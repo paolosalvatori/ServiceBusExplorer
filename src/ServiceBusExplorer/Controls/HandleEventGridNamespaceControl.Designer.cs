@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class HandleEventGridNamespaceControl
     {
@@ -42,16 +42,16 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.namespacePropertyListView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.namespacePropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.namespacePropertyListView.BackgroundGradientColor = System.Drawing.Color.White;
+            this.namespacePropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.namespacePropertyListView.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.namespacePropertyListView.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.namespacePropertyListView.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.namespacePropertyListView.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.namespacePropertyListView.BorderThickness = 1F;
             this.namespacePropertyListView.Controls.Add(this.namespaceListView);
             this.namespacePropertyListView.Controls.Add(this.propertyGrid);
-            this.namespacePropertyListView.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.namespacePropertyListView.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.namespacePropertyListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.namespacePropertyListView.ForeColor = System.Drawing.Color.White;
+            this.namespacePropertyListView.ForeColor = System.Drawing.SystemColors.ControlText;
             this.namespacePropertyListView.GroupImage = null;
             this.namespacePropertyListView.GroupTitle = "Namespace Properties";
             this.namespacePropertyListView.Location = new System.Drawing.Point(68, 48);
@@ -110,7 +110,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.Controls.Add(this.namespacePropertyListView);
             this.Name = "HandleEventGridNamespaceControl";
             this.Size = new System.Drawing.Size(1472, 811);
@@ -127,3 +127,4 @@
         private ReadOnlyPropertyGrid propertyGrid;
     }
 }
+

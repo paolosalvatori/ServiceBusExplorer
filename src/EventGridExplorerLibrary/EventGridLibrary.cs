@@ -47,8 +47,8 @@ namespace EventGridExplorerLibrary
         public async Task<AsyncPageable<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName, string hostname)
         {
             NamespaceTopicCollection namespaceTopicCollection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
-            AsyncPageable<NamespaceTopicResource> pages = namespaceTopicCollection.GetAllAsync();
-            IAsyncEnumerator<NamespaceTopicResource> enumerator = pages.GetAsyncEnumerator();
+            var pages = namespaceTopicCollection.GetAllAsync();
+            var enumerator = pages.GetAsyncEnumerator();
 
             try
             {
@@ -71,7 +71,7 @@ namespace EventGridExplorerLibrary
         {
             NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
             NamespaceTopicEventSubscriptionCollection namespaceTopicEventSubscriptionCollection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
-            AsyncPageable<NamespaceTopicEventSubscriptionResource> pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
+            var pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
 
             return pages;
         }
@@ -105,7 +105,7 @@ namespace EventGridExplorerLibrary
 
         public async Task PublishEventsAsync(string topicName, string eventSource, string eventType, List<string> publishEvents)
         {
-            CloudEvent[] cloudEvents = new CloudEvent[publishEvents.Count];
+            var cloudEvents = new CloudEvent[publishEvents.Count];
 
             for (int i = 0; i < cloudEvents.Length; i++)
             {
@@ -140,7 +140,7 @@ namespace EventGridExplorerLibrary
             }
         }
 
-        public async Task<bool> EventActionsAsync(string action, List<string> lockTokens, string topicName, string subscriptionName, WriteToLogDelegate writeToLog)
+        public async Task<bool> EventActionsAsync(string action, List<string> lockTokens, string topicName, string subscriptionName, WriteToLogDelegate logAction)
         {
             if (lockTokens.Count > 0)
             {
@@ -150,45 +150,45 @@ namespace EventGridExplorerLibrary
                 switch (action)
                 {
                     case "Acknowledge":
-                        AcknowledgeResult acknowledgeResult = await dataPlaneClients[topicName].AcknowledgeCloudEventsAsync(topicName, subscriptionName, new AcknowledgeOptions(lockTokens));
+                        var acknowledgeResult = (await dataPlaneClients[topicName].AcknowledgeCloudEventsAsync(topicName, subscriptionName, new AcknowledgeOptions(lockTokens))).Value;
                         succeededLockTokens = acknowledgeResult.SucceededLockTokens;
                         failedLockTokens = acknowledgeResult.FailedLockTokens;
                         break;
                     case "Release":
-                        ReleaseResult releaseResult = await dataPlaneClients[topicName].ReleaseCloudEventsAsync(topicName, subscriptionName, new ReleaseOptions(lockTokens));
+                        var releaseResult = (await dataPlaneClients[topicName].ReleaseCloudEventsAsync(topicName, subscriptionName, new ReleaseOptions(lockTokens))).Value;
                         succeededLockTokens = releaseResult.SucceededLockTokens;
                         failedLockTokens = releaseResult.FailedLockTokens;
                         break;
                     case "Reject":
-                        RejectResult rejectResult = await dataPlaneClients[topicName].RejectCloudEventsAsync(topicName, subscriptionName, new RejectOptions(lockTokens));
+                        var rejectResult = (await dataPlaneClients[topicName].RejectCloudEventsAsync(topicName, subscriptionName, new RejectOptions(lockTokens))).Value;
                         succeededLockTokens = rejectResult.SucceededLockTokens;
                         failedLockTokens = rejectResult.FailedLockTokens;
                         break;
                 }
 
-                writeToLog($"Event Action: {action}");
+                logAction($"Event Action: {action}");
 
-                if (succeededLockTokens.Count > 0)
+                if (succeededLockTokens?.Count > 0)
                 {
-                    writeToLog($"Success Count: {succeededLockTokens.Count}");
-                    foreach (string lockToken in succeededLockTokens)
+                    logAction($"Success Count: {succeededLockTokens.Count}");
+                    foreach (var lockToken in succeededLockTokens)
                     {
-                        writeToLog($"Lock Token: {lockToken}");
+                        logAction($"Lock Token: {lockToken}");
                     }
                 }
 
-                if (failedLockTokens.Count > 0)
+                if (failedLockTokens?.Count > 0)
                 {
-                    writeToLog($"Failed Count: {failedLockTokens.Count}");
-                    foreach (FailedLockToken lockToken in failedLockTokens)
+                    logAction($"Failed Count: {failedLockTokens.Count}");
+                    foreach (var lockToken in failedLockTokens)
                     {
-                        writeToLog($"Lock Token: {lockToken.LockToken}");
-                        writeToLog($"Error Code: {lockToken.Error.Code}");
-                        writeToLog($"Error Description: {lockToken.Error.Message}");
+                        logAction($"Lock Token: {lockToken.LockToken}");
+                        logAction($"Error Code: {lockToken.Error.Code}");
+                        logAction($"Error Description: {lockToken.Error.Message}");
                     }
                 }
 
-                return failedLockTokens.Count == 0;
+                return failedLockTokens?.Count == 0;
             }
 
             return false;

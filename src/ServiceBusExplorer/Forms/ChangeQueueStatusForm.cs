@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Helpers;
+using Microsoft.ServiceBus.Messaging;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -12,6 +13,7 @@ namespace ServiceBusExplorer.Forms
         public ChangeQueueStatusForm(EntityStatus entityCurrentStatus)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             SetSelected(entityCurrentStatus);
         }
 
@@ -39,3 +41,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -49,6 +49,7 @@ namespace ServiceBusExplorer.Forms
         public DeleteForm(string message)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             lblMessage.Text = string.Format(message);
             Width = lblMessage.Width + 88;
         }
@@ -56,6 +57,7 @@ namespace ServiceBusExplorer.Forms
         public DeleteForm(string entityName, string entityType)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             lblMessage.Text = string.Format(MessageFormat,
                                             entityType ?? Unknown,
                                             entityName ?? Unknown);
@@ -156,3 +158,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

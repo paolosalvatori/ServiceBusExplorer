@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -92,6 +92,7 @@ namespace ServiceBusExplorer.Forms
             this.entity = entity;
             FilterExpression = filterExpression;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls();
         }
         #endregion
@@ -495,3 +496,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

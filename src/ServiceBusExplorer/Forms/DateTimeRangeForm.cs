@@ -1,5 +1,6 @@
-﻿#region Using Directives
+#region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -14,6 +15,7 @@ namespace ServiceBusExplorer.Forms
         public DateTimeRangeForm(DateTime? DateTimeFrom, DateTime? DateTimeTo)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             if (DateTimeFrom != null && DateTime.TryParse(DateTimeFrom.ToString(), out _))
             {
                 dateFromTimePicker.Checked = true;
@@ -98,3 +100,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

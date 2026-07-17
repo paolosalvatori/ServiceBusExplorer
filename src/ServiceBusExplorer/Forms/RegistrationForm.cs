@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -74,6 +74,7 @@ namespace ServiceBusExplorer.Forms
         public RegistrationForm()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             cboRegistrationType.Items.AddRange(new object[]{SelectRegistration, 
                                                             MpnsRegistrationDescription, 
                                                             MpnsTemplateRegistrationDescription,
@@ -247,3 +248,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

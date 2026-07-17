@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -84,6 +84,7 @@ namespace ServiceBusExplorer.Forms
             includeNotificationHubs = notificationHubs;
             includeRelays = relays;
             InitializeComponent();
+            ThemeManager.Apply(this);
             if (MainForm.SingletonMainForm != null &&
                 MainForm.SingletonMainForm.ServiceBusTreeView != null)
             {
@@ -399,3 +400,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

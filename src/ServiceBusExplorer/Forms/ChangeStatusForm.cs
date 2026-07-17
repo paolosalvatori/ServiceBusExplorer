@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -21,6 +21,7 @@
 
 #region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -46,6 +47,7 @@ namespace ServiceBusExplorer.Forms
         public ChangeStatusForm(string entityName, string entityType, EntityStatus desiredStatus)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             
             if (desiredStatus == EntityStatus.Active)
             {
@@ -102,3 +104,4 @@ namespace ServiceBusExplorer.Forms
         #endregion 
     }
 }
+

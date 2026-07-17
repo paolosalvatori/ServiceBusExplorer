@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
@@ -61,16 +61,16 @@ namespace ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.subscriptionPropertyListView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.subscriptionPropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.subscriptionPropertyListView.BackgroundGradientColor = System.Drawing.Color.White;
+            this.subscriptionPropertyListView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.subscriptionPropertyListView.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.subscriptionPropertyListView.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.subscriptionPropertyListView.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.subscriptionPropertyListView.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.subscriptionPropertyListView.BorderThickness = 1F;
             this.subscriptionPropertyListView.Controls.Add(this.subscriptionListView);
             this.subscriptionPropertyListView.Controls.Add(this.propertyGrid);
-            this.subscriptionPropertyListView.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.subscriptionPropertyListView.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.subscriptionPropertyListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.subscriptionPropertyListView.ForeColor = System.Drawing.Color.White;
+            this.subscriptionPropertyListView.ForeColor = System.Drawing.SystemColors.ControlText;
             this.subscriptionPropertyListView.GroupImage = null;
             this.subscriptionPropertyListView.GroupTitle = "Subscription Properties";
             this.subscriptionPropertyListView.Location = new System.Drawing.Point(1081, 44);
@@ -130,18 +130,18 @@ namespace ServiceBusExplorer.Controls
             this.receivedEventsGrouper.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.receivedEventsGrouper.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.receivedEventsGrouper.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.receivedEventsGrouper.BackgroundGradientColor = System.Drawing.Color.White;
+            this.receivedEventsGrouper.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.receivedEventsGrouper.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.receivedEventsGrouper.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.receivedEventsGrouper.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.receivedEventsGrouper.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.receivedEventsGrouper.BorderThickness = 1F;
             this.receivedEventsGrouper.Controls.Add(this.btnAck);
             this.receivedEventsGrouper.Controls.Add(this.btnRel);
             this.receivedEventsGrouper.Controls.Add(this.btnRej);
             this.receivedEventsGrouper.Controls.Add(this.eventsDataGridView);
-            this.receivedEventsGrouper.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.receivedEventsGrouper.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.receivedEventsGrouper.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.receivedEventsGrouper.ForeColor = System.Drawing.Color.White;
+            this.receivedEventsGrouper.ForeColor = System.Drawing.SystemColors.ControlText;
             this.receivedEventsGrouper.GroupImage = null;
             this.receivedEventsGrouper.GroupTitle = "Received Events";
             this.receivedEventsGrouper.Location = new System.Drawing.Point(41, 44);
@@ -159,10 +159,10 @@ namespace ServiceBusExplorer.Controls
             // btnAck
             // 
             this.btnAck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAck.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnAck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnAck.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnAck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAck.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnAck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnAck.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnAck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnAck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAck.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnAck.Location = new System.Drawing.Point(548, 365);
@@ -177,10 +177,10 @@ namespace ServiceBusExplorer.Controls
             // btnRel
             // 
             this.btnRel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnRel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnRel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnRel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnRel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRel.Location = new System.Drawing.Point(697, 365);
@@ -195,10 +195,10 @@ namespace ServiceBusExplorer.Controls
             // btnRej
             // 
             this.btnRej.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRej.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRej.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRej.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRej.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRej.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnRej.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnRej.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnRej.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnRej.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRej.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRej.Location = new System.Drawing.Point(844, 365);
@@ -218,7 +218,7 @@ namespace ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.eventsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.eventsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.eventsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.eventsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.eventsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.eventsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -245,15 +245,15 @@ namespace ServiceBusExplorer.Controls
             // 
             this.grouperCaption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.grouperCaption.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperCaption.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperCaption.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperCaption.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperCaption.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCaption.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperCaption.BorderThickness = 1F;
             this.grouperCaption.Controls.Add(this.receiveEventInfo);
-            this.grouperCaption.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperCaption.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperCaption.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperCaption.ForeColor = System.Drawing.Color.White;
+            this.grouperCaption.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperCaption.GroupImage = null;
             this.grouperCaption.GroupTitle = "Event Info";
             this.grouperCaption.Location = new System.Drawing.Point(41, 493);
@@ -308,7 +308,7 @@ namespace ServiceBusExplorer.Controls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.Controls.Add(this.subscriptionPropertyListView);
             this.Controls.Add(this.receivedEventsGrouper);
             this.Controls.Add(this.grouperCaption);
@@ -340,3 +340,4 @@ namespace ServiceBusExplorer.Controls
         private Button btnRej;
     }
 }
+

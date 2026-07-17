@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -163,6 +163,7 @@ namespace ServiceBusExplorer.Controls
             this.path = path;
 
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeControls(initialCall: true);
         } 
         #endregion
@@ -276,7 +277,8 @@ namespace ServiceBusExplorer.Controls
 
                 // Initialize textboxes
                 txtPath.ReadOnly = true;
-                txtPath.BackColor = SystemColors.Window;
+                txtPath.BackColor = ThemeManager.IsDark ? ThemeManager.SurfaceLight : SystemColors.Window;
+                txtPath.ForeColor = ThemeManager.IsDark ? ThemeManager.Foreground : SystemColors.WindowText;
                 txtPath.GotFocus += textBox_GotFocus;
                 trackBarMaxTopicSize.Enabled = false;
 
@@ -1187,3 +1189,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

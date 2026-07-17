@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -58,6 +58,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
         #endregion
 
@@ -154,3 +155,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

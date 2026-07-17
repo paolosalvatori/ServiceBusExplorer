@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -73,6 +73,7 @@ namespace ServiceBusExplorer.Controls
             this.serviceBusHelper = serviceBusHelper;
             this.partitionDescription = partitionDescription;
             InitializeComponent();
+            ThemeManager.Apply(this);
             InitializeData();
         } 
         #endregion
@@ -396,3 +397,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+

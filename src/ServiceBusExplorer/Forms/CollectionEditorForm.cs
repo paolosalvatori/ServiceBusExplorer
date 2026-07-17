@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -21,6 +21,7 @@
 
 #region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -43,6 +44,7 @@ namespace ServiceBusExplorer.Forms
         public CollectionEditorForm(string text, string groupTitle, object value)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             Text = text;
             Value = value;
             grouperCaption.GroupTitle = string.IsNullOrWhiteSpace(groupTitle) ? DefaultLabel : groupTitle;
@@ -193,3 +195,4 @@ namespace ServiceBusExplorer.Forms
         #endregion 
     }
 }
+

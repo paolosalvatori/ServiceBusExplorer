@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -59,10 +59,10 @@ namespace ServiceBusExplorer.Forms
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOk.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOk.Location = new System.Drawing.Point(235, 403);
             this.btnOk.Name = "btnOk";
@@ -75,11 +75,11 @@ namespace ServiceBusExplorer.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(315, 403);
             this.btnCancel.Name = "btnCancel";
@@ -103,10 +103,10 @@ namespace ServiceBusExplorer.Forms
             // 
             // grouperEventGridNamespaceSettings
             // 
-            this.grouperEventGridNamespaceSettings.BackgroundColor = System.Drawing.Color.White;
-            this.grouperEventGridNamespaceSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperEventGridNamespaceSettings.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperEventGridNamespaceSettings.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperEventGridNamespaceSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperEventGridNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperEventGridNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperEventGridNamespaceSettings.BorderThickness = 1F;
             this.grouperEventGridNamespaceSettings.Controls.Add(this.cboApiVersion);
             this.grouperEventGridNamespaceSettings.Controls.Add(this.cloudGroupBox);
@@ -120,9 +120,9 @@ namespace ServiceBusExplorer.Forms
             this.grouperEventGridNamespaceSettings.Controls.Add(this.lblSubscriptionId);
             this.grouperEventGridNamespaceSettings.Controls.Add(this.txtNamespaceName);
             this.grouperEventGridNamespaceSettings.Controls.Add(this.lblNamespaceName);
-            this.grouperEventGridNamespaceSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperEventGridNamespaceSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperEventGridNamespaceSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperEventGridNamespaceSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperEventGridNamespaceSettings.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperEventGridNamespaceSettings.GroupImage = null;
             this.grouperEventGridNamespaceSettings.GroupTitle = "Context Settings";
             this.grouperEventGridNamespaceSettings.Location = new System.Drawing.Point(22, 25);
@@ -255,7 +255,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.txtResourceGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtResourceGroupName.BackColor = System.Drawing.SystemColors.Window;
+            this.txtResourceGroupName.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtResourceGroupName.ForeColor = System.Drawing.SystemColors.ControlText;
             this.txtResourceGroupName.Location = new System.Drawing.Point(16, 97);
             this.txtResourceGroupName.Multiline = true;
@@ -308,7 +308,7 @@ namespace ServiceBusExplorer.Forms
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(414, 442);
             this.Controls.Add(this.pbAzure);
@@ -356,3 +356,4 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ComboBox cboApiVersion;
     }
 }
+

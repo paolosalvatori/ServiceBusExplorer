@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class DashboardControl : UserControl
+    public class DashboardControl : UserControl
     {
         private DataGridView dataGridView;
         private Button refreshButton;

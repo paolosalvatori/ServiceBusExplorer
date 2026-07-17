@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class HandleNotificationHubControl
     {
@@ -343,10 +343,10 @@
             // btnSend
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSend.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnSend.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSend.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnSend.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnSend.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnSend.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnSend.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnSend.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnSend.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSend.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnSend.Location = new System.Drawing.Point(680, 504);
@@ -386,7 +386,7 @@
             // 
             // tabPageDescription
             // 
-            this.tabPageDescription.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageDescription.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageDescription.Controls.Add(this.grouperNotificationHubInformation);
             this.tabPageDescription.Controls.Add(this.grouperUserMetadata);
             this.tabPageDescription.Controls.Add(this.grouperGoogleCloudMessaggingSettings);
@@ -407,15 +407,15 @@
             // 
             this.grouperNotificationHubInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperNotificationHubInformation.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperNotificationHubInformation.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperNotificationHubInformation.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperNotificationHubInformation.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperNotificationHubInformation.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperNotificationHubInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperNotificationHubInformation.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperNotificationHubInformation.BorderThickness = 1F;
             this.grouperNotificationHubInformation.Controls.Add(this.propertyListView);
-            this.grouperNotificationHubInformation.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperNotificationHubInformation.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperNotificationHubInformation.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperNotificationHubInformation.ForeColor = System.Drawing.Color.White;
+            this.grouperNotificationHubInformation.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperNotificationHubInformation.GroupImage = null;
             this.grouperNotificationHubInformation.GroupTitle = "Notification Hub Information";
             this.grouperNotificationHubInformation.Location = new System.Drawing.Point(656, 112);
@@ -463,17 +463,17 @@
             // 
             this.grouperUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperUserMetadata.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperUserMetadata.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperUserMetadata.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperUserMetadata.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperUserMetadata.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperUserMetadata.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperUserMetadata.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperUserMetadata.BorderThickness = 1F;
             this.grouperUserMetadata.Controls.Add(this.txtUserMetadata);
             this.grouperUserMetadata.Controls.Add(this.lblUserMetadata);
             this.grouperUserMetadata.Controls.Add(this.btnOpenDescriptionForm);
-            this.grouperUserMetadata.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperUserMetadata.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperUserMetadata.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperUserMetadata.ForeColor = System.Drawing.Color.White;
+            this.grouperUserMetadata.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperUserMetadata.GroupImage = null;
             this.grouperUserMetadata.GroupTitle = "User Metdata";
             this.grouperUserMetadata.Location = new System.Drawing.Point(336, 16);
@@ -491,7 +491,7 @@
             // 
             this.txtUserMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtUserMetadata.BackColor = System.Drawing.SystemColors.Window;
+            this.txtUserMetadata.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtUserMetadata.Location = new System.Drawing.Point(20, 48);
             this.txtUserMetadata.Name = "txtUserMetadata";
             this.txtUserMetadata.Size = new System.Drawing.Size(232, 20);
@@ -510,10 +510,10 @@
             // btnOpenDescriptionForm
             // 
             this.btnOpenDescriptionForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenDescriptionForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnOpenDescriptionForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnOpenDescriptionForm.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnOpenDescriptionForm.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnOpenDescriptionForm.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnOpenDescriptionForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnOpenDescriptionForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenDescriptionForm.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnOpenDescriptionForm.Location = new System.Drawing.Point(260, 48);
@@ -529,19 +529,19 @@
             // 
             this.grouperGoogleCloudMessaggingSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperGoogleCloudMessaggingSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperGoogleCloudMessaggingSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperGoogleCloudMessaggingSettings.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperGoogleCloudMessaggingSettings.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperGoogleCloudMessaggingSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperGoogleCloudMessaggingSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGoogleCloudMessaggingSettings.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperGoogleCloudMessaggingSettings.BorderThickness = 1F;
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.btnClearGcmNotification);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.txtGcmEndpoint);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblGcmEndpoint);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblGcmApiKey);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.txtGcmApiKey);
-            this.grouperGoogleCloudMessaggingSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGoogleCloudMessaggingSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperGoogleCloudMessaggingSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperGoogleCloudMessaggingSettings.GroupImage = null;
             this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Google Cloud Messagging Settings";
             this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(336, 112);
@@ -558,10 +558,10 @@
             // btnClearGcmNotification
             // 
             this.btnClearGcmNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearGcmNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearGcmNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearGcmNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearGcmNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearGcmNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnClearGcmNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnClearGcmNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnClearGcmNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnClearGcmNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearGcmNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnClearGcmNotification.Location = new System.Drawing.Point(216, 124);
@@ -576,7 +576,7 @@
             // 
             this.txtGcmEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGcmEndpoint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtGcmEndpoint.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 92);
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
@@ -607,7 +607,7 @@
             // 
             this.txtGcmApiKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGcmApiKey.BackColor = System.Drawing.SystemColors.Window;
+            this.txtGcmApiKey.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtGcmApiKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
             this.txtGcmApiKey.Name = "txtGcmApiKey";
@@ -619,19 +619,19 @@
             this.grouperWindowsPhoneNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWindowsPhoneNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWindowsPhoneNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWindowsPhoneNotificationSettings.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWindowsPhoneNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWindowsPhoneNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsPhoneNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWindowsPhoneNotificationSettings.BorderThickness = 1F;
             this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnClearMpnsNotification);
             this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.checkBoxEnableUnauthenticatedMpns);
             this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.btnMpnsCredentialUploadCertificate);
             this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.lblMpnsCredentialCertificateThumbprint);
             this.grouperWindowsPhoneNotificationSettings.Controls.Add(this.txtMpnsCredentialCertificateThumbprint);
-            this.grouperWindowsPhoneNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsPhoneNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWindowsPhoneNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWindowsPhoneNotificationSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperWindowsPhoneNotificationSettings.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWindowsPhoneNotificationSettings.GroupImage = null;
             this.grouperWindowsPhoneNotificationSettings.GroupTitle = "Windows Phone Notification Settings";
             this.grouperWindowsPhoneNotificationSettings.Location = new System.Drawing.Point(16, 280);
@@ -648,10 +648,10 @@
             // btnClearMpnsNotification
             // 
             this.btnClearMpnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearMpnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearMpnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearMpnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearMpnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearMpnsNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnClearMpnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnClearMpnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnClearMpnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnClearMpnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearMpnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnClearMpnsNotification.Location = new System.Drawing.Point(216, 124);
@@ -677,10 +677,10 @@
             // btnMpnsCredentialUploadCertificate
             // 
             this.btnMpnsCredentialUploadCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMpnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnMpnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnMpnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnMpnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnMpnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnMpnsCredentialUploadCertificate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMpnsCredentialUploadCertificate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnMpnsCredentialUploadCertificate.Location = new System.Drawing.Point(136, 124);
@@ -705,7 +705,7 @@
             // 
             this.txtMpnsCredentialCertificateThumbprint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMpnsCredentialCertificateThumbprint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMpnsCredentialCertificateThumbprint.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtMpnsCredentialCertificateThumbprint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtMpnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 48);
             this.txtMpnsCredentialCertificateThumbprint.Name = "txtMpnsCredentialCertificateThumbprint";
@@ -718,10 +718,10 @@
             this.grouperAppleNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAppleNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAppleNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAppleNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperAppleNotificationSettings.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperAppleNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAppleNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperAppleNotificationSettings.BorderThickness = 1F;
             this.grouperAppleNotificationSettings.Controls.Add(this.btnClearApnsNotification);
             this.grouperAppleNotificationSettings.Controls.Add(this.txtApnsEndpoint);
@@ -729,9 +729,9 @@
             this.grouperAppleNotificationSettings.Controls.Add(this.btnApnsCredentialUploadCertificate);
             this.grouperAppleNotificationSettings.Controls.Add(this.lblApnsCredentialCertificateThumbprint);
             this.grouperAppleNotificationSettings.Controls.Add(this.txtApnsCredentialCertificateThumbprint);
-            this.grouperAppleNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperAppleNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAppleNotificationSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperAppleNotificationSettings.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperAppleNotificationSettings.GroupImage = null;
             this.grouperAppleNotificationSettings.GroupTitle = "Apple Notification Settings";
             this.grouperAppleNotificationSettings.Location = new System.Drawing.Point(336, 280);
@@ -748,10 +748,10 @@
             // btnClearApnsNotification
             // 
             this.btnClearApnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearApnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearApnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearApnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearApnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearApnsNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnClearApnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnClearApnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnClearApnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnClearApnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearApnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnClearApnsNotification.Location = new System.Drawing.Point(216, 124);
@@ -766,7 +766,7 @@
             // 
             this.txtApnsEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtApnsEndpoint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtApnsEndpoint.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtApnsEndpoint.Location = new System.Drawing.Point(16, 92);
             this.txtApnsEndpoint.Name = "txtApnsEndpoint";
             this.txtApnsEndpoint.ReadOnly = true;
@@ -786,10 +786,10 @@
             // btnApnsCredentialUploadCertificate
             // 
             this.btnApnsCredentialUploadCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnApnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnApnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnApnsCredentialUploadCertificate.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnApnsCredentialUploadCertificate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnApnsCredentialUploadCertificate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnApnsCredentialUploadCertificate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnApnsCredentialUploadCertificate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnApnsCredentialUploadCertificate.Location = new System.Drawing.Point(136, 124);
@@ -814,7 +814,7 @@
             // 
             this.txtApnsCredentialCertificateThumbprint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtApnsCredentialCertificateThumbprint.BackColor = System.Drawing.SystemColors.Window;
+            this.txtApnsCredentialCertificateThumbprint.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtApnsCredentialCertificateThumbprint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtApnsCredentialCertificateThumbprint.Location = new System.Drawing.Point(16, 48);
             this.txtApnsCredentialCertificateThumbprint.Name = "txtApnsCredentialCertificateThumbprint";
@@ -827,19 +827,19 @@
             this.grouperWindowsNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWindowsNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWindowsNotificationSettings.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWindowsNotificationSettings.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWindowsNotificationSettings.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWindowsNotificationSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWindowsNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsNotificationSettings.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWindowsNotificationSettings.BorderThickness = 1F;
             this.grouperWindowsNotificationSettings.Controls.Add(this.btnClearWnsNotification);
             this.grouperWindowsNotificationSettings.Controls.Add(this.txtClientSecret);
             this.grouperWindowsNotificationSettings.Controls.Add(this.lblClientSecret);
             this.grouperWindowsNotificationSettings.Controls.Add(this.lblPackageSid);
             this.grouperWindowsNotificationSettings.Controls.Add(this.txtPackageSid);
-            this.grouperWindowsNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWindowsNotificationSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWindowsNotificationSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWindowsNotificationSettings.ForeColor = System.Drawing.Color.White;
+            this.grouperWindowsNotificationSettings.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWindowsNotificationSettings.GroupImage = null;
             this.grouperWindowsNotificationSettings.GroupTitle = "Windows Notification Settings";
             this.grouperWindowsNotificationSettings.Location = new System.Drawing.Point(16, 112);
@@ -856,10 +856,10 @@
             // btnClearWnsNotification
             // 
             this.btnClearWnsNotification.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearWnsNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnClearWnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearWnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnClearWnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnClearWnsNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnClearWnsNotification.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnClearWnsNotification.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnClearWnsNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnClearWnsNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearWnsNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnClearWnsNotification.Location = new System.Drawing.Point(216, 124);
@@ -874,7 +874,7 @@
             // 
             this.txtClientSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtClientSecret.BackColor = System.Drawing.SystemColors.Window;
+            this.txtClientSecret.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtClientSecret.Location = new System.Drawing.Point(16, 92);
             this.txtClientSecret.Name = "txtClientSecret";
             this.txtClientSecret.Size = new System.Drawing.Size(272, 20);
@@ -904,7 +904,7 @@
             // 
             this.txtPackageSid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPackageSid.BackColor = System.Drawing.SystemColors.Window;
+            this.txtPackageSid.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtPackageSid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPackageSid.Location = new System.Drawing.Point(16, 48);
             this.txtPackageSid.Name = "txtPackageSid";
@@ -914,15 +914,15 @@
             // grouperDuplicateDetectionHistoryTimeWindow
             // 
             this.grouperDuplicateDetectionHistoryTimeWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperDuplicateDetectionHistoryTimeWindow.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperDuplicateDetectionHistoryTimeWindow.BorderThickness = 1F;
             this.grouperDuplicateDetectionHistoryTimeWindow.Controls.Add(this.tsRegistrationTimeToLive);
-            this.grouperDuplicateDetectionHistoryTimeWindow.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperDuplicateDetectionHistoryTimeWindow.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperDuplicateDetectionHistoryTimeWindow.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperDuplicateDetectionHistoryTimeWindow.ForeColor = System.Drawing.Color.White;
+            this.grouperDuplicateDetectionHistoryTimeWindow.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupImage = null;
             this.grouperDuplicateDetectionHistoryTimeWindow.GroupTitle = "Registration Time To Live";
             this.grouperDuplicateDetectionHistoryTimeWindow.Location = new System.Drawing.Point(656, 16);
@@ -948,16 +948,16 @@
             // 
             this.grouperPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperPath.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperPath.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperPath.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperPath.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPath.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperPath.BorderThickness = 1F;
             this.grouperPath.Controls.Add(this.lblRelativeURI);
             this.grouperPath.Controls.Add(this.txtPath);
-            this.grouperPath.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperPath.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperPath.ForeColor = System.Drawing.Color.White;
+            this.grouperPath.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperPath.GroupImage = null;
             this.grouperPath.GroupTitle = "Path";
             this.grouperPath.Location = new System.Drawing.Point(16, 16);
@@ -985,7 +985,7 @@
             // 
             this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPath.BackColor = System.Drawing.SystemColors.Window;
+            this.txtPath.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtPath.Location = new System.Drawing.Point(16, 48);
             this.txtPath.Name = "txtPath";
@@ -994,7 +994,7 @@
             // 
             // tabPageAuthorization
             // 
-            this.tabPageAuthorization.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageAuthorization.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageAuthorization.Controls.Add(this.grouperAuthorizationRuleList);
             this.tabPageAuthorization.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageAuthorization.Location = new System.Drawing.Point(4, 22);
@@ -1008,15 +1008,15 @@
             this.grouperAuthorizationRuleList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAuthorizationRuleList.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperAuthorizationRuleList.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperAuthorizationRuleList.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAuthorizationRuleList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAuthorizationRuleList.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperAuthorizationRuleList.BorderThickness = 1F;
             this.grouperAuthorizationRuleList.Controls.Add(this.authorizationRulesDataGridView);
-            this.grouperAuthorizationRuleList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAuthorizationRuleList.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperAuthorizationRuleList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAuthorizationRuleList.ForeColor = System.Drawing.Color.White;
+            this.grouperAuthorizationRuleList.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperAuthorizationRuleList.GroupImage = null;
             this.grouperAuthorizationRuleList.GroupTitle = "Authorization Rule List";
             this.grouperAuthorizationRuleList.Location = new System.Drawing.Point(16, 8);
@@ -1038,7 +1038,7 @@
             this.authorizationRulesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.authorizationRulesDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.authorizationRulesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.authorizationRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.authorizationRulesDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -1061,7 +1061,7 @@
             // 
             // tabPageRegistrations
             // 
-            this.tabPageRegistrations.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageRegistrations.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageRegistrations.Controls.Add(this.registrationsSplitContainer);
             this.tabPageRegistrations.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageRegistrations.Location = new System.Drawing.Point(4, 22);
@@ -1093,10 +1093,10 @@
             // 
             // grouperRegistrations
             // 
-            this.grouperRegistrations.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperRegistrations.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperRegistrations.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperRegistrations.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperRegistrations.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperRegistrations.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperRegistrations.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperRegistrations.BorderThickness = 1F;
             this.grouperRegistrations.Controls.Add(this.pictFindRegistrations);
             this.grouperRegistrations.Controls.Add(this.txtCurrentRegistrationPage);
@@ -1105,10 +1105,10 @@
             this.grouperRegistrations.Controls.Add(this.btnLastRegistrationPage);
             this.grouperRegistrations.Controls.Add(this.btnNextRegistrationPage);
             this.grouperRegistrations.Controls.Add(this.registrationsDataGridView);
-            this.grouperRegistrations.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperRegistrations.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperRegistrations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperRegistrations.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperRegistrations.ForeColor = System.Drawing.Color.White;
+            this.grouperRegistrations.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperRegistrations.GroupImage = null;
             this.grouperRegistrations.GroupTitle = "Registration List";
             this.grouperRegistrations.Location = new System.Drawing.Point(0, 0);
@@ -1149,10 +1149,10 @@
             // btnPreviousRegistrationPage
             // 
             this.btnPreviousRegistrationPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPreviousRegistrationPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnPreviousRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPreviousRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnPreviousRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnPreviousRegistrationPage.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnPreviousRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnPreviousRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnPreviousRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnPreviousRegistrationPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPreviousRegistrationPage.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnPreviousRegistrationPage.ImageKey = "ButtonPrevious.png";
@@ -1176,10 +1176,10 @@
             // btnFirstRegistrationPage
             // 
             this.btnFirstRegistrationPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnFirstRegistrationPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnFirstRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnFirstRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnFirstRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnFirstRegistrationPage.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnFirstRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnFirstRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnFirstRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnFirstRegistrationPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFirstRegistrationPage.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnFirstRegistrationPage.ImageKey = "ButtonFirst.png";
@@ -1194,10 +1194,10 @@
             // btnLastRegistrationPage
             // 
             this.btnLastRegistrationPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLastRegistrationPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnLastRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnLastRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnLastRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnLastRegistrationPage.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnLastRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnLastRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnLastRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnLastRegistrationPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLastRegistrationPage.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnLastRegistrationPage.ImageKey = "ButtonLast.png";
@@ -1212,10 +1212,10 @@
             // btnNextRegistrationPage
             // 
             this.btnNextRegistrationPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNextRegistrationPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnNextRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnNextRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnNextRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnNextRegistrationPage.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnNextRegistrationPage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnNextRegistrationPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnNextRegistrationPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnNextRegistrationPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNextRegistrationPage.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnNextRegistrationPage.ImageKey = "ButtonNext.png";
@@ -1235,7 +1235,7 @@
             this.registrationsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.registrationsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.registrationsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.registrationsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.registrationsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.registrationsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -1260,20 +1260,20 @@
             // 
             // grouperRegistrationProperties
             // 
-            this.grouperRegistrationProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperRegistrationProperties.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperRegistrationProperties.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperRegistrationProperties.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperRegistrationProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperRegistrationProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperRegistrationProperties.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperRegistrationProperties.BorderThickness = 1F;
             this.grouperRegistrationProperties.Controls.Add(this.btnRefreshRegistrations);
             this.grouperRegistrationProperties.Controls.Add(this.btnCreateRegistration);
             this.grouperRegistrationProperties.Controls.Add(this.btnDeleteRegistration);
             this.grouperRegistrationProperties.Controls.Add(this.btnUpdateRegistration);
             this.grouperRegistrationProperties.Controls.Add(this.registrationPropertyGrid);
-            this.grouperRegistrationProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperRegistrationProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperRegistrationProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperRegistrationProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperRegistrationProperties.ForeColor = System.Drawing.Color.White;
+            this.grouperRegistrationProperties.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperRegistrationProperties.GroupImage = null;
             this.grouperRegistrationProperties.GroupTitle = "Registration Properties";
             this.grouperRegistrationProperties.Location = new System.Drawing.Point(0, 0);
@@ -1291,10 +1291,10 @@
             // btnRefreshRegistrations
             // 
             this.btnRefreshRegistrations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefreshRegistrations.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRefreshRegistrations.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefreshRegistrations.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefreshRegistrations.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRefreshRegistrations.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnRefreshRegistrations.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnRefreshRegistrations.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnRefreshRegistrations.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnRefreshRegistrations.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefreshRegistrations.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRefreshRegistrations.Location = new System.Drawing.Point(16, 384);
@@ -1310,10 +1310,10 @@
             // btnCreateRegistration
             // 
             this.btnCreateRegistration.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCreateRegistration.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCreateRegistration.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateRegistration.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnCreateRegistration.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCreateRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCreateRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCreateRegistration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateRegistration.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCreateRegistration.Location = new System.Drawing.Point(97, 384);
@@ -1329,10 +1329,10 @@
             // btnDeleteRegistration
             // 
             this.btnDeleteRegistration.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeleteRegistration.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnDeleteRegistration.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnDeleteRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnDeleteRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDeleteRegistration.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnDeleteRegistration.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnDeleteRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnDeleteRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnDeleteRegistration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeleteRegistration.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnDeleteRegistration.Location = new System.Drawing.Point(177, 384);
@@ -1348,10 +1348,10 @@
             // btnUpdateRegistration
             // 
             this.btnUpdateRegistration.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUpdateRegistration.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnUpdateRegistration.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnUpdateRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnUpdateRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnUpdateRegistration.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnUpdateRegistration.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnUpdateRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnUpdateRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnUpdateRegistration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnUpdateRegistration.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnUpdateRegistration.Location = new System.Drawing.Point(256, 384);
@@ -1369,7 +1369,7 @@
             this.registrationPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.registrationPropertyGrid.BackColor = System.Drawing.SystemColors.Window;
+            this.registrationPropertyGrid.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.registrationPropertyGrid.HelpVisible = false;
             this.registrationPropertyGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.registrationPropertyGrid.Location = new System.Drawing.Point(16, 32);
@@ -1381,7 +1381,7 @@
             // 
             // tabPageTemplateNotification
             // 
-            this.tabPageTemplateNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageTemplateNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageTemplateNotification.Controls.Add(this.templateSplitContainer);
             this.tabPageTemplateNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageTemplateNotification.Location = new System.Drawing.Point(4, 22);
@@ -1432,16 +1432,16 @@
             // 
             // grouperBody
             // 
-            this.grouperBody.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperBody.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperBody.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperBody.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperBody.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperBody.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperBody.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperBody.BorderThickness = 1F;
             this.grouperBody.Controls.Add(this.txtTemplatePayload);
-            this.grouperBody.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperBody.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperBody.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperBody.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperBody.ForeColor = System.Drawing.Color.White;
+            this.grouperBody.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperBody.GroupImage = null;
             this.grouperBody.GroupTitle = "Notification Payload";
             this.grouperBody.Location = new System.Drawing.Point(0, 0);
@@ -1460,7 +1460,7 @@
             this.txtTemplatePayload.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTemplatePayload.BackColor = System.Drawing.SystemColors.Window;
+            this.txtTemplatePayload.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtTemplatePayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTemplatePayload.Location = new System.Drawing.Point(16, 32);
             this.txtTemplatePayload.MaxLength = 0;
@@ -1487,7 +1487,7 @@
             // 
             // tabTemplateTagExpression
             // 
-            this.tabTemplateTagExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabTemplateTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabTemplateTagExpression.Controls.Add(this.grouperTemplateTagExpression);
             this.tabTemplateTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabTemplateTagExpression.Location = new System.Drawing.Point(4, 24);
@@ -1501,15 +1501,15 @@
             this.grouperTemplateTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperTemplateTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperTemplateTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperTemplateTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperTemplateTagExpression.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperTemplateTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTemplateTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateTagExpression.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperTemplateTagExpression.BorderThickness = 1F;
             this.grouperTemplateTagExpression.Controls.Add(this.txtTemplateTagExpression);
-            this.grouperTemplateTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperTemplateTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperTemplateTagExpression.ForeColor = System.Drawing.Color.White;
+            this.grouperTemplateTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperTemplateTagExpression.GroupImage = null;
             this.grouperTemplateTagExpression.GroupTitle = "Tag Expression";
             this.grouperTemplateTagExpression.Location = new System.Drawing.Point(16, 8);
@@ -1528,7 +1528,7 @@
             this.txtTemplateTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTemplateTagExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtTemplateTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtTemplateTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTemplateTagExpression.Location = new System.Drawing.Point(16, 32);
             this.txtTemplateTagExpression.MaxLength = 0;
@@ -1540,7 +1540,7 @@
             // 
             // tabTemplateNotificationTags
             // 
-            this.tabTemplateNotificationTags.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabTemplateNotificationTags.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabTemplateNotificationTags.Controls.Add(this.grouperTemplateTags);
             this.tabTemplateNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabTemplateNotificationTags.Location = new System.Drawing.Point(4, 24);
@@ -1555,15 +1555,15 @@
             this.grouperTemplateTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperTemplateTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperTemplateTags.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperTemplateTags.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperTemplateTags.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperTemplateTags.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTemplateTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateTags.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperTemplateTags.BorderThickness = 1F;
             this.grouperTemplateTags.Controls.Add(this.templateTagsDataGridView);
-            this.grouperTemplateTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperTemplateTags.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperTemplateTags.ForeColor = System.Drawing.Color.White;
+            this.grouperTemplateTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperTemplateTags.GroupImage = null;
             this.grouperTemplateTags.GroupTitle = "Notification Tags";
             this.grouperTemplateTags.Location = new System.Drawing.Point(16, 8);
@@ -1584,7 +1584,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.templateTagsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.templateTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.templateTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.templateTagsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.templateTagsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.templateTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -1613,7 +1613,7 @@
             // 
             // tabTemplateNotificationProperties
             // 
-            this.tabTemplateNotificationProperties.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabTemplateNotificationProperties.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabTemplateNotificationProperties.Controls.Add(this.grouperTemplateNotificationProperties);
             this.tabTemplateNotificationProperties.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabTemplateNotificationProperties.Location = new System.Drawing.Point(4, 24);
@@ -1627,15 +1627,15 @@
             this.grouperTemplateNotificationProperties.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperTemplateNotificationProperties.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperTemplateNotificationProperties.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperTemplateNotificationProperties.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperTemplateNotificationProperties.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperTemplateNotificationProperties.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTemplateNotificationProperties.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateNotificationProperties.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperTemplateNotificationProperties.BorderThickness = 1F;
             this.grouperTemplateNotificationProperties.Controls.Add(this.templateNotificationDataGridView);
-            this.grouperTemplateNotificationProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateNotificationProperties.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperTemplateNotificationProperties.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperTemplateNotificationProperties.ForeColor = System.Drawing.Color.White;
+            this.grouperTemplateNotificationProperties.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperTemplateNotificationProperties.GroupImage = null;
             this.grouperTemplateNotificationProperties.GroupTitle = "Notification Properties";
             this.grouperTemplateNotificationProperties.Location = new System.Drawing.Point(16, 8);
@@ -1656,7 +1656,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.templateNotificationDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.templateNotificationDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.templateNotificationDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.templateNotificationDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.templateNotificationDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.templateNotificationDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -1673,7 +1673,7 @@
             // 
             // tabTemplateAdditionalHeaders
             // 
-            this.tabTemplateAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabTemplateAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabTemplateAdditionalHeaders.Controls.Add(this.grouperTemplateAdditionalHeaders);
             this.tabTemplateAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabTemplateAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
@@ -1688,15 +1688,15 @@
             this.grouperTemplateAdditionalHeaders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperTemplateAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperTemplateAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperTemplateAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperTemplateAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperTemplateAdditionalHeaders.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperTemplateAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperTemplateAdditionalHeaders.BorderThickness = 1F;
             this.grouperTemplateAdditionalHeaders.Controls.Add(this.templateHeadersDataGridView);
-            this.grouperTemplateAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperTemplateAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperTemplateAdditionalHeaders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperTemplateAdditionalHeaders.ForeColor = System.Drawing.Color.White;
+            this.grouperTemplateAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperTemplateAdditionalHeaders.GroupImage = null;
             this.grouperTemplateAdditionalHeaders.GroupTitle = "Additional Headers";
             this.grouperTemplateAdditionalHeaders.Location = new System.Drawing.Point(16, 8);
@@ -1717,7 +1717,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.templateHeadersDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.templateHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.templateHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.templateHeadersDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.templateHeadersDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.templateHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -1732,7 +1732,7 @@
             // 
             // tabPageMpnsNativeNotification
             // 
-            this.tabPageMpnsNativeNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageMpnsNativeNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageMpnsNativeNotification.Controls.Add(this.mpnsSplitContainer);
             this.tabPageMpnsNativeNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageMpnsNativeNotification.Location = new System.Drawing.Point(4, 22);
@@ -1783,16 +1783,16 @@
             // 
             // grouperMpnsTemplate
             // 
-            this.grouperMpnsTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMpnsTemplate.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMpnsTemplate.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperMpnsTemplate.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperMpnsTemplate.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMpnsTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsTemplate.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperMpnsTemplate.BorderThickness = 1F;
             this.grouperMpnsTemplate.Controls.Add(this.txtMpnsPayload);
-            this.grouperMpnsTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperMpnsTemplate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperMpnsTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMpnsTemplate.ForeColor = System.Drawing.Color.White;
+            this.grouperMpnsTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperMpnsTemplate.GroupImage = null;
             this.grouperMpnsTemplate.GroupTitle = "Notification Payload";
             this.grouperMpnsTemplate.Location = new System.Drawing.Point(0, 0);
@@ -1811,7 +1811,7 @@
             this.txtMpnsPayload.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMpnsPayload.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMpnsPayload.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtMpnsPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMpnsPayload.Location = new System.Drawing.Point(16, 32);
             this.txtMpnsPayload.MaxLength = 0;
@@ -1839,7 +1839,7 @@
             // 
             // tabMpnsTagExpression
             // 
-            this.tabMpnsTagExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabMpnsTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabMpnsTagExpression.Controls.Add(this.grouperMpnsTagExpression);
             this.tabMpnsTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabMpnsTagExpression.Location = new System.Drawing.Point(4, 24);
@@ -1853,15 +1853,15 @@
             this.grouperMpnsTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperMpnsTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMpnsTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMpnsTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperMpnsTagExpression.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperMpnsTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMpnsTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsTagExpression.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperMpnsTagExpression.BorderThickness = 1F;
             this.grouperMpnsTagExpression.Controls.Add(this.txtMpnsTagExpression);
-            this.grouperMpnsTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperMpnsTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMpnsTagExpression.ForeColor = System.Drawing.Color.White;
+            this.grouperMpnsTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperMpnsTagExpression.GroupImage = null;
             this.grouperMpnsTagExpression.GroupTitle = "Tag Expression";
             this.grouperMpnsTagExpression.Location = new System.Drawing.Point(16, 8);
@@ -1880,7 +1880,7 @@
             this.txtMpnsTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMpnsTagExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtMpnsTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtMpnsTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMpnsTagExpression.Location = new System.Drawing.Point(16, 32);
             this.txtMpnsTagExpression.MaxLength = 0;
@@ -1892,7 +1892,7 @@
             // 
             // tabMpnsNotificationTags
             // 
-            this.tabMpnsNotificationTags.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabMpnsNotificationTags.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabMpnsNotificationTags.Controls.Add(this.grouperMpnsTags);
             this.tabMpnsNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabMpnsNotificationTags.Location = new System.Drawing.Point(4, 24);
@@ -1907,15 +1907,15 @@
             this.grouperMpnsTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperMpnsTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMpnsTags.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMpnsTags.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperMpnsTags.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperMpnsTags.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMpnsTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsTags.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperMpnsTags.BorderThickness = 1F;
             this.grouperMpnsTags.Controls.Add(this.mpnsTagsDataGridView);
-            this.grouperMpnsTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperMpnsTags.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMpnsTags.ForeColor = System.Drawing.Color.White;
+            this.grouperMpnsTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperMpnsTags.GroupImage = null;
             this.grouperMpnsTags.GroupTitle = "Notification Tags";
             this.grouperMpnsTags.Location = new System.Drawing.Point(16, 8);
@@ -1936,7 +1936,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mpnsTagsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.mpnsTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.mpnsTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.mpnsTagsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.mpnsTagsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.mpnsTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -1965,7 +1965,7 @@
             // 
             // tabMpnsNotificationTemplate
             // 
-            this.tabMpnsNotificationTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabMpnsNotificationTemplate.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabMpnsNotificationTemplate.Controls.Add(this.grouperMpnsNotificationTemplate);
             this.tabMpnsNotificationTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabMpnsNotificationTemplate.Location = new System.Drawing.Point(4, 24);
@@ -1979,16 +1979,16 @@
             this.grouperMpnsNotificationTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperMpnsNotificationTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMpnsNotificationTemplate.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMpnsNotificationTemplate.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperMpnsNotificationTemplate.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperMpnsNotificationTemplate.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMpnsNotificationTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsNotificationTemplate.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperMpnsNotificationTemplate.BorderThickness = 1F;
             this.grouperMpnsNotificationTemplate.Controls.Add(this.cboMpnsNotificationTemplate);
             this.grouperMpnsNotificationTemplate.Controls.Add(this.mpnsTemplatePropertyGrid);
-            this.grouperMpnsNotificationTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsNotificationTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperMpnsNotificationTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMpnsNotificationTemplate.ForeColor = System.Drawing.Color.White;
+            this.grouperMpnsNotificationTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperMpnsNotificationTemplate.GroupImage = null;
             this.grouperMpnsNotificationTemplate.GroupTitle = "Notification Template";
             this.grouperMpnsNotificationTemplate.Location = new System.Drawing.Point(16, 8);
@@ -2031,7 +2031,7 @@
             // 
             // tabMpnsAdditionalHeaders
             // 
-            this.tabMpnsAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabMpnsAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabMpnsAdditionalHeaders.Controls.Add(this.grouperMpnsAdditionalHeaders);
             this.tabMpnsAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabMpnsAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
@@ -2046,15 +2046,15 @@
             this.grouperMpnsAdditionalHeaders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperMpnsAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperMpnsAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperMpnsAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperMpnsAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperMpnsAdditionalHeaders.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperMpnsAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperMpnsAdditionalHeaders.BorderThickness = 1F;
             this.grouperMpnsAdditionalHeaders.Controls.Add(this.mpnsHeadersDataGridView);
-            this.grouperMpnsAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperMpnsAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperMpnsAdditionalHeaders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperMpnsAdditionalHeaders.ForeColor = System.Drawing.Color.White;
+            this.grouperMpnsAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperMpnsAdditionalHeaders.GroupImage = null;
             this.grouperMpnsAdditionalHeaders.GroupTitle = "Additional Headers";
             this.grouperMpnsAdditionalHeaders.Location = new System.Drawing.Point(16, 8);
@@ -2075,7 +2075,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mpnsHeadersDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.mpnsHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.mpnsHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.mpnsHeadersDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.mpnsHeadersDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.mpnsHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -2090,7 +2090,7 @@
             // 
             // tabPageWnsNativeNotification
             // 
-            this.tabPageWnsNativeNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageWnsNativeNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageWnsNativeNotification.Controls.Add(this.wnsSplitContainer);
             this.tabPageWnsNativeNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageWnsNativeNotification.Location = new System.Drawing.Point(4, 22);
@@ -2141,16 +2141,16 @@
             // 
             // grouperWnsTemplate
             // 
-            this.grouperWnsTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWnsTemplate.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWnsTemplate.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWnsTemplate.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWnsTemplate.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWnsTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsTemplate.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWnsTemplate.BorderThickness = 1F;
             this.grouperWnsTemplate.Controls.Add(this.txtWnsPayload);
-            this.grouperWnsTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWnsTemplate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperWnsTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWnsTemplate.ForeColor = System.Drawing.Color.White;
+            this.grouperWnsTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWnsTemplate.GroupImage = null;
             this.grouperWnsTemplate.GroupTitle = "Notification Payload";
             this.grouperWnsTemplate.Location = new System.Drawing.Point(0, 0);
@@ -2169,7 +2169,7 @@
             this.txtWnsPayload.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtWnsPayload.BackColor = System.Drawing.SystemColors.Window;
+            this.txtWnsPayload.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtWnsPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWnsPayload.Location = new System.Drawing.Point(16, 32);
             this.txtWnsPayload.MaxLength = 0;
@@ -2197,7 +2197,7 @@
             // 
             // tabWnsTagExpression
             // 
-            this.tabWnsTagExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabWnsTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabWnsTagExpression.Controls.Add(this.grouperWnsTagExpression);
             this.tabWnsTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabWnsTagExpression.Location = new System.Drawing.Point(4, 24);
@@ -2211,15 +2211,15 @@
             this.grouperWnsTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWnsTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWnsTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWnsTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWnsTagExpression.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWnsTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWnsTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsTagExpression.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWnsTagExpression.BorderThickness = 1F;
             this.grouperWnsTagExpression.Controls.Add(this.txtWnsTagExpression);
-            this.grouperWnsTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWnsTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWnsTagExpression.ForeColor = System.Drawing.Color.White;
+            this.grouperWnsTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWnsTagExpression.GroupImage = null;
             this.grouperWnsTagExpression.GroupTitle = "Tag Expression";
             this.grouperWnsTagExpression.Location = new System.Drawing.Point(16, 8);
@@ -2238,7 +2238,7 @@
             this.txtWnsTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtWnsTagExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtWnsTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtWnsTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWnsTagExpression.Location = new System.Drawing.Point(16, 32);
             this.txtWnsTagExpression.MaxLength = 0;
@@ -2250,7 +2250,7 @@
             // 
             // tabWnsNotificationTags
             // 
-            this.tabWnsNotificationTags.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabWnsNotificationTags.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabWnsNotificationTags.Controls.Add(this.grouperWnsTags);
             this.tabWnsNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabWnsNotificationTags.Location = new System.Drawing.Point(4, 24);
@@ -2265,15 +2265,15 @@
             this.grouperWnsTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWnsTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWnsTags.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWnsTags.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWnsTags.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWnsTags.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWnsTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsTags.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWnsTags.BorderThickness = 1F;
             this.grouperWnsTags.Controls.Add(this.wnsTagsDataGridView);
-            this.grouperWnsTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWnsTags.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWnsTags.ForeColor = System.Drawing.Color.White;
+            this.grouperWnsTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWnsTags.GroupImage = null;
             this.grouperWnsTags.GroupTitle = "Notification Tags";
             this.grouperWnsTags.Location = new System.Drawing.Point(16, 8);
@@ -2294,7 +2294,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.wnsTagsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.wnsTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.wnsTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.wnsTagsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.wnsTagsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.wnsTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -2323,7 +2323,7 @@
             // 
             // tabWnsTemplate
             // 
-            this.tabWnsTemplate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabWnsTemplate.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabWnsTemplate.Controls.Add(this.grouperWnsNotificationTemplate);
             this.tabWnsTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabWnsTemplate.Location = new System.Drawing.Point(4, 24);
@@ -2337,16 +2337,16 @@
             this.grouperWnsNotificationTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWnsNotificationTemplate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWnsNotificationTemplate.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWnsNotificationTemplate.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWnsNotificationTemplate.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWnsNotificationTemplate.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWnsNotificationTemplate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsNotificationTemplate.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWnsNotificationTemplate.BorderThickness = 1F;
             this.grouperWnsNotificationTemplate.Controls.Add(this.cboWnsNotificationTemplate);
             this.grouperWnsNotificationTemplate.Controls.Add(this.wnsTemplatePropertyGrid);
-            this.grouperWnsNotificationTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsNotificationTemplate.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWnsNotificationTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWnsNotificationTemplate.ForeColor = System.Drawing.Color.White;
+            this.grouperWnsNotificationTemplate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWnsNotificationTemplate.GroupImage = null;
             this.grouperWnsNotificationTemplate.GroupTitle = "Notification Template";
             this.grouperWnsNotificationTemplate.Location = new System.Drawing.Point(16, 8);
@@ -2389,7 +2389,7 @@
             // 
             // tabWnsAdditionalHeaders
             // 
-            this.tabWnsAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabWnsAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabWnsAdditionalHeaders.Controls.Add(this.grouperWnsAdditionalHeaders);
             this.tabWnsAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabWnsAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
@@ -2404,15 +2404,15 @@
             this.grouperWnsAdditionalHeaders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperWnsAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperWnsAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperWnsAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperWnsAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperWnsAdditionalHeaders.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperWnsAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperWnsAdditionalHeaders.BorderThickness = 1F;
             this.grouperWnsAdditionalHeaders.Controls.Add(this.wnsHeadersDataGridView);
-            this.grouperWnsAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperWnsAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperWnsAdditionalHeaders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperWnsAdditionalHeaders.ForeColor = System.Drawing.Color.White;
+            this.grouperWnsAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperWnsAdditionalHeaders.GroupImage = null;
             this.grouperWnsAdditionalHeaders.GroupTitle = "Additional Headers";
             this.grouperWnsAdditionalHeaders.Location = new System.Drawing.Point(16, 8);
@@ -2433,7 +2433,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.wnsHeadersDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.wnsHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.wnsHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.wnsHeadersDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.wnsHeadersDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.wnsHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -2448,7 +2448,7 @@
             // 
             // tabPageAppleNativeNotification
             // 
-            this.tabPageAppleNativeNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageAppleNativeNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageAppleNativeNotification.Controls.Add(this.appleSplitContainer);
             this.tabPageAppleNativeNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageAppleNativeNotification.Location = new System.Drawing.Point(4, 22);
@@ -2480,16 +2480,16 @@
             // 
             // grouperJsonPayload
             // 
-            this.grouperJsonPayload.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperJsonPayload.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperJsonPayload.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperJsonPayload.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperJsonPayload.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperJsonPayload.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperJsonPayload.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperJsonPayload.BorderThickness = 1F;
             this.grouperJsonPayload.Controls.Add(this.txtApnsJsonPayload);
-            this.grouperJsonPayload.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperJsonPayload.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperJsonPayload.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouperJsonPayload.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperJsonPayload.ForeColor = System.Drawing.Color.White;
+            this.grouperJsonPayload.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperJsonPayload.GroupImage = null;
             this.grouperJsonPayload.GroupTitle = "Json Payload";
             this.grouperJsonPayload.Location = new System.Drawing.Point(0, 0);
@@ -2509,7 +2509,7 @@
             this.txtApnsJsonPayload.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtApnsJsonPayload.BackColor = System.Drawing.SystemColors.Window;
+            this.txtApnsJsonPayload.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtApnsJsonPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtApnsJsonPayload.Location = new System.Drawing.Point(16, 32);
             this.txtApnsJsonPayload.MaxLength = 0;
@@ -2554,7 +2554,7 @@
             // 
             // tabAppleTagExpression
             // 
-            this.tabAppleTagExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabAppleTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabAppleTagExpression.Controls.Add(this.grouperAppleTagExpression);
             this.tabAppleTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabAppleTagExpression.Location = new System.Drawing.Point(4, 24);
@@ -2568,15 +2568,15 @@
             this.grouperAppleTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAppleTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAppleTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAppleTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperAppleTagExpression.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperAppleTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAppleTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleTagExpression.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperAppleTagExpression.BorderThickness = 1F;
             this.grouperAppleTagExpression.Controls.Add(this.txtAppleTagExpression);
-            this.grouperAppleTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperAppleTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAppleTagExpression.ForeColor = System.Drawing.Color.White;
+            this.grouperAppleTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperAppleTagExpression.GroupImage = null;
             this.grouperAppleTagExpression.GroupTitle = "Tag Expression";
             this.grouperAppleTagExpression.Location = new System.Drawing.Point(16, 8);
@@ -2595,7 +2595,7 @@
             this.txtAppleTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAppleTagExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtAppleTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtAppleTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAppleTagExpression.Location = new System.Drawing.Point(16, 32);
             this.txtAppleTagExpression.MaxLength = 0;
@@ -2607,7 +2607,7 @@
             // 
             // tabAppleNotificationTags
             // 
-            this.tabAppleNotificationTags.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabAppleNotificationTags.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabAppleNotificationTags.Controls.Add(this.grouperAppleTags);
             this.tabAppleNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabAppleNotificationTags.Location = new System.Drawing.Point(4, 24);
@@ -2622,15 +2622,15 @@
             this.grouperAppleTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAppleTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAppleTags.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAppleTags.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperAppleTags.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperAppleTags.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAppleTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleTags.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperAppleTags.BorderThickness = 1F;
             this.grouperAppleTags.Controls.Add(this.appleTagsDataGridView);
-            this.grouperAppleTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperAppleTags.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAppleTags.ForeColor = System.Drawing.Color.White;
+            this.grouperAppleTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperAppleTags.GroupImage = null;
             this.grouperAppleTags.GroupTitle = "Notification Tags";
             this.grouperAppleTags.Location = new System.Drawing.Point(16, 8);
@@ -2651,7 +2651,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.appleTagsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.appleTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.appleTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.appleTagsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.appleTagsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.appleTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -2680,7 +2680,7 @@
             // 
             // tabAppleAdditionalHeaders
             // 
-            this.tabAppleAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabAppleAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabAppleAdditionalHeaders.Controls.Add(this.grouperAppleAdditionalHeaders);
             this.tabAppleAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabAppleAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
@@ -2694,15 +2694,15 @@
             this.grouperAppleAdditionalHeaders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperAppleAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperAppleAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperAppleAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperAppleAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperAppleAdditionalHeaders.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperAppleAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperAppleAdditionalHeaders.BorderThickness = 1F;
             this.grouperAppleAdditionalHeaders.Controls.Add(this.appleHeadersDataGridView);
-            this.grouperAppleAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperAppleAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperAppleAdditionalHeaders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperAppleAdditionalHeaders.ForeColor = System.Drawing.Color.White;
+            this.grouperAppleAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperAppleAdditionalHeaders.GroupImage = null;
             this.grouperAppleAdditionalHeaders.GroupTitle = "Additional Headers";
             this.grouperAppleAdditionalHeaders.Location = new System.Drawing.Point(16, 8);
@@ -2723,7 +2723,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.appleHeadersDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.appleHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.appleHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.appleHeadersDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.appleHeadersDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.appleHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -2739,7 +2739,7 @@
             // 
             // tabAppleNotificationExpiry
             // 
-            this.tabAppleNotificationExpiry.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabAppleNotificationExpiry.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabAppleNotificationExpiry.Controls.Add(this.grouperApnsExpiry);
             this.tabAppleNotificationExpiry.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabAppleNotificationExpiry.Location = new System.Drawing.Point(4, 24);
@@ -2754,15 +2754,15 @@
             this.grouperApnsExpiry.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperApnsExpiry.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperApnsExpiry.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperApnsExpiry.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperApnsExpiry.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperApnsExpiry.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperApnsExpiry.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperApnsExpiry.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperApnsExpiry.BorderThickness = 1F;
             this.grouperApnsExpiry.Controls.Add(this.tsApnsExpiry);
-            this.grouperApnsExpiry.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperApnsExpiry.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperApnsExpiry.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperApnsExpiry.ForeColor = System.Drawing.Color.White;
+            this.grouperApnsExpiry.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperApnsExpiry.GroupImage = null;
             this.grouperApnsExpiry.GroupTitle = "Notification Expiry";
             this.grouperApnsExpiry.Location = new System.Drawing.Point(16, 8);
@@ -2786,7 +2786,7 @@
             // 
             // tabPageGoogleNativeNotification
             // 
-            this.tabPageGoogleNativeNotification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageGoogleNativeNotification.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabPageGoogleNativeNotification.Controls.Add(this.gcmSplitContainer);
             this.tabPageGoogleNativeNotification.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageGoogleNativeNotification.Location = new System.Drawing.Point(4, 22);
@@ -2818,16 +2818,16 @@
             // 
             // grouper1
             // 
-            this.grouper1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouper1.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouper1.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouper1.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouper1.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouper1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouper1.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouper1.BorderThickness = 1F;
             this.grouper1.Controls.Add(this.txtGcmJsonPayload);
-            this.grouper1.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouper1.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouper1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grouper1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouper1.ForeColor = System.Drawing.Color.White;
+            this.grouper1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouper1.GroupImage = null;
             this.grouper1.GroupTitle = "Json Payload";
             this.grouper1.Location = new System.Drawing.Point(0, 0);
@@ -2846,7 +2846,7 @@
             this.txtGcmJsonPayload.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGcmJsonPayload.BackColor = System.Drawing.SystemColors.Window;
+            this.txtGcmJsonPayload.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtGcmJsonPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtGcmJsonPayload.Location = new System.Drawing.Point(16, 32);
             this.txtGcmJsonPayload.MaxLength = 0;
@@ -2891,7 +2891,7 @@
             // 
             // tabGcmTagExpression
             // 
-            this.tabGcmTagExpression.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabGcmTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabGcmTagExpression.Controls.Add(this.grouperGcmTagExpression);
             this.tabGcmTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabGcmTagExpression.Location = new System.Drawing.Point(4, 24);
@@ -2905,15 +2905,15 @@
             this.grouperGcmTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperGcmTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperGcmTagExpression.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperGcmTagExpression.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperGcmTagExpression.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperGcmTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperGcmTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGcmTagExpression.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperGcmTagExpression.BorderThickness = 1F;
             this.grouperGcmTagExpression.Controls.Add(this.txtGcmTagExpression);
-            this.grouperGcmTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGcmTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperGcmTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperGcmTagExpression.ForeColor = System.Drawing.Color.White;
+            this.grouperGcmTagExpression.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperGcmTagExpression.GroupImage = null;
             this.grouperGcmTagExpression.GroupTitle = "Tag Expression";
             this.grouperGcmTagExpression.Location = new System.Drawing.Point(16, 8);
@@ -2932,7 +2932,7 @@
             this.txtGcmTagExpression.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGcmTagExpression.BackColor = System.Drawing.SystemColors.Window;
+            this.txtGcmTagExpression.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.txtGcmTagExpression.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtGcmTagExpression.Location = new System.Drawing.Point(16, 32);
             this.txtGcmTagExpression.MaxLength = 0;
@@ -2944,7 +2944,7 @@
             // 
             // tabGcmNotificationTags
             // 
-            this.tabGcmNotificationTags.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabGcmNotificationTags.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabGcmNotificationTags.Controls.Add(this.grouperGcmTags);
             this.tabGcmNotificationTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabGcmNotificationTags.Location = new System.Drawing.Point(4, 24);
@@ -2959,15 +2959,15 @@
             this.grouperGcmTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperGcmTags.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperGcmTags.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperGcmTags.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperGcmTags.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperGcmTags.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperGcmTags.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGcmTags.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperGcmTags.BorderThickness = 1F;
             this.grouperGcmTags.Controls.Add(this.gcmTagsDataGridView);
-            this.grouperGcmTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGcmTags.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperGcmTags.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperGcmTags.ForeColor = System.Drawing.Color.White;
+            this.grouperGcmTags.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperGcmTags.GroupImage = null;
             this.grouperGcmTags.GroupTitle = "Notification Tags";
             this.grouperGcmTags.Location = new System.Drawing.Point(16, 8);
@@ -2988,7 +2988,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gcmTagsDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.gcmTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.gcmTagsDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.gcmTagsDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.gcmTagsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gcmTagsDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -3016,7 +3016,7 @@
             // 
             // tabGcmAdditionalHeaders
             // 
-            this.tabGcmAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabGcmAdditionalHeaders.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.tabGcmAdditionalHeaders.Controls.Add(this.grouperGcmAdditionalHeaders);
             this.tabGcmAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabGcmAdditionalHeaders.Location = new System.Drawing.Point(4, 24);
@@ -3030,15 +3030,15 @@
             this.grouperGcmAdditionalHeaders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grouperGcmAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.grouperGcmAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.White;
+            this.grouperGcmAdditionalHeaders.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.grouperGcmAdditionalHeaders.BackgroundGradientColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.grouperGcmAdditionalHeaders.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
-            this.grouperGcmAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGcmAdditionalHeaders.BorderColor = System.Drawing.Color.FromArgb(72, 72, 72);
             this.grouperGcmAdditionalHeaders.BorderThickness = 1F;
             this.grouperGcmAdditionalHeaders.Controls.Add(this.gcmHeadersDataGridView);
-            this.grouperGcmAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.grouperGcmAdditionalHeaders.CustomGroupBoxColor = System.Drawing.Color.FromArgb(42, 42, 42);
             this.grouperGcmAdditionalHeaders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.grouperGcmAdditionalHeaders.ForeColor = System.Drawing.Color.White;
+            this.grouperGcmAdditionalHeaders.ForeColor = System.Drawing.SystemColors.ControlText;
             this.grouperGcmAdditionalHeaders.GroupImage = null;
             this.grouperGcmAdditionalHeaders.GroupTitle = "Additional Headers";
             this.grouperGcmAdditionalHeaders.Location = new System.Drawing.Point(16, 8);
@@ -3059,7 +3059,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gcmHeadersDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.gcmHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.gcmHeadersDataGridView.BackgroundColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.gcmHeadersDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.gcmHeadersDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gcmHeadersDataGridView.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -3076,10 +3076,10 @@
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRefresh.Location = new System.Drawing.Point(760, 504);
@@ -3095,10 +3095,10 @@
             // btnCancelUpdate
             // 
             this.btnCancelUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancelUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCancelUpdate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancelUpdate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCancelUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCancelUpdate.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnCancelUpdate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCancelUpdate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCancelUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCancelUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelUpdate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCancelUpdate.Location = new System.Drawing.Point(920, 504);
@@ -3114,10 +3114,10 @@
             // btnCreateDelete
             // 
             this.btnCreateDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnCreateDelete.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnCreateDelete.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnCreateDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnCreateDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnCreateDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateDelete.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnCreateDelete.Location = new System.Drawing.Point(840, 504);
@@ -3133,10 +3133,10 @@
             // btnRegistrations
             // 
             this.btnRegistrations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRegistrations.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
-            this.btnRegistrations.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRegistrations.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.btnRegistrations.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnRegistrations.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
+            this.btnRegistrations.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.btnRegistrations.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
+            this.btnRegistrations.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
             this.btnRegistrations.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRegistrations.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnRegistrations.Location = new System.Drawing.Point(594, 504);
@@ -3176,7 +3176,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.BackColor = System.Drawing.Color.FromArgb(33, 33, 33);
             this.Controls.Add(this.btnRegistrations);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCancelUpdate);
@@ -3532,3 +3532,4 @@
         private TimeSpanControl tsApnsExpiry;
     }
 }
+

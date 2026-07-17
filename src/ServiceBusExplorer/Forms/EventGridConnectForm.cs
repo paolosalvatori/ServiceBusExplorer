@@ -1,4 +1,4 @@
-﻿using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +22,7 @@ namespace ServiceBusExplorer.Forms
         public EventGridConnectForm()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
 
         private void customCloud_CheckedChanged(object sender, EventArgs e)
@@ -56,3 +57,4 @@ namespace ServiceBusExplorer.Forms
         }
     }
 }
+

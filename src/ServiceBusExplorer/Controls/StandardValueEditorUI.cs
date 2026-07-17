@@ -55,6 +55,7 @@ namespace ServiceBusExplorer.Controls
         public StandardValueEditorUI()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
 
         public void SetData(ITypeDescriptorContext context, IWindowsFormsEditorService editorService, object value)
@@ -475,3 +476,4 @@ namespace ServiceBusExplorer.Controls
     }
 
 }
+

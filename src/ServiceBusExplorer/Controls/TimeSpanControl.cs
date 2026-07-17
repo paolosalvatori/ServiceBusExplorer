@@ -1,6 +1,7 @@
-﻿namespace ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
-    using System;
+    using ServiceBusExplorer.Helpers;
+using System;
     using System.Globalization;
     using System.Windows.Forms;
 
@@ -18,6 +19,7 @@
         public TimeSpanControl()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
         }
 
         public bool IsFilled => txtDays.IsFilled || txtHours.IsFilled || txtMinutes.IsFilled || txtSeconds.IsFilled || txtMilliseconds.IsFilled;
@@ -88,3 +90,4 @@
         }
     }
 }
+

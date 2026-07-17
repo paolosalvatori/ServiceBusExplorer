@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -45,6 +45,7 @@ namespace ServiceBusExplorer.Forms
         public TextForm(string label, string content)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             grouperCaption.GroupTitle = string.IsNullOrWhiteSpace(label) ? DefaultLabel : label;
             Content = XmlHelper.Indent(content);
             txtContent.Text = string.IsNullOrWhiteSpace(Content) ? string.Empty : Content;
@@ -53,6 +54,7 @@ namespace ServiceBusExplorer.Forms
         public TextForm(string text, string label, string content)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             if (!string.IsNullOrWhiteSpace(text))
             {
                 Text = text;
@@ -65,6 +67,7 @@ namespace ServiceBusExplorer.Forms
         public TextForm(string text, string label, string content, bool hideOpen = false)
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             if (!string.IsNullOrWhiteSpace(text))
             {
                 Text = text;
@@ -165,3 +168,4 @@ namespace ServiceBusExplorer.Forms
         #endregion
     }
 }
+

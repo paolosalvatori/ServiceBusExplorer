@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Martin Lottering : 2007-10-27
 // --------------------------------
@@ -18,6 +18,7 @@
 
 #region Using Directives
 
+using ServiceBusExplorer.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,6 +36,7 @@ namespace ServiceBusExplorer.Controls
         public CheckBoxComboBox()
         {
             InitializeComponent();
+            ThemeManager.Apply(this);
             _CheckBoxProperties = new CheckBoxProperties();
             _CheckBoxProperties.PropertyChanged += _CheckBoxProperties_PropertyChanged;
             // Dumps the ListControl in a(nother) Container to ensure the ScrollBar on the ListControl does not
@@ -909,3 +911,4 @@ namespace ServiceBusExplorer.Controls
         #endregion
     }
 }
+
