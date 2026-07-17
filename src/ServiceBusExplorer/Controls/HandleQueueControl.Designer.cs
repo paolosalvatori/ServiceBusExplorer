@@ -2228,42 +2228,42 @@
             this.saveSelectedDeadletteredMessageToolStripMenuItem.Name = "saveSelectedDeadletteredMessageToolStripMenuItem";
             this.saveSelectedDeadletteredMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedDeadletteredMessageToolStripMenuItem.Text = "Save Selected Message";
-            this.saveSelectedDeadletteredMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessageToolStripMenuItem_Click);
+            this.saveSelectedDeadletteredMessageToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessageToolStripMenuItem_Click);
             // 
             // saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Name = "saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem";
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Text = "Save Selected Message Text as File";
-            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem_Click);
+            this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click);
             // 
             // saveSelectedDeadletteredMessagesToolStripMenuItem
             // 
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Name = "saveSelectedDeadletteredMessagesToolStripMenuItem";
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedDeadletteredMessagesToolStripMenuItem.Text = "Save Selected Messages";
-            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessagesToolStripMenuItem_Click);
+            this.saveSelectedDeadletteredMessagesToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesToolStripMenuItem_Click);
             // 
             // saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem
             // 
             this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Name = "saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem";
             this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Text = "Save Selected Messages Text as File";
-            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
+            this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Click += new System.EventHandler(this.saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click);
             // 
             // deleteSelectedDeadletterMessageToolStripMenuItem
             // 
             this.deleteSelectedDeadletterMessageToolStripMenuItem.Name = "deleteSelectedDeadletterMessageToolStripMenuItem";
             this.deleteSelectedDeadletterMessageToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedDeadletterMessageToolStripMenuItem.Text = "Delete Selected Message";
-            this.deleteSelectedDeadletterMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click);
+            this.deleteSelectedDeadletterMessageToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedDeadletterMessageToolStripMenuItem_Click);
             // 
             // deleteSelectedDeadletterMessagesToolStripMenuItem
             // 
             this.deleteSelectedDeadletterMessagesToolStripMenuItem.Name = "deleteSelectedDeadletterMessagesToolStripMenuItem";
             this.deleteSelectedDeadletterMessagesToolStripMenuItem.Size = new System.Drawing.Size(305, 22);
             this.deleteSelectedDeadletterMessagesToolStripMenuItem.Text = "Delete Selected Messages";
-            this.deleteSelectedDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click);
+            this.deleteSelectedDeadletterMessagesToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedDeadletterMessagesToolStripMenuItem_Click);
             // 
             // btnPurgeMessages
             // 

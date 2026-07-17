@@ -3411,12 +3411,12 @@ namespace ServiceBusExplorer.Controls
              : "Cancel Selected Scheduled Message";
         }
 
-        void deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void deleteSelectedDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click(sender, e);
+            deleteSelectedDeadletterMessagesToolStripMenuItem_Click(sender, e);
         }
 
-        async void deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        async void deleteSelectedDeadletterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var dataGridView = GetActiveDeadletterGridView();
 
@@ -4140,22 +4140,22 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        void saveSelectedSharedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveSelectedMessage(SaveInJsonFormat: true);
         }
 
-        void saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveSelectedMessage(SaveInJsonFormat: false);
         }
 
-        void saveSelectedSharedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveSelectedMessages(SaveInJsonFormat: true);
         }
 
-        void saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
            SaveSelectedMessages(SaveInJsonFormat: false);
         }
