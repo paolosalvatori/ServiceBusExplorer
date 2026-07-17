@@ -84,7 +84,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
       run: |
-        $releaseExists = gh release view ${{ env.RELEASE_VERSION }} 2>&1
+        gh release view ${{ env.RELEASE_VERSION }} *> $null
         if ($LASTEXITCODE -ne 0) {
           gh release create ${{ env.RELEASE_VERSION }} --draft --generate-notes
         } else {
