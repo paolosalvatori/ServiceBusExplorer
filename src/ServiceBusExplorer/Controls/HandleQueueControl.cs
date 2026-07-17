@@ -4121,11 +4121,8 @@ namespace ServiceBusExplorer.Controls
                 foreach (var body in bodies)
                 {
                     count++;
-                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
-                    var fileExtension = fileNameParts.Last();
-                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
-                    fileNameParts.Add($"({count}).{fileExtension}");
-                    var fileName = string.Join(".", fileNameParts);
+                    var fileName = PathHelper.GetNumberedFileName(saveFileDialog.FileName, count);
+
                     if (File.Exists(fileName))
                     {
                         File.Delete(fileName);
@@ -4303,11 +4300,8 @@ namespace ServiceBusExplorer.Controls
                 foreach (var body in bodies)
                 {
                     count++;
-                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
-                    var fileExtension = fileNameParts.Last();
-                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
-                    fileNameParts.Add($"({count}).{fileExtension}");
-                    var fileName = string.Join(".", fileNameParts);
+                    var fileName = PathHelper.GetNumberedFileName(saveFileDialog.FileName, count);
+
                     if (File.Exists(fileName))
                     {
                         File.Delete(fileName);
@@ -4389,7 +4383,7 @@ namespace ServiceBusExplorer.Controls
             saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
             deleteSelectedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
-            sharedDeadletterContextMenuStrip.Show(Cursor.Position);
+            deadletterContextMenuStrip.Show(Cursor.Position);
         }
 
         void RepairAndResubmitSharedDeadletterMessage(DataGridViewCellEventArgs e)
