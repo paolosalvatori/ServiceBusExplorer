@@ -147,15 +147,16 @@ namespace ServiceBusExplorer.Forms
             this.lblOverrideProxy = new System.Windows.Forms.Label();
             this.txtProxyAddress = new System.Windows.Forms.TextBox();
             this.lblProxyAddress = new System.Windows.Forms.Label();
+            this.tabPageAuthentication = new System.Windows.Forms.TabPage();
+            this.btnDeleteTenantId = new System.Windows.Forms.Button();
+            this.btnAddTenantId = new System.Windows.Forms.Button();
+            this.lbxTenantIds = new System.Windows.Forms.ListBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtNewTenantId = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabPageColors = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
             this.dgNodeColors = new System.Windows.Forms.DataGridView();
-            this.nodeColorsBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.mainPanel = new System.Windows.Forms.Panel();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewColorPickerColumn1 = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.IsLeaf = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colorDataGridViewTextBoxColumn = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
@@ -164,6 +165,12 @@ namespace ServiceBusExplorer.Forms
             this.scheduledMessageCountDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.transferMessageCountThresholdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.nodeColorsBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.mainPanel = new System.Windows.Forms.Panel();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewColorPickerColumn1 = new ServiceBusExplorer.Controls.DataGridViewColorPickerColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.tabOptionsControl.SuspendLayout();
@@ -183,6 +190,7 @@ namespace ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.senderThinkTimeNumericUpDown)).BeginInit();
             this.tabPageConnectivity.SuspendLayout();
             this.tabPageProxy.SuspendLayout();
+            this.tabPageAuthentication.SuspendLayout();
             this.tabPageColors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgNodeColors)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nodeColorsBindingSource)).BeginInit();
@@ -346,6 +354,7 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Controls.Add(this.tabPageSending);
             this.tabOptionsControl.Controls.Add(this.tabPageConnectivity);
             this.tabOptionsControl.Controls.Add(this.tabPageProxy);
+            this.tabOptionsControl.Controls.Add(this.tabPageAuthentication);
             this.tabOptionsControl.Controls.Add(this.tabPageColors);
             this.tabOptionsControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabOptionsControl.Location = new System.Drawing.Point(16, 39);
@@ -1329,6 +1338,91 @@ namespace ServiceBusExplorer.Forms
             this.lblProxyAddress.TabIndex = 2;
             this.lblProxyAddress.Text = "Proxy Address:";
             // 
+            // tabPageAuthentication
+            // 
+            this.tabPageAuthentication.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageAuthentication.Controls.Add(this.btnDeleteTenantId);
+            this.tabPageAuthentication.Controls.Add(this.btnAddTenantId);
+            this.tabPageAuthentication.Controls.Add(this.lbxTenantIds);
+            this.tabPageAuthentication.Controls.Add(this.label7);
+            this.tabPageAuthentication.Controls.Add(this.txtNewTenantId);
+            this.tabPageAuthentication.Controls.Add(this.label6);
+            this.tabPageAuthentication.Location = new System.Drawing.Point(4, 22);
+            this.tabPageAuthentication.Name = "tabPageAuthentication";
+            this.tabPageAuthentication.Size = new System.Drawing.Size(576, 360);
+            this.tabPageAuthentication.TabIndex = 6;
+            this.tabPageAuthentication.Text = "&Authentication";
+            this.tabPageAuthentication.Paint += new System.Windows.Forms.PaintEventHandler(this.tabAuthentication_Paint);
+            // 
+            // btnDeleteTenantId
+            // 
+            this.btnDeleteTenantId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDeleteTenantId.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnDeleteTenantId.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDeleteTenantId.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDeleteTenantId.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnDeleteTenantId.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDeleteTenantId.Location = new System.Drawing.Point(300, 294);
+            this.btnDeleteTenantId.Name = "btnDeleteTenantId";
+            this.btnDeleteTenantId.Size = new System.Drawing.Size(72, 24);
+            this.btnDeleteTenantId.TabIndex = 13;
+            this.btnDeleteTenantId.Text = "&Delete";
+            this.btnDeleteTenantId.UseVisualStyleBackColor = false;
+            this.btnDeleteTenantId.Click += new System.EventHandler(this.btnDeleteTenantId_Click);
+            // 
+            // btnAddTenantId
+            // 
+            this.btnAddTenantId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddTenantId.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnAddTenantId.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddTenantId.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddTenantId.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.btnAddTenantId.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddTenantId.Location = new System.Drawing.Point(204, 294);
+            this.btnAddTenantId.Name = "btnAddTenantId";
+            this.btnAddTenantId.Size = new System.Drawing.Size(72, 24);
+            this.btnAddTenantId.TabIndex = 12;
+            this.btnAddTenantId.Text = "&Add";
+            this.btnAddTenantId.UseVisualStyleBackColor = false;
+            this.btnAddTenantId.Click += new System.EventHandler(this.btnAddTenantId_Click);
+            // 
+            // lbxTenantIds
+            // 
+            this.lbxTenantIds.FormattingEnabled = true;
+            this.lbxTenantIds.Location = new System.Drawing.Point(204, 38);
+            this.lbxTenantIds.Name = "lbxTenantIds";
+            this.lbxTenantIds.Size = new System.Drawing.Size(286, 173);
+            this.lbxTenantIds.TabIndex = 11;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label7.Location = new System.Drawing.Point(24, 37);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(127, 13);
+            this.label7.TabIndex = 10;
+            this.label7.Text = "Entra tenant IDs for login:";
+            // 
+            // txtNewTenantId
+            // 
+            this.txtNewTenantId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewTenantId.Location = new System.Drawing.Point(204, 243);
+            this.txtNewTenantId.Name = "txtNewTenantId";
+            this.txtNewTenantId.Size = new System.Drawing.Size(302, 20);
+            this.txtNewTenantId.TabIndex = 9;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.label6.Location = new System.Drawing.Point(24, 246);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(52, 13);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "&Add new:";
+            // 
             // tabPageColors
             // 
             this.tabPageColors.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
@@ -1338,7 +1432,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageColors.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageColors.Name = "tabPageColors";
             this.tabPageColors.Padding = new System.Windows.Forms.Padding(16, 25, 16, 25);
-            this.tabPageColors.Size = new System.Drawing.Size(576, 329);
+            this.tabPageColors.Size = new System.Drawing.Size(576, 360);
             this.tabPageColors.TabIndex = 5;
             this.tabPageColors.Text = "Colors";
             this.tabPageColors.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageColors_Paint);
@@ -1395,6 +1489,70 @@ namespace ServiceBusExplorer.Forms
             this.dgNodeColors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgNodeColors.Size = new System.Drawing.Size(544, 263);
             this.dgNodeColors.TabIndex = 0;
+            // 
+            // textDataGridViewTextBoxColumn
+            // 
+            this.textDataGridViewTextBoxColumn.DataPropertyName = "Text";
+            this.textDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.textDataGridViewTextBoxColumn.HeaderText = "Text (regexp)";
+            this.textDataGridViewTextBoxColumn.Name = "textDataGridViewTextBoxColumn";
+            // 
+            // IsLeaf
+            // 
+            this.IsLeaf.DataPropertyName = "IsLeaf";
+            this.IsLeaf.FillWeight = 30F;
+            this.IsLeaf.HeaderText = "Leaf";
+            this.IsLeaf.MinimumWidth = 20;
+            this.IsLeaf.Name = "IsLeaf";
+            // 
+            // colorDataGridViewTextBoxColumn
+            // 
+            this.colorDataGridViewTextBoxColumn.DataPropertyName = "Color";
+            this.colorDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.colorDataGridViewTextBoxColumn.HeaderText = "Color";
+            this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
+            this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // activeMessageCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "ActiveMessageCountThreshold";
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Active Message Count Threshold";
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.Name = "activeMessageCountThresholdDataGridViewTextBoxColumn";
+            this.activeMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // deadLetterCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "DeadLetterCountThreshold";
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.HeaderText = "Dead Letter Count Threshold";
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.Name = "deadLetterCountThresholdDataGridViewTextBoxColumn";
+            this.deadLetterCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // scheduledMessageCountDataGridViewTextBoxColumn
+            // 
+            this.scheduledMessageCountDataGridViewTextBoxColumn.DataPropertyName = "ScheduledMessageCount";
+            this.scheduledMessageCountDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.scheduledMessageCountDataGridViewTextBoxColumn.HeaderText = "Scheduled Message Count Threshold";
+            this.scheduledMessageCountDataGridViewTextBoxColumn.Name = "scheduledMessageCountDataGridViewTextBoxColumn";
+            this.scheduledMessageCountDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // transferMessageCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "TransferMessageCountThreshold";
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Transfer Message Count Threshold";
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.Name = "transferMessageCountThresholdDataGridViewTextBoxColumn";
+            this.transferMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn
+            // 
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "TransferDeadLetterMessageCountThreshold";
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Transfer Dead Letter Message Count Threshold";
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.Name = "transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn";
+            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // nodeColorsBindingSource
             // 
@@ -1457,75 +1615,6 @@ namespace ServiceBusExplorer.Forms
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             this.dataGridViewTextBoxColumn2.Width = 270;
             // 
-            // textDataGridViewTextBoxColumn
-            // 
-            this.textDataGridViewTextBoxColumn.DataPropertyName = "Text";
-            this.textDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.textDataGridViewTextBoxColumn.HeaderText = "Text (regexp)";
-            this.textDataGridViewTextBoxColumn.Name = "textDataGridViewTextBoxColumn";
-            // 
-            // IsLeaf
-            // 
-            this.IsLeaf.DataPropertyName = "IsLeaf";
-            this.IsLeaf.FillWeight = 30F;
-            this.IsLeaf.HeaderText = "Leaf";
-            this.IsLeaf.MinimumWidth = 20;
-            this.IsLeaf.Name = "IsLeaf";
-            // 
-            // colorDataGridViewTextBoxColumn
-            // 
-            this.colorDataGridViewTextBoxColumn.DataPropertyName = "Color";
-            this.colorDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.colorDataGridViewTextBoxColumn.HeaderText = "Color";
-            this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
-            this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // activeMessageCountThresholdDataGridViewTextBoxColumn
-            // 
-            this.activeMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "ActiveMessageCountThreshold";
-            this.activeMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.activeMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Active Message Count Threshold";
-            this.activeMessageCountThresholdDataGridViewTextBoxColumn.Name = "activeMessageCountThresholdDataGridViewTextBoxColumn";
-            this.activeMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.activeMessageCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // deadLetterCountThresholdDataGridViewTextBoxColumn
-            // 
-            this.deadLetterCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "DeadLetterCountThreshold";
-            this.deadLetterCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.deadLetterCountThresholdDataGridViewTextBoxColumn.HeaderText = "Dead Letter Count Threshold";
-            this.deadLetterCountThresholdDataGridViewTextBoxColumn.Name = "deadLetterCountThresholdDataGridViewTextBoxColumn";
-            this.deadLetterCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.deadLetterCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // scheduledMessageCountDataGridViewTextBoxColumn
-            // 
-            this.scheduledMessageCountDataGridViewTextBoxColumn.DataPropertyName = "ScheduledMessageCount";
-            this.scheduledMessageCountDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.scheduledMessageCountDataGridViewTextBoxColumn.HeaderText = "Scheduled Message Count Threshold";
-            this.scheduledMessageCountDataGridViewTextBoxColumn.Name = "scheduledMessageCountDataGridViewTextBoxColumn";
-            this.scheduledMessageCountDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.scheduledMessageCountDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // transferMessageCountThresholdDataGridViewTextBoxColumn
-            // 
-            this.transferMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "TransferMessageCountThreshold";
-            this.transferMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.transferMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Transfer Message Count Threshold";
-            this.transferMessageCountThresholdDataGridViewTextBoxColumn.Name = "transferMessageCountThresholdDataGridViewTextBoxColumn";
-            this.transferMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.transferMessageCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn
-            // 
-            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "TransferDeadLetterMessageCountThreshold";
-            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.FillWeight = 134.7716F;
-            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.HeaderText = "Transfer Dead Letter Message Count Threshold";
-            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.Name = "transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn";
-            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
             // OptionForm
             // 
             this.AcceptButton = this.btnOk;
@@ -1571,6 +1660,8 @@ namespace ServiceBusExplorer.Forms
             this.tabPageConnectivity.PerformLayout();
             this.tabPageProxy.ResumeLayout(false);
             this.tabPageProxy.PerformLayout();
+            this.tabPageAuthentication.ResumeLayout(false);
+            this.tabPageAuthentication.PerformLayout();
             this.tabPageColors.ResumeLayout(false);
             this.tabPageColors.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgNodeColors)).EndInit();
@@ -1686,5 +1777,12 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn scheduledMessageCountDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn transferMessageCountThresholdDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn;
+        private System.Windows.Forms.TabPage tabPageAuthentication;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtNewTenantId;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ListBox lbxTenantIds;
+        private System.Windows.Forms.Button btnDeleteTenantId;
+        private System.Windows.Forms.Button btnAddTenantId;
     }
 }

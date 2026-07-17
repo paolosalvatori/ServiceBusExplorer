@@ -25,6 +25,8 @@ using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
+
+using ServiceBusExplorer.Common.Entities;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -638,6 +640,8 @@ namespace ServiceBusExplorer.Forms
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
 
+                EntraTenantIds = EntraTenantIds,
+
                 NodesColors = NodesColors
             };
 
@@ -714,6 +718,8 @@ namespace ServiceBusExplorer.Forms
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
 
                 SetProxy(optionForm.MainSettings);
+
+                EntraTenantIds = optionForm.MainSettings.EntraTenantIds;
 
                 NodesColors = optionForm.MainSettings.NodesColors;
             }
@@ -4173,6 +4179,7 @@ namespace ServiceBusExplorer.Forms
                 ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
+                EntraTenantIds = EntraTenantIds,
                 NodesColors = NodesColors
             };
 
@@ -4289,6 +4296,7 @@ namespace ServiceBusExplorer.Forms
 
             SetProxy(readSettings);
 
+            EntraTenantIds = readSettings.EntraTenantIds;
             NodesColors = readSettings.NodesColors;
         }
 
@@ -4485,6 +4493,8 @@ namespace ServiceBusExplorer.Forms
         public string TopicName { get; set; }
         public string NamespaceHostname { get; set; }
         public List<Dictionary<string, List<string>>> Filters { get; set; }
+
+        public List<EntraTenantIdItem> EntraTenantIds { get; set; } = new List<EntraTenantIdItem>();
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 

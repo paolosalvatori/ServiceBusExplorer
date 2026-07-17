@@ -41,6 +41,9 @@ namespace ServiceBusExplorer.Forms
 {
     using System.ComponentModel;
     using System.Configuration;
+
+    using ServiceBusExplorer.Common.Entities;
+
     using Utilities.Helpers;
 
     public partial class OptionForm : Form
@@ -66,9 +69,10 @@ namespace ServiceBusExplorer.Forms
             "Both (User file will override)"
         };
 
-        ConfigFileUse originalConfigFileUse;
+        readonly ConfigFileUse originalConfigFileUse;
 
-        BindingList<NodeColorInfo> NodesColorInfoBindingList = new BindingList<NodeColorInfo>();
+        readonly BindingList<EntraTenantIdItem> EntraTenantIdBindingList = new BindingList<EntraTenantIdItem>();
+        readonly BindingList<NodeColorInfo> NodesColorInfoBindingList = new BindingList<NodeColorInfo>();
 
         #endregion
 
@@ -154,7 +158,7 @@ namespace ServiceBusExplorer.Forms
         {
             MainSettings.SelectedEntities = GetSelectedEntities();
             MainSettings.SelectedMessageCounts = GetSelectedMessageCounts();
-            
+
             SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
 
             DialogResult = DialogResult.OK;
@@ -261,7 +265,30 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = MainSettings.ProxyUserName;
             txtProxyPassword.Text = MainSettings.ProxyPassword;
 
+            SetEntraTenantIdsIntoBindingList(MainSettings.EntraTenantIds);
+
             SetNodesColorsIntoBindingList(MainSettings.NodesColors);
+        }
+
+        private void SetEntraTenantIdsIntoBindingList(IEnumerable<EntraTenantIdItem> items)
+        {
+            try
+            {
+                EntraTenantIdBindingList.RaiseListChangedEvents = false;
+                EntraTenantIdBindingList.Clear();
+                foreach (var entraTenantIdItem in items)
+                {
+                    EntraTenantIdBindingList.Add(entraTenantIdItem);
+                }
+            }
+            finally
+            {
+                EntraTenantIdBindingList.RaiseListChangedEvents = true;
+                EntraTenantIdBindingList.ResetBindings();
+                lbxTenantIds.DataSource = EntraTenantIdBindingList;
+                lbxTenantIds.DisplayMember = nameof(EntraTenantIdItem.DisplayText);
+                lbxTenantIds.ValueMember = nameof(EntraTenantIdItem.Value);
+            }
         }
 
         private void SetNodesColorsIntoBindingList(IEnumerable<NodeColorInfo> items)
@@ -513,7 +540,7 @@ namespace ServiceBusExplorer.Forms
             MainSettings.ProxyPassword = txtProxyPassword.Text;
         }
 
-        
+
         private void NodesColorsListChanged(object sender, ListChangedEventArgs e)
         {
             MainSettings.NodesColors = NodesColorInfoBindingList.ToList();
@@ -569,7 +596,7 @@ namespace ServiceBusExplorer.Forms
             // Special case: if we have switched from user config file to application config file,
             // we still have to update that particular setting in the user config file, or it won't
             // persist through program restart.
-            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig 
+            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig
                 && configFileUse == ConfigFileUse.ApplicationConfig)
             {
                 var userConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
@@ -659,7 +686,11 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyPassword,
                 MainSettings.ProxyPassword);
 
-            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, NodeColorInfo.FormatAll(MainSettings.NodesColors));
+            SaveListSetting(configuration, readSettings, ConfigurationParameters.EntraTenantIds,
+                runningList: EntraTenantIdBindingList.Select(x => x.Value.ToString()).ToList());
+
+            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
+                NodeColorInfo.FormatAll(MainSettings.NodesColors));
 
             configuration.Save();
         }
@@ -750,6 +781,8 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = mainSettings.ProxyUserName;
             txtProxyPassword.Text = mainSettings.ProxyPassword;
 
+            SetEntraTenantIdsIntoBindingList(mainSettings.EntraTenantIds);
+
             SetNodesColorsIntoBindingList(mainSettings.NodesColors);
         }
 
@@ -812,5 +845,60 @@ namespace ServiceBusExplorer.Forms
         }
 
         #endregion
+
+
+
+        private void btnAddTenantId_Click(object sender, EventArgs e)
+        {
+            var text = txtNewTenantId.Text.Trim();
+
+            if (!Guid.TryParse(text, out var guid))
+            {
+                MessageBox.Show(
+                    "Enter a valid GUID.",
+                    "Invalid GUID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            AddTenantIdIfMissing(guid);
+            txtNewTenantId.Clear();
+            txtNewTenantId.Focus();
+        }
+
+        private void btnDeleteTenantId_Click(object sender, EventArgs e)
+        {
+            if (lbxTenantIds.SelectedItem is EntraTenantIdItem item)
+            {
+                EntraTenantIdBindingList.Remove(item);
+            }
+        }
+
+        private void AddTenantIdIfMissing(Guid tenantId)
+        {
+            if (EntraTenantIdBindingList.Any(x => x.Value == tenantId))
+            {
+                MessageBox.Show(
+                    "That Tenant ID already exists.",
+                    "Duplicate Tenant ID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            var item = new EntraTenantIdItem { Value = tenantId };
+            EntraTenantIdBindingList.Add(item);
+            lbxTenantIds.SelectedItem = item;
+        }
+
+        private void tabAuthentication_Paint(object sender, PaintEventArgs e)
+        {
+            //e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+            //            cboDefaultMessageBodyType.Location.X - 1,
+            //            cboDefaultMessageBodyType.Location.Y - 1,
+            //            cboDefaultMessageBodyType.Size.Width + 1,
+            //            cboDefaultMessageBodyType.Size.Height + 1);
+        }
     }
 }
