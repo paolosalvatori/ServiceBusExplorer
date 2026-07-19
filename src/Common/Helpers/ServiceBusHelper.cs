@@ -150,7 +150,7 @@ namespace ServiceBusExplorer
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
         private ServiceBusNamespace serviceBusNamespaceInstance;
-        private Microsoft.ServiceBus.TokenProvider aadTokenProvider;
+        private Microsoft.ServiceBus.TokenProvider entraTokenProvider;
         private MessagingFactory eventHubMessagingFactory;
         private readonly object eventHubFactoryLock = new object();
         private IServiceBusQueue serviceBusQueue;
@@ -191,7 +191,7 @@ namespace ServiceBusExplorer
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             connectionString = serviceBusHelper.ConnectionString;
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
-            aadTokenProvider = serviceBusHelper.aadTokenProvider;
+            entraTokenProvider = serviceBusHelper.entraTokenProvider;
             namespaceManager = serviceBusHelper.NamespaceManager;
             notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
             MessagingFactory = serviceBusHelper.MessagingFactory;
@@ -632,9 +632,9 @@ namespace ServiceBusExplorer
         public MessagingFactory CreateMessagingFactory()
         {
             MessagingFactory factory;
-            if (aadTokenProvider != null)
+            if (entraTokenProvider != null)
             {
-                factory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
+                factory = MessagingFactory.Create(namespaceUri, entraTokenProvider);
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
@@ -671,7 +671,7 @@ namespace ServiceBusExplorer
 
             if (serviceBusNamespaceInstance?.IsEntra == true)
             {
-                if (aadTokenProvider == null)
+                if (entraTokenProvider == null)
                 {
                     throw new InvalidOperationException(
                         "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
@@ -731,7 +731,7 @@ namespace ServiceBusExplorer
         /// </summary>
         private MessagingFactory CreateEventHubMessagingFactory()
         {
-            if (aadTokenProvider == null)
+            if (entraTokenProvider == null)
             {
                 throw new InvalidOperationException(
                     "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
@@ -739,7 +739,7 @@ namespace ServiceBusExplorer
 
             return MessagingFactory.Create(namespaceUri, new MessagingFactorySettings
             {
-                TokenProvider = aadTokenProvider,
+                TokenProvider = entraTokenProvider,
                 TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
             });
         }
@@ -787,8 +787,8 @@ namespace ServiceBusExplorer
                     // Try Service Bus scope first; if the management probe fails with an
                     // authorization error, the namespace may be an Event Hub namespace that
                     // requires the Event Hub audience instead.
-                    aadTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
-                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                    entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
+                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
 
                     try
                     {
@@ -802,15 +802,15 @@ namespace ServiceBusExplorer
                         // Audience mismatch — the namespace expects a different token audience
                         // (Event Hub vs Service Bus). Retry with Event Hub scope.
                         WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
-                        aadTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
+                        entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
                             tenantId, EntraCredentialFactory.EventHubsAudience);
-                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
                         IsEventHubNamespace = true;
                     }
                 }
                 else
                 {
-                    aadTokenProvider = null;
+                    entraTokenProvider = null;
                     namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 }
 
@@ -875,7 +875,7 @@ namespace ServiceBusExplorer
                 }
                 else if (isEntra)
                 {
-                    MessagingFactory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
+                    MessagingFactory = MessagingFactory.Create(namespaceUri, entraTokenProvider);
                 }
                 else
                 {

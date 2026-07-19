@@ -218,9 +218,6 @@ namespace ServiceBusExplorer.Forms
         public string Key { get; private set; }
         public string Uri { get; private set; }
         public string Namespace { get; private set; }
-        //public string ServicePath { get; set; }
-        //string IssuerName { get; private set; }
-        //string IssuerSecret { get; private set; }
         public string SharedAccessKeyName { get; private set; }
         public string SharedAccessKey { get; private set; }
         public string ConnectionString { get; private set; }
