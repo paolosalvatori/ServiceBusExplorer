@@ -20,7 +20,6 @@ on:
 env:
   SOLUTION_FILE_PATH: .\src
   BUILD_CONFIGURATION: Release
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build_test_publish:

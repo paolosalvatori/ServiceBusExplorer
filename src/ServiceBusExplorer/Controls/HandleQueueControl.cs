@@ -3411,12 +3411,12 @@ namespace ServiceBusExplorer.Controls
              : "Cancel Selected Scheduled Message";
         }
 
-        void deleteSelectedDeadletterMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void deleteSelectedSharedDeadLetterMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deleteSelectedDeadletterMessagesToolStripMenuItem_Click(sender, e);
+            deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click(sender, e);
         }
 
-        async void deleteSelectedDeadletterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        async void deleteSelectedSharedDeadLetterMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var dataGridView = GetActiveDeadletterGridView();
 
@@ -4121,8 +4121,11 @@ namespace ServiceBusExplorer.Controls
                 foreach (var body in bodies)
                 {
                     count++;
-                    var fileName = PathHelper.GetNumberedFileName(saveFileDialog.FileName, count);
-
+                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
+                    var fileExtension = fileNameParts.Last();
+                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
+                    fileNameParts.Add($"({count}).{fileExtension}");
+                    var fileName = string.Join(".", fileNameParts);
                     if (File.Exists(fileName))
                     {
                         File.Delete(fileName);
@@ -4140,22 +4143,22 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        void saveSelectedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedSharedDeadletteredMessageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveSelectedMessage(SaveInJsonFormat: true);
         }
 
-        void saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveSelectedMessage(SaveInJsonFormat: false);
         }
 
-        void saveSelectedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedSharedDeadletteredMessagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveSelectedMessages(SaveInJsonFormat: true);
         }
 
-        void saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
+        void saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
            SaveSelectedMessages(SaveInJsonFormat: false);
         }
@@ -4300,8 +4303,11 @@ namespace ServiceBusExplorer.Controls
                 foreach (var body in bodies)
                 {
                     count++;
-                    var fileName = PathHelper.GetNumberedFileName(saveFileDialog.FileName, count);
-
+                    var fileNameParts = saveFileDialog.FileName.Split('.').ToList();
+                    var fileExtension = fileNameParts.Last();
+                    fileNameParts.RemoveAt(fileNameParts.IndexOf(fileExtension));
+                    fileNameParts.Add($"({count}).{fileExtension}");
+                    var fileName = string.Join(".", fileNameParts);
                     if (File.Exists(fileName))
                     {
                         File.Delete(fileName);
@@ -4373,17 +4379,17 @@ namespace ServiceBusExplorer.Controls
 
             repairAndResubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitSharedDeadletterToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
-            saveSelectedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
-            deleteSelectedDeadletterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessageToolStripMenuItem.Visible = !multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessageBodyAsFileToolStripMenuItem.Visible = !multipleSelectedRows;
+            deleteSelectedSharedDeadletterMessageToolStripMenuItem.Visible = !multipleSelectedRows;
 
 
             resubmitSelectedSharedDeadletterInBatchModeToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
-            saveSelectedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
-            deleteSelectedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessagesToolStripMenuItem.Visible = multipleSelectedRows;
+            saveSelectedSharedDeadletteredMessagesBodyAsFileToolStripMenuItem.Visible = multipleSelectedRows;
+            deleteSelectedSharedDeadletterMessagesToolStripMenuItem.Visible = multipleSelectedRows;
 
-            deadletterContextMenuStrip.Show(Cursor.Position);
+            sharedDeadletterContextMenuStrip.Show(Cursor.Position);
         }
 
         void RepairAndResubmitSharedDeadletterMessage(DataGridViewCellEventArgs e)

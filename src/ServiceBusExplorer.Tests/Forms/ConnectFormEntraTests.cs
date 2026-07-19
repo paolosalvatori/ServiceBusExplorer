@@ -1,0 +1,413 @@
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using FluentAssertions;
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using Xunit;
+
+namespace ServiceBusExplorer.Tests.Forms
+{
+    public class ConnectFormEntraTests
+    {
+        private const string ControlNameServiceBusNamespace = "cboServiceBusNamespace";
+        private const string ControlNameAuthMode = "cboAuthMode";
+        private const string ControlNameUri = "txtUri";
+        private const string ControlNameTenantIds = "cboTenantIds";
+        private const string ControlNameEntityPath = "txtEntityPath";
+        private const string ControlNameTransportType = "cboTransportType";
+        private const string ControlNameIssuerSecret = "txtIssuerSecret";
+        private const string ControlNameSelectedEntities = "cboSelectedEntities";
+        private const string ControlNameIssuerName = "txtIssuerName";
+
+        private const string SavedEntraEntryName = "Saved AAD";
+
+        private const string ConnectionStringPartEndpoint = "Endpoint=";
+        private const string ConnectionStringPartAuthModeEntra = "AuthMode=AAD";
+        private const string ConnectionStringPartTenantId = "TenantId=";
+        private const string ConnectionStringPartEntityPath = "EntityPath=";
+
+        [Fact]
+        public void BuildCurrentConnectionString_ManualAadMode_BuildsStructuredAadEntry()
+        {
+            string connectionString = null;
+            string endpoint = null;
+            string tenantId = null;
+            string entityPath = null;
+            bool isEntra = false;
+            bool issuerSecretVisible = true;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                    GetTextBox(form, ControlNameUri).Text = "myns.servicebus.windows.net";
+                    GetComboBox(form, ControlNameTenantIds).Text = "tenant-id";
+                    GetTextBox(form, ControlNameEntityPath).Text = "queue-a";
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
+
+                    InvokePrivateMethod(form, "BuildCurrentConnectionString");
+
+                    connectionString = form.ConnectionString;
+                    endpoint = form.ServiceBusNamespaceInstance?.Uri;
+                    tenantId = form.ServiceBusNamespaceInstance?.TenantId;
+                    entityPath = form.ServiceBusNamespaceInstance?.EntityPath;
+                    isEntra = form.ServiceBusNamespaceInstance?.IsEntra == true;
+                    issuerSecretVisible = GetTextBox(form, ControlNameIssuerSecret).Visible;
+                }
+            });
+
+            isEntra.Should().BeTrue();
+            endpoint.Should().Be("sb://myns.servicebus.windows.net");
+            tenantId.Should().Be("tenant-id");
+            entityPath.Should().Be("queue-a");
+            connectionString.Should().Contain(ConnectionStringPartEndpoint + "sb://myns.servicebus.windows.net");
+            connectionString.Should().Contain(ConnectionStringPartAuthModeEntra);
+            connectionString.Should().Contain(ConnectionStringPartTenantId + "tenant-id");
+            connectionString.Should().Contain(ConnectionStringPartEntityPath + "queue-a");
+            issuerSecretVisible.Should().BeFalse();
+        }
+
+        [Fact]
+        public void BuildCurrentConnectionString_SavedAadEntry_UsesEditedValues()
+        {
+            string connectionString = null;
+            string endpoint = null;
+            string tenantId = null;
+            string entityPath = null;
+            TransportType transportType = TransportType.NetMessaging;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                var helper = new ServiceBusHelper((message, asynchronous) => { });
+                helper.ServiceBusNamespaces[SavedEntraEntryName] = new ServiceBusNamespace(
+                    "sb://oldns.servicebus.windows.net/",
+                    "oldns",
+                    "tenant-old",
+                    TransportType.NetMessaging,
+                    "old-entity",
+                    true);
+
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = SavedEntraEntryName;
+                    GetTextBox(form, ControlNameUri).Text = "newns.servicebus.windows.net";
+                    GetComboBox(form, ControlNameTenantIds).Text = "tenant-new";
+                    GetTextBox(form, ControlNameEntityPath).Text = "queue-new";
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
+
+                    InvokePrivateMethod(form, "BuildCurrentConnectionString");
+
+                    connectionString = form.ConnectionString;
+                    endpoint = form.ServiceBusNamespaceInstance?.Uri;
+                    tenantId = form.ServiceBusNamespaceInstance?.TenantId;
+                    entityPath = form.ServiceBusNamespaceInstance?.EntityPath;
+                    transportType = form.ServiceBusNamespaceInstance?.TransportType ?? TransportType.NetMessaging;
+                }
+            });
+
+            endpoint.Should().Be("sb://newns.servicebus.windows.net");
+            tenantId.Should().Be("tenant-new");
+            entityPath.Should().Be("queue-new");
+            transportType.Should().Be(TransportType.Amqp);
+            connectionString.Should().Contain(ConnectionStringPartEndpoint + "sb://newns.servicebus.windows.net");
+            connectionString.Should().Contain(ConnectionStringPartTenantId + "tenant-new");
+            connectionString.Should().Contain(ConnectionStringPartEntityPath + "queue-new");
+        }
+
+        [Fact]
+        public void AuthModeSwitch_SasToEntra_ForcesSelectedEntitiesToQueuesAndTopics()
+        {
+            string[] selectedEntities = null;
+            bool selectedEntitiesEnabled = true;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                    selectedEntities = form.SelectedEntities.ToArray();
+                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, ControlNameSelectedEntities).Enabled;
+                }
+            });
+
+            selectedEntities.Should().Equal(Constants.QueueEntities, Constants.TopicEntities, Constants.EventHubEntities);
+            selectedEntitiesEnabled.Should().BeFalse();
+        }
+
+        [Fact]
+        public void AuthModeSwitch_EntraToSas_ReenablesSelectedEntitiesPicker()
+        {
+            bool selectedEntitiesEnabled = false;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0;
+                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, ControlNameSelectedEntities).Enabled;
+                }
+            });
+
+            selectedEntitiesEnabled.Should().BeTrue();
+        }
+
+        [Fact]
+        public void SavedEntraEntry_Load_ForcesSelectedEntitiesToQueuesAndTopics()
+        {
+            string[] selectedEntities = null;
+            bool selectedEntitiesEnabled = true;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                var helper = new ServiceBusHelper((message, asynchronous) => { });
+                helper.ServiceBusNamespaces[SavedEntraEntryName] = new ServiceBusNamespace(
+                    "sb://oldns.servicebus.windows.net/",
+                    "oldns",
+                    "tenant-old",
+                    TransportType.NetMessaging,
+                    "old-entity",
+                    true);
+
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = SavedEntraEntryName;
+                    selectedEntities = form.SelectedEntities.ToArray();
+                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, ControlNameSelectedEntities).Enabled;
+                }
+            });
+
+            selectedEntities.Should().Equal(Constants.QueueEntities, Constants.TopicEntities, Constants.EventHubEntities);
+            selectedEntitiesEnabled.Should().BeFalse();
+        }
+
+        static void RunOnStaThread(Action action)
+        {
+            Exception exception = null;
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            if (exception != null)
+            {
+                throw exception;
+            }
+        }
+
+        static void ResetManualConnectionState()
+        {
+            SetPrivateStaticField(typeof(ConnectForm), "connectionString", null);
+            SetPrivateStaticField(typeof(ConnectForm), "connectionStringIndex", -1);
+        }
+
+        static void InvokePrivateMethod(object instance, string methodName)
+        {
+            var method = instance.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+            method.Should().NotBeNull();
+            method.Invoke(instance, null);
+        }
+
+        static T FindControl<T>(System.Windows.Forms.Control root, string name)
+            where T : System.Windows.Forms.Control
+        {
+            return root.Controls.Find(name, true).Single().Should().BeOfType<T>().Which;
+        }
+
+        static System.Windows.Forms.ComboBox GetComboBox(ConnectForm form, string name)
+        {
+            return FindControl<System.Windows.Forms.ComboBox>(form, name);
+        }
+
+        static CheckBoxComboBox GetCheckBoxComboBox(ConnectForm form, string name)
+        {
+            var comboBox = FindControl<CheckBoxComboBox>(form, name);
+            comboBox._CheckBoxComboBoxListControl.SynchroniseControlsWithComboBoxItems();
+            return comboBox;
+        }
+
+        static System.Windows.Forms.TextBox GetTextBox(ConnectForm form, string name)
+        {
+            return FindControl<System.Windows.Forms.TextBox>(form, name);
+        }
+
+        [Fact]
+        public void AuthModeSwitch_SasToEntra_ExtractsEndpointAndEntityPath()
+        {
+            string uriText = null;
+            string entityPathText = null;
+            string issuerNameText = null;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    // Start in manual SAS mode
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0; // SAS
+
+                    // Enter a full connection string with EntityPath
+                    GetTextBox(form, ControlNameUri).Text =
+                        "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=abc123;EntityPath=myqueue";
+                    GetTextBox(form, ControlNameIssuerName).Text = "RootManageSharedAccessKey";
+
+                    // Switch to AAD
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+
+                    uriText = GetTextBox(form, ControlNameUri).Text;
+                    entityPathText = GetTextBox(form, ControlNameEntityPath).Text;
+                    issuerNameText = GetTextBox(form, ControlNameIssuerName).Text;
+                }
+            });
+
+            uriText.Should().Be("sb://myns.servicebus.windows.net/");
+            entityPathText.Should().Be("myqueue");
+            issuerNameText.Should().BeEmpty("SAS key name should not persist as tenant ID");
+        }
+
+        [Fact]
+        public void AuthModeSwitch_EntraToSas_ClearsFields()
+        {
+            string uriText = null;
+            string issuerNameText = null;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    // Start in manual Entra mode
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1; // Entra
+
+                    // Enter Entra fields
+                    GetTextBox(form, ControlNameUri).Text = "myns.servicebus.windows.net";
+                    GetComboBox(form, ControlNameTenantIds).Text = "my-tenant-id";
+
+                    // Switch to SAS
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0;
+
+                    uriText = GetTextBox(form, ControlNameUri).Text;
+                    issuerNameText = GetTextBox(form, ControlNameIssuerName).Text;
+                }
+            });
+
+            uriText.Should().BeEmpty("endpoint should not persist as connection string");
+            issuerNameText.Should().BeEmpty("tenant ID should not persist as SAS key name");
+        }
+
+        [Fact]
+        public void AuthModeSwitch_SasToEntra_PreservesExistingEntityPath()
+        {
+            string entityPathText = null;
+
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
+                    GetComboBox(form, "cboAuthMode").SelectedIndex = 0; // SAS
+
+                    // EntityPath already set by user (entity path is only visible in structured mode)
+                    // Switch to Entra first to get structured mode, set entity path, switch to SAS, then back to Entra
+                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1; // Entra
+                    GetTextBox(form, "txtEntityPath").Text = "user-set-queue";
+
+                    // Enter a connection string with a different entity path
+                    GetComboBox(form, "cboAuthMode").SelectedIndex = 0; // SAS
+                    GetTextBox(form, "txtUri").Text =
+                        "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=key;SharedAccessKey=abc;EntityPath=other-queue";
+
+                    // Switch to Entra: should NOT overwrite user-set entity path
+                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1;
+
+                    entityPathText = GetTextBox(form, "txtEntityPath").Text;
+                }
+            });
+
+            // Entity path should keep what user set, not overwrite with connection string's value
+            entityPathText.Should().Be("user-set-queue");
+        }
+
+        [Fact]
+        public void ExtractEndpoint_ReturnsEndpointFromConnectionString()
+        {
+            var result = InvokeStaticPrivateMethod<string>(typeof(ConnectForm), "ExtractEndpoint",
+                "Endpoint=sb://test.servicebus.windows.net/;SharedAccessKeyName=key;SharedAccessKey=abc");
+
+            result.Should().Be("sb://test.servicebus.windows.net/");
+        }
+
+        [Fact]
+        public void ExtractEntityPath_ReturnsEntityPath()
+        {
+            var result = InvokeStaticPrivateMethod<string>(typeof(ConnectForm), "ExtractEntityPath",
+                "Endpoint=sb://test.servicebus.windows.net/;EntityPath=myqueue");
+
+            result.Should().Be("myqueue");
+        }
+
+        [Fact]
+        public void ExtractEntityPath_ReturnsNullWhenMissing()
+        {
+            var result = InvokeStaticPrivateMethod<string>(typeof(ConnectForm), "ExtractEntityPath",
+                "Endpoint=sb://test.servicebus.windows.net/;SharedAccessKeyName=key");
+
+            result.Should().BeNull();
+        }
+
+        static T InvokeStaticPrivateMethod<T>(Type type, string methodName, params object[] args)
+        {
+            var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+            method.Should().NotBeNull();
+            return (T)method.Invoke(null, args);
+        }
+
+        static void SetPrivateStaticField(Type type, string fieldName, object value)
+        {
+            var field = type.GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
+            field.Should().NotBeNull();
+            field.SetValue(null, value);
+        }
+    }
+}

@@ -6,33 +6,37 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   check-tag-branch:
     # This job is based on replies in https://github.community/t/how-to-create-filter-on-both-tag-and-branch/16936/6
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository history
+    - name: Get tag commit hash
+      id: tag-commit-hash
+      run: |
+        hash=${{ github.sha }}
+        echo "{name}=tag-hash::${hash}" >> $GITHUB_OUTPUT
+        echo $hash
+
+    - name: Checkout main
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        ref: main
 
-    - name: Verify tag commit is contained in main
+    - name: Get latest main commit hash
+      id: main-commit-hash
       run: |
-        # Peel annotated tags to their target commit and verify that commit is reachable from main.
-        # This intentionally enforces "contained in main" semantics instead of exact main HEAD equality.
-        tag_commit=$(git rev-parse "$GITHUB_SHA^{commit}")
-        if git merge-base --is-ancestor "$tag_commit" origin/main; then
-          echo "Tag commit is contained in main."
-        else
-          echo "Tag commit is not contained in main. Exiting."
-          exit 1
-        fi
+        hash=$(git log -n1 --format=format:"%H")
+        echo "{name}=main-hash::${hash}" >> $GITHUB_OUTPUT
+        echo $hash
+
+    - name: Verify tag commit matches main commit - exit if they don't match
+      if: steps.tag-commit-hash.outputs.tag-hash != steps.main-commit-hash.outputs.main-hash
+      run: |
+        echo "Tag was not on the main branch. Exiting."
+        exit 1
 
   get-version:
-    needs: [check-tag-branch]
     runs-on: windows-2022
     steps:
     - name: Get version from tag

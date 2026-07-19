@@ -1,0 +1,265 @@
+using System;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Azure.Core;
+using FluentAssertions;
+using Microsoft.ServiceBus;
+using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.ServiceBus.Helpers;
+using Xunit;
+
+namespace ServiceBusExplorer.Tests.Helpers
+{
+    public class ServiceBusHelperEntraTests
+    {
+        [Fact]
+        public void CopyConstructor_EntraState_PreservesEntraFieldsAndNewSdkBridge()
+        {
+            var source = new ServiceBusHelper((message, asynchronous) => { })
+            {
+                NamespaceUri = new Uri("sb://myns.servicebus.windows.net/")
+            };
+            var entraNamespace = new ServiceBusNamespace(
+                "sb://myns.servicebus.windows.net/",
+                "myns",
+                "tenant-id",
+                TransportType.Amqp);
+
+            SetPrivateField(source, "serviceBusNamespaceInstance", entraNamespace);
+            SetPrivateField(source, "entraTokenProvider", EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id"));
+
+            var copy = new ServiceBusHelper((message, asynchronous) => { }, source);
+
+            GetPrivateField<TokenProvider>(copy, "entraTokenProvider").Should().NotBeNull();
+            GetPrivateField<ServiceBusNamespace>(copy, "serviceBusNamespaceInstance").Should().BeSameAs(entraNamespace);
+
+            var helper2 = copy.GetServiceBusHelper2();
+            helper2.IsEntra.Should().BeTrue();
+            helper2.FullyQualifiedNamespace.Should().Be("myns.servicebus.windows.net");
+            helper2.EntraTokenCredential.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void CreateEventHubClient_EntraNamespace_ReturnsClient()
+        {
+            var helper = new ServiceBusHelper((message, asynchronous) => { });
+            var entraNamespace = new ServiceBusNamespace(
+                "sb://myns.servicebus.windows.net/",
+                "myns",
+                "tenant-id",
+                TransportType.Amqp);
+
+            SetPrivateField(helper, "serviceBusNamespaceInstance", entraNamespace);
+
+            // The new implementation requires the cached eventHubMessagingFactory
+            // (created during Connect) to create EventHubClients.
+            var tokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            SetPrivateField(helper, "entraTokenProvider", tokenProvider);
+            var nsUri = new Uri("sb://myns.servicebus.windows.net/");
+            SetPrivateField(helper, "namespaceUri", nsUri);
+            var factory = MessagingFactory.Create(nsUri, new MessagingFactorySettings
+            {
+                TokenProvider = tokenProvider,
+                TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
+            });
+            SetPrivateField(helper, "eventHubMessagingFactory", factory);
+
+            var client = helper.CreateEventHubClient("hub1");
+
+            client.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void ServiceBusHelper2_CreateClients_EntraConfiguration_ReturnsClients()
+        {
+            var helper2 = new ServiceBusHelper2((message, asynchronous) => { })
+            {
+                FullyQualifiedNamespace = "myns.servicebus.windows.net",
+                EntraTokenCredential = new FakeTokenCredential(),
+                TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp
+            };
+
+            helper2.IsEntra.Should().BeTrue();
+            helper2.CreateServiceBusClient().Should().NotBeNull();
+            helper2.CreateAdministrationClient().Should().NotBeNull();
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_SameTenant_ReusesCredentialCallbackAndProvider()
+        {
+            var credential1 = EntraCredentialFactory.CreateInteractiveBrowserCredential("tenant-id");
+            var credential2 = EntraCredentialFactory.CreateInteractiveBrowserCredential("tenant-id");
+            var callback1 = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id");
+            var callback2 = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id");
+            var provider1 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            var provider2 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            var tokenCredential1 = EntraCredentialFactory.CreateNewSdkTokenCredential("tenant-id");
+            var tokenCredential2 = EntraCredentialFactory.CreateNewSdkTokenCredential("tenant-id");
+
+            credential2.Should().BeSameAs(credential1);
+            callback2.Should().BeSameAs(callback1);
+            provider2.Should().BeSameAs(provider1);
+            tokenCredential2.Should().BeSameAs(tokenCredential1);
+            tokenCredential1.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_BlankTenant_ReusesSameCredentialAsOrganizations()
+        {
+            var fromNull = EntraCredentialFactory.CreateInteractiveBrowserCredential(null);
+            var fromOrganizations = EntraCredentialFactory.CreateInteractiveBrowserCredential("organizations");
+
+            fromOrganizations.Should().BeSameAs(fromNull);
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_GetScopes_UsesResourceValue()
+        {
+            var scopes = InvokePrivateStatic<string[]>(typeof(EntraCredentialFactory), "GetScopes", "https://servicebus.azure.net");
+
+            scopes.Should().ContainSingle().Which.Should().Be("https://servicebus.azure.net/.default");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void EntraCredentialFactory_GetAuthority_BlankTenant_UsesOrganizationsEndpoint(string tenantId)
+        {
+            var authority = EntraCredentialFactory.GetAuthority(tenantId);
+
+            authority.Should().Be("https://login.microsoftonline.com/organizations");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void CreateEventHubClient_NullOrEmptyPath_ThrowsArgumentExceptionWithParamName(string path)
+        {
+            var helper = new ServiceBusHelper((message, asynchronous) => { });
+
+            var act = () => helper.CreateEventHubClient(path);
+
+            act.Should().Throw<ArgumentException>()
+                .And.ParamName.Should().Be("path");
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_DifferentAudiences_ReturnDifferentProviders()
+        {
+            var sbProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.ServiceBusAudience);
+            var ehProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.EventHubsAudience);
+
+            ehProvider.Should().NotBeSameAs(sbProvider, "different audiences must produce different token providers");
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_SameAudience_ReusesCachedProvider()
+        {
+            var ehProvider1 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.EventHubsAudience);
+            var ehProvider2 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.EventHubsAudience);
+
+            ehProvider2.Should().BeSameAs(ehProvider1, "same tenant+audience should reuse cached provider");
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_DifferentAudiences_ReturnDifferentCallbacks()
+        {
+            var sbCallback = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", EntraCredentialFactory.ServiceBusAudience);
+            var ehCallback = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", EntraCredentialFactory.EventHubsAudience);
+
+            ehCallback.Should().NotBeSameAs(sbCallback, "different audiences must produce different callbacks");
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_EventHubsAudience_HasCorrectValue()
+        {
+            EntraCredentialFactory.EventHubsAudience.Should().Be("https://eventhubs.azure.net");
+        }
+
+        [Fact]
+        public void EntraCredentialFactory_GetScopes_EventHubResource_UsesEventHubScope()
+        {
+            var scopes = InvokePrivateStatic<string[]>(typeof(EntraCredentialFactory), "GetScopes", "https://eventhubs.azure.net");
+
+            scopes.Should().ContainSingle().Which.Should().Be("https://eventhubs.azure.net/.default");
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_InvalidAudienceSubstatus_ReturnsTrue()
+        {
+            var ex = new MessagingException("SubCode=40104. Token has invalid audience.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_InvalidAudienceKeyword_ReturnsTrue()
+        {
+            var ex = new UnauthorizedAccessException("InvalidAudience: the token was issued for a different resource.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_ManageClaimDenied_ReturnsFalse()
+        {
+            var ex = new UnauthorizedAccessException("40301: Manage claim is required for this operation.");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeFalse();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_Generic401_ReturnsTrueForBackwardCompat()
+        {
+            var ex = new MessagingException("The request was unauthorized. Status code: 401");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAudienceMismatch_UnrelatedMessagingException_ReturnsFalse()
+        {
+            var ex = new MessagingException("Entity not found. Status code: 404");
+            InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
+                .Should().BeFalse();
+        }
+
+        static T GetPrivateField<T>(object instance, string fieldName)
+        {
+            var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            field.Should().NotBeNull();
+            return (T)field.GetValue(instance);
+        }
+
+        static T InvokePrivateStatic<T>(Type type, string methodName, params object[] args)
+        {
+            var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+            method.Should().NotBeNull();
+            return (T)method.Invoke(null, args);
+        }
+
+        static void SetPrivateField(object instance, string fieldName, object value)
+        {
+            var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            field.Should().NotBeNull();
+            field.SetValue(instance, value);
+        }
+
+        sealed class FakeTokenCredential : TokenCredential
+        {
+            public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                return new AccessToken("fake-token", DateTimeOffset.UtcNow.AddMinutes(5));
+            }
+
+            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                return new ValueTask<AccessToken>(new AccessToken("fake-token", DateTimeOffset.UtcNow.AddMinutes(5)));
+            }
+        }
+    }
+}
