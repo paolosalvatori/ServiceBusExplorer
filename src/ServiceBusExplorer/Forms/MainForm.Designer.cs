@@ -38,7 +38,6 @@ namespace ServiceBusExplorer.Forms
             this.connectUsingSASToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectUsingEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logOutFromEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.logOutFromEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorMain = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
