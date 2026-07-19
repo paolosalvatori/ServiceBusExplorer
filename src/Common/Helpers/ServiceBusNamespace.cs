@@ -97,7 +97,7 @@ namespace ServiceBusExplorer.Helpers
         const string ConnectionStringEntityPath = "entitypath";
         const string ConnectionStringAuthMode = "authmode";
         const string ConnectionStringTenantId = "tenantid";
-        const string AuthModeAad = "aad";
+        const string AuthModeEntra = "aad";
 
         #endregion
 
@@ -107,10 +107,10 @@ namespace ServiceBusExplorer.Helpers
         //***************************
         public const string SasConnectionStringFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3}";
         public const string SasConnectionStringEntityPathFormat = "Endpoint={0};SharedAccessKeyName={1};SharedAccessKey={2};TransportType={3};EntityPath={4}";
-        public const string AadConnectionStringFormat = "Endpoint={0};AuthMode=AAD;TransportType={1}";
-        public const string AadConnectionStringTenantFormat = "Endpoint={0};AuthMode=AAD;TenantId={1};TransportType={2}";
-        public const string AadConnectionStringEntityPathFormat = "Endpoint={0};AuthMode=AAD;TenantId={1};TransportType={2};EntityPath={3}";
-        public const string AadConnectionStringEntityPathNoTenantFormat = "Endpoint={0};AuthMode=AAD;TransportType={1};EntityPath={2}";
+        public const string EntraConnectionStringFormat = "Endpoint={0};AuthMode=AAD;TransportType={1}";
+        public const string EntraConnectionStringTenantFormat = "Endpoint={0};AuthMode=AAD;TenantId={1};TransportType={2}";
+        public const string EntraConnectionStringEntityPathFormat = "Endpoint={0};AuthMode=AAD;TenantId={1};TransportType={2};EntityPath={3}";
+        public const string EntraConnectionStringEntityPathNoTenantFormat = "Endpoint={0};AuthMode=AAD;TransportType={1};EntityPath={2}";
         #endregion
 
         #region Public Constructors
@@ -259,7 +259,7 @@ namespace ServiceBusExplorer.Helpers
             EntityPath = entityPath;
             UserCreated = isUserCreated;
 
-            // No SAS keys or connection string for AAD
+            // No SAS keys or connection string for Entra
             ConnectionString = null;
             SharedAccessKeyName = null;
             SharedAccessKey = null;
@@ -299,9 +299,9 @@ namespace ServiceBusExplorer.Helpers
             if (toLower.Contains(ConnectionStringEndpoint) &&
                 toLower.Contains(ConnectionStringAuthMode) &&
                 parameters.ContainsKey(ConnectionStringAuthMode) &&
-                string.Equals(parameters[ConnectionStringAuthMode], AuthModeAad, StringComparison.OrdinalIgnoreCase))
+                string.Equals(parameters[ConnectionStringAuthMode], AuthModeEntra, StringComparison.OrdinalIgnoreCase))
             {
-                return GetServiceBusNamespaceUsingAad(key, connectionString, staticWriteToLog,
+                return GetServiceBusNamespaceUsingEntra(key, connectionString, staticWriteToLog,
                     isUserCreated, parameters);
             }
 
@@ -680,7 +680,7 @@ namespace ServiceBusExplorer.Helpers
             return uri.Host.Split('.')[0];
         }
 
-        static ServiceBusNamespace GetServiceBusNamespaceUsingAad(string key, string connectionString,
+        static ServiceBusNamespace GetServiceBusNamespaceUsingEntra(string key, string connectionString,
             WriteToLogDelegate staticWriteToLog, bool isUserCreated, Dictionary<string, string> parameters)
         {
             var endpoint = parameters.ContainsKey(ConnectionStringEndpoint) ?
@@ -726,11 +726,11 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Builds a metadata-only connection string for persisting an AAD connection.
+        /// Builds a metadata-only connection string for persisting an Entra connection.
         /// No secrets are stored — only the endpoint, auth mode, transport type,
         /// and optionally the tenant ID and entity path.
         /// </summary>
-        public static string BuildAadConnectionString(string endpoint, string tenantId,
+        public static string BuildEntraConnectionString(string endpoint, string tenantId,
             TransportType transportType, string entityPath = null)
         {
             var hasTenant = !string.IsNullOrWhiteSpace(tenantId);
@@ -738,22 +738,22 @@ namespace ServiceBusExplorer.Helpers
 
             if (hasEntity && hasTenant)
             {
-                return string.Format(AadConnectionStringEntityPathFormat,
+                return string.Format(EntraConnectionStringEntityPathFormat,
                     endpoint, tenantId, transportType, entityPath);
             }
 
             if (hasEntity)
             {
-                return string.Format(AadConnectionStringEntityPathNoTenantFormat,
+                return string.Format(EntraConnectionStringEntityPathNoTenantFormat,
                     endpoint, transportType, entityPath);
             }
 
             if (hasTenant)
             {
-                return string.Format(AadConnectionStringTenantFormat, endpoint, tenantId, transportType);
+                return string.Format(EntraConnectionStringTenantFormat, endpoint, tenantId, transportType);
             }
 
-            return string.Format(AadConnectionStringFormat, endpoint, transportType);
+            return string.Format(EntraConnectionStringFormat, endpoint, transportType);
         }
 
         #endregion

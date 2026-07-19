@@ -13,6 +13,23 @@ namespace ServiceBusExplorer.Tests.Forms
 {
     public class ConnectFormEntraTests
     {
+        private const string ControlNameServiceBusNamespace = "cboServiceBusNamespace";
+        private const string ControlNameAuthMode = "cboAuthMode";
+        private const string ControlNameUri = "txtUri";
+        private const string ControlNameTenantIds = "cboTenantIds";
+        private const string ControlNameEntityPath = "txtEntityPath";
+        private const string ControlNameTransportType = "cboTransportType";
+        private const string ControlNameIssuerSecret = "txtIssuerSecret";
+        private const string ControlNameSelectedEntities = "cboSelectedEntities";
+        private const string ControlNameIssuerName = "txtIssuerName";
+
+        private const string SavedEntraEntryName = "Saved AAD";
+
+        private const string ConnectionStringPartEndpoint = "Endpoint=";
+        private const string ConnectionStringPartAuthModeEntra = "AuthMode=AAD";
+        private const string ConnectionStringPartTenantId = "TenantId=";
+        private const string ConnectionStringPartEntityPath = "EntityPath=";
+
         [Fact]
         public void BuildCurrentConnectionString_ManualAadMode_BuildsStructuredAadEntry()
         {
@@ -20,7 +37,7 @@ namespace ServiceBusExplorer.Tests.Forms
             string endpoint = null;
             string tenantId = null;
             string entityPath = null;
-            bool isAad = false;
+            bool isEntra = false;
             bool issuerSecretVisible = true;
 
             RunOnStaThread(() =>
@@ -28,14 +45,14 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
-                           ConfigFileUse.ApplicationConfig))
+                           ConfigFileUse.ApplicationConfig, null))
                 {
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1;
-                    GetTextBox(form, "txtUri").Text = "myns.servicebus.windows.net";
-                    GetTextBox(form, "txtIssuerName").Text = "tenant-id";
-                    GetTextBox(form, "txtEntityPath").Text = "queue-a";
-                    GetComboBox(form, "cboTransportType").SelectedItem = TransportType.Amqp;
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                    GetTextBox(form, ControlNameUri).Text = "myns.servicebus.windows.net";
+                    GetComboBox(form, ControlNameTenantIds).Text = "tenant-id";
+                    GetTextBox(form, ControlNameEntityPath).Text = "queue-a";
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
 
                     InvokePrivateMethod(form, "BuildCurrentConnectionString");
 
@@ -43,19 +60,19 @@ namespace ServiceBusExplorer.Tests.Forms
                     endpoint = form.ServiceBusNamespaceInstance?.Uri;
                     tenantId = form.ServiceBusNamespaceInstance?.TenantId;
                     entityPath = form.ServiceBusNamespaceInstance?.EntityPath;
-                    isAad = form.ServiceBusNamespaceInstance?.IsEntra == true;
-                    issuerSecretVisible = GetTextBox(form, "txtIssuerSecret").Visible;
+                    isEntra = form.ServiceBusNamespaceInstance?.IsEntra == true;
+                    issuerSecretVisible = GetTextBox(form, ControlNameIssuerSecret).Visible;
                 }
             });
 
-            isAad.Should().BeTrue();
+            isEntra.Should().BeTrue();
             endpoint.Should().Be("sb://myns.servicebus.windows.net");
             tenantId.Should().Be("tenant-id");
             entityPath.Should().Be("queue-a");
-            connectionString.Should().Contain("Endpoint=sb://myns.servicebus.windows.net");
-            connectionString.Should().Contain("AuthMode=AAD");
-            connectionString.Should().Contain("TenantId=tenant-id");
-            connectionString.Should().Contain("EntityPath=queue-a");
+            connectionString.Should().Contain(ConnectionStringPartEndpoint + "sb://myns.servicebus.windows.net");
+            connectionString.Should().Contain(ConnectionStringPartAuthModeEntra);
+            connectionString.Should().Contain(ConnectionStringPartTenantId + "tenant-id");
+            connectionString.Should().Contain(ConnectionStringPartEntityPath + "queue-a");
             issuerSecretVisible.Should().BeFalse();
         }
 
@@ -73,7 +90,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 var helper = new ServiceBusHelper((message, asynchronous) => { });
-                helper.ServiceBusNamespaces["Saved AAD"] = new ServiceBusNamespace(
+                helper.ServiceBusNamespaces[SavedEntraEntryName] = new ServiceBusNamespace(
                     "sb://oldns.servicebus.windows.net/",
                     "oldns",
                     "tenant-old",
@@ -81,13 +98,13 @@ namespace ServiceBusExplorer.Tests.Forms
                     "old-entity",
                     true);
 
-                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig))
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
                 {
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedItem = "Saved AAD";
-                    GetTextBox(form, "txtUri").Text = "newns.servicebus.windows.net";
-                    GetTextBox(form, "txtIssuerName").Text = "tenant-new";
-                    GetTextBox(form, "txtEntityPath").Text = "queue-new";
-                    GetComboBox(form, "cboTransportType").SelectedItem = TransportType.Amqp;
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = SavedEntraEntryName;
+                    GetTextBox(form, ControlNameUri).Text = "newns.servicebus.windows.net";
+                    GetComboBox(form, ControlNameTenantIds).Text = "tenant-new";
+                    GetTextBox(form, ControlNameEntityPath).Text = "queue-new";
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
 
                     InvokePrivateMethod(form, "BuildCurrentConnectionString");
 
@@ -103,9 +120,9 @@ namespace ServiceBusExplorer.Tests.Forms
             tenantId.Should().Be("tenant-new");
             entityPath.Should().Be("queue-new");
             transportType.Should().Be(TransportType.Amqp);
-            connectionString.Should().Contain("Endpoint=sb://newns.servicebus.windows.net");
-            connectionString.Should().Contain("TenantId=tenant-new");
-            connectionString.Should().Contain("EntityPath=queue-new");
+            connectionString.Should().Contain(ConnectionStringPartEndpoint + "sb://newns.servicebus.windows.net");
+            connectionString.Should().Contain(ConnectionStringPartTenantId + "tenant-new");
+            connectionString.Should().Contain(ConnectionStringPartEntityPath + "queue-new");
         }
 
         [Fact]
@@ -119,12 +136,12 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
-                           ConfigFileUse.ApplicationConfig))
+                           ConfigFileUse.ApplicationConfig, null))
                 {
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1;
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
                     selectedEntities = form.SelectedEntities.ToArray();
-                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, "cboSelectedEntities").Enabled;
+                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, ControlNameSelectedEntities).Enabled;
                 }
             });
 
@@ -142,12 +159,12 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
-                           ConfigFileUse.ApplicationConfig))
+                           ConfigFileUse.ApplicationConfig, null))
                 {
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 0;
-                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, "cboSelectedEntities").Enabled;
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0;
+                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, ControlNameSelectedEntities).Enabled;
                 }
             });
 
@@ -165,7 +182,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 var helper = new ServiceBusHelper((message, asynchronous) => { });
-                helper.ServiceBusNamespaces["Saved AAD"] = new ServiceBusNamespace(
+                helper.ServiceBusNamespaces[SavedEntraEntryName] = new ServiceBusNamespace(
                     "sb://oldns.servicebus.windows.net/",
                     "oldns",
                     "tenant-old",
@@ -173,11 +190,11 @@ namespace ServiceBusExplorer.Tests.Forms
                     "old-entity",
                     true);
 
-                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig))
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
                 {
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedItem = "Saved AAD";
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = SavedEntraEntryName;
                     selectedEntities = form.SelectedEntities.ToArray();
-                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, "cboSelectedEntities").Enabled;
+                    selectedEntitiesEnabled = GetCheckBoxComboBox(form, ControlNameSelectedEntities).Enabled;
                 }
             });
 
@@ -258,23 +275,23 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
-                           ConfigFileUse.ApplicationConfig))
+                           ConfigFileUse.ApplicationConfig, null))
                 {
                     // Start in manual SAS mode
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 0; // SAS
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0; // SAS
 
                     // Enter a full connection string with EntityPath
-                    GetTextBox(form, "txtUri").Text =
+                    GetTextBox(form, ControlNameUri).Text =
                         "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=abc123;EntityPath=myqueue";
-                    GetTextBox(form, "txtIssuerName").Text = "RootManageSharedAccessKey";
+                    GetTextBox(form, ControlNameIssuerName).Text = "RootManageSharedAccessKey";
 
                     // Switch to AAD
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
 
-                    uriText = GetTextBox(form, "txtUri").Text;
-                    entityPathText = GetTextBox(form, "txtEntityPath").Text;
-                    issuerNameText = GetTextBox(form, "txtIssuerName").Text;
+                    uriText = GetTextBox(form, ControlNameUri).Text;
+                    entityPathText = GetTextBox(form, ControlNameEntityPath).Text;
+                    issuerNameText = GetTextBox(form, ControlNameIssuerName).Text;
                 }
             });
 
@@ -294,21 +311,21 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
-                           ConfigFileUse.ApplicationConfig))
+                           ConfigFileUse.ApplicationConfig, null))
                 {
                     // Start in manual Entra mode
-                    GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 1; // Entra
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1; // Entra
 
                     // Enter Entra fields
-                    GetTextBox(form, "txtUri").Text = "myns.servicebus.windows.net";
-                    GetTextBox(form, "txtIssuerName").Text = "my-tenant-id";
+                    GetTextBox(form, ControlNameUri).Text = "myns.servicebus.windows.net";
+                    GetComboBox(form, ControlNameTenantIds).Text = "my-tenant-id";
 
                     // Switch to SAS
-                    GetComboBox(form, "cboAuthMode").SelectedIndex = 0;
+                    GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0;
 
-                    uriText = GetTextBox(form, "txtUri").Text;
-                    issuerNameText = GetTextBox(form, "txtIssuerName").Text;
+                    uriText = GetTextBox(form, ControlNameUri).Text;
+                    issuerNameText = GetTextBox(form, ControlNameIssuerName).Text;
                 }
             });
 
@@ -326,7 +343,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 ResetManualConnectionState();
 
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
-                           ConfigFileUse.ApplicationConfig))
+                           ConfigFileUse.ApplicationConfig, null))
                 {
                     GetComboBox(form, "cboServiceBusNamespace").SelectedIndex = 1;
                     GetComboBox(form, "cboAuthMode").SelectedIndex = 0; // SAS

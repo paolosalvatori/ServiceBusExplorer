@@ -27,6 +27,7 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
 
 using ServiceBusExplorer.Common.Entities;
+using ServiceBusExplorer.Common.Helpers;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -513,7 +514,7 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse, this.EntraTenantIds))
                 {
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
@@ -524,9 +525,11 @@ namespace ServiceBusExplorer.Forms
                     SelectedEntities = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
+
                     var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
                         ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
+                    
                     serviceBusHelper.Connect(serviceBusNamespace);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -4597,12 +4600,12 @@ namespace ServiceBusExplorer.Forms
                     var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                     var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                     var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
-                    var isAad = serviceBusHelper.IsEntra;
+                    var isEntra = serviceBusHelper.IsEntra;
                     var loadQueues = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.QueueEntities);
                     var loadTopics = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.TopicEntities);
-                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities) && (!isAad || serviceBusHelper.IsEventHubNamespace);
-                    var loadNotificationHubs = !isAad && SelectedEntities.Contains(Constants.NotificationHubEntities);
-                    var loadRelays = !isAad && SelectedEntities.Contains(Constants.RelayEntities);
+                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities) && (!isEntra || serviceBusHelper.IsEventHubNamespace);
+                    var loadNotificationHubs = !isEntra && SelectedEntities.Contains(Constants.NotificationHubEntities);
+                    var loadRelays = !isEntra && SelectedEntities.Contains(Constants.RelayEntities);
                     if (entityType == EntityType.All)
                     {
                         serviceBusTreeView.Nodes.Clear();

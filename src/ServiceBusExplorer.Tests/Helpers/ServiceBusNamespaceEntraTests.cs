@@ -5,7 +5,7 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
-    public class ServiceBusNamespaceAadTests
+    public class ServiceBusNamespaceEntraTests
     {
         #region Parser round-trip tests
 
@@ -71,7 +71,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var original = "Endpoint=sb://myns.servicebus.windows.net/;AuthMode=AAD;TenantId=aaaa-bbbb;TransportType=Amqp;EntityPath=myqueue";
             var ns = ServiceBusNamespace.GetServiceBusNamespace("TestKey", original, (_, __) => { });
 
-            var rebuilt = ServiceBusNamespace.BuildAadConnectionString(
+            var rebuilt = ServiceBusNamespace.BuildEntraConnectionString(
                 ns.Uri, ns.TenantId, ns.TransportType, ns.EntityPath);
 
             var ns2 = ServiceBusNamespace.GetServiceBusNamespace("TestKey2", rebuilt, (_, __) => { });
@@ -128,12 +128,12 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         #endregion
 
-        #region BuildAadConnectionString tests
+        #region BuildEntraConnectionString tests
 
         [Fact]
-        public void BuildAadConnectionString_MinimalFields_ProducesValidString()
+        public void BuildEntraConnectionString_MinimalFields_ProducesValidString()
         {
-            var result = ServiceBusNamespace.BuildAadConnectionString(
+            var result = ServiceBusNamespace.BuildEntraConnectionString(
                 "sb://myns.servicebus.windows.net/", null, TransportType.Amqp);
 
             result.Should().Contain("Endpoint=sb://myns.servicebus.windows.net/");
@@ -144,27 +144,27 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void BuildAadConnectionString_WithTenant_IncludesTenantId()
+        public void BuildEntraConnectionString_WithTenant_IncludesTenantId()
         {
-            var result = ServiceBusNamespace.BuildAadConnectionString(
+            var result = ServiceBusNamespace.BuildEntraConnectionString(
                 "sb://myns.servicebus.windows.net/", "my-tenant-id", TransportType.Amqp);
 
             result.Should().Contain("TenantId=my-tenant-id");
         }
 
         [Fact]
-        public void BuildAadConnectionString_WithEntityPath_IncludesEntityPath()
+        public void BuildEntraConnectionString_WithEntityPath_IncludesEntityPath()
         {
-            var result = ServiceBusNamespace.BuildAadConnectionString(
+            var result = ServiceBusNamespace.BuildEntraConnectionString(
                 "sb://myns.servicebus.windows.net/", "my-tenant", TransportType.Amqp, "myqueue");
 
             result.Should().Contain("EntityPath=myqueue");
         }
 
         [Fact]
-        public void BuildAadConnectionString_EntityPathNoTenant_OmitsTenantId()
+        public void BuildEntraConnectionString_EntityPathNoTenant_OmitsTenantId()
         {
-            var result = ServiceBusNamespace.BuildAadConnectionString(
+            var result = ServiceBusNamespace.BuildEntraConnectionString(
                 "sb://myns.servicebus.windows.net/", null, TransportType.Amqp, "myqueue");
 
             result.Should().Contain("EntityPath=myqueue");
@@ -173,9 +173,9 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void BuildAadConnectionString_NetMessagingTransport_IncludesCorrectTransportType()
+        public void BuildEntraConnectionString_NetMessagingTransport_IncludesCorrectTransportType   ()
         {
-            var result = ServiceBusNamespace.BuildAadConnectionString(
+            var result = ServiceBusNamespace.BuildEntraConnectionString(
                 "sb://myns.servicebus.windows.net/", null, TransportType.NetMessaging);
 
             result.Should().Contain("TransportType=NetMessaging");
@@ -228,7 +228,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             var result = ns.ConnectionStringWithoutTransportType;
 
-            result.Should().BeNull("AAD namespaces have no SAS connection string");
+            result.Should().BeNull("Entra namespaces have no SAS connection string");
         }
 
         [Fact]

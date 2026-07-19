@@ -20,12 +20,13 @@
 #endregion
 
 using ServiceBusExplorer.Common.Entities;
+using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Common.Helpers
 {
     public static class ConfigurationHelper
     {
@@ -232,8 +233,8 @@ namespace ServiceBusExplorer.Helpers
             
             var entraTenantIdsValue = configuration.GetStringValue(ConfigurationParameters.EntraTenantIds, string.Empty);
             resultProperties.EntraTenantIds = GetParameterValueAsList(entraTenantIdsValue)
-                .Where(s => Guid.TryParse(s, out _))
-                .Select(s => new EntraTenantIdItem { Value = Guid.Parse(s) })
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => new EntraTenantIdItem { Value = s })
                 .ToList();
 
             resultProperties.NodesColors = NodeColorInfo.ParseAll(configuration.GetStringValue(ConfigurationParameters.NodesColors, string.Empty));

@@ -43,6 +43,7 @@ namespace ServiceBusExplorer.Forms
     using System.Configuration;
 
     using ServiceBusExplorer.Common.Entities;
+    using ServiceBusExplorer.Common.Helpers;
 
     using Utilities.Helpers;
 
@@ -686,8 +687,9 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyPassword,
                 MainSettings.ProxyPassword);
 
+            MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
             SaveListSetting(configuration, readSettings, ConfigurationParameters.EntraTenantIds,
-                runningList: EntraTenantIdBindingList.Select(x => x.Value.ToString()).ToList());
+                runningList: MainSettings.EntraTenantIds.Select(x => x.Value).ToList());
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
                 NodeColorInfo.FormatAll(MainSettings.NodesColors));
@@ -852,17 +854,7 @@ namespace ServiceBusExplorer.Forms
         {
             var text = txtNewTenantId.Text.Trim();
 
-            if (!Guid.TryParse(text, out var guid))
-            {
-                MessageBox.Show(
-                    "Enter a valid GUID.",
-                    "Invalid GUID",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-
-            AddTenantIdIfMissing(guid);
+            AddTenantIdIfMissing(text);
             txtNewTenantId.Clear();
             txtNewTenantId.Focus();
         }
@@ -875,7 +867,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void AddTenantIdIfMissing(Guid tenantId)
+        private void AddTenantIdIfMissing(string tenantId)
         {
             if (EntraTenantIdBindingList.Any(x => x.Value == tenantId))
             {

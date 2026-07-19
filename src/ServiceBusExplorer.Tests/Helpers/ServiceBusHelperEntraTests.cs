@@ -12,33 +12,33 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
-    public class ServiceBusHelperAadTests
+    public class ServiceBusHelperEntraTests
     {
         [Fact]
-        public void CopyConstructor_AadState_PreservesAadFieldsAndNewSdkBridge()
+        public void CopyConstructor_EntraState_PreservesEntraFieldsAndNewSdkBridge()
         {
             var source = new ServiceBusHelper((message, asynchronous) => { })
             {
                 NamespaceUri = new Uri("sb://myns.servicebus.windows.net/")
             };
-            var aadNamespace = new ServiceBusNamespace(
+            var entraNamespace = new ServiceBusNamespace(
                 "sb://myns.servicebus.windows.net/",
                 "myns",
                 "tenant-id",
                 TransportType.Amqp);
 
-            SetPrivateField(source, "serviceBusNamespaceInstance", aadNamespace);
-            SetPrivateField(source, "aadTokenProvider", EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id"));
+            SetPrivateField(source, "serviceBusNamespaceInstance", entraNamespace);
+            SetPrivateField(source, "entraTokenProvider", EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id"));
 
             var copy = new ServiceBusHelper((message, asynchronous) => { }, source);
 
-            GetPrivateField<TokenProvider>(copy, "aadTokenProvider").Should().NotBeNull();
-            GetPrivateField<ServiceBusNamespace>(copy, "serviceBusNamespaceInstance").Should().BeSameAs(aadNamespace);
+            GetPrivateField<TokenProvider>(copy, "entraTokenProvider").Should().NotBeNull();
+            GetPrivateField<ServiceBusNamespace>(copy, "serviceBusNamespaceInstance").Should().BeSameAs(entraNamespace);
 
             var helper2 = copy.GetServiceBusHelper2();
-            helper2.IsAad.Should().BeTrue();
+            helper2.IsEntra.Should().BeTrue();
             helper2.FullyQualifiedNamespace.Should().Be("myns.servicebus.windows.net");
-            helper2.AadTokenCredential.Should().NotBeNull();
+            helper2.EntraTokenCredential.Should().NotBeNull();
         }
 
         [Fact]
@@ -77,11 +77,11 @@ namespace ServiceBusExplorer.Tests.Helpers
             var helper2 = new ServiceBusHelper2((message, asynchronous) => { })
             {
                 FullyQualifiedNamespace = "myns.servicebus.windows.net",
-                AadTokenCredential = new FakeTokenCredential(),
+                EntraTokenCredential = new FakeTokenCredential(),
                 TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp
             };
 
-            helper2.IsAad.Should().BeTrue();
+            helper2.IsEntra.Should().BeTrue();
             helper2.CreateServiceBusClient().Should().NotBeNull();
             helper2.CreateAdministrationClient().Should().NotBeNull();
         }

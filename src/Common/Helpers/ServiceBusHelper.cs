@@ -4154,7 +4154,7 @@ namespace ServiceBusExplorer
             if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
-                serviceBusHelper2.AadTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
+                serviceBusHelper2.EntraTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
                     serviceBusNamespaceInstance.TenantId);
             }
 

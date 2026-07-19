@@ -30,6 +30,7 @@ using Microsoft.ServiceBus;
 namespace ServiceBusExplorer.Helpers
 {
     using ServiceBusExplorer.Common.Entities;
+    using ServiceBusExplorer.Common.Helpers;
 
     using Utilities.Helpers;
 

@@ -1391,7 +1391,7 @@ namespace ServiceBusExplorer.Forms
             this.lbxTenantIds.FormattingEnabled = true;
             this.lbxTenantIds.Location = new System.Drawing.Point(204, 38);
             this.lbxTenantIds.Name = "lbxTenantIds";
-            this.lbxTenantIds.Size = new System.Drawing.Size(286, 173);
+            this.lbxTenantIds.Size = new System.Drawing.Size(286, 186);
             this.lbxTenantIds.TabIndex = 11;
             // 
             // label7
@@ -1410,7 +1410,7 @@ namespace ServiceBusExplorer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNewTenantId.Location = new System.Drawing.Point(204, 243);
             this.txtNewTenantId.Name = "txtNewTenantId";
-            this.txtNewTenantId.Size = new System.Drawing.Size(302, 20);
+            this.txtNewTenantId.Size = new System.Drawing.Size(286, 20);
             this.txtNewTenantId.TabIndex = 9;
             // 
             // label6
