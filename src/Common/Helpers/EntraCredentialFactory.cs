@@ -34,7 +34,7 @@ using Microsoft.ServiceBus;
 namespace ServiceBusExplorer.Helpers
 {
     /// <summary>
-    /// Creates and caches Azure AD credentials for Service Bus connections.
+    /// Creates and caches Entra credentials for Service Bus connections.
     /// Shared by both the old (WindowsAzure.ServiceBus) and new (Azure.Messaging.ServiceBus) SDK paths.
     /// </summary>
     /// <remarks>
@@ -43,7 +43,7 @@ namespace ServiceBusExplorer.Helpers
     /// are hard-coded for the public cloud. Sovereign clouds (Azure Government, Azure China, etc.)
     /// are not currently supported.
     /// </remarks>
-    public static class AadCredentialFactory
+    public static class EntraCredentialFactory
     {
         // Public Azure only — sovereign clouds would require a different audience and authority.
         const string DefaultTenantId = "organizations";
@@ -68,10 +68,10 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Returns the Azure AD authority URL for the given tenant.
+        /// Returns the Entra authority URL for the given tenant.
         /// Defaults to the "organizations" tenant when <paramref name="tenantId"/> is null or whitespace.
         /// </summary>
-        /// <param name="tenantId">Azure AD tenant ID or domain, or null for the organizations endpoint.</param>
+        /// <param name="tenantId">Entra tenant ID or domain, or null for the organizations endpoint.</param>
         public static string GetAuthority(string tenantId = null)
         {
             return $"https://login.microsoftonline.com/{NormalizeTenantId(tenantId)}";
@@ -105,7 +105,7 @@ namespace ServiceBusExplorer.Helpers
         /// that obtains tokens via interactive browser sign-in.
         /// Uses the Service Bus audience by default.
         /// </summary>
-        /// <param name="tenantId">Azure AD tenant ID, or null for the organizations endpoint.</param>
+        /// <param name="tenantId">Entra tenant ID, or null for the organizations endpoint.</param>
         public static AzureActiveDirectoryTokenProvider.AuthenticationCallback CreateOldSdkAuthenticationCallback(string tenantId = null)
         {
             return CreateOldSdkAuthenticationCallback(tenantId, ServiceBusAudience);
@@ -115,7 +115,7 @@ namespace ServiceBusExplorer.Helpers
         /// Creates an authentication callback for the old WindowsAzure.ServiceBus SDK
         /// that obtains tokens via interactive browser sign-in, targeting the specified audience.
         /// </summary>
-        /// <param name="tenantId">Azure AD tenant ID, or null for the organizations endpoint.</param>
+        /// <param name="tenantId">Entra tenant ID, or null for the organizations endpoint.</param>
         /// <param name="audience">The token audience (e.g. ServiceBusAudience or EventHubsAudience).</param>
         public static AzureActiveDirectoryTokenProvider.AuthenticationCallback CreateOldSdkAuthenticationCallback(string tenantId, string audience)
         {
@@ -164,7 +164,7 @@ namespace ServiceBusExplorer.Helpers
         /// Creates a TokenProvider for the old WindowsAzure.ServiceBus SDK that obtains
         /// tokens from an InteractiveBrowserCredential, targeting the specified audience.
         /// </summary>
-        /// <param name="tenantId">Azure AD tenant ID, or null for the organizations endpoint.</param>
+        /// <param name="tenantId">Entra tenant ID, or null for the organizations endpoint.</param>
         /// <param name="audience">The token audience (e.g. ServiceBusAudience or EventHubsAudience).</param>
         public static TokenProvider CreateOldSdkTokenProvider(string tenantId, string audience)
         {
@@ -185,7 +185,20 @@ namespace ServiceBusExplorer.Helpers
         public static TokenCredential CreateNewSdkTokenCredential(string tenantId = null)
         {
             var normalizedTenantId = NormalizeTenantId(tenantId);
-            return tokenCredentials.GetOrAdd(normalizedTenantId, _ => new CachedAadTokenCredential(normalizedTenantId));
+            return tokenCredentials.GetOrAdd(normalizedTenantId, _ => new CachedEntraTokenCredential(normalizedTenantId));
+        }
+
+        /// <summary>
+        /// Clears all cached credentials and authentication state.
+        /// This effectively logs out the user from Entra ID for this application.
+        /// </summary>
+        public static void ClearCache()
+        {
+            interactiveBrowserCredentials.Clear();
+            authenticationCallbacks.Clear();
+            tokenCredentials.Clear();
+            tokenProviders.Clear();
+            interactiveLoginGates.Clear();
         }
 
         static string[] GetScopes(string resource)
@@ -213,11 +226,11 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        sealed class CachedAadTokenCredential : TokenCredential
+        sealed class CachedEntraTokenCredential : TokenCredential
         {
             readonly string tenantId;
 
-            public CachedAadTokenCredential(string tenantId)
+            public CachedEntraTokenCredential(string tenantId)
             {
                 this.tenantId = tenantId;
             }

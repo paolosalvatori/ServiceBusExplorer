@@ -19,12 +19,14 @@
 //=======================================================================================
 #endregion
 
+using ServiceBusExplorer.Common.Entities;
+using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ServiceBusExplorer.Helpers
+namespace ServiceBusExplorer.Common.Helpers
 {
     public static class ConfigurationHelper
     {
@@ -228,6 +230,13 @@ namespace ServiceBusExplorer.Helpers
             resultProperties.ProxyBypassList = configuration.GetStringValue(ConfigurationParameters.ProxyBypassList, string.Empty);
             resultProperties.ProxyUserName = configuration.GetStringValue(ConfigurationParameters.ProxyUserName, string.Empty);
             resultProperties.ProxyPassword = configuration.GetStringValue(ConfigurationParameters.ProxyPassword, string.Empty);
+            
+            var entraTenantIdsValue = configuration.GetStringValue(ConfigurationParameters.EntraTenantIds, string.Empty);
+            resultProperties.EntraTenantIds = GetParameterValueAsList(entraTenantIdsValue)
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => new EntraTenantIdItem { Value = s })
+                .ToList();
+
             resultProperties.NodesColors = NodeColorInfo.ParseAll(configuration.GetStringValue(ConfigurationParameters.NodesColors, string.Empty));
 
             return resultProperties;

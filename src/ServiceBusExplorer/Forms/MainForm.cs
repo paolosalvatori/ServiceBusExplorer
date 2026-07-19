@@ -25,6 +25,9 @@ using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus.Messaging;
+
+using ServiceBusExplorer.Common.Entities;
+using ServiceBusExplorer.Common.Helpers;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -511,7 +514,7 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse))
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse, this.EntraTenantIds))
                 {
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
@@ -522,9 +525,11 @@ namespace ServiceBusExplorer.Forms
                     SelectedEntities = connectForm.SelectedEntities;
                     ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
                     ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
+
                     var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
                         ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
+                    
                     serviceBusHelper.Connect(serviceBusNamespace);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -638,6 +643,8 @@ namespace ServiceBusExplorer.Forms
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
 
+                EntraTenantIds = EntraTenantIds,
+
                 NodesColors = NodesColors
             };
 
@@ -714,6 +721,8 @@ namespace ServiceBusExplorer.Forms
                 ServiceBusHelper.EncodingType = optionForm.MainSettings.EncodingType;
 
                 SetProxy(optionForm.MainSettings);
+
+                EntraTenantIds = optionForm.MainSettings.EntraTenantIds;
 
                 NodesColors = optionForm.MainSettings.NodesColors;
             }
@@ -4173,6 +4182,7 @@ namespace ServiceBusExplorer.Forms
                 ProxyUseDefaultCredentials = ProxyUseDefaultCredentials,
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
+                EntraTenantIds = EntraTenantIds,
                 NodesColors = NodesColors
             };
 
@@ -4289,6 +4299,7 @@ namespace ServiceBusExplorer.Forms
 
             SetProxy(readSettings);
 
+            EntraTenantIds = readSettings.EntraTenantIds;
             NodesColors = readSettings.NodesColors;
         }
 
@@ -4486,6 +4497,8 @@ namespace ServiceBusExplorer.Forms
         public string NamespaceHostname { get; set; }
         public List<Dictionary<string, List<string>>> Filters { get; set; }
 
+        public List<EntraTenantIdItem> EntraTenantIds { get; set; } = new List<EntraTenantIdItem>();
+
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
         public BodyType MessageBodyType
@@ -4587,12 +4600,12 @@ namespace ServiceBusExplorer.Forms
                     var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                     var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                     var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
-                    var isAad = serviceBusHelper.IsAzureActiveDirectory;
+                    var isEntra = serviceBusHelper.IsEntra;
                     var loadQueues = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.QueueEntities);
                     var loadTopics = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.TopicEntities);
-                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities) && (!isAad || serviceBusHelper.IsEventHubNamespace);
-                    var loadNotificationHubs = !isAad && SelectedEntities.Contains(Constants.NotificationHubEntities);
-                    var loadRelays = !isAad && SelectedEntities.Contains(Constants.RelayEntities);
+                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities) && (!isEntra || serviceBusHelper.IsEventHubNamespace);
+                    var loadNotificationHubs = !isEntra && SelectedEntities.Contains(Constants.NotificationHubEntities);
+                    var loadRelays = !isEntra && SelectedEntities.Contains(Constants.RelayEntities);
                     if (entityType == EntityType.All)
                     {
                         serviceBusTreeView.Nodes.Clear();
@@ -7799,5 +7812,19 @@ namespace ServiceBusExplorer.Forms
         }
 
         #endregion
+
+        private void logOutFromEntraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Log out from Entra ID
+            try
+            {
+                serviceBusHelper.LogOutFromEntra();
+                WriteToLog("Cleared cached Entra credentials. You will need to sign in again.");
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
     }
 }
