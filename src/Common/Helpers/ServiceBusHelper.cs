@@ -674,7 +674,7 @@ namespace ServiceBusExplorer
                 if (entraTokenProvider == null)
                 {
                     throw new InvalidOperationException(
-                        "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                        "Entra token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
                 }
 
                 // Use the cached MessagingFactory created during Connect() instead of
@@ -727,14 +727,14 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Creates a new MessagingFactory for Event Hub operations using AAD token provider.
+        /// Creates a new MessagingFactory for Event Hub operations using Entra token provider.
         /// </summary>
         private MessagingFactory CreateEventHubMessagingFactory()
         {
             if (entraTokenProvider == null)
             {
                 throw new InvalidOperationException(
-                    "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                    "Entra token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
             }
 
             return MessagingFactory.Create(namespaceUri, new MessagingFactorySettings

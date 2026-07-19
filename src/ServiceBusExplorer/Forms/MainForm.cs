@@ -7819,7 +7819,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 serviceBusHelper.LogOutFromEntra();
-                WriteToLog("Logged out from Entra ID successfully.");
+                WriteToLog("Cleared cached Entra credentials. You will need to sign in again.");
             }
             catch (Exception ex)
             {

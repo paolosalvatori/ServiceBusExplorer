@@ -473,7 +473,7 @@ namespace ServiceBusExplorer.Forms
             // connectUsingSASToolStripMenuItem
             // 
             this.connectUsingSASToolStripMenuItem.Name = "connectUsingSASToolStripMenuItem";
-            this.connectUsingSASToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.connectUsingSASToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.connectUsingSASToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.connectUsingSASToolStripMenuItem.Text = "&Connect";
             this.connectUsingSASToolStripMenuItem.Click += new System.EventHandler(this.connectUsingSASToolStripMenuItem_Click);
