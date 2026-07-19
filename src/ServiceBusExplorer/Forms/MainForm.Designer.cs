@@ -37,6 +37,7 @@ namespace ServiceBusExplorer.Forms
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectUsingSASToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectUsingEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logOutFromEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorMain = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -377,7 +378,6 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
-            this.logOutFromEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -473,6 +473,7 @@ namespace ServiceBusExplorer.Forms
             // connectUsingSASToolStripMenuItem
             // 
             this.connectUsingSASToolStripMenuItem.Name = "connectUsingSASToolStripMenuItem";
+            this.connectUsingSASToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.connectUsingSASToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.connectUsingSASToolStripMenuItem.Text = "&Connect";
             this.connectUsingSASToolStripMenuItem.Click += new System.EventHandler(this.connectUsingSASToolStripMenuItem_Click);
@@ -483,6 +484,13 @@ namespace ServiceBusExplorer.Forms
             this.connectUsingEntraToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.connectUsingEntraToolStripMenuItem.Text = "Connect to Event &Grid";
             this.connectUsingEntraToolStripMenuItem.Click += new System.EventHandler(this.connectUsingEntraToolStripMenuItem_Click);
+            // 
+            // logOutFromEntraToolStripMenuItem
+            // 
+            this.logOutFromEntraToolStripMenuItem.Name = "logOutFromEntraToolStripMenuItem";
+            this.logOutFromEntraToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.logOutFromEntraToolStripMenuItem.Text = "&Log out from Entra";
+            this.logOutFromEntraToolStripMenuItem.Click += new System.EventHandler(this.logOutFromEntraToolStripMenuItem_Click);
             // 
             // savedConnectionsToolStripMenuItem
             // 
@@ -3289,13 +3297,6 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.TabStop = true;
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
-            // 
-            // logOutFromEntraToolStripMenuItem
-            // 
-            this.logOutFromEntraToolStripMenuItem.Name = "logOutFromEntraToolStripMenuItem";
-            this.logOutFromEntraToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.logOutFromEntraToolStripMenuItem.Text = "&Log out from Entra";
-            this.logOutFromEntraToolStripMenuItem.Click += new System.EventHandler(this.logOutFromEntraToolStripMenuItem_Click);
             // 
             // MainForm
             // 

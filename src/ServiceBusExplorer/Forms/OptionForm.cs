@@ -869,7 +869,17 @@ namespace ServiceBusExplorer.Forms
 
         private void AddTenantIdIfMissing(string tenantId)
         {
-            if (EntraTenantIdBindingList.Any(x => x.Value == tenantId))
+            if (string.IsNullOrWhiteSpace(tenantId))
+            {
+                MessageBox.Show(
+                    "Tenant ID cannot be empty.",
+                    "Invalid Tenant ID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            if (EntraTenantIdBindingList.Any(x => string.Equals(x.Value, tenantId, StringComparison.OrdinalIgnoreCase)))
             {
                 MessageBox.Show(
                     "That Tenant ID already exists.",
