@@ -347,6 +347,7 @@ namespace ServiceBusExplorer.Forms
             {
                 lblIssuerName.Text = SharedAccessKeyNameLabel;
                 lblIssuerSecret.Text = SharedAccessKeyLabel;
+                cboTenantIds.Visible = false;
                 return;
             }
 
