@@ -331,6 +331,7 @@
             this.messageTabControl.Size = new System.Drawing.Size(459, 366);
             this.messageTabControl.TabIndex = 0;
             this.messageTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.messageTabControl_DrawItem);
+            this.messageTabControl.Selected += messageTabControl_Selected;
             // 
             // tabMessagePage
             // 
@@ -589,6 +590,8 @@
             this.messageFileListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.messageFileListView_DrawItem);
             this.messageFileListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.messageFileListView_DrawSubItem);
             this.messageFileListView.Resize += new System.EventHandler(this.messageFileListView_Resize);
+            this.messageFileListView.ItemChecked += messageFileListView_ItemCheckedChanged;
+            
             // 
             // nameColumnHeader
             // 
@@ -2622,7 +2625,6 @@
             this.ResumeLayout(false);
 
         }
-
         #endregion
 
         private System.Windows.Forms.Button btnStart;
