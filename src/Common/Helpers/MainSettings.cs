@@ -179,8 +179,8 @@ namespace ServiceBusExplorer.Helpers
             if (MessageText != otherProperties.MessageText) return false;
             if (MessageContentType != otherProperties.MessageContentType) return false;
 
-            if (!SelectedEntities.SequenceEqual(SelectedEntities)) return false;
-            if (!SelectedMessageCounts.SequenceEqual(SelectedMessageCounts)) return false;
+            if (!SelectedEntities.SequenceEqual(otherProperties.SelectedEntities)) return false;
+            if (!SelectedMessageCounts.SequenceEqual(otherProperties.SelectedMessageCounts)) return false;
 
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
             if (ConnectivityMode != otherProperties.ConnectivityMode) return false;

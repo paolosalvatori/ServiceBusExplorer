@@ -687,9 +687,15 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyPassword,
                 MainSettings.ProxyPassword);
 
+
+            // Save the list of Entra Tenant IDs as a comma-separated string in the configuration file
             MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
-            SaveListSetting(configuration, readSettings, ConfigurationParameters.EntraTenantIds,
-                runningList: MainSettings.EntraTenantIds.Select(x => x.Value).ToList());
+
+            if (!readSettings.EntraTenantIds.SequenceEqual(MainSettings.EntraTenantIds))
+            {
+                configuration.SetValue(ConfigurationParameters.EntraTenantIds,
+                    string.Join(",", MainSettings.EntraTenantIds.Select(x => x.Value)));
+            }
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
                 NodeColorInfo.FormatAll(MainSettings.NodesColors));

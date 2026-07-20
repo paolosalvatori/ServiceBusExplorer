@@ -65,7 +65,7 @@ namespace ServiceBusExplorer.Forms
         private const string AuthenticationModeLabel = "Authentication:";
         private const string SharedAccessKeyNameLabel = "Shared Access Key Name:";
         private const string SharedAccessKeyLabel = "Shared Access Key:";
-        private const string TenantIdLabel = "Tenant ID (required for non-organizational accounts):";
+        private const string TenantIdLabel = "Tenant ID (optional, but required for non-organizational accounts):";
         private const string SharedAccessSignatureAuthMode = "Shared Access Signature (SAS)";
         private const string EntraAuthMode = "Entra";
         private const string replacementText = "{replace}";
@@ -118,7 +118,7 @@ namespace ServiceBusExplorer.Forms
         public ConnectForm(
             ServiceBusHelper serviceBusHelper, 
             ConfigFileUse configFileUse, 
-            List<EntraTenantIdItem> entraTenantIdIs)
+            List<EntraTenantIdItem> entraTenantIds)
         {
             InitializeComponent();
 
@@ -176,9 +176,9 @@ namespace ServiceBusExplorer.Forms
             cboServiceBusNamespace_SelectedIndexChanged(cboServiceBusNamespace, EventArgs.Empty);
             validation_TextChanged(this, EventArgs.Empty);
 
-            if (entraTenantIdIs != null)
+            if (entraTenantIds != null)
             {
-                cboTenantIds.Items.AddRange(entraTenantIdIs.Select(t => t.DisplayText).ToArray());
+                cboTenantIds.Items.AddRange(entraTenantIds.Select(t => t.DisplayText).ToArray());
             }
         }
 
