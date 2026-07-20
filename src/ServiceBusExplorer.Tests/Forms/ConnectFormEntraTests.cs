@@ -23,7 +23,7 @@ namespace ServiceBusExplorer.Tests.Forms
         private const string ControlNameSelectedEntities = "cboSelectedEntities";
         private const string ControlNameIssuerName = "txtIssuerName";
 
-        private const string SavedEntraEntryName = "Saved AAD";
+        private const string SavedEntraEntryName = "Saved Entra";
 
         private const string ConnectionStringPartEndpoint = "Endpoint=";
         private const string ConnectionStringPartAuthModeEntra = "AuthMode=AAD";
@@ -31,7 +31,7 @@ namespace ServiceBusExplorer.Tests.Forms
         private const string ConnectionStringPartEntityPath = "EntityPath=";
 
         [Fact]
-        public void BuildCurrentConnectionString_ManualAadMode_BuildsStructuredAadEntry()
+        public void BuildCurrentConnectionString_ManualEntraMode_BuildsStructuredEntraEntry()
         {
             string connectionString = null;
             string endpoint = null;
@@ -77,7 +77,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void BuildCurrentConnectionString_SavedAadEntry_UsesEditedValues()
+        public void BuildCurrentConnectionString_SavedEntraEntry_UsesEditedValues()
         {
             string connectionString = null;
             string endpoint = null;
@@ -286,7 +286,7 @@ namespace ServiceBusExplorer.Tests.Forms
                         "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=abc123;EntityPath=myqueue";
                     GetTextBox(form, ControlNameIssuerName).Text = "RootManageSharedAccessKey";
 
-                    // Switch to AAD
+                    // Switch to Entra
                     GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
 
                     uriText = GetTextBox(form, ControlNameUri).Text;

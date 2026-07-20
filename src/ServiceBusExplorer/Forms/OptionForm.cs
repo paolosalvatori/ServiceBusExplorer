@@ -275,6 +275,8 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
+                items ??= Enumerable.Empty<EntraTenantIdItem>();
+
                 EntraTenantIdBindingList.RaiseListChangedEvents = false;
                 EntraTenantIdBindingList.Clear();
                 foreach (var entraTenantIdItem in items)

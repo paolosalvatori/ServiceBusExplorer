@@ -39,13 +39,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public ServiceBusTransportType TransportType { get; set; }
 
         /// <summary>
-        /// Fully qualified namespace (e.g. "mynamespace.servicebus.windows.net") used for AAD auth.
+        /// Fully qualified namespace (e.g. "mynamespace.servicebus.windows.net") used for Entra auth.
         /// When set together with EntraTokenCredential, SDK clients use token-based auth instead of connection strings.
         /// </summary>
         public string FullyQualifiedNamespace { get; set; }
 
         /// <summary>
-        /// Token credential for AAD auth with the new Azure.Messaging.ServiceBus SDK.
+        /// Token credential for Entra auth with the new Azure.Messaging.ServiceBus SDK.
         /// </summary>
         public TokenCredential EntraTokenCredential { get; set; }
 
@@ -70,7 +70,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         /// <summary>
         /// Returns true when the connection string contains an EntityPath segment.
-        /// Always returns false for AAD connections.
+        /// Always returns false for Entra connections.
         /// </summary>
         public bool ConnectionStringContainsEntityPath()
         {
@@ -106,7 +106,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         }
 
         /// <summary>
-        /// Creates a <see cref="ServiceBusAdministrationClient"/> using AAD credentials or
+        /// Creates a <see cref="ServiceBusAdministrationClient"/> using Entra credentials or
         /// a connection string depending on the current authentication mode.
         /// </summary>
         public ServiceBusAdministrationClient CreateAdministrationClient()
