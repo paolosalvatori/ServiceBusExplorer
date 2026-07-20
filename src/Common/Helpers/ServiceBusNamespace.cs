@@ -479,7 +479,7 @@ namespace ServiceBusExplorer.Helpers
         public ServiceBusAuthMode AuthMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the Azure AD tenant ID (optional; null means the organizations endpoint).
+        /// Gets or sets the Entra tenant ID (optional; null means the organizations endpoint).
         /// </summary>
         public string TenantId { get; set; }
 
@@ -505,7 +505,7 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Returns true when this namespace entry uses Azure AD authentication
+        /// Returns true when this namespace entry uses Entra authentication
         /// and has no SAS connection string.
         /// </summary>
         public bool IsEntra => AuthMode == ServiceBusAuthMode.Entra;

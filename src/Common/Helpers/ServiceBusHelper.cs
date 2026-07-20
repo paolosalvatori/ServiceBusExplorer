@@ -822,7 +822,7 @@ namespace ServiceBusExplorer
                                                                                             RetryHelper.RetryCount);
                 }
 
-                // Notification Hubs don't support AAD token-provider auth
+                // Notification Hubs don't support Entra token-provider auth
                 if (!isEntra)
                 {
                     try

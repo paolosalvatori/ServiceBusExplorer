@@ -10,7 +10,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         #region Parser round-trip tests
 
         [Fact]
-        public void GetServiceBusNamespace_AadMinimalString_ParsesCorrectly()
+        public void GetServiceBusNamespace_EntraMinimalString_ParsesCorrectly()
         {
             var connectionString = "Endpoint=sb://myns.servicebus.windows.net/;AuthMode=AAD;TransportType=Amqp";
 
@@ -173,7 +173,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void BuildEntraConnectionString_NetMessagingTransport_IncludesCorrectTransportType   ()
+        public void BuildEntraConnectionString_NetMessagingTransport_IncludesCorrectTransportType()
         {
             var result = ServiceBusNamespace.BuildEntraConnectionString(
                 "sb://myns.servicebus.windows.net/", null, TransportType.NetMessaging);
