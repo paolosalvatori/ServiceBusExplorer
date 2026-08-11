@@ -3009,8 +3009,8 @@ namespace ServiceBusExplorer.Controls
 
         /// <summary>
         /// Populates the message body cache asynchronously on a background thread.
-        /// Returns <c>true</c> immediately if already ready; <c>false</c> if population started
-        /// � <paramref name="onReady"/> is invoked on the UI thread when complete.
+        /// Returns <c>true</c> immediately if already ready; <c>false</c> if population started —
+        /// <paramref name="onReady"/> is invoked on the UI thread when complete.
         /// A version counter guards against stale completions from superseded message loads.
         /// </summary>
         private bool EnsureMessageBodyCacheAsync(Action onReady)

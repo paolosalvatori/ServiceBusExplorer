@@ -88,8 +88,7 @@ namespace ServiceBusExplorer.Forms
         #region Form Setup
 
         private void InitializeForm()
-        {this.DialogResult = DialogResult.OK;
-            this.Close()
+        {
             Text = "Message Filter";
             Size = new Size(520, 430);
             MinimumSize = new Size(520, 430);
@@ -354,7 +353,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 var token = JToken.Parse(trimmed);
-                // Use SelectToken which properly handles dot notation, arrays, and keys containing dots
+                // SelectToken handles dot notation/arrays; for keys containing dots or special chars, use bracket notation (e.g. ['a.b'])
                 var result = token.SelectToken(path);
                 
                 if (result == null) return null;
