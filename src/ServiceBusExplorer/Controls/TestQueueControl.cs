@@ -631,11 +631,13 @@ namespace ServiceBusExplorer.Controls
                             long receiveMessageNumber = 0;
                             long sendTotalTime = 0;
                             long receiveTotalTime = 0;
+
                             while (ok && sendMessageNumber < max && receiveMessageNumber < max)
                             {
-                                ok = blockingCollection?.TryTake(out var tuple, 10) ?? false;
+                                Tuple<long, long, DirectionType> tuple = null;
+                                ok = blockingCollection?.TryTake(out tuple, 10) ?? false;
 
-                                if (ok && tuple! != null)
+                                if (ok && tuple != null)
                                 {
                                     if (tuple.Item3 == DirectionType.Send)
                                     {
@@ -647,14 +649,17 @@ namespace ServiceBusExplorer.Controls
                                         }
                                         continue;
                                     }
+
                                     receiveMessageNumber += tuple.Item1;
                                     receiveTotalTime += tuple.Item2;
+                                    
                                     if (receiveMessageNumber > max)
                                     {
                                         max = receiveMessageNumber;
                                     }
                                 }
                             }
+
                             if (sendMessageNumber > 0)
                             {
                                 var sendTuple = new Tuple<long, long, DirectionType>(sendMessageNumber, sendTotalTime, DirectionType.Send);
