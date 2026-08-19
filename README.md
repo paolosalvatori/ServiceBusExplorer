@@ -158,7 +158,11 @@ Here are some guidelines concerning contributions:
 
 Visual Studio 2026 18.8.0 or later is required to build the solution. 
 
-When editing UI elements Visual Studio should run as a DPI-unaware process. For more information about this, see the [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) when it is running as a DPI-unaware process.
+When editing UI elements Visual Studio should run as a DPI-unaware process. 
+For more information about this, see the 
+[Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). 
+In Visual Studio 2026 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
+when it is running as a DPI-unaware process.
 
 
 # Azure Service Bus
