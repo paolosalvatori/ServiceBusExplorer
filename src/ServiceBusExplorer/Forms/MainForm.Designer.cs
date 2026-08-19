@@ -474,41 +474,41 @@ namespace ServiceBusExplorer.Forms
             // 
             this.connectUsingSASToolStripMenuItem.Name = "connectUsingSASToolStripMenuItem";
             this.connectUsingSASToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.connectUsingSASToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.connectUsingSASToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.connectUsingSASToolStripMenuItem.Text = "&Connect";
             this.connectUsingSASToolStripMenuItem.Click += new System.EventHandler(this.connectUsingSASToolStripMenuItem_Click);
             // 
             // connectUsingEntraToolStripMenuItem
             // 
             this.connectUsingEntraToolStripMenuItem.Name = "connectUsingEntraToolStripMenuItem";
-            this.connectUsingEntraToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.connectUsingEntraToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.connectUsingEntraToolStripMenuItem.Text = "Connect to Event &Grid";
             this.connectUsingEntraToolStripMenuItem.Click += new System.EventHandler(this.connectUsingEntraToolStripMenuItem_Click);
             // 
             // logOutFromEntraToolStripMenuItem
             // 
             this.logOutFromEntraToolStripMenuItem.Name = "logOutFromEntraToolStripMenuItem";
-            this.logOutFromEntraToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.logOutFromEntraToolStripMenuItem.Text = "&Log out from Entra";
+            this.logOutFromEntraToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.logOutFromEntraToolStripMenuItem.Text = "Partial &log out from Entra";
             this.logOutFromEntraToolStripMenuItem.Click += new System.EventHandler(this.logOutFromEntraToolStripMenuItem_Click);
             // 
             // savedConnectionsToolStripMenuItem
             // 
             this.savedConnectionsToolStripMenuItem.Enabled = false;
             this.savedConnectionsToolStripMenuItem.Name = "savedConnectionsToolStripMenuItem";
-            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.savedConnectionsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.savedConnectionsToolStripMenuItem.Text = "&Saved connections";
             // 
             // toolStripSeparatorMain
             // 
             this.toolStripSeparatorMain.Name = "toolStripSeparatorMain";
-            this.toolStripSeparatorMain.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparatorMain.Size = new System.Drawing.Size(204, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.close_Click);
             // 
@@ -1834,16 +1834,6 @@ namespace ServiceBusExplorer.Forms
             this.changeStatusQueueMenuItem.Name = "changeStatusQueueMenuItem";
             this.changeStatusQueueMenuItem.Size = new System.Drawing.Size(313, 22);
             this.changeStatusQueueMenuItem.Text = "Set Status";
-            this.changeStatusQueueMenuItem.DropDownOpening += changeStatusQueueMenuItem_DropDownOpening;
-            this.changeStatusQueueMenuItem.DropDownItemClicked += changeStatusQueue_Click;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Active.ToString())
-                .Tag = EntityStatus.Active;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.Disabled.ToString())
-                .Tag = EntityStatus.Disabled;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.SendDisabled.ToString())
-                .Tag = EntityStatus.SendDisabled;
-            this.changeStatusQueueMenuItem.DropDownItems.Add(EntityStatus.ReceiveDisabled.ToString())
-                .Tag = EntityStatus.ReceiveDisabled;
             // 
             // deleteQueueMenuItem
             // 

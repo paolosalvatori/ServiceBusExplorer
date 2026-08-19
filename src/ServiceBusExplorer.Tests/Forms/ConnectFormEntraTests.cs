@@ -301,10 +301,10 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void AuthModeSwitch_EntraToSas_ClearsFields()
+        public void AuthModeSwitch_EntraToSas_HidesFields()
         {
-            string uriText = null;
-            string issuerNameText = null;
+            bool issuerNameVisible = true;
+            bool issuerSecretVisible = true;
 
             RunOnStaThread(() =>
             {
@@ -324,13 +324,13 @@ namespace ServiceBusExplorer.Tests.Forms
                     // Switch to SAS
                     GetComboBox(form, ControlNameAuthMode).SelectedIndex = 0;
 
-                    uriText = GetTextBox(form, ControlNameUri).Text;
-                    issuerNameText = GetTextBox(form, ControlNameIssuerName).Text;
+                    issuerNameVisible = GetTextBox(form, ControlNameIssuerName).Visible;
+                    issuerSecretVisible = GetTextBox(form, ControlNameIssuerSecret).Visible;
                 }
             });
 
-            uriText.Should().BeEmpty("endpoint should not persist as connection string");
-            issuerNameText.Should().BeEmpty("tenant ID should not persist as SAS key name");
+            issuerNameVisible.Should().BeFalse($"{ControlNameIssuerName} should not be visible");
+            issuerSecretVisible.Should().BeFalse($"{ControlNameIssuerSecret} should not be visible");
         }
 
         [Fact]

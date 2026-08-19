@@ -633,8 +633,9 @@ namespace ServiceBusExplorer.Controls
                             long receiveTotalTime = 0;
                             while (ok && sendMessageNumber < max && receiveMessageNumber < max)
                             {
-                                ok = blockingCollection.TryTake(out var tuple, 10);
-                                if (ok)
+                                ok = blockingCollection?.TryTake(out var tuple, 10) ?? false;
+
+                                if (ok && tuple! != null)
                                 {
                                     if (tuple.Item3 == DirectionType.Send)
                                     {

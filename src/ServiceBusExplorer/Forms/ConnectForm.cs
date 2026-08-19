@@ -116,8 +116,8 @@ namespace ServiceBusExplorer.Forms
         #region Public Constructor
 
         public ConnectForm(
-            ServiceBusHelper serviceBusHelper, 
-            ConfigFileUse configFileUse, 
+            ServiceBusHelper serviceBusHelper,
+            ConfigFileUse configFileUse,
             List<EntraTenantIdItem> entraTenantIds)
         {
             InitializeComponent();
@@ -144,7 +144,6 @@ namespace ServiceBusExplorer.Forms
             cboAuthMode.Items.AddRange(new object[] { SharedAccessSignatureAuthMode, EntraAuthMode });
             cboAuthMode.SelectedIndex = 0;
             toolTip.SetToolTip(cboAuthMode, AuthenticationModeTooltip);
-            txtAuthentication.Visible = false;
 
             cboTransportType.DataSource = Enum.GetValues(typeof(TransportType));
             var settings = new MessagingFactorySettings();
@@ -323,9 +322,6 @@ namespace ServiceBusExplorer.Forms
             UpdateSelectedEntitiesUi(isEntra);
 
             lblNamespace.Text = AuthenticationModeLabel;
-            txtAuthentication.Visible = false;
-            cboAuthMode.Visible = true;
-            cboAuthMode.Enabled = connectionStringType != ServiceBusNamespaceType.OnPremises && !containsStsEndpoint;
 
             lblUri.Text = usesRawConnectionStringEditor ? ConnectionStringLabel : UriLabel;
             txtUri.Multiline = usesRawConnectionStringEditor;
@@ -335,7 +331,7 @@ namespace ServiceBusExplorer.Forms
             lblEntityPath.Visible = !usesRawConnectionStringEditor;
             txtEntityPath.Visible = !usesRawConnectionStringEditor;
 
-            lblIssuerName.Visible = !usesRawConnectionStringEditor;
+            lblIssuerNameOrTenantId.Visible = !usesRawConnectionStringEditor;
             txtIssuerName.Visible = !usesRawConnectionStringEditor;
             txtIssuerName.Enabled = !usesRawConnectionStringEditor;
 
@@ -345,25 +341,22 @@ namespace ServiceBusExplorer.Forms
 
             if (usesRawConnectionStringEditor)
             {
-                lblIssuerName.Text = SharedAccessKeyNameLabel;
-                lblIssuerSecret.Text = SharedAccessKeyLabel;
+                lblIssuerNameOrTenantId.Text = SharedAccessKeyNameLabel;
                 cboTenantIds.Visible = false;
                 return;
             }
 
             if (isEntra)
             {
-                lblIssuerName.Text = TenantIdLabel;
+                lblIssuerNameOrTenantId.Text = TenantIdLabel;
                 txtIssuerName.Visible = false;
                 cboTenantIds.Visible = true;
-                txtIssuerSecret.Text = string.Empty;
             }
             else
             {
-                lblIssuerName.Text = SharedAccessKeyNameLabel;
-                //txtIssuerName.Visible = true;
+                lblIssuerNameOrTenantId.Text = SharedAccessKeyNameLabel;
+                txtIssuerName.Visible = true;
                 cboTenantIds.Visible = false;
-                lblIssuerSecret.Text = SharedAccessKeyLabel;
             }
         }
 
@@ -384,7 +377,6 @@ namespace ServiceBusExplorer.Forms
         private void ClearConnectionFields()
         {
             txtUri.Text = string.Empty;
-            txtAuthentication.Text = string.Empty;
             txtEntityPath.Text = string.Empty;
             txtIssuerName.Text = string.Empty;
             cboTenantIds.SelectedIndex = -1;
@@ -446,7 +438,7 @@ namespace ServiceBusExplorer.Forms
                 : new MessagingFactorySettings().TransportType;
             var entraConnectionString = ServiceBusNamespace.BuildEntraConnectionString(
                 ExtractEndpoint(txtUri.Text),
-                string.IsNullOrWhiteSpace(cboTenantIds.Text) ? 
+                string.IsNullOrWhiteSpace(cboTenantIds.Text) ?
                     null : cboTenantIds.Text.Trim(),
                 transportType,
                 string.IsNullOrWhiteSpace(txtEntityPath.Text) ? null : txtEntityPath.Text.Trim());
@@ -613,7 +605,6 @@ namespace ServiceBusExplorer.Forms
                     {
                         BuildCurrentConnectionString();
                         var ns = ServiceBusNamespace.GetServiceBusNamespace(Key, ConnectionString, (message, async) => { });
-                        txtAuthentication.Text = ns.Namespace;
                     }
                     catch
                     {
@@ -621,9 +612,16 @@ namespace ServiceBusExplorer.Forms
                     }
                 }
 
-                btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text) &&
+                if (SelectedAuthMode == ServiceBusAuthMode.Entra)
+                {
+                    btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text);
+                }
+                else
+                {
+                    btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text) &&
                                 !string.IsNullOrWhiteSpace(txtIssuerName.Text) &&
                                 !string.IsNullOrWhiteSpace(txtIssuerSecret.Text);
+                }
             }
         }
 
@@ -640,6 +638,8 @@ namespace ServiceBusExplorer.Forms
             btnDelete.Visible = false;
             btnSave.Visible = cboServiceBusNamespace.Text == EnterConnectionString;
 
+
+            // SAS selected
             if (cboServiceBusNamespace.SelectedIndex == 0)
             {
                 SetSelectedAuthMode(ServiceBusAuthMode.Sas);
@@ -677,7 +677,6 @@ namespace ServiceBusExplorer.Forms
 
             if (UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint))
             {
-                txtUri.Text = selectedNamespace.ConnectionString;
             }
             else
             {
@@ -719,22 +718,20 @@ namespace ServiceBusExplorer.Forms
                 var endpoint = ExtractEndpoint(currentUri);
                 var entityPath = ExtractEntityPath(currentUri);
 
-                txtIssuerName.Text = string.Empty;
-                txtUri.Text = endpoint ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(endpoint))
+                {
+                    txtUri.Text = endpoint;
+                }
+
                 if (!string.IsNullOrWhiteSpace(entityPath) && string.IsNullOrWhiteSpace(txtEntityPath.Text))
                 {
                     txtEntityPath.Text = entityPath;
                 }
 
-                txtEntityPath.Visible = true;
-            }
-            else
-            {
-                // Switching to SAS: clear fields since user needs a full connection string
+                // Clear SAS-specific fields when switching to Entra
                 txtIssuerName.Text = string.Empty;
-                txtUri.Text = string.Empty;
-                txtEntityPath.Visible = false;
             }
+           
 
             GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
             UpdateConnectionSettingsUi(connectionStringType, containsStsEndpoint);
