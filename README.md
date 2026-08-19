@@ -93,7 +93,7 @@ Service Bus Explorer supports interactive browser sign-in for Azure Service Bus 
 >
 
 ### Cached credentials
-The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Log out from Entra" for that. 
+The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Partial log out from Entra" for that. 
 
 ### Screenshots
 

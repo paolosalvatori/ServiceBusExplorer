@@ -58,19 +58,10 @@ namespace ServiceBusExplorer.Forms
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.panelTreeView = new ServiceBusExplorer.Controls.HeaderPanel();
-            this.serviceBusTreeView = new System.Windows.Forms.TreeView();
-            this.filterPanel = new System.Windows.Forms.Panel();
-            this.filterTreeViewTextBox = new System.Windows.Forms.TextBox();
-            this.clearFilterButton = new System.Windows.Forms.Button();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageDashboard = new System.Windows.Forms.TabPage();
-            this.dashboardControl = new ServiceBusExplorer.Controls.DashboardControl();
             this.tabPageExplorer = new System.Windows.Forms.TabPage();
-            this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.panelLog = new ServiceBusExplorer.Controls.HeaderPanel();
-            this.lstLog = new System.Windows.Forms.ListBox();
             this.logContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copySelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -378,12 +369,20 @@ namespace ServiceBusExplorer.Forms
             this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabelNewVersionAvailable = new System.Windows.Forms.LinkLabel();
+            this.panelTreeView = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.serviceBusTreeView = new System.Windows.Forms.TreeView();
+            this.filterPanel = new System.Windows.Forms.Panel();
+            this.filterTreeViewTextBox = new System.Windows.Forms.TextBox();
+            this.clearFilterButton = new System.Windows.Forms.Button();
+            this.dashboardControl = new ServiceBusExplorer.Controls.DashboardControl();
+            this.panelMain = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.panelLog = new ServiceBusExplorer.Controls.HeaderPanel();
+            this.lstLog = new System.Windows.Forms.ListBox();
+            this.toolStripSeparator80 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
-            this.panelTreeView.SuspendLayout();
-            this.filterPanel.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.tabPageDashboard.SuspendLayout();
             this.tabPageExplorer.SuspendLayout();
@@ -391,7 +390,6 @@ namespace ServiceBusExplorer.Forms
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
             this.mainSplitContainer.SuspendLayout();
-            this.panelLog.SuspendLayout();
             this.logContextMenuStrip.SuspendLayout();
             this.rootContextMenuStrip.SuspendLayout();
             this.queuesContextMenuStrip.SuspendLayout();
@@ -422,6 +420,9 @@ namespace ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.relayServiceFolderContextMenuStrip.SuspendLayout();
             this.relayContextMenuStrip.SuspendLayout();
+            this.panelTreeView.SuspendLayout();
+            this.filterPanel.SuspendLayout();
+            this.panelLog.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList
@@ -462,8 +463,9 @@ namespace ServiceBusExplorer.Forms
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.connectUsingSASToolStripMenuItem,
             this.connectUsingEntraToolStripMenuItem,
-            this.logOutFromEntraToolStripMenuItem,
             this.savedConnectionsToolStripMenuItem,
+            this.toolStripSeparator80,
+            this.logOutFromEntraToolStripMenuItem,
             this.toolStripSeparatorMain,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -662,83 +664,6 @@ namespace ServiceBusExplorer.Forms
             this.splitContainer.TabIndex = 1;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
             // 
-            // panelTreeView
-            // 
-            this.panelTreeView.AutoScroll = true;
-            this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panelTreeView.Controls.Add(this.serviceBusTreeView);
-            this.panelTreeView.Controls.Add(this.filterPanel);
-            this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelTreeView.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.panelTreeView.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.panelTreeView.HeaderHeight = 24;
-            this.panelTreeView.HeaderText = "Service Bus Namespace";
-            this.panelTreeView.Icon = ((System.Drawing.Image)(resources.GetObject("panelTreeView.Icon")));
-            this.panelTreeView.IconTransparentColor = System.Drawing.Color.White;
-            this.panelTreeView.Location = new System.Drawing.Point(0, 0);
-            this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.panelTreeView.Name = "panelTreeView";
-            this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelTreeView.Size = new System.Drawing.Size(372, 566);
-            this.panelTreeView.TabIndex = 0;
-            // 
-            // serviceBusTreeView
-            // 
-            this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.serviceBusTreeView.HideSelection = false;
-            this.serviceBusTreeView.ImageIndex = 0;
-            this.serviceBusTreeView.ImageList = this.imageList;
-            this.serviceBusTreeView.Indent = 20;
-            this.serviceBusTreeView.ItemHeight = 20;
-            this.serviceBusTreeView.Location = new System.Drawing.Point(5, 49);
-            this.serviceBusTreeView.Name = "serviceBusTreeView";
-            this.serviceBusTreeView.SelectedImageIndex = 0;
-            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 513);
-            this.serviceBusTreeView.TabIndex = 0;
-            this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
-            this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
-            this.serviceBusTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyDown);
-            // 
-            // filterPanel
-            // 
-            this.filterPanel.Controls.Add(this.filterTreeViewTextBox);
-            this.filterPanel.Controls.Add(this.clearFilterButton);
-            this.filterPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.filterPanel.Location = new System.Drawing.Point(5, 29);
-            this.filterPanel.Name = "filterPanel";
-            this.filterPanel.Size = new System.Drawing.Size(362, 20);
-            this.filterPanel.TabIndex = 1;
-            // 
-            // filterTreeViewTextBox
-            // 
-            this.filterTreeViewTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.filterTreeViewTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.filterTreeViewTextBox.Location = new System.Drawing.Point(0, 0);
-            this.filterTreeViewTextBox.Name = "filterTreeViewTextBox";
-            this.filterTreeViewTextBox.Size = new System.Drawing.Size(338, 20);
-            this.filterTreeViewTextBox.TabIndex = 0;
-            this.filterTreeViewTextBox.TextChanged += new System.EventHandler(this.filterTreeViewTextBox_TextChanged);
-            // 
-            // clearFilterButton
-            // 
-            this.clearFilterButton.Dock = System.Windows.Forms.DockStyle.Right;
-            this.clearFilterButton.FlatAppearance.BorderSize = 0;
-            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.clearFilterButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.clearFilterButton.ForeColor = System.Drawing.Color.Black;
-            this.clearFilterButton.Location = new System.Drawing.Point(338, 0);
-            this.clearFilterButton.Name = "clearFilterButton";
-            this.clearFilterButton.Size = new System.Drawing.Size(24, 20);
-            this.clearFilterButton.TabIndex = 1;
-            this.clearFilterButton.TabStop = false;
-            this.clearFilterButton.Text = "×";
-            this.clearFilterButton.UseVisualStyleBackColor = true;
-            this.clearFilterButton.Visible = false;
-            this.clearFilterButton.Click += new System.EventHandler(this.clearFilterButton_Click);
-            // 
             // mainTabControl
             // 
             this.mainTabControl.Controls.Add(this.tabPageDashboard);
@@ -761,19 +686,6 @@ namespace ServiceBusExplorer.Forms
             this.tabPageDashboard.Text = "Dashboard";
             this.tabPageDashboard.UseVisualStyleBackColor = true;
             // 
-            // dashboardControl
-            // 
-            this.dashboardControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dashboardControl.Location = new System.Drawing.Point(3, 3);
-            this.dashboardControl.Name = "dashboardControl";
-            this.dashboardControl.OnRefreshRequested = null;
-            this.dashboardControl.OnRefreshRowRequested = null;
-            this.dashboardControl.OnRowDoubleClicked = null;
-            this.dashboardControl.OnRowSelected = null;
-            this.dashboardControl.OnSyncWithTreeViewChanged = null;
-            this.dashboardControl.Size = new System.Drawing.Size(994, 534);
-            this.dashboardControl.TabIndex = 0;
-            // 
             // tabPageExplorer
             // 
             this.tabPageExplorer.Controls.Add(this.panelMain);
@@ -784,26 +696,6 @@ namespace ServiceBusExplorer.Forms
             this.tabPageExplorer.TabIndex = 1;
             this.tabPageExplorer.Text = "Explorer";
             this.tabPageExplorer.UseVisualStyleBackColor = true;
-            // 
-            // panelMain
-            // 
-            this.panelMain.AutoScroll = true;
-            this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.panelMain.HeaderHeight = 24;
-            this.panelMain.HeaderText = "";
-            this.panelMain.Icon = global::ServiceBusExplorer.Properties.Resources.SmallWorld;
-            this.panelMain.IconTransparentColor = System.Drawing.Color.White;
-            this.panelMain.Location = new System.Drawing.Point(3, 3);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.panelMain.Name = "panelMain";
-            this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelMain.Size = new System.Drawing.Size(994, 534);
-            this.panelMain.TabIndex = 0;
             // 
             // mainSplitContainer
             // 
@@ -825,44 +717,6 @@ namespace ServiceBusExplorer.Forms
             this.mainSplitContainer.SplitterDistance = 566;
             this.mainSplitContainer.TabIndex = 21;
             this.mainSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.mainSplitContainer_SplitterMoved);
-            // 
-            // panelLog
-            // 
-            this.panelLog.AutoScroll = true;
-            this.panelLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panelLog.Controls.Add(this.lstLog);
-            this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
-            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
-            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
-            this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.panelLog.HeaderHeight = 24;
-            this.panelLog.HeaderText = "Log";
-            this.panelLog.Icon = ((System.Drawing.Image)(resources.GetObject("panelLog.Icon")));
-            this.panelLog.IconTransparentColor = System.Drawing.Color.White;
-            this.panelLog.Location = new System.Drawing.Point(0, 0);
-            this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.panelLog.Name = "panelLog";
-            this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
-            this.panelLog.Size = new System.Drawing.Size(1384, 213);
-            this.panelLog.TabIndex = 0;
-            // 
-            // lstLog
-            // 
-            this.lstLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstLog.ContextMenuStrip = this.logContextMenuStrip;
-            this.lstLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lstLog.FormattingEnabled = true;
-            this.lstLog.HorizontalScrollbar = true;
-            this.lstLog.ItemHeight = 14;
-            this.lstLog.Location = new System.Drawing.Point(5, 29);
-            this.lstLog.Name = "lstLog";
-            this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstLog.Size = new System.Drawing.Size(1374, 180);
-            this.lstLog.TabIndex = 0;
-            this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
-            this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
             // 
             // logContextMenuStrip
             // 
@@ -3298,6 +3152,159 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.Text = "New Version Available";
             this.linkLabelNewVersionAvailable.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelNewVersionAvailable_LinkClicked);
             // 
+            // panelTreeView
+            // 
+            this.panelTreeView.AutoScroll = true;
+            this.panelTreeView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelTreeView.Controls.Add(this.serviceBusTreeView);
+            this.panelTreeView.Controls.Add(this.filterPanel);
+            this.panelTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelTreeView.ForeColor = System.Drawing.SystemColors.Window;
+            this.panelTreeView.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
+            this.panelTreeView.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelTreeView.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.panelTreeView.HeaderHeight = 24;
+            this.panelTreeView.HeaderText = "Service Bus Namespace";
+            this.panelTreeView.Icon = ((System.Drawing.Image)(resources.GetObject("panelTreeView.Icon")));
+            this.panelTreeView.IconTransparentColor = System.Drawing.Color.White;
+            this.panelTreeView.Location = new System.Drawing.Point(0, 0);
+            this.panelTreeView.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelTreeView.Name = "panelTreeView";
+            this.panelTreeView.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelTreeView.Size = new System.Drawing.Size(372, 566);
+            this.panelTreeView.TabIndex = 0;
+            // 
+            // serviceBusTreeView
+            // 
+            this.serviceBusTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.serviceBusTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.serviceBusTreeView.HideSelection = false;
+            this.serviceBusTreeView.ImageIndex = 0;
+            this.serviceBusTreeView.ImageList = this.imageList;
+            this.serviceBusTreeView.Indent = 20;
+            this.serviceBusTreeView.ItemHeight = 20;
+            this.serviceBusTreeView.Location = new System.Drawing.Point(5, 49);
+            this.serviceBusTreeView.Name = "serviceBusTreeView";
+            this.serviceBusTreeView.SelectedImageIndex = 0;
+            this.serviceBusTreeView.Size = new System.Drawing.Size(362, 513);
+            this.serviceBusTreeView.TabIndex = 0;
+            this.serviceBusTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.serviceBusTreeView_BeforeExpand);
+            this.serviceBusTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.serviceBusTreeView_NodeMouseClick);
+            this.serviceBusTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.serviceBusTreeView_KeyDown);
+            // 
+            // filterPanel
+            // 
+            this.filterPanel.Controls.Add(this.filterTreeViewTextBox);
+            this.filterPanel.Controls.Add(this.clearFilterButton);
+            this.filterPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.filterPanel.Location = new System.Drawing.Point(5, 29);
+            this.filterPanel.Name = "filterPanel";
+            this.filterPanel.Size = new System.Drawing.Size(362, 20);
+            this.filterPanel.TabIndex = 1;
+            // 
+            // filterTreeViewTextBox
+            // 
+            this.filterTreeViewTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filterTreeViewTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.filterTreeViewTextBox.Location = new System.Drawing.Point(0, 0);
+            this.filterTreeViewTextBox.Name = "filterTreeViewTextBox";
+            this.filterTreeViewTextBox.Size = new System.Drawing.Size(338, 20);
+            this.filterTreeViewTextBox.TabIndex = 0;
+            this.filterTreeViewTextBox.TextChanged += new System.EventHandler(this.filterTreeViewTextBox_TextChanged);
+            // 
+            // clearFilterButton
+            // 
+            this.clearFilterButton.Dock = System.Windows.Forms.DockStyle.Right;
+            this.clearFilterButton.FlatAppearance.BorderSize = 0;
+            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.clearFilterButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.clearFilterButton.ForeColor = System.Drawing.Color.Black;
+            this.clearFilterButton.Location = new System.Drawing.Point(338, 0);
+            this.clearFilterButton.Name = "clearFilterButton";
+            this.clearFilterButton.Size = new System.Drawing.Size(24, 20);
+            this.clearFilterButton.TabIndex = 1;
+            this.clearFilterButton.TabStop = false;
+            this.clearFilterButton.Text = "×";
+            this.clearFilterButton.UseVisualStyleBackColor = true;
+            this.clearFilterButton.Visible = false;
+            this.clearFilterButton.Click += new System.EventHandler(this.clearFilterButton_Click);
+            // 
+            // dashboardControl
+            // 
+            this.dashboardControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dashboardControl.Location = new System.Drawing.Point(3, 3);
+            this.dashboardControl.Name = "dashboardControl";
+            this.dashboardControl.OnRefreshRequested = null;
+            this.dashboardControl.OnRefreshRowRequested = null;
+            this.dashboardControl.OnRowDoubleClicked = null;
+            this.dashboardControl.OnRowSelected = null;
+            this.dashboardControl.OnSyncWithTreeViewChanged = null;
+            this.dashboardControl.Size = new System.Drawing.Size(994, 534);
+            this.dashboardControl.TabIndex = 0;
+            // 
+            // panelMain
+            // 
+            this.panelMain.AutoScroll = true;
+            this.panelMain.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
+            this.panelMain.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
+            this.panelMain.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelMain.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.panelMain.HeaderHeight = 24;
+            this.panelMain.HeaderText = "";
+            this.panelMain.Icon = global::ServiceBusExplorer.Properties.Resources.SmallWorld;
+            this.panelMain.IconTransparentColor = System.Drawing.Color.White;
+            this.panelMain.Location = new System.Drawing.Point(3, 3);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelMain.Name = "panelMain";
+            this.panelMain.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelMain.Size = new System.Drawing.Size(994, 534);
+            this.panelMain.TabIndex = 0;
+            // 
+            // panelLog
+            // 
+            this.panelLog.AutoScroll = true;
+            this.panelLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panelLog.Controls.Add(this.lstLog);
+            this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelLog.ForeColor = System.Drawing.SystemColors.Window;
+            this.panelLog.HeaderColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(205)))), ((int)(((byte)(219)))));
+            this.panelLog.HeaderColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
+            this.panelLog.HeaderFont = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.panelLog.HeaderHeight = 24;
+            this.panelLog.HeaderText = "Log";
+            this.panelLog.Icon = ((System.Drawing.Image)(resources.GetObject("panelLog.Icon")));
+            this.panelLog.IconTransparentColor = System.Drawing.Color.White;
+            this.panelLog.Location = new System.Drawing.Point(0, 0);
+            this.panelLog.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.panelLog.Name = "panelLog";
+            this.panelLog.Padding = new System.Windows.Forms.Padding(5, 29, 5, 4);
+            this.panelLog.Size = new System.Drawing.Size(1384, 213);
+            this.panelLog.TabIndex = 0;
+            // 
+            // lstLog
+            // 
+            this.lstLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lstLog.ContextMenuStrip = this.logContextMenuStrip;
+            this.lstLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstLog.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lstLog.FormattingEnabled = true;
+            this.lstLog.HorizontalScrollbar = true;
+            this.lstLog.ItemHeight = 14;
+            this.lstLog.Location = new System.Drawing.Point(5, 29);
+            this.lstLog.Name = "lstLog";
+            this.lstLog.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lstLog.Size = new System.Drawing.Size(1374, 180);
+            this.lstLog.TabIndex = 0;
+            this.lstLog.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstLog_KeyDown);
+            this.lstLog.Leave += new System.EventHandler(this.lstLog_Leave);
+            // 
+            // toolStripSeparator80
+            // 
+            this.toolStripSeparator80.Name = "toolStripSeparator80";
+            this.toolStripSeparator80.Size = new System.Drawing.Size(204, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3324,9 +3331,6 @@ namespace ServiceBusExplorer.Forms
             this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
-            this.panelTreeView.ResumeLayout(false);
-            this.filterPanel.ResumeLayout(false);
-            this.filterPanel.PerformLayout();
             this.mainTabControl.ResumeLayout(false);
             this.tabPageDashboard.ResumeLayout(false);
             this.tabPageExplorer.ResumeLayout(false);
@@ -3334,7 +3338,6 @@ namespace ServiceBusExplorer.Forms
             this.mainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).EndInit();
             this.mainSplitContainer.ResumeLayout(false);
-            this.panelLog.ResumeLayout(false);
             this.logContextMenuStrip.ResumeLayout(false);
             this.rootContextMenuStrip.ResumeLayout(false);
             this.queuesContextMenuStrip.ResumeLayout(false);
@@ -3366,6 +3369,10 @@ namespace ServiceBusExplorer.Forms
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.relayServiceFolderContextMenuStrip.ResumeLayout(false);
             this.relayContextMenuStrip.ResumeLayout(false);
+            this.panelTreeView.ResumeLayout(false);
+            this.filterPanel.ResumeLayout(false);
+            this.filterPanel.PerformLayout();
+            this.panelLog.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3718,6 +3725,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem connectUsingSASToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem connectUsingEntraToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logOutFromEntraToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator80;
     }
 }
 
