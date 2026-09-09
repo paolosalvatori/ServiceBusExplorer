@@ -12,51 +12,51 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
-    public class ServiceBusHelperAadTests
+    public class ServiceBusHelperEntraTests
     {
         [Fact]
-        public void CopyConstructor_AadState_PreservesAadFieldsAndNewSdkBridge()
+        public void CopyConstructor_EntraState_PreservesEntraFieldsAndNewSdkBridge()
         {
             var source = new ServiceBusHelper((message, asynchronous) => { })
             {
                 NamespaceUri = new Uri("sb://myns.servicebus.windows.net/")
             };
-            var aadNamespace = new ServiceBusNamespace(
+            var entraNamespace = new ServiceBusNamespace(
                 "sb://myns.servicebus.windows.net/",
                 "myns",
                 "tenant-id",
                 TransportType.Amqp);
 
-            SetPrivateField(source, "serviceBusNamespaceInstance", aadNamespace);
-            SetPrivateField(source, "aadTokenProvider", AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id"));
+            SetPrivateField(source, "serviceBusNamespaceInstance", entraNamespace);
+            SetPrivateField(source, "entraTokenProvider", EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id"));
 
             var copy = new ServiceBusHelper((message, asynchronous) => { }, source);
 
-            GetPrivateField<TokenProvider>(copy, "aadTokenProvider").Should().NotBeNull();
-            GetPrivateField<ServiceBusNamespace>(copy, "serviceBusNamespaceInstance").Should().BeSameAs(aadNamespace);
+            GetPrivateField<TokenProvider>(copy, "entraTokenProvider").Should().NotBeNull();
+            GetPrivateField<ServiceBusNamespace>(copy, "serviceBusNamespaceInstance").Should().BeSameAs(entraNamespace);
 
             var helper2 = copy.GetServiceBusHelper2();
-            helper2.IsAad.Should().BeTrue();
+            helper2.IsEntra.Should().BeTrue();
             helper2.FullyQualifiedNamespace.Should().Be("myns.servicebus.windows.net");
-            helper2.AadTokenCredential.Should().NotBeNull();
+            helper2.EntraTokenCredential.Should().NotBeNull();
         }
 
         [Fact]
-        public void CreateEventHubClient_AadNamespace_ReturnsClient()
+        public void CreateEventHubClient_EntraNamespace_ReturnsClient()
         {
             var helper = new ServiceBusHelper((message, asynchronous) => { });
-            var aadNamespace = new ServiceBusNamespace(
+            var entraNamespace = new ServiceBusNamespace(
                 "sb://myns.servicebus.windows.net/",
                 "myns",
                 "tenant-id",
                 TransportType.Amqp);
 
-            SetPrivateField(helper, "serviceBusNamespaceInstance", aadNamespace);
+            SetPrivateField(helper, "serviceBusNamespaceInstance", entraNamespace);
 
             // The new implementation requires the cached eventHubMessagingFactory
             // (created during Connect) to create EventHubClients.
-            var tokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
-            SetPrivateField(helper, "aadTokenProvider", tokenProvider);
+            var tokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            SetPrivateField(helper, "entraTokenProvider", tokenProvider);
             var nsUri = new Uri("sb://myns.servicebus.windows.net/");
             SetPrivateField(helper, "namespaceUri", nsUri);
             var factory = MessagingFactory.Create(nsUri, new MessagingFactorySettings
@@ -72,31 +72,31 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void ServiceBusHelper2_CreateClients_AadConfiguration_ReturnsClients()
+        public void ServiceBusHelper2_CreateClients_EntraConfiguration_ReturnsClients()
         {
             var helper2 = new ServiceBusHelper2((message, asynchronous) => { })
             {
                 FullyQualifiedNamespace = "myns.servicebus.windows.net",
-                AadTokenCredential = new FakeTokenCredential(),
+                EntraTokenCredential = new FakeTokenCredential(),
                 TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp
             };
 
-            helper2.IsAad.Should().BeTrue();
+            helper2.IsEntra.Should().BeTrue();
             helper2.CreateServiceBusClient().Should().NotBeNull();
             helper2.CreateAdministrationClient().Should().NotBeNull();
         }
 
         [Fact]
-        public void AadCredentialFactory_SameTenant_ReusesCredentialCallbackAndProvider()
+        public void EntraCredentialFactory_SameTenant_ReusesCredentialCallbackAndProvider()
         {
-            var credential1 = AadCredentialFactory.CreateInteractiveBrowserCredential("tenant-id");
-            var credential2 = AadCredentialFactory.CreateInteractiveBrowserCredential("tenant-id");
-            var callback1 = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id");
-            var callback2 = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id");
-            var provider1 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
-            var provider2 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
-            var tokenCredential1 = AadCredentialFactory.CreateNewSdkTokenCredential("tenant-id");
-            var tokenCredential2 = AadCredentialFactory.CreateNewSdkTokenCredential("tenant-id");
+            var credential1 = EntraCredentialFactory.CreateInteractiveBrowserCredential("tenant-id");
+            var credential2 = EntraCredentialFactory.CreateInteractiveBrowserCredential("tenant-id");
+            var callback1 = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id");
+            var callback2 = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id");
+            var provider1 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            var provider2 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
+            var tokenCredential1 = EntraCredentialFactory.CreateNewSdkTokenCredential("tenant-id");
+            var tokenCredential2 = EntraCredentialFactory.CreateNewSdkTokenCredential("tenant-id");
 
             credential2.Should().BeSameAs(credential1);
             callback2.Should().BeSameAs(callback1);
@@ -106,18 +106,18 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void AadCredentialFactory_BlankTenant_ReusesSameCredentialAsOrganizations()
+        public void EntraCredentialFactory_BlankTenant_ReusesSameCredentialAsOrganizations()
         {
-            var fromNull = AadCredentialFactory.CreateInteractiveBrowserCredential(null);
-            var fromOrganizations = AadCredentialFactory.CreateInteractiveBrowserCredential("organizations");
+            var fromNull = EntraCredentialFactory.CreateInteractiveBrowserCredential(null);
+            var fromOrganizations = EntraCredentialFactory.CreateInteractiveBrowserCredential("organizations");
 
             fromOrganizations.Should().BeSameAs(fromNull);
         }
 
         [Fact]
-        public void AadCredentialFactory_GetScopes_UsesResourceValue()
+        public void EntraCredentialFactory_GetScopes_UsesResourceValue()
         {
-            var scopes = InvokePrivateStatic<string[]>(typeof(AadCredentialFactory), "GetScopes", "https://servicebus.azure.net");
+            var scopes = InvokePrivateStatic<string[]>(typeof(EntraCredentialFactory), "GetScopes", "https://servicebus.azure.net");
 
             scopes.Should().ContainSingle().Which.Should().Be("https://servicebus.azure.net/.default");
         }
@@ -126,9 +126,9 @@ namespace ServiceBusExplorer.Tests.Helpers
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void AadCredentialFactory_GetAuthority_BlankTenant_UsesOrganizationsEndpoint(string tenantId)
+        public void EntraCredentialFactory_GetAuthority_BlankTenant_UsesOrganizationsEndpoint(string tenantId)
         {
-            var authority = AadCredentialFactory.GetAuthority(tenantId);
+            var authority = EntraCredentialFactory.GetAuthority(tenantId);
 
             authority.Should().Be("https://login.microsoftonline.com/organizations");
         }
@@ -148,42 +148,42 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void AadCredentialFactory_DifferentAudiences_ReturnDifferentProviders()
+        public void EntraCredentialFactory_DifferentAudiences_ReturnDifferentProviders()
         {
-            var sbProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.ServiceBusAudience);
-            var ehProvider = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+            var sbProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.ServiceBusAudience);
+            var ehProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.EventHubsAudience);
 
             ehProvider.Should().NotBeSameAs(sbProvider, "different audiences must produce different token providers");
         }
 
         [Fact]
-        public void AadCredentialFactory_SameAudience_ReusesCachedProvider()
+        public void EntraCredentialFactory_SameAudience_ReusesCachedProvider()
         {
-            var ehProvider1 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
-            var ehProvider2 = AadCredentialFactory.CreateOldSdkTokenProvider("tenant-id", AadCredentialFactory.EventHubsAudience);
+            var ehProvider1 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.EventHubsAudience);
+            var ehProvider2 = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id", EntraCredentialFactory.EventHubsAudience);
 
             ehProvider2.Should().BeSameAs(ehProvider1, "same tenant+audience should reuse cached provider");
         }
 
         [Fact]
-        public void AadCredentialFactory_DifferentAudiences_ReturnDifferentCallbacks()
+        public void EntraCredentialFactory_DifferentAudiences_ReturnDifferentCallbacks()
         {
-            var sbCallback = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", AadCredentialFactory.ServiceBusAudience);
-            var ehCallback = AadCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", AadCredentialFactory.EventHubsAudience);
+            var sbCallback = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", EntraCredentialFactory.ServiceBusAudience);
+            var ehCallback = EntraCredentialFactory.CreateOldSdkAuthenticationCallback("tenant-id", EntraCredentialFactory.EventHubsAudience);
 
             ehCallback.Should().NotBeSameAs(sbCallback, "different audiences must produce different callbacks");
         }
 
         [Fact]
-        public void AadCredentialFactory_EventHubsAudience_HasCorrectValue()
+        public void EntraCredentialFactory_EventHubsAudience_HasCorrectValue()
         {
-            AadCredentialFactory.EventHubsAudience.Should().Be("https://eventhubs.azure.net");
+            EntraCredentialFactory.EventHubsAudience.Should().Be("https://eventhubs.azure.net");
         }
 
         [Fact]
-        public void AadCredentialFactory_GetScopes_EventHubResource_UsesEventHubScope()
+        public void EntraCredentialFactory_GetScopes_EventHubResource_UsesEventHubScope()
         {
-            var scopes = InvokePrivateStatic<string[]>(typeof(AadCredentialFactory), "GetScopes", "https://eventhubs.azure.net");
+            var scopes = InvokePrivateStatic<string[]>(typeof(EntraCredentialFactory), "GetScopes", "https://eventhubs.azure.net");
 
             scopes.Should().ContainSingle().Which.Should().Be("https://eventhubs.azure.net/.default");
         }

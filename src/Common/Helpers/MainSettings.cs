@@ -29,6 +29,9 @@ using Microsoft.ServiceBus;
 
 namespace ServiceBusExplorer.Helpers
 {
+    using ServiceBusExplorer.Common.Entities;
+    using ServiceBusExplorer.Common.Helpers;
+
     using Utilities.Helpers;
 
     public class MainSettings
@@ -77,6 +80,8 @@ namespace ServiceBusExplorer.Helpers
         public bool ProxyUseDefaultCredentials { get; set; }
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
+
+        public List<EntraTenantIdItem> EntraTenantIds { get; set; } = new List<EntraTenantIdItem>();
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
@@ -138,7 +143,9 @@ namespace ServiceBusExplorer.Helpers
             ProxyBypassList = string.Empty;
             ProxyUserName = string.Empty;
             ProxyPassword = string.Empty;
-            
+
+            EntraTenantIds = new List<EntraTenantIdItem>();
+
             NodesColors = new List<NodeColorInfo>();
         }
 
@@ -172,8 +179,8 @@ namespace ServiceBusExplorer.Helpers
             if (MessageText != otherProperties.MessageText) return false;
             if (MessageContentType != otherProperties.MessageContentType) return false;
 
-            if (!SelectedEntities.SequenceEqual(SelectedEntities)) return false;
-            if (!SelectedMessageCounts.SequenceEqual(SelectedMessageCounts)) return false;
+            if (!SelectedEntities.SequenceEqual(otherProperties.SelectedEntities)) return false;
+            if (!SelectedMessageCounts.SequenceEqual(otherProperties.SelectedMessageCounts)) return false;
 
             if (MessageBodyType != otherProperties.MessageBodyType) return false;
             if (ConnectivityMode != otherProperties.ConnectivityMode) return false;
@@ -186,12 +193,13 @@ namespace ServiceBusExplorer.Helpers
             if (ProxyBypassList != otherProperties.ProxyBypassList) return false;
             if (ProxyUserName != otherProperties.ProxyUserName) return false;
             if (ProxyPassword != otherProperties.ProxyPassword) return false;
-            if (NodesColors.SequenceEqual(otherProperties.NodesColors)) return false;
+            if (!EntraTenantIds.SequenceEqual(otherProperties.EntraTenantIds)) return false;
+            if (!NodesColors.SequenceEqual(otherProperties.NodesColors)) return false;
 
             return true;
         }
 
-        //// GetHashCode is based on mutable fields so these fields must not be changed while 
+        // GetHashCode is based on mutable fields so these fields must not be changed while 
         // it is being in a container.
         public override int GetHashCode()
         {
@@ -303,7 +311,7 @@ namespace ServiceBusExplorer.Helpers
                     return ProxyBypassOnLocal;
 
                 case ConfigurationParameters.ProxyAddress:
-                    return ProxyBypassList;
+                    return ProxyAddress;
 
                 case ConfigurationParameters.ProxyBypassList:
                     return ProxyBypassList;
@@ -313,6 +321,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ProxyPassword:
                     return ProxyPassword;
+
+                case ConfigurationParameters.EntraTenantIds:
+                    return EntraTenantIds;
 
                 case ConfigurationParameters.NodesColors:
                     return NodesColors;

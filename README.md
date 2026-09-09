@@ -82,16 +82,18 @@ Service Bus Explorer supports interactive browser sign-in for Azure Service Bus 
 
 1. Open the regular Service Bus connection dialog.
 2. Select `Select a service bus namespace...` for a manual connection, or edit an existing saved connection.
-3. Change `Authentication` to `Azure Active Directory`.
+3. Change `Authentication` to `Entra`.
 4. Enter the namespace endpoint as either `sb://<namespace>.servicebus.windows.net/` or `<namespace>.servicebus.windows.net`.
-5. Optionally enter `Tenant ID` and `Entity Path`. If `Tenant ID` is left blank, Service Bus Explorer uses the `organizations` endpoint, so the sign-in flow accepts work or school accounts only.
+5. Optionally enter `Tenant ID` and `Entity Path`. If `Tenant ID` is left blank, Service Bus Explorer uses the `organizations` endpoint. In that case the sign-in flow accepts work or school accounts only. To sign in using a personal Microsoft account enter the target tenant ID.  
 6. Click `OK` and complete the browser sign-in flow.
 
 > **Note**
 >
-> The `File -> Connect using Entra (Event grid)` menu entry is for Event Grid, not Azure Service Bus. For Service Bus, use the normal connection dialog and switch the `Authentication` selector to `Azure Active Directory`.
+> The `File -> Connect using Entra (Event grid)` menu entry is for Event Grid, not Azure Service Bus. For Service Bus, use the normal connection dialog and switch the `Authentication` selector to `Entra`.
 >
-> Personal Microsoft accounts are not supported for Service Bus authentication unless they have been invited into a Microsoft Entra tenant that has access to the namespace.
+
+### Cached credentials
+The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Partial log out from Entra" for that. 
 
 ### Screenshots
 
@@ -103,13 +105,17 @@ Open the normal connection dialog:
 
 ![Service Bus connect dialog](./media/entra/entra-connect-dialog.png)
 
-Switch `Authentication` to `Azure Active Directory`:
+Switch `Authentication` to `Entra`:
 
-![Authentication dropdown with Azure Active Directory option](./media/entra/entra-auth-dropdown.png)
+![Authentication dropdown with Entra option](./media/entra/entra-auth-dropdown.png)
 
-Enter the namespace endpoint and optional Entra metadata:
+Enter the namespace endpoint and optionally select an Entra Tenant ID from the list. You may also enter a Tenant ID that is not in the list. If you save the connection it will store the Tenant ID with the connection:
 
-![Azure Active Directory connection fields](./media/entra/entra-aad-fields.png)
+![Entra connection fields](./media/entra/entra-connect-tenant-id-list.png)
+
+The list of Entra Tenant IDs is managed in the `Options | Authentication` dialog:
+
+![Entra Tenant ID list](./media/entra/entra-options-tenant-id-list.png)
 
 After sign-in, the namespace can be browsed without storing SAS keys locally:
 
@@ -132,8 +138,8 @@ Endpoint=sb://<namespace>.servicebus.windows.net/;AuthMode=AAD
 ### Current scope
 
 - Interactive browser sign-in only
-- Azure Active Directory mode currently loads Service Bus queues, topics, and subscriptions only
-- Event Hubs, Notification Hubs, and Relay are not loaded when Azure Active Directory authentication is selected
+- Entra mode currently loads Service Bus queues, topics, and subscriptions only
+- Event Hubs, Notification Hubs, and Relay are not loaded when Entra authentication is selected
 - Local persistence stores metadata only, not passwords or SAS keys
 - Managed identity, Azure CLI auth and service principal auth are not included in this feature
 
@@ -150,9 +156,13 @@ Here are some guidelines concerning contributions:
 
 ## Development Environment
 
-Visual Studio 2022 17.8.0 or later is required to build the solution. 
+Visual Studio 2026 18.8.0 or later is required to build the solution. 
 
-When editing UI elements Visual Studio should run as a DPI-unaware process. For more information about this, see the [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) when it is running as a DPI-unaware process.
+When editing UI elements Visual Studio should run as a DPI-unaware process. 
+For more information about this, see the 
+[Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). 
+In Visual Studio 2026 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
+when it is running as a DPI-unaware process.
 
 
 # Azure Service Bus

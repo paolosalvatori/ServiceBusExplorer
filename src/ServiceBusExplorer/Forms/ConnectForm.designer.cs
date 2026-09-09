@@ -68,10 +68,9 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenQueueFilterForm = new System.Windows.Forms.Button();
             this.txtQueueFilterExpression = new System.Windows.Forms.TextBox();
             this.txtTopicFilterExpression = new System.Windows.Forms.TextBox();
-            this.txtIssuerSecret = new System.Windows.Forms.TextBox();
             this.txtIssuerName = new System.Windows.Forms.TextBox();
-            this.txtNamespace = new System.Windows.Forms.TextBox();
-            this.cboAuthMode = new System.Windows.Forms.ComboBox();
+            this.cboTenantIds = new System.Windows.Forms.ComboBox();
+            this.txtIssuerSecret = new System.Windows.Forms.TextBox();
             this.txtEntityPath = new System.Windows.Forms.TextBox();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
             this.btnSave = new System.Windows.Forms.Button();
@@ -95,8 +94,9 @@ namespace ServiceBusExplorer.Forms
             this.txtUri = new System.Windows.Forms.TextBox();
             this.lblUri = new System.Windows.Forms.Label();
             this.lblIssuerSecret = new System.Windows.Forms.Label();
-            this.lblIssuerName = new System.Windows.Forms.Label();
+            this.lblIssuerNameOrTenantId = new System.Windows.Forms.Label();
             this.lblNamespace = new System.Windows.Forms.Label();
+            this.cboAuthMode = new System.Windows.Forms.ComboBox();
             this.lblEntityPath = new System.Windows.Forms.Label();
             this.grouperServiceBusNamespaces = new ServiceBusExplorer.Controls.Grouper();
             this.cboServiceBusNamespace = new System.Windows.Forms.ComboBox();
@@ -129,6 +129,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
@@ -309,19 +310,6 @@ namespace ServiceBusExplorer.Forms
             this.txtTopicFilterExpression.TabIndex = 7;
             this.toolTip.SetToolTip(this.txtTopicFilterExpression, "Gets or sets the OData filter for topics.");
             // 
-            // txtIssuerSecret
-            // 
-            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
-            this.txtIssuerSecret.Name = "txtIssuerSecret";
-            this.txtIssuerSecret.PasswordChar = '*';
-            this.txtIssuerSecret.Size = new System.Drawing.Size(336, 20);
-            this.txtIssuerSecret.TabIndex = 9;
-            this.toolTip.SetToolTip(this.txtIssuerSecret, "Gets or sets the shared secret issuer secret.");
-            this.txtIssuerSecret.TextChanged += new System.EventHandler(this.validation_TextChanged);
-            // 
             // txtIssuerName
             // 
             this.txtIssuerName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -334,28 +322,30 @@ namespace ServiceBusExplorer.Forms
             this.toolTip.SetToolTip(this.txtIssuerName, "Gets or sets the shared secret issuer name.");
             this.txtIssuerName.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
-            // txtNamespace
+            // cboTenantIds
             // 
-            this.txtNamespace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.cboTenantIds.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboTenantIds.FormattingEnabled = true;
+            this.cboTenantIds.Location = new System.Drawing.Point(16, 192);
+            this.cboTenantIds.Name = "cboTenantIds";
+            this.cboTenantIds.Size = new System.Drawing.Size(336, 21);
+            this.cboTenantIds.Sorted = true;
+            this.cboTenantIds.TabIndex = 8;
+            this.toolTip.SetToolTip(this.cboTenantIds, "Gets or sets the Entra tenant ID. Leave blank to use the organizations endpoint (" +
+        "work or school accounts only).");
+            // 
+            // txtIssuerSecret
+            // 
+            this.txtIssuerSecret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtNamespace.Location = new System.Drawing.Point(16, 96);
-            this.txtNamespace.Name = "txtNamespace";
-            this.txtNamespace.Size = new System.Drawing.Size(336, 20);
-            this.txtNamespace.TabIndex = 3;
-            this.toolTip.SetToolTip(this.txtNamespace, "Gets or sets the name of the Service Bus namespace.");
-            this.txtNamespace.TextChanged += new System.EventHandler(this.validation_TextChanged);
-            // 
-            // cboAuthMode
-            // 
-            this.cboAuthMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboAuthMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cboAuthMode.FormattingEnabled = true;
-            this.cboAuthMode.Location = new System.Drawing.Point(16, 96);
-            this.cboAuthMode.Name = "cboAuthMode";
-            this.cboAuthMode.Size = new System.Drawing.Size(336, 21);
-            this.cboAuthMode.TabIndex = 3;
-            this.cboAuthMode.SelectedIndexChanged += new System.EventHandler(this.cboAuthMode_SelectedIndexChanged);
+            this.txtIssuerSecret.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.txtIssuerSecret.Location = new System.Drawing.Point(16, 240);
+            this.txtIssuerSecret.Name = "txtIssuerSecret";
+            this.txtIssuerSecret.PasswordChar = '*';
+            this.txtIssuerSecret.Size = new System.Drawing.Size(336, 20);
+            this.txtIssuerSecret.TabIndex = 10;
+            this.toolTip.SetToolTip(this.txtIssuerSecret, "Gets or sets the shared secret issuer secret.");
+            this.txtIssuerSecret.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
             // txtEntityPath
             // 
@@ -365,7 +355,7 @@ namespace ServiceBusExplorer.Forms
             this.txtEntityPath.Location = new System.Drawing.Point(16, 144);
             this.txtEntityPath.Name = "txtEntityPath";
             this.txtEntityPath.Size = new System.Drawing.Size(336, 20);
-            this.txtEntityPath.TabIndex = 5;
+            this.txtEntityPath.TabIndex = 6;
             this.toolTip.SetToolTip(this.txtEntityPath, "Gets or sets the entity path (queue, topic, or event hub name).");
             // 
             // logoPictureBox
@@ -566,6 +556,8 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperServiceBusNamespaceSettings.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperServiceBusNamespaceSettings.BorderThickness = 1F;
+            this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtIssuerName);
+            this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboTenantIds);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.useAmqpWebSocketsCheckBox);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblNewSdkTransportType);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboTransportType);
@@ -576,9 +568,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblUri);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtIssuerSecret);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblIssuerSecret);
-            this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtIssuerName);
-            this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblIssuerName);
-            this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtNamespace);
+            this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblIssuerNameOrTenantId);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.lblNamespace);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.cboAuthMode);
             this.grouperServiceBusNamespaceSettings.Controls.Add(this.txtEntityPath);
@@ -607,7 +597,7 @@ namespace ServiceBusExplorer.Forms
             this.useAmqpWebSocketsCheckBox.Location = new System.Drawing.Point(337, 384);
             this.useAmqpWebSocketsCheckBox.Name = "useAmqpWebSocketsCheckBox";
             this.useAmqpWebSocketsCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.useAmqpWebSocketsCheckBox.TabIndex = 15;
+            this.useAmqpWebSocketsCheckBox.TabIndex = 16;
             this.useAmqpWebSocketsCheckBox.UseVisualStyleBackColor = true;
             // 
             // lblNewSdkTransportType
@@ -617,7 +607,7 @@ namespace ServiceBusExplorer.Forms
             this.lblNewSdkTransportType.Location = new System.Drawing.Point(16, 368);
             this.lblNewSdkTransportType.Name = "lblNewSdkTransportType";
             this.lblNewSdkTransportType.Size = new System.Drawing.Size(346, 13);
-            this.lblNewSdkTransportType.TabIndex = 14;
+            this.lblNewSdkTransportType.TabIndex = 15;
             this.lblNewSdkTransportType.Text = "Use AMQP Web Sockets for Microsoft.Azure.ServiceBus.dll (new client)";
             // 
             // cboTransportType
@@ -628,7 +618,7 @@ namespace ServiceBusExplorer.Forms
             this.cboTransportType.Location = new System.Drawing.Point(16, 336);
             this.cboTransportType.Name = "cboTransportType";
             this.cboTransportType.Size = new System.Drawing.Size(336, 21);
-            this.cboTransportType.TabIndex = 13;
+            this.cboTransportType.TabIndex = 14;
             this.cboTransportType.SelectedIndexChanged += new System.EventHandler(this.cboTransportType_SelectedIndexChanged);
             // 
             // lblTransportType
@@ -638,7 +628,7 @@ namespace ServiceBusExplorer.Forms
             this.lblTransportType.Location = new System.Drawing.Point(16, 320);
             this.lblTransportType.Name = "lblTransportType";
             this.lblTransportType.Size = new System.Drawing.Size(82, 13);
-            this.lblTransportType.TabIndex = 12;
+            this.lblTransportType.TabIndex = 13;
             this.lblTransportType.Text = "Transport Type:";
             // 
             // cboConnectivityMode
@@ -649,7 +639,7 @@ namespace ServiceBusExplorer.Forms
             this.cboConnectivityMode.Location = new System.Drawing.Point(16, 288);
             this.cboConnectivityMode.Name = "cboConnectivityMode";
             this.cboConnectivityMode.Size = new System.Drawing.Size(336, 21);
-            this.cboConnectivityMode.TabIndex = 11;
+            this.cboConnectivityMode.TabIndex = 12;
             // 
             // lblConnectivityMode
             // 
@@ -658,7 +648,7 @@ namespace ServiceBusExplorer.Forms
             this.lblConnectivityMode.Location = new System.Drawing.Point(16, 272);
             this.lblConnectivityMode.Name = "lblConnectivityMode";
             this.lblConnectivityMode.Size = new System.Drawing.Size(98, 13);
-            this.lblConnectivityMode.TabIndex = 10;
+            this.lblConnectivityMode.TabIndex = 11;
             this.lblConnectivityMode.Text = "Connectivity Mode:";
             // 
             // txtUri
@@ -670,7 +660,7 @@ namespace ServiceBusExplorer.Forms
             this.txtUri.Multiline = true;
             this.txtUri.Name = "txtUri";
             this.txtUri.Size = new System.Drawing.Size(336, 20);
-            this.txtUri.TabIndex = 1;
+            this.txtUri.TabIndex = 2;
             this.txtUri.TextChanged += new System.EventHandler(this.validation_TextChanged);
             // 
             // lblUri
@@ -680,7 +670,7 @@ namespace ServiceBusExplorer.Forms
             this.lblUri.Location = new System.Drawing.Point(16, 32);
             this.lblUri.Name = "lblUri";
             this.lblUri.Size = new System.Drawing.Size(74, 13);
-            this.lblUri.TabIndex = 0;
+            this.lblUri.TabIndex = 1;
             this.lblUri.Text = "Endpoint URI:";
             // 
             // lblIssuerSecret
@@ -690,18 +680,18 @@ namespace ServiceBusExplorer.Forms
             this.lblIssuerSecret.Location = new System.Drawing.Point(16, 224);
             this.lblIssuerSecret.Name = "lblIssuerSecret";
             this.lblIssuerSecret.Size = new System.Drawing.Size(103, 13);
-            this.lblIssuerSecret.TabIndex = 8;
+            this.lblIssuerSecret.TabIndex = 9;
             this.lblIssuerSecret.Text = "Shared Access Key:";
             // 
-            // lblIssuerName
+            // lblIssuerNameOrTenantId
             // 
-            this.lblIssuerName.AutoSize = true;
-            this.lblIssuerName.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblIssuerName.Location = new System.Drawing.Point(16, 176);
-            this.lblIssuerName.Name = "lblIssuerName";
-            this.lblIssuerName.Size = new System.Drawing.Size(134, 13);
-            this.lblIssuerName.TabIndex = 6;
-            this.lblIssuerName.Text = "Shared Access Key Name:";
+            this.lblIssuerNameOrTenantId.AutoSize = true;
+            this.lblIssuerNameOrTenantId.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblIssuerNameOrTenantId.Location = new System.Drawing.Point(16, 176);
+            this.lblIssuerNameOrTenantId.Name = "lblIssuerNameOrTenantId";
+            this.lblIssuerNameOrTenantId.Size = new System.Drawing.Size(134, 13);
+            this.lblIssuerNameOrTenantId.TabIndex = 7;
+            this.lblIssuerNameOrTenantId.Text = "Shared Access Key Name:";
             // 
             // lblNamespace
             // 
@@ -709,9 +699,20 @@ namespace ServiceBusExplorer.Forms
             this.lblNamespace.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblNamespace.Location = new System.Drawing.Point(16, 80);
             this.lblNamespace.Name = "lblNamespace";
-            this.lblNamespace.Size = new System.Drawing.Size(83, 13);
-            this.lblNamespace.TabIndex = 2;
+            this.lblNamespace.Size = new System.Drawing.Size(78, 13);
+            this.lblNamespace.TabIndex = 3;
             this.lblNamespace.Text = "Authentication:";
+            // 
+            // cboAuthMode
+            // 
+            this.cboAuthMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboAuthMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboAuthMode.FormattingEnabled = true;
+            this.cboAuthMode.Location = new System.Drawing.Point(16, 96);
+            this.cboAuthMode.Name = "cboAuthMode";
+            this.cboAuthMode.Size = new System.Drawing.Size(336, 21);
+            this.cboAuthMode.TabIndex = 3;
+            this.cboAuthMode.SelectedIndexChanged += new System.EventHandler(this.cboAuthMode_SelectedIndexChanged);
             // 
             // lblEntityPath
             // 
@@ -720,7 +721,7 @@ namespace ServiceBusExplorer.Forms
             this.lblEntityPath.Location = new System.Drawing.Point(16, 128);
             this.lblEntityPath.Name = "lblEntityPath";
             this.lblEntityPath.Size = new System.Drawing.Size(61, 13);
-            this.lblEntityPath.TabIndex = 4;
+            this.lblEntityPath.TabIndex = 5;
             this.lblEntityPath.Text = "Entity Path:";
             // 
             // grouperServiceBusNamespaces
@@ -767,6 +768,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(784, 477);
             this.Controls.Add(this.grouperConfigFileUse);
             this.Controls.Add(this.btnDelete);
@@ -811,8 +813,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.TextBox txtIssuerSecret;
         private System.Windows.Forms.Label lblIssuerSecret;
         private System.Windows.Forms.TextBox txtIssuerName;
-        private System.Windows.Forms.Label lblIssuerName;
-        private System.Windows.Forms.TextBox txtNamespace;
+        private System.Windows.Forms.Label lblIssuerNameOrTenantId;
         private System.Windows.Forms.Label lblNamespace;
         private System.Windows.Forms.ComboBox cboAuthMode;
         private System.Windows.Forms.PictureBox logoPictureBox;
@@ -845,5 +846,6 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label lblConfigFileUse;
         private System.Windows.Forms.Label lblNewSdkTransportType;
         private System.Windows.Forms.CheckBox useAmqpWebSocketsCheckBox;
+        private System.Windows.Forms.ComboBox cboTenantIds;
     }
 }
