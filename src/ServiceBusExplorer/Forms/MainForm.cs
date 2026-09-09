@@ -414,6 +414,11 @@ namespace ServiceBusExplorer.Forms
 
         void DisplayNewVersionInformation()
         {
+#if DEBUG
+            linkLabelNewVersionAvailable.Visible = true;
+            linkLabelNewVersionAvailable.Enabled = false;
+            linkLabelNewVersionAvailable.Text = $"Debug Version";
+#else
             if (!VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog))
             {
                 linkLabelNewVersionAvailable.Visible = true;
@@ -423,6 +428,7 @@ namespace ServiceBusExplorer.Forms
             {
                 linkLabelNewVersionAvailable.Visible = false;
             }
+#endif
         }
 
         private void UpdateSavedConnectionsMenu()
@@ -490,7 +496,7 @@ namespace ServiceBusExplorer.Forms
             argumentName = argument;
             argumentValue = value;
         }
-        #endregion
+#endregion
 
         #region Event Handlers
         private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
