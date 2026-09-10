@@ -1,0 +1,626 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ServiceBusExplorer.Avalonia.ViewModels"
+        x:Class="ServiceBusExplorer.Avalonia.Views.MainWindow"
+        x:DataType="vm:ShellViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1280" Height="860"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+
+  <DockPanel>
+
+    <!-- ── Menu bar ──────────────────────────────────────────────────────── -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Connect…"
+                  Command="{Binding OpenConnectDialogCommand}"
+                  InputGesture="Ctrl+N" />
+        <Separator />
+        <MenuItem Header="_Disconnect"
+                  Command="{Binding DisconnectCommand}"
+                  IsEnabled="{Binding IsConnected}" />
+        <Separator />
+        <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
+      </MenuItem>
+      <MenuItem Header="_View">
+        <MenuItem Header="_Refresh Tree"
+                  Command="{Binding EntityTree.RefreshCommand}"
+                  IsEnabled="{Binding IsConnected}"
+                  InputGesture="F5" />
+      </MenuItem>
+    </Menu>
+
+    <!-- ── Status bar ─────────────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            Padding="8,3">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0"
+                   Text="{Binding ConnectionStatusText}"
+                   FontSize="12" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1"
+                   Text="{Binding EntityTree.StatusText}"
+                   FontSize="12" VerticalAlignment="Center"
+                   Opacity="0.7" Margin="0,0,4,0"
+                   IsVisible="{Binding IsConnected}" />
+      </Grid>
+    </Border>
+
+    <!-- ── Main content ───────────────────────────────────────────────────── -->
+    <Panel>
+
+      <!-- ── Splash (not connected) ────────────────────────────────────────── -->
+      <StackPanel IsVisible="{Binding IsDisconnected}"
+                  HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+        <TextBlock Text="Service Bus Explorer"
+                   FontSize="28" FontWeight="Light" HorizontalAlignment="Center" />
+        <TextBlock Text="Cross-platform — Avalonia edition"
+                   FontSize="13" Opacity="0.5" HorizontalAlignment="Center" />
+        <Button Content="Connect to a namespace…"
+                Command="{Binding OpenConnectDialogCommand}"
+                HorizontalAlignment="Center" Padding="20,8" Margin="0,16,0,0"
+                Classes="accent" />
+      </StackPanel>
+
+      <!-- ── Connected layout ──────────────────────────────────────────────── -->
+      <Grid IsVisible="{Binding IsConnected}"
+            ColumnDefinitions="280,4,*">
+
+        <!-- Entity tree sidebar -->
+        <DockPanel Grid.Column="0">
+          <!-- Tree toolbar -->
+          <Border DockPanel.Dock="Top"
+                  Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                  Padding="4,4">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+              <StackPanel Grid.Column="0" Margin="4,0">
+                <TextBlock Text="Entities" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Text="Queue counts: (active, dead-letter, transfer-DLQ)"
+                           FontSize="10" Opacity="0.6" />
+              </StackPanel>
+              <Button Grid.Column="1"
+                      Content="+ Queue"
+                      Command="{Binding EntityTree.ToggleCreateQueuePanelCommand}"
+                      Padding="6,2" FontSize="11" Margin="0,0,4,0" />
+              <Button Grid.Column="2"
+                      Content="Delete"
+                      Command="{Binding EntityTree.DeleteSelectedQueueCommand}"
+                      IsEnabled="{Binding EntityTree.CanDeleteSelectedQueue}"
+                      Padding="6,2" FontSize="11" Margin="0,0,4,0" />
+              <Button Grid.Column="3"
+                      Content="⟳ Refresh"
+                      Command="{Binding EntityTree.RefreshQueuesCommand}"
+                      Padding="6,2" FontSize="11" />
+            </Grid>
+          </Border>
+
+          <Border DockPanel.Dock="Top"
+                  IsVisible="{Binding EntityTree.IsCreateQueuePanelOpen}"
+                  BorderThickness="0,0,0,1"
+                  BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                  Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                  Padding="6,6">
+            <StackPanel Spacing="6">
+              <TextBlock Text="Create Queue" FontWeight="SemiBold" FontSize="12" />
+              <TextBox Text="{Binding EntityTree.NewQueueName}"
+                       Watermark="Queue name (e.g. cloud-server/new-queue)" />
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                <Button Content="Cancel"
+                        Command="{Binding EntityTree.CancelCreateQueueCommand}" />
+                <Button Content="Create"
+                        Command="{Binding EntityTree.CreateQueueCommand}"
+                        Classes="accent" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- Error banner -->
+          <Border DockPanel.Dock="Top"
+                  IsVisible="{Binding EntityTree.ErrorText,
+                              Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                  Background="#20FF4444" Padding="6,4">
+            <TextBlock Text="{Binding EntityTree.ErrorText}"
+                       FontSize="11" Foreground="#CC0000" TextWrapping="Wrap" />
+          </Border>
+
+          <!-- Loading indicator -->
+          <Border DockPanel.Dock="Top" IsVisible="{Binding EntityTree.IsLoading}"
+                  Padding="6,4">
+            <TextBlock Text="Loading…" FontSize="11" Opacity="0.6" />
+          </Border>
+
+          <!-- Tree itself -->
+          <TreeView ItemsSource="{Binding EntityTree.Nodes}"
+                    SelectionChanged="OnTreeSelectionChanged">
+            <TreeView.ItemTemplate>
+              <TreeDataTemplate x:DataType="vm:EntityTreeNodeViewModel"
+                                ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <TextBlock Text="{Binding Icon}" FontSize="13" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding QueueCounters}"
+                             VerticalAlignment="Center"
+                             FontSize="11"
+                             Opacity="0.7"
+                             IsVisible="{Binding QueueCounters,
+                                         Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <Border IsVisible="{Binding DeadLetterBadge,
+                                      Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                          Background="#CC3333" CornerRadius="8"
+                          Padding="4,1" Margin="4,0,0,0">
+                    <TextBlock Text="{Binding DeadLetterBadge}"
+                               FontSize="10" Foreground="White" />
+                  </Border>
+                </StackPanel>
+              </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+          </TreeView>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" Width="4"
+                      ResizeDirection="Columns"
+                      VerticalAlignment="Stretch"
+                      Background="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+
+        <!-- Detail panel -->
+        <DockPanel Grid.Column="2">
+
+          <!-- No entity selected placeholder -->
+          <StackPanel IsVisible="{Binding EntityDetail.HasEntity,
+                                  FallbackValue=True,
+                                  Converter={x:Static BoolConverters.Not}}"
+                      HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+            <TextBlock Text="Select an entity to view details."
+                       FontSize="14" Opacity="0.5" />
+          </StackPanel>
+
+          <!-- Entity detail (shown when an entity is selected) -->
+          <DockPanel IsVisible="{Binding EntityDetail.HasEntity, FallbackValue=False}">
+
+            <!-- Detail toolbar -->
+            <Border DockPanel.Dock="Top"
+                    Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                    Padding="8,6">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding EntityDetail.EntityTitle}"
+                           FontSize="15" FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="Refresh"
+                        Command="{Binding EntityDetail.RefreshSelectedEntityCommand}" />
+              </Grid>
+            </Border>
+
+            <!-- Status bar for detail panel -->
+            <Border DockPanel.Dock="Top" Padding="8,3"
+                    Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+              <TextBlock Text="{Binding EntityDetail.Status}"
+                         FontSize="12" Opacity="0.7" />
+            </Border>
+
+            <TabControl SelectedIndex="{Binding EntityDetail.SelectedTabIndex}">
+
+              <!-- ── Overview ────────────────────────────────────────────── -->
+              <TabItem Header="Overview">
+                <DataGrid Margin="8"
+                          ItemsSource="{Binding EntityDetail.OverviewProperties}"
+                          IsReadOnly="True"
+                          AutoGenerateColumns="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          FontSize="12">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="Property" Binding="{Binding Key}" Width="260" />
+                    <DataGridTextColumn Header="Value"    Binding="{Binding Value}" Width="*" />
+                  </DataGrid.Columns>
+                </DataGrid>
+              </TabItem>
+
+              <!-- ── Settings (queue forwarding) ─────────────────────────── -->
+              <TabItem Header="Settings">
+                <Grid RowDefinitions="Auto,*" Margin="12">
+                  <TextBlock Grid.Row="0"
+                             Text="Edit forwarding settings for queues."
+                             FontSize="12" Opacity="0.7" Margin="0,0,0,10" />
+
+                  <Panel Grid.Row="1">
+                    <Border IsVisible="{Binding EntityDetail.IsQueueEntity}"
+                            BorderThickness="1"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            Padding="12">
+                      <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto,Auto">
+                          <TextBlock Grid.Row="0" Grid.Column="0"
+                                     Text="Forward to queue:" VerticalAlignment="Center" Margin="0,0,8,8" />
+                          <TextBox Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding EntityDetail.QueueForwardToInput}"
+                                   Watermark="Queue name (leave empty to clear)" Margin="0,0,8,8" />
+                          <Button Grid.Row="0" Grid.Column="2"
+                                  Content="Select…"
+                                  Command="{Binding EntityDetail.OpenQueuePickerCommand}"
+                                  CommandParameter="ForwardTo"
+                                  Margin="0,0,0,8" />
+
+                          <TextBlock Grid.Row="1" Grid.Column="0"
+                                     Text="Forward DL to queue:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                          <TextBox Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding EntityDetail.QueueForwardDeadLetterToInput}"
+                                   Watermark="Queue name (leave empty to clear)" Margin="0,0,8,0" />
+                          <Button Grid.Row="1" Grid.Column="2"
+                                  Content="Select…"
+                                  Command="{Binding EntityDetail.OpenQueuePickerCommand}"
+                                  CommandParameter="ForwardDeadLetteredMessagesTo" />
+                        </Grid>
+
+                        <Border IsVisible="{Binding EntityDetail.IsQueuePickerOpen}"
+                                BorderThickness="1"
+                                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                Padding="10"
+                                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}">
+                          <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding EntityDetail.QueuePickerTitle}" FontWeight="SemiBold" />
+                            <ComboBox ItemsSource="{Binding EntityDetail.QueueSelectionOptions}"
+                                      SelectedItem="{Binding EntityDetail.SelectedQueueOption}"
+                                      MinWidth="360"
+                                      MaxWidth="640"
+                                      HorizontalAlignment="Left" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                              <Button Content="Cancel"
+                                      Command="{Binding EntityDetail.CancelQueuePickerCommand}" />
+                              <Button Content="Apply"
+                                      Command="{Binding EntityDetail.ApplySelectedQueueCommand}"
+                                      Classes="accent" />
+                            </StackPanel>
+                          </StackPanel>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                          <Button Content="Save"
+                                  Command="{Binding EntityDetail.SaveQueueSettingsCommand}"
+                                  Classes="accent" />
+                        </StackPanel>
+                      </StackPanel>
+                    </Border>
+
+                    <TextBlock IsVisible="{Binding EntityDetail.IsQueueEntity,
+                                            Converter={x:Static BoolConverters.Not}}"
+                               Text="Settings editing is currently available for queues only."
+                               FontSize="12" Opacity="0.6" />
+                  </Panel>
+                </Grid>
+              </TabItem>
+
+              <!-- ── Messages ────────────────────────────────────────────── -->
+              <TabItem Header="Messages">
+                <DockPanel>
+
+                  <!-- Peek button + options panel -->
+                  <StackPanel DockPanel.Dock="Top">
+
+                    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                            Padding="8,4">
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="⚙ Peek messages…"
+                                Command="{Binding EntityDetail.TogglePeekOptionsPanelCommand}"
+                                IsEnabled="{Binding EntityDetail.CanPeekMessages}"
+                                HorizontalAlignment="Left" />
+                        <Button Content="Send…"
+                                Command="{Binding EntityDetail.ToggleSendPanelCommand}"
+                                IsEnabled="{Binding EntityDetail.CanSendToEntity}" />
+                        <Button Content="Purge"
+                                Command="{Binding EntityDetail.PurgeQueueCommand}"
+                                IsVisible="{Binding EntityDetail.IsQueueEntity}" />
+                      </StackPanel>
+                    </Border>
+
+                    <!-- Peek options panel (collapsible) -->
+                    <Border IsVisible="{Binding EntityDetail.ShowPeekOptionsPanel}"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            Padding="16,10">
+                      <StackPanel Spacing="10">
+                        <TextBlock Text="Peek Options" FontWeight="SemiBold" FontSize="13" />
+
+                        <!-- Receive mode -->
+                        <Grid ColumnDefinitions="110,*">
+                          <TextBlock Grid.Column="0" Text="Receive mode:" VerticalAlignment="Center" FontSize="12" />
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20">
+                            <RadioButton Content="Peek (non-destructive)"
+                                         IsChecked="{Binding EntityDetail.IsPeekModeNonDestructive}" />
+                            <RadioButton Content="Peek &amp; Delete"
+                                         IsChecked="{Binding EntityDetail.IsPeekModeDestructive}"
+                                         ToolTip.Tip="Messages will be permanently removed from the queue" />
+                          </StackPanel>
+                        </Grid>
+
+                        <!-- Count selection -->
+                        <Grid ColumnDefinitions="110,*">
+                          <TextBlock Grid.Column="0" Text="Count:" VerticalAlignment="Center" FontSize="12" />
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center">
+                            <RadioButton Content="All"  IsChecked="{Binding EntityDetail.IsCountAll}" />
+                            <RadioButton Content="Top"  IsChecked="{Binding EntityDetail.IsCountTop}" />
+                            <RadioButton Content="Last" IsChecked="{Binding EntityDetail.IsCountLast}"
+                                         ToolTip.Tip="Takes the last N messages from a large fetch" />
+                            <NumericUpDown IsVisible="{Binding EntityDetail.ShowPeekCountInput}"
+                                           Value="{Binding EntityDetail.PeekCountValue}"
+                                           Minimum="1" Maximum="10000"
+                                           Increment="10"
+                                           ShowButtonSpinner="False"
+                                           FormatString="N0"
+                                           Width="140"
+                                           Margin="12,0,0,0" />
+                          </StackPanel>
+                        </Grid>
+
+                        <!-- Actions -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                          <Button Content="Cancel"
+                                  Command="{Binding EntityDetail.TogglePeekOptionsPanelCommand}" />
+                          <Button Content="Peek"
+                                  Command="{Binding EntityDetail.ExecutePeekCommand}"
+                                  Classes="accent" />
+                        </StackPanel>
+                      </StackPanel>
+                    </Border>
+
+                    <!-- Send panel (collapsible) -->
+                    <Border IsVisible="{Binding EntityDetail.ShowSendPanel}"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            Padding="12,10">
+                      <StackPanel Spacing="8">
+                        <TextBlock Text="Send Message" FontWeight="SemiBold" />
+                        <Grid ColumnDefinitions="80,*,12,90,*" RowDefinitions="Auto,8,Auto,8,Auto,8,Auto">
+                          <TextBlock Grid.Row="0" Grid.Column="0" Text="Message ID:"
+                                     VerticalAlignment="Center" FontSize="12" />
+                          <TextBox Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding EntityDetail.SendMessageId}"
+                                   Watermark="auto-generated if blank" />
+                          <TextBlock Grid.Row="0" Grid.Column="3" Text="Count:"
+                                     VerticalAlignment="Center" FontSize="12" />
+                          <NumericUpDown Grid.Row="0" Grid.Column="4"
+                                         Value="{Binding EntityDetail.SendCount}"
+                                         Minimum="1" Maximum="1000" />
+                          <TextBlock Grid.Row="2" Grid.Column="0" Text="Correlation ID:"
+                                     VerticalAlignment="Center" FontSize="12" />
+                          <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4"
+                                   Text="{Binding EntityDetail.SendCorrelationId}"
+                                   Watermark="optional Service Bus correlation ID" />
+                          <TextBlock Grid.Row="4" Grid.Column="0" Text="Body:"
+                                     VerticalAlignment="Top" Margin="0,4,0,0" FontSize="12" />
+                          <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4"
+                                   Text="{Binding EntityDetail.SendBody}"
+                                   AcceptsReturn="True" MinHeight="60"
+                                   Watermark="Message body (plain text or JSON)" />
+                          <TextBlock Grid.Row="6" Grid.Column="0" Text="Metadata:"
+                                     VerticalAlignment="Top" Margin="0,4,0,0" FontSize="12" />
+                          <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="4"
+                                   Text="{Binding EntityDetail.SendMetadata}"
+                                   AcceptsReturn="True" MinHeight="44"
+                                   Watermark="JSON object or key=value lines" />
+                        </Grid>
+                        <Button Content="Send"
+                                Command="{Binding EntityDetail.SendMessageCommand}"
+                                Classes="accent"
+                                HorizontalAlignment="Right" />
+                      </StackPanel>
+                    </Border>
+
+                  </StackPanel>
+
+                  <!-- Message list + conditional body preview -->
+                  <Grid RowDefinitions="Auto,*">
+
+                    <TextBlock Grid.Row="0"
+                               Margin="8,4,8,4"
+                               Text="{Binding EntityDetail.ShownMessagesLabel}"
+                               FontSize="12" Opacity="0.6" />
+
+                    <!-- The inner grid guarantees the DataGrid stays visible in the star row. -->
+                    <Grid Grid.Row="1" RowDefinitions="*,Auto,Auto">
+                      <DataGrid Grid.Row="0"
+                                ItemsSource="{Binding EntityDetail.Messages}"
+                                SelectedItem="{Binding EntityDetail.SelectedMessage}"
+                                IsReadOnly="True"
+                                AutoGenerateColumns="False"
+                                CanUserResizeColumns="True"
+                                GridLinesVisibility="Horizontal"
+                                HeadersVisibility="Column"
+                                HorizontalScrollBarVisibility="Auto"
+                                VerticalScrollBarVisibility="Auto"
+                                FontSize="12"
+                                MinHeight="120">
+                        <DataGrid.Columns>
+                          <DataGridTextColumn Header="Message ID"     Binding="{Binding MessageId}"      Width="220" CanUserResize="True" />
+                          <DataGridTextColumn Header="Seq#"           Binding="{Binding SequenceNumber}" Width="70"  CanUserResize="True" />
+                          <DataGridTextColumn Header="Size"           Binding="{Binding SizeDisplay}"    Width="80"  CanUserResize="True" />
+                          <DataGridTextColumn Header="Enqueued (UTC)" Binding="{Binding EnqueuedTime}"   Width="200" CanUserResize="True" />
+                          <DataGridTextColumn Header="Expires (UTC)"  Binding="{Binding ExpiresAtUtc}"   Width="200" CanUserResize="True" />
+                        </DataGrid.Columns>
+                      </DataGrid>
+
+                      <GridSplitter Grid.Row="1"
+                                    Height="4"
+                                    HorizontalAlignment="Stretch"
+                                    ResizeDirection="Rows"
+                                    IsVisible="{Binding EntityDetail.SelectedMessage,
+                                                Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+                      <TextBox Grid.Row="2"
+                               Height="220"
+                               IsVisible="{Binding EntityDetail.SelectedMessage,
+                                           Converter={x:Static ObjectConverters.IsNotNull}}"
+                               Text="{Binding EntityDetail.MessageBody}"
+                               IsReadOnly="True" AcceptsReturn="True"
+                               FontFamily="Courier New, Cascadia Code, Menlo, monospace"
+                               FontSize="12" TextWrapping="Wrap" />
+                    </Grid>
+
+                  </Grid>
+
+                </DockPanel>
+              </TabItem>
+
+              <!-- ── Dead-letter ─────────────────────────────────────────── -->
+              <TabItem Header="Dead-letter">
+                <DockPanel>
+
+                  <StackPanel DockPanel.Dock="Top">
+
+                    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                            Padding="8,4">
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="⚙ Peek dead-letter…"
+                                Command="{Binding EntityDetail.ToggleDlPeekOptionsPanelCommand}"
+                                IsEnabled="{Binding EntityDetail.CanPeekMessages}"
+                                HorizontalAlignment="Left" />
+                        <Button Content="Purge DLQ"
+                                Command="{Binding EntityDetail.PurgeDeadLetterQueueCommand}"
+                                IsVisible="{Binding EntityDetail.IsQueueEntity}" />
+                      </StackPanel>
+                    </Border>
+
+                    <!-- DL peek options panel (collapsible) -->
+                    <Border IsVisible="{Binding EntityDetail.ShowDlPeekOptionsPanel}"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            Padding="16,10">
+                      <StackPanel Spacing="10">
+                        <TextBlock Text="Peek Options" FontWeight="SemiBold" FontSize="13" />
+
+                        <!-- Receive mode -->
+                        <Grid ColumnDefinitions="110,*">
+                          <TextBlock Grid.Column="0" Text="Receive mode:" VerticalAlignment="Center" FontSize="12" />
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20">
+                            <RadioButton Content="Peek (non-destructive)"
+                                         IsChecked="{Binding EntityDetail.IsPeekModeNonDestructive}" />
+                            <RadioButton Content="Peek &amp; Delete"
+                                         IsChecked="{Binding EntityDetail.IsPeekModeDestructive}"
+                                         ToolTip.Tip="Messages will be permanently removed from the dead-letter queue" />
+                          </StackPanel>
+                        </Grid>
+
+                        <!-- Count selection -->
+                        <Grid ColumnDefinitions="110,*">
+                          <TextBlock Grid.Column="0" Text="Count:" VerticalAlignment="Center" FontSize="12" />
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center">
+                            <RadioButton Content="All"  IsChecked="{Binding EntityDetail.IsCountAll}" />
+                            <RadioButton Content="Top"  IsChecked="{Binding EntityDetail.IsCountTop}" />
+                            <RadioButton Content="Last" IsChecked="{Binding EntityDetail.IsCountLast}"
+                                         ToolTip.Tip="Takes the last N messages from a large fetch" />
+                            <NumericUpDown IsVisible="{Binding EntityDetail.ShowPeekCountInput}"
+                                           Value="{Binding EntityDetail.PeekCountValue}"
+                                           Minimum="1" Maximum="10000"
+                                           Increment="10"
+                                           ShowButtonSpinner="False"
+                                           FormatString="N0"
+                                           Width="140"
+                                           Margin="12,0,0,0" />
+                          </StackPanel>
+                        </Grid>
+
+                        <!-- Actions -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                          <Button Content="Cancel"
+                                  Command="{Binding EntityDetail.ToggleDlPeekOptionsPanelCommand}" />
+                          <Button Content="Peek"
+                                  Command="{Binding EntityDetail.ExecuteDlPeekCommand}"
+                                  Classes="accent" />
+                        </StackPanel>
+                      </StackPanel>
+                    </Border>
+
+                  </StackPanel>
+
+                  <!-- DLQ message list + conditional body preview -->
+                  <Grid RowDefinitions="Auto,*">
+
+                    <TextBlock Grid.Row="0"
+                               Margin="8,4,8,4"
+                               Text="{Binding EntityDetail.ShownDeadLetterMessagesLabel}"
+                               FontSize="12" Opacity="0.6" />
+
+                    <Grid Grid.Row="1" RowDefinitions="*,Auto,Auto">
+                      <DataGrid Grid.Row="0"
+                                ItemsSource="{Binding EntityDetail.DeadLetterMessages}"
+                                SelectedItem="{Binding EntityDetail.SelectedDeadLetterMessage}"
+                                IsReadOnly="True"
+                                AutoGenerateColumns="False"
+                                CanUserResizeColumns="True"
+                                GridLinesVisibility="Horizontal"
+                                HeadersVisibility="Column"
+                                HorizontalScrollBarVisibility="Auto"
+                                VerticalScrollBarVisibility="Auto"
+                                FontSize="12"
+                                MinHeight="120">
+                        <DataGrid.Columns>
+                          <DataGridTextColumn Header="Message ID"     Binding="{Binding MessageId}"         Width="220" CanUserResize="True" />
+                          <DataGridTextColumn Header="Seq#"           Binding="{Binding SequenceNumber}"    Width="70"  CanUserResize="True" />
+                          <DataGridTextColumn Header="Size"           Binding="{Binding SizeDisplay}"       Width="80"  CanUserResize="True" />
+                          <DataGridTextColumn Header="Enqueued (UTC)" Binding="{Binding EnqueuedTime}"      Width="200" CanUserResize="True" />
+                          <DataGridTextColumn Header="Expires (UTC)"  Binding="{Binding ExpiresAtUtc}"      Width="200" CanUserResize="True" />
+                          <DataGridTextColumn Header="DL Reason"      Binding="{Binding DeadLetterReason}"  Width="240" CanUserResize="True" />
+                        </DataGrid.Columns>
+                      </DataGrid>
+
+                      <GridSplitter Grid.Row="1"
+                                    Height="4"
+                                    HorizontalAlignment="Stretch"
+                                    ResizeDirection="Rows"
+                                    IsVisible="{Binding EntityDetail.SelectedDeadLetterMessage,
+                                                Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+                      <TextBox Grid.Row="2"
+                               Height="220"
+                               IsVisible="{Binding EntityDetail.SelectedDeadLetterMessage,
+                                           Converter={x:Static ObjectConverters.IsNotNull}}"
+                               Text="{Binding EntityDetail.DeadLetterMessageBody}"
+                               IsReadOnly="True" AcceptsReturn="True"
+                               FontFamily="Courier New, Cascadia Code, Menlo, monospace"
+                               FontSize="12" TextWrapping="Wrap" />
+                    </Grid>
+
+                  </Grid>
+
+                </DockPanel>
+              </TabItem>
+
+              <!-- ── Output ──────────────────────────────────────────────── -->
+              <TabItem Header="Output">
+                <DockPanel>
+                  <Border DockPanel.Dock="Top"
+                          Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                          Padding="8,4">
+                    <Button Content="Clear log"
+                            Command="{Binding EntityDetail.ClearLogCommand}"
+                            HorizontalAlignment="Right" />
+                  </Border>
+                  <ListBox ItemsSource="{Binding EntityDetail.LogEntries}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <Grid ColumnDefinitions="70,28,*" Margin="4,2">
+                          <TextBlock Grid.Column="0" Text="{Binding TimestampText}" Opacity="0.6" FontSize="12" />
+                          <TextBlock Grid.Column="1" Text="{Binding LevelTag}"
+                                     Foreground="{Binding LevelColor}"
+                                     HorizontalAlignment="Center" />
+                          <TextBlock Grid.Column="2" Text="{Binding Message}"
+                                     TextWrapping="Wrap" FontSize="12" />
+                        </Grid>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </DockPanel>
+              </TabItem>
+
+            </TabControl>
+
+          </DockPanel>
+        </DockPanel>
+
+      </Grid>
+    </Panel>
+  </DockPanel>
+</Window>

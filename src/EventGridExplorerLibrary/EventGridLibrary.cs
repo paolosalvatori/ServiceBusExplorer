@@ -31,7 +31,7 @@ namespace EventGridExplorerLibrary
 
         public EventGridLibrary(string subscriptionId, string apiVersion, int maxWaitTime, string customId, WriteToLogDelegate writeToLog)
         {
-            string tenantId = customId == string.Empty ? null : customId;
+            var tenantId = customId == string.Empty ? null : customId;
             var apiVersionToUse = string.IsNullOrEmpty(apiVersion) ? DefaultApiVersion : apiVersion;
             eventGridControlPlaneClient = new EventGridControlPlaneClient(subscriptionId, tenantId);
             this.maxWaitTime = maxWaitTime;
@@ -46,15 +46,15 @@ namespace EventGridExplorerLibrary
 
         public async Task<AsyncPageable<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName, string hostname)
         {
-            NamespaceTopicCollection namespaceTopicCollection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
-            AsyncPageable<NamespaceTopicResource> pages = namespaceTopicCollection.GetAllAsync();
-            IAsyncEnumerator<NamespaceTopicResource> enumerator = pages.GetAsyncEnumerator();
+            var namespaceTopicCollection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
+            var pages = namespaceTopicCollection.GetAllAsync();
+            var enumerator = pages.GetAsyncEnumerator();
 
             try
             {
                 while (await enumerator.MoveNextAsync())
                 {
-                    NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(enumerator.Current.Data.Name)).Value;
+                    var namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(enumerator.Current.Data.Name)).Value;
                     var key = (await namespaceTopicResource.GetSharedAccessKeysAsync()).Value;
                     dataPlaneClients[enumerator.Current.Data.Name] = new EventGridClient(new Uri(hostname), new AzureKeyCredential(key.Key1));
                 }
@@ -69,9 +69,9 @@ namespace EventGridExplorerLibrary
 
         public async Task<AsyncPageable<NamespaceTopicEventSubscriptionResource>> GetEventSubscriptionsAsync(string resourceGroupName, string namespaceName, string topicName)
         {
-            NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
-            NamespaceTopicEventSubscriptionCollection namespaceTopicEventSubscriptionCollection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
-            AsyncPageable<NamespaceTopicEventSubscriptionResource> pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
+            var namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
+            var namespaceTopicEventSubscriptionCollection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
+            var pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
 
             return pages;
         }
@@ -105,11 +105,11 @@ namespace EventGridExplorerLibrary
 
         public async Task PublishEventsAsync(string topicName, string eventSource, string eventType, List<string> publishEvents)
         {
-            CloudEvent[] cloudEvents = new CloudEvent[publishEvents.Count];
+            var cloudEvents = new CloudEvent[publishEvents.Count];
 
-            for (int i = 0; i < cloudEvents.Length; i++)
+            for (var i = 0; i < cloudEvents.Length; i++)
             {
-                string eventModel = publishEvents[i];
+                var eventModel = publishEvents[i];
                 cloudEvents[i] = new CloudEvent(eventSource, eventType, eventModel);
             }
 
@@ -171,7 +171,7 @@ namespace EventGridExplorerLibrary
                 if (succeededLockTokens.Count > 0)
                 {
                     writeToLog($"Success Count: {succeededLockTokens.Count}");
-                    foreach (string lockToken in succeededLockTokens)
+                    foreach (var lockToken in succeededLockTokens)
                     {
                         writeToLog($"Lock Token: {lockToken}");
                     }
@@ -180,7 +180,7 @@ namespace EventGridExplorerLibrary
                 if (failedLockTokens.Count > 0)
                 {
                     writeToLog($"Failed Count: {failedLockTokens.Count}");
-                    foreach (FailedLockToken lockToken in failedLockTokens)
+                    foreach (var lockToken in failedLockTokens)
                     {
                         writeToLog($"Lock Token: {lockToken.LockToken}");
                         writeToLog($"Error Code: {lockToken.Error.Code}");
