@@ -184,6 +184,7 @@ Here are a couple of alternatives. We do not take responsibility for them though
 | [Superbus]                               | paid with a free trial, macOS                 |
 | [Service Bus Cloud Explorer]             | paid with a free basic plan, SaaS, web based  |
 | [Service Bus TUI](https://github.com/MonsieurTib/service-bus-tui) | free, open source, cross platform, terminal based             |
+| [bussin](https://bussin.dev) | free, source-available, browser based PWA, no installation required |
 
 [PowerShell]: https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps
 [Purple Explorer]: https://github.com/philipmat/PurpleExplorer
