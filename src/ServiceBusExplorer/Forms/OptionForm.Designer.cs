@@ -1352,8 +1352,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageAuthentication.Size = new System.Drawing.Size(576, 360);
             this.tabPageAuthentication.TabIndex = 6;
             this.tabPageAuthentication.Text = "&Authentication";
-            this.tabPageAuthentication.Paint += new System.Windows.Forms.PaintEventHandler(this.tabAuthentication_Paint);
-            // 
+            //
             // btnDeleteTenantId
             // 
             this.btnDeleteTenantId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));

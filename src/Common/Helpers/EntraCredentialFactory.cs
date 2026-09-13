@@ -87,13 +87,13 @@ namespace ServiceBusExplorer.Helpers
             var normalizedTenantId = NormalizeTenantId(tenantId);
             return interactiveBrowserCredentials.GetOrAdd(normalizedTenantId, _ =>
             {
+                // Deliberately in-memory only. Cross-process silent sign-in would additionally require
+                // persisting an AuthenticationRecord, which this tool does not do, so a persisted cache
+                // would store refresh tokens on disk for no benefit and would leave ClearCache unable to
+                // log the user out.
                 var options = new InteractiveBrowserCredentialOptions
                 {
-                    TenantId = normalizedTenantId,
-                    TokenCachePersistenceOptions = new TokenCachePersistenceOptions
-                    {
-                        Name = "ServiceBusExplorer"
-                    }
+                    TenantId = normalizedTenantId
                 };
 
                 return new InteractiveBrowserCredential(options);
@@ -189,8 +189,10 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Clears all cached credentials and authentication state.
-        /// This effectively logs out the user from Entra ID for this application.
+        /// Clears the in-process credential caches, so the next connection re-runs the
+        /// interactive sign-in. Any MSAL cache persisted on disk by an older version of this
+        /// tool is not affected, and the browser session cookie is not cleared, so this is not
+        /// a full Entra sign-out.
         /// </summary>
         public static void ClearCache()
         {
@@ -198,7 +200,9 @@ namespace ServiceBusExplorer.Helpers
             authenticationCallbacks.Clear();
             tokenCredentials.Clear();
             tokenProviders.Clear();
-            interactiveLoginGates.Clear();
+            // interactiveLoginGates is deliberately not cleared: the semaphores are mutual-exclusion
+            // primitives, not cached state, and removing one that a sign-in still holds would let a
+            // concurrent caller open a second browser prompt.
         }
 
         static string[] GetScopes(string resource)

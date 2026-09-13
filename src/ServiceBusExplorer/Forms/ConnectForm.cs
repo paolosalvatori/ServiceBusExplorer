@@ -380,6 +380,7 @@ namespace ServiceBusExplorer.Forms
             txtEntityPath.Text = string.Empty;
             txtIssuerName.Text = string.Empty;
             cboTenantIds.SelectedIndex = -1;
+            cboTenantIds.Text = string.Empty;
             txtIssuerSecret.Text = string.Empty;
         }
 
@@ -677,6 +678,7 @@ namespace ServiceBusExplorer.Forms
 
             if (UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint))
             {
+                txtUri.Text = selectedNamespace.ConnectionString;
             }
             else
             {
@@ -731,7 +733,14 @@ namespace ServiceBusExplorer.Forms
                 // Clear SAS-specific fields when switching to Entra
                 txtIssuerName.Text = string.Empty;
             }
-           
+            else if (cboServiceBusNamespace.Text == EnterConnectionString)
+            {
+                // Switching to SAS with the raw connection-string editor active: txtUri
+                // currently holds just the Entra endpoint, which would otherwise be reused
+                // verbatim as the SAS connection string.
+                txtUri.Text = string.Empty;
+                txtIssuerName.Text = string.Empty;
+            }
 
             GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
             UpdateConnectionSettingsUi(connectionStringType, containsStsEndpoint);

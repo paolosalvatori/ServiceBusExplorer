@@ -491,7 +491,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.logOutFromEntraToolStripMenuItem.Name = "logOutFromEntraToolStripMenuItem";
             this.logOutFromEntraToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.logOutFromEntraToolStripMenuItem.Text = "Partial &log out from Entra";
+            this.logOutFromEntraToolStripMenuItem.Text = "&Log out from Entra";
             this.logOutFromEntraToolStripMenuItem.Click += new System.EventHandler(this.logOutFromEntraToolStripMenuItem_Click);
             // 
             // savedConnectionsToolStripMenuItem

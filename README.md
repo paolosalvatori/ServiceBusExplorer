@@ -84,7 +84,7 @@ Service Bus Explorer supports interactive browser sign-in for Azure Service Bus 
 2. Select `Select a service bus namespace...` for a manual connection, or edit an existing saved connection.
 3. Change `Authentication` to `Entra`.
 4. Enter the namespace endpoint as either `sb://<namespace>.servicebus.windows.net/` or `<namespace>.servicebus.windows.net`.
-5. Optionally enter `Tenant ID` and `Entity Path`. If `Tenant ID` is left blank, Service Bus Explorer uses the `organizations` endpoint. In that case the sign-in flow accepts work or school accounts only. To sign in using a personal Microsoft account enter the target tenant ID.  
+5. Optionally enter `Tenant ID` and `Entity Path`. If `Tenant ID` is left blank, Service Bus Explorer uses the `organizations` endpoint. In that case the sign-in flow accepts work or school accounts only. To sign in with a personal Microsoft account, enter the target tenant ID; note that the account must already have been invited into that tenant as a guest and been granted a Service Bus data role, otherwise sign-in succeeds but every operation is refused.
 6. Click `OK` and complete the browser sign-in flow.
 
 > **Note**
@@ -93,7 +93,7 @@ Service Bus Explorer supports interactive browser sign-in for Azure Service Bus 
 >
 
 ### Cached credentials
-The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Partial log out from Entra" for that. 
+The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Log out from Entra" for that.
 
 ### Screenshots
 
@@ -156,12 +156,12 @@ Here are some guidelines concerning contributions:
 
 ## Development Environment
 
-Visual Studio 2026 18.8.0 or later is required to build the solution. 
+Visual Studio 2022 17.8.0 or later is required to build the solution. 
 
 When editing UI elements Visual Studio should run as a DPI-unaware process. 
 For more information about this, see the 
 [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). 
-In Visual Studio 2026 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
+In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
 when it is running as a DPI-unaware process.
 
 

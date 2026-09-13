@@ -97,6 +97,9 @@ namespace ServiceBusExplorer.Helpers
         const string ConnectionStringEntityPath = "entitypath";
         const string ConnectionStringAuthMode = "authmode";
         const string ConnectionStringTenantId = "tenantid";
+        // Wire value, not display text. Saved namespaces persist "AuthMode=AAD", so this string and
+        // the AuthMode=AAD in the EntraConnectionString*Format constants must not be renamed to
+        // "entra" or every existing saved Entra connection stops being recognised.
         const string AuthModeEntra = "aad";
 
         #endregion

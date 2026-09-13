@@ -887,6 +887,18 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
 
+            // The list is persisted as a comma-separated value, so a comma would split one
+            // entry into two on the next start.
+            if (tenantId.Contains(","))
+            {
+                MessageBox.Show(
+                    "A Tenant ID cannot contain a comma. Add one Tenant ID at a time.",
+                    "Invalid Tenant ID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
             if (EntraTenantIdBindingList.Any(x => string.Equals(x.Value, tenantId, StringComparison.OrdinalIgnoreCase)))
             {
                 MessageBox.Show(
@@ -900,15 +912,6 @@ namespace ServiceBusExplorer.Forms
             var item = new EntraTenantIdItem { Value = tenantId };
             EntraTenantIdBindingList.Add(item);
             lbxTenantIds.SelectedItem = item;
-        }
-
-        private void tabAuthentication_Paint(object sender, PaintEventArgs e)
-        {
-            //e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-            //            cboDefaultMessageBodyType.Location.X - 1,
-            //            cboDefaultMessageBodyType.Location.Y - 1,
-            //            cboDefaultMessageBodyType.Size.Width + 1,
-            //            cboDefaultMessageBodyType.Size.Height + 1);
         }
     }
 }
