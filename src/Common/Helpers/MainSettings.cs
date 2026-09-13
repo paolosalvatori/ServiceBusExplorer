@@ -194,7 +194,8 @@ namespace ServiceBusExplorer.Helpers
             if (ProxyUserName != otherProperties.ProxyUserName) return false;
             if (ProxyPassword != otherProperties.ProxyPassword) return false;
             if (!EntraTenantIds.SequenceEqual(otherProperties.EntraTenantIds)) return false;
-            if (!NodesColors.SequenceEqual(otherProperties.NodesColors)) return false;
+            // NodeColorInfo has no value equality, so compare the same serialized form used for persistence.
+            if (NodeColorInfo.FormatAll(NodesColors) != NodeColorInfo.FormatAll(otherProperties.NodesColors)) return false;
 
             return true;
         }

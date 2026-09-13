@@ -89,11 +89,11 @@ Service Bus Explorer supports interactive browser sign-in for Azure Service Bus 
 
 > **Note**
 >
-> The `File -> Connect using Entra (Event grid)` menu entry is for Event Grid, not Azure Service Bus. For Service Bus, use the normal connection dialog and switch the `Authentication` selector to `Entra`.
+> The `File -> Connect to Event Grid` menu entry is for Event Grid, not Azure Service Bus. For Service Bus, use the normal connection dialog and switch the `Authentication` selector to `Entra`.
 >
 
 ### Cached credentials
-The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Log out from Entra" for that.
+The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Log out from Entra" for that. This clears the credentials cached by Service Bus Explorer only; it does not sign you out of Entra in your browser, so a new sign-in may still pick the same account automatically unless you also sign out there.
 
 ### Screenshots
 
@@ -138,8 +138,8 @@ Endpoint=sb://<namespace>.servicebus.windows.net/;AuthMode=AAD
 ### Current scope
 
 - Interactive browser sign-in only
-- Entra mode currently loads Service Bus queues, topics, and subscriptions only
-- Event Hubs, Notification Hubs, and Relay are not loaded when Entra authentication is selected
+- Entra mode currently loads Service Bus queues and topics (with subscriptions), plus Event Hubs when the namespace is detected as an Event Hubs namespace
+- Notification Hubs and Relay are not loaded when Entra authentication is selected
 - Local persistence stores metadata only, not passwords or SAS keys
 - Managed identity, Azure CLI auth and service principal auth are not included in this feature
 

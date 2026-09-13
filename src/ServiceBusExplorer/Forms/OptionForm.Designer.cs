@@ -1511,8 +1511,7 @@ namespace ServiceBusExplorer.Forms
             this.colorDataGridViewTextBoxColumn.HeaderText = "Color";
             this.colorDataGridViewTextBoxColumn.Name = "colorDataGridViewTextBoxColumn";
             this.colorDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colorDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
+            //
             // activeMessageCountThresholdDataGridViewTextBoxColumn
             // 
             this.activeMessageCountThresholdDataGridViewTextBoxColumn.DataPropertyName = "ActiveMessageCountThreshold";

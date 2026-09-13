@@ -7819,7 +7819,8 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 serviceBusHelper.LogOutFromEntra();
-                WriteToLog("Logged out from Entra. You will need to sign in again next time you connect.");
+                WriteToLog("Cleared cached Entra credentials for this app. You will need to sign in again next time you connect. "
+                    + "This does not sign you out of Entra in your browser, so a new sign-in may still pick the same account automatically.");
             }
             catch (Exception ex)
             {

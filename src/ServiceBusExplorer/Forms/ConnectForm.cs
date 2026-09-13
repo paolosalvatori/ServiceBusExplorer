@@ -71,7 +71,8 @@ namespace ServiceBusExplorer.Forms
         private const string replacementText = "{replace}";
         private const string SelectedEntitiesTooltip = "Select which entity groups Service Bus Explorer loads for this namespace.";
         private const string EntraSelectedEntitiesTooltip =
-            "Entra connections currently load queues and topics. Subscription nodes remain available under topics.";
+            "Entra connections currently load queues and topics (subscription nodes remain available under topics), "
+            + "plus Event Hubs when the namespace is detected as an Event Hubs namespace.";
 
         //***************************
         // Tooltips

@@ -102,6 +102,7 @@ namespace ServiceBusExplorer.Forms
             ConfigFileUse = configFileUse;
             cboConfigFile.SelectedIndex = GetIndexForConfigFileUseUIString(ConfigFileUse);
 
+            EntraTenantIdBindingList.ListChanged += EntraTenantIdsListChanged;
             NodesColorInfoBindingList.ListChanged += NodesColorsListChanged;
             nodeColorsBindingSource.DataSource = NodesColorInfoBindingList;
 
@@ -547,6 +548,11 @@ namespace ServiceBusExplorer.Forms
         private void NodesColorsListChanged(object sender, ListChangedEventArgs e)
         {
             MainSettings.NodesColors = NodesColorInfoBindingList.ToList();
+        }
+
+        private void EntraTenantIdsListChanged(object sender, ListChangedEventArgs e)
+        {
+            MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
         }
 
         #endregion
