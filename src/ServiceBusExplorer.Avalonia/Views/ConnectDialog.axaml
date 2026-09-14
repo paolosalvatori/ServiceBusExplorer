@@ -1,0 +1,179 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ServiceBusExplorer.Avalonia.ViewModels"
+        x:Class="ServiceBusExplorer.Avalonia.Views.ConnectDialog"
+        x:DataType="vm:ConnectViewModel"
+        Title="Connect to Service Bus Namespace"
+        Width="580" SizeToContent="Height"
+        MinHeight="500"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="24" Spacing="0">
+
+      <!-- ── Heading ───────────────────────────────────────────────────────── -->
+      <TextBlock Text="Connect to Service Bus Namespace"
+                 FontSize="18" FontWeight="SemiBold"
+                 Margin="0,0,0,20" />
+
+      <!-- ── Saved connections ─────────────────────────────────────────────── -->
+      <TextBlock Text="Saved namespace:" FontWeight="Medium" Margin="0,0,0,4" />
+      <Grid ColumnDefinitions="*,8,Auto" Margin="0,0,0,16">
+        <ComboBox Grid.Column="0"
+                  ItemsSource="{Binding SavedConnections}"
+                  SelectedItem="{Binding SelectedConnection}"
+                  DisplayMemberBinding="{Binding DisplayName}"
+                  PlaceholderText="Select a saved namespace…"
+                  HorizontalAlignment="Stretch" />
+        <Button Grid.Column="2"
+                Content="Delete"
+                Command="{Binding DeleteSelectedConnectionCommand}"
+                IsEnabled="{Binding SelectedConnection, Converter={x:Static ObjectConverters.IsNotNull}}"
+                ToolTip.Tip="Remove the selected saved connection" />
+      </Grid>
+
+      <!-- ── Authentication mode ───────────────────────────────────────────── -->
+      <TextBlock Text="Authentication:" FontWeight="Medium" Margin="0,0,0,6" />
+      <StackPanel Orientation="Horizontal" Spacing="24" Margin="0,0,0,16">
+        <RadioButton Content="Shared Access Signature (SAS)"
+                     IsChecked="{Binding IsSasMode, Mode=TwoWay}" />
+        <RadioButton Content="Azure Active Directory (Entra ID)"
+                     IsChecked="{Binding IsAadMode, Mode=TwoWay}" />
+        <RadioButton Content="Windows (compat)"
+                     IsChecked="{Binding IsWindowsMode, Mode=TwoWay}"
+                     ToolTip.Tip="On-premises Service Bus for Windows Server only. Compatibility mode — uses legacy SDK adapter." />
+      </StackPanel>
+
+      <!-- ── SAS panel ──────────────────────────────────────────────────────── -->
+      <StackPanel IsVisible="{Binding IsSasMode}" Spacing="8" Margin="0,0,0,16">
+        <TextBlock Text="Connection String:" FontWeight="Medium" />
+        <TextBox Text="{Binding ConnectionString}"
+                 Watermark="Endpoint=sb://…;SharedAccessKeyName=…;SharedAccessKey=…"
+                 AcceptsReturn="False" />
+
+        <!-- Auto-parse helper -->
+        <Button Content="Parse connection string"
+                Command="{Binding ParseConnectionStringInputCommand}"
+                HorizontalAlignment="Left" />
+
+        <TextBlock Text="Or enter endpoint + keys separately:"
+                   FontSize="12" Opacity="0.6" Margin="0,4,0,0" />
+        <TextBlock Text="Endpoint URI:" />
+        <TextBox Text="{Binding Endpoint}"
+                 Watermark="sb://mynamespace.servicebus.windows.net/" />
+      </StackPanel>
+
+      <!-- ── AAD panel ──────────────────────────────────────────────────────── -->
+      <StackPanel IsVisible="{Binding IsAadMode}" Spacing="8" Margin="0,0,0,16">
+        <TextBlock Text="Namespace Endpoint:" FontWeight="Medium" />
+        <TextBox Text="{Binding Endpoint}"
+                 Watermark="sb://mynamespace.servicebus.windows.net/ or mynamespace.servicebus.windows.net" />
+        <TextBlock Text="Tenant ID (optional):" />
+        <TextBox Text="{Binding TenantId}"
+                 Watermark="Leave blank for organizations endpoint (work / school accounts)" />
+        <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                CornerRadius="4" Padding="10,8" Margin="0,4,0,0">
+          <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">
+            <Run Text="Clicking "/>
+            <Run Text="Connect" FontWeight="SemiBold" />
+            <Run Text=" will open an interactive browser window to complete Entra ID sign-in." />
+          </TextBlock>
+        </Border>
+      </StackPanel>
+
+      <!-- ── Windows panel (compat) ─────────────────────────────────────────── -->
+      <StackPanel IsVisible="{Binding IsWindowsMode}" Spacing="8" Margin="0,0,0,16">
+        <Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                CornerRadius="4" Padding="10,8">
+          <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8"
+                     Text="On-premises Windows auth is a compatibility-mode feature. It requires the legacy SDK adapter on the Windows host. Not supported on macOS or Linux." />
+        </Border>
+        <TextBlock Text="Endpoint URI:" />
+        <TextBox Text="{Binding Endpoint}"
+                 Watermark="sb://machine/namespace" />
+      </StackPanel>
+
+      <!-- ── Transport type ─────────────────────────────────────────────────── -->
+      <TextBlock Text="Transport Type:" FontWeight="Medium" Margin="0,0,0,4" />
+      <ComboBox ItemsSource="{Binding AvailableTransportTypes}"
+                SelectedItem="{Binding TransportType}"
+                HorizontalAlignment="Stretch"
+                Margin="0,0,0,16" />
+
+      <!-- ── Entity selection ──────────────────────────────────────────────── -->
+      <TextBlock Text="Load Entity Types:" FontWeight="Medium" Margin="0,0,0,6" />
+      <WrapPanel Margin="0,0,0,16">
+        <CheckBox Content="Queues"             IsChecked="{Binding SelectQueues}"           Margin="0,0,16,4" />
+        <CheckBox Content="Topics"             IsChecked="{Binding SelectTopics}"           Margin="0,0,16,4" />
+        <CheckBox Content="Event Hubs"         IsChecked="{Binding SelectEventHubs}"        Margin="0,0,16,4" />
+        <CheckBox Content="Notification Hubs"  IsChecked="{Binding SelectNotificationHubs}" Margin="0,0,16,4" />
+        <CheckBox Content="Relays"             IsChecked="{Binding SelectRelays}"           Margin="0,0,16,4" />
+      </WrapPanel>
+
+      <Grid IsVisible="{Binding IsNotificationHubNameVisible}"
+            ColumnDefinitions="140,*"
+            Margin="0,-8,0,16">
+        <TextBlock Grid.Column="0"
+                   Text="Notification Hub name:"
+                   VerticalAlignment="Center" />
+        <TextBox Grid.Column="1"
+                 Text="{Binding NotificationHubName}"
+                 Watermark="hub name (EntityPath)" />
+      </Grid>
+
+      <!-- ── OData filter expressions ─────────────────────────────────────── -->
+      <TextBlock Text="OData Filters (optional):" FontWeight="Medium" Margin="0,0,0,6" />
+      <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,8,Auto,8,Auto"
+            Margin="0,0,0,16">
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Queue filter:"
+                   VerticalAlignment="Center" />
+        <TextBox   Grid.Row="0" Grid.Column="1"
+                   Text="{Binding QueueFilter}"
+                   Watermark="e.g. Startswith(Path, 'orders')" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Topic filter:"
+                   VerticalAlignment="Center" />
+        <TextBox   Grid.Row="2" Grid.Column="1"
+                   Text="{Binding TopicFilter}"
+                   Watermark="e.g. Startswith(Path, 'events')" />
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Subscription filter:"
+                   VerticalAlignment="Center" />
+        <TextBox   Grid.Row="4" Grid.Column="1"
+                   Text="{Binding SubscriptionFilter}"
+                   Watermark="e.g. Startswith(Name, 'sub')" />
+      </Grid>
+
+      <!-- ── Save-as ───────────────────────────────────────────────────────── -->
+      <TextBlock Text="Save connection as (optional):" FontWeight="Medium" Margin="0,0,0,4" />
+      <TextBox Text="{Binding SaveConnectionName}"
+               Watermark="Display name — leave blank to connect without saving"
+               Margin="0,0,0,20" />
+
+      <!-- ── Status / error message ────────────────────────────────────────── -->
+      <Border IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+              Background="#20FF4444" CornerRadius="4" Padding="10,8" Margin="0,0,0,12">
+        <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                   Foreground="#CC0000" FontSize="12" />
+      </Border>
+
+      <!-- ── Buttons ───────────────────────────────────────────────────────── -->
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button Content="Cancel" Click="OnCancelClicked" Padding="16,6" />
+        <Button Content="{Binding ConnectButtonLabel}"
+                Command="{Binding ConnectCommand}"
+                IsEnabled="{Binding IsBusy, Converter={x:Static BoolConverters.Not}}"
+                Classes="accent"
+                IsDefault="True"
+                Padding="16,6" />
+      </StackPanel>
+
+      <!-- Bottom spacer -->
+      <Border Height="8" />
+
+    </StackPanel>
+  </ScrollViewer>
+</Window>
+

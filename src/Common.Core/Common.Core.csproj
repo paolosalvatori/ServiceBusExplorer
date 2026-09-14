@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <AssemblyName>ServiceBusExplorer.Common.Core</AssemblyName>
+    <RootNamespace>ServiceBusExplorer.Core</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <NoWarn>7035</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity"              Version="1.13.2" />
+    <PackageReference Include="Azure.Messaging.ServiceBus"  Version="7.19.0" />
+    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
+    <PackageReference Include="Newtonsoft.Json"             Version="13.0.3" />
+  </ItemGroup>
+</Project>
