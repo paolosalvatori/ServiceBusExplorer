@@ -68,6 +68,11 @@ namespace ServiceBusExplorer.Helpers
         public const string ProxyUserName = "Proxy.UserName";
         public const string ProxyPassword = "Proxy.Password";
         public const string EntraTenantIds = "Entra.TenantIds";
+        // TwoFilesConfiguration.GetStringValue treats an empty string as "no override" and falls
+        // back to the other config file. This sentinel lets an explicitly emptied tenant list be
+        // persisted and read back as empty instead of resurrecting a stale non-empty value from
+        // the other config file in "Both" mode.
+        public const string EntraTenantIdsClearedMarker = "(cleared)";
         public const string NodesColors = "Colors.Nodes";
 
         #endregion

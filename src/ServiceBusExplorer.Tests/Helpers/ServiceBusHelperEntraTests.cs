@@ -106,6 +106,31 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
+        public void EntraCredentialFactory_ClearCache_ReturnsNewInstancesForSameTenant()
+        {
+            // Uses a tenant ID not referenced by any other test in this class: EntraCredentialFactory's
+            // caches are static, and ClearCache() clears them for every tenant, not just this one.
+            const string tenantId = "clear-cache-regression-tenant";
+
+            var credential1 = EntraCredentialFactory.CreateInteractiveBrowserCredential(tenantId);
+            var callback1 = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenantId);
+            var provider1 = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
+            var tokenCredential1 = EntraCredentialFactory.CreateNewSdkTokenCredential(tenantId);
+
+            EntraCredentialFactory.ClearCache();
+
+            var credential2 = EntraCredentialFactory.CreateInteractiveBrowserCredential(tenantId);
+            var callback2 = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenantId);
+            var provider2 = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
+            var tokenCredential2 = EntraCredentialFactory.CreateNewSdkTokenCredential(tenantId);
+
+            credential2.Should().NotBeSameAs(credential1, "ClearCache should force a fresh sign-in");
+            callback2.Should().NotBeSameAs(callback1);
+            provider2.Should().NotBeSameAs(provider1);
+            tokenCredential2.Should().NotBeSameAs(tokenCredential1);
+        }
+
+        [Fact]
         public void EntraCredentialFactory_BlankTenant_ReusesSameCredentialAsOrganizations()
         {
             var fromNull = EntraCredentialFactory.CreateInteractiveBrowserCredential(null);

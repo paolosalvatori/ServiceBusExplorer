@@ -232,10 +232,12 @@ namespace ServiceBusExplorer.Common.Helpers
             resultProperties.ProxyPassword = configuration.GetStringValue(ConfigurationParameters.ProxyPassword, string.Empty);
             
             var entraTenantIdsValue = configuration.GetStringValue(ConfigurationParameters.EntraTenantIds, string.Empty);
-            resultProperties.EntraTenantIds = GetParameterValueAsList(entraTenantIdsValue)
-                .Where(s => !string.IsNullOrEmpty(s))
-                .Select(s => new EntraTenantIdItem { Value = s })
-                .ToList();
+            resultProperties.EntraTenantIds = entraTenantIdsValue == ConfigurationParameters.EntraTenantIdsClearedMarker
+                ? new List<EntraTenantIdItem>()
+                : GetParameterValueAsList(entraTenantIdsValue)
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .Select(s => new EntraTenantIdItem { Value = s })
+                    .ToList();
 
             resultProperties.NodesColors = NodeColorInfo.ParseAll(configuration.GetStringValue(ConfigurationParameters.NodesColors, string.Empty));
 

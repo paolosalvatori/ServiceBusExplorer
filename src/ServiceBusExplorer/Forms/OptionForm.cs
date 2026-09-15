@@ -701,8 +701,10 @@ namespace ServiceBusExplorer.Forms
 
             if (!readSettings.EntraTenantIds.SequenceEqual(MainSettings.EntraTenantIds))
             {
-                configuration.SetValue(ConfigurationParameters.EntraTenantIds,
-                    string.Join(",", MainSettings.EntraTenantIds.Select(x => x.Value)));
+                var serializedTenantIds = MainSettings.EntraTenantIds.Count == 0
+                    ? ConfigurationParameters.EntraTenantIdsClearedMarker
+                    : string.Join(",", MainSettings.EntraTenantIds.Select(x => x.Value));
+                configuration.SetValue(ConfigurationParameters.EntraTenantIds, serializedTenantIds);
             }
 
             SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
@@ -894,11 +896,13 @@ namespace ServiceBusExplorer.Forms
             }
 
             // The list is persisted as a comma-separated value, so a comma would split one
-            // entry into two on the next start.
-            if (tenantId.Contains(","))
+            // entry into two on the next start. A semicolon is also rejected because tenant IDs
+            // are later interpolated into the semicolon-delimited Entra connection string, where
+            // it could inject an extra field (e.g. "tenant;EntityPath=other").
+            if (tenantId.Contains(",") || tenantId.Contains(";"))
             {
                 MessageBox.Show(
-                    "A Tenant ID cannot contain a comma. Add one Tenant ID at a time.",
+                    "A Tenant ID cannot contain a comma or a semicolon.",
                     "Invalid Tenant ID",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);

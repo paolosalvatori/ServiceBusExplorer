@@ -742,6 +742,15 @@ namespace ServiceBusExplorer.Helpers
         public static string BuildEntraConnectionString(string endpoint, string tenantId,
             TransportType transportType, string entityPath = null)
         {
+            // tenantId is interpolated directly into a semicolon-delimited connection string.
+            // A semicolon in a manually-typed tenant ID (bypassing the Options-dialog validation)
+            // could otherwise inject an extra field, e.g. "tenant;EntityPath=other".
+            var semicolonIndex = tenantId?.IndexOf(';') ?? -1;
+            if (semicolonIndex >= 0)
+            {
+                tenantId = tenantId.Substring(0, semicolonIndex);
+            }
+
             var hasTenant = !string.IsNullOrWhiteSpace(tenantId);
             var hasEntity = !string.IsNullOrWhiteSpace(entityPath);
 
