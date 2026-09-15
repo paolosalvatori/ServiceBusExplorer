@@ -150,7 +150,7 @@ namespace ServiceBusExplorer
         private string currentSharedAccessKeyName;
         private string currentSharedAccessKey;
         private ServiceBusNamespace serviceBusNamespaceInstance;
-        private Microsoft.ServiceBus.TokenProvider aadTokenProvider;
+        private Microsoft.ServiceBus.TokenProvider entraTokenProvider;
         private MessagingFactory eventHubMessagingFactory;
         private readonly object eventHubFactoryLock = new object();
         private IServiceBusQueue serviceBusQueue;
@@ -191,7 +191,7 @@ namespace ServiceBusExplorer
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
             connectionString = serviceBusHelper.ConnectionString;
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
-            aadTokenProvider = serviceBusHelper.aadTokenProvider;
+            entraTokenProvider = serviceBusHelper.entraTokenProvider;
             namespaceManager = serviceBusHelper.NamespaceManager;
             notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
             MessagingFactory = serviceBusHelper.MessagingFactory;
@@ -241,15 +241,15 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Gets a boolean that indicates if the current namespace uses Azure Active Directory authentication.
+        /// Gets a boolean that indicates if the current namespace uses Entra authentication.
         /// </summary>
-        public bool IsAzureActiveDirectory
+        public bool IsEntra
         {
             get
             {
                 lock (this)
                 {
-                    return serviceBusNamespaceInstance?.IsAzureActiveDirectory == true;
+                    return serviceBusNamespaceInstance?.IsEntra == true;
                 }
             }
         }
@@ -632,9 +632,9 @@ namespace ServiceBusExplorer
         public MessagingFactory CreateMessagingFactory()
         {
             MessagingFactory factory;
-            if (aadTokenProvider != null)
+            if (entraTokenProvider != null)
             {
-                factory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
+                factory = MessagingFactory.Create(namespaceUri, entraTokenProvider);
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
@@ -669,12 +669,12 @@ namespace ServiceBusExplorer
                 throw new ArgumentException("The path argument must not be null or whitespace.", nameof(path));
             }
 
-            if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
+            if (serviceBusNamespaceInstance?.IsEntra == true)
             {
-                if (aadTokenProvider == null)
+                if (entraTokenProvider == null)
                 {
                     throw new InvalidOperationException(
-                        "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                        "Entra token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
                 }
 
                 // Use the cached MessagingFactory created during Connect() instead of
@@ -727,19 +727,19 @@ namespace ServiceBusExplorer
         }
 
         /// <summary>
-        /// Creates a new MessagingFactory for Event Hub operations using AAD token provider.
+        /// Creates a new MessagingFactory for Event Hub operations using Entra token provider.
         /// </summary>
         private MessagingFactory CreateEventHubMessagingFactory()
         {
-            if (aadTokenProvider == null)
+            if (entraTokenProvider == null)
             {
                 throw new InvalidOperationException(
-                    "AAD token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
+                    "Entra token provider is not available. Ensure Connect() has been called before creating Event Hub clients.");
             }
 
             return MessagingFactory.Create(namespaceUri, new MessagingFactorySettings
             {
-                TokenProvider = aadTokenProvider,
+                TokenProvider = entraTokenProvider,
                 TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
             });
         }
@@ -753,16 +753,16 @@ namespace ServiceBusExplorer
         {
             this.serviceBusNamespaceInstance = serviceBusNamespace;
 
-            var isAad = serviceBusNamespace?.IsAzureActiveDirectory == true;
+            var isEntra = serviceBusNamespace?.IsEntra == true;
 
-            if (!isAad && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
+            if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                var endpoint = isAad ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
+                var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
                 throw new Exception($"Could not contact host in connection string: { endpoint }.");
             }
 
@@ -779,7 +779,7 @@ namespace ServiceBusExplorer
                     ReplaceEventHubFactory(null);
                 }
 
-                if (isAad)
+                if (isEntra)
                 {
                     var endpointUri = new Uri(serviceBusNamespace.Uri);
                     var tenantId = serviceBusNamespace.TenantId;
@@ -787,8 +787,8 @@ namespace ServiceBusExplorer
                     // Try Service Bus scope first; if the management probe fails with an
                     // authorization error, the namespace may be an Event Hub namespace that
                     // requires the Event Hub audience instead.
-                    aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(tenantId);
-                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                    entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
+                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
 
                     try
                     {
@@ -802,15 +802,15 @@ namespace ServiceBusExplorer
                         // Audience mismatch — the namespace expects a different token audience
                         // (Event Hub vs Service Bus). Retry with Event Hub scope.
                         WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
-                        aadTokenProvider = AadCredentialFactory.CreateOldSdkTokenProvider(
-                            tenantId, AadCredentialFactory.EventHubsAudience);
-                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, aadTokenProvider);
+                        entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
+                            tenantId, EntraCredentialFactory.EventHubsAudience);
+                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
                         IsEventHubNamespace = true;
                     }
                 }
                 else
                 {
-                    aadTokenProvider = null;
+                    entraTokenProvider = null;
                     namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 }
 
@@ -822,8 +822,8 @@ namespace ServiceBusExplorer
                                                                                             RetryHelper.RetryCount);
                 }
 
-                // Notification Hubs don't support AAD token-provider auth
-                if (!isAad)
+                // Notification Hubs don't support Entra token-provider auth
+                if (!isEntra)
                 {
                     try
                     {
@@ -873,9 +873,9 @@ namespace ServiceBusExplorer
                         ReplaceEventHubFactory(CreateEventHubMessagingFactory());
                     }
                 }
-                else if (isAad)
+                else if (isEntra)
                 {
-                    MessagingFactory = MessagingFactory.Create(namespaceUri, aadTokenProvider);
+                    MessagingFactory = MessagingFactory.Create(namespaceUri, entraTokenProvider);
                 }
                 else
                 {
@@ -4151,10 +4151,10 @@ namespace ServiceBusExplorer
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
 
-            if (serviceBusNamespaceInstance?.IsAzureActiveDirectory == true)
+            if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
-                serviceBusHelper2.AadTokenCredential = AadCredentialFactory.CreateNewSdkTokenCredential(
+                serviceBusHelper2.EntraTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
                     serviceBusNamespaceInstance.TenantId);
             }
 
@@ -4168,9 +4168,9 @@ namespace ServiceBusExplorer
 
         public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
         {
-            var administrationClient = serviceBusNamespaceInstance?.IsAzureActiveDirectory == true
+            var administrationClient = serviceBusNamespaceInstance?.IsEntra == true
                 ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    AadCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
+                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
                 : new ServiceBusAdministrationClient(connectionString);
             var result = new List<QueueProperties>();
 
@@ -4189,9 +4189,9 @@ namespace ServiceBusExplorer
 
         public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
         {
-            var managementClient = serviceBusNamespaceInstance?.IsAzureActiveDirectory == true
+            var managementClient = serviceBusNamespaceInstance?.IsEntra == true
                 ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    AadCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
+                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
                 : new ServiceBusAdministrationClient(connectionString);
             var result = new List<SubscriptionProperties>();
 
@@ -4604,6 +4604,14 @@ namespace ServiceBusExplorer
             };
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Logs out from Entra ID by clearing all cached credentials and authentication state.
+        /// </summary>
+        public void LogOutFromEntra()
+        {
+            EntraCredentialFactory.ClearCache();
         }
 
         #endregion

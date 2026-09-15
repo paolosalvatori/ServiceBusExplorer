@@ -79,7 +79,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public void RetryFunc_WrappedAuthFailure_DoesNotRetry()
         {
-            // Simulates the AadCredentialFactory pattern: AuthenticationFailedException
+            // Simulates the EntraCredentialFactory pattern: AuthenticationFailedException
             // is wrapped in OperationCanceledException to escape the retry loop.
             int callCount = 0;
             var innerException = new InvalidOperationException("authentication failed");

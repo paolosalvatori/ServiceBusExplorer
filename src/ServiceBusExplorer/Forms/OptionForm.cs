@@ -41,6 +41,10 @@ namespace ServiceBusExplorer.Forms
 {
     using System.ComponentModel;
     using System.Configuration;
+
+    using ServiceBusExplorer.Common.Entities;
+    using ServiceBusExplorer.Common.Helpers;
+
     using Utilities.Helpers;
 
     public partial class OptionForm : Form
@@ -66,9 +70,10 @@ namespace ServiceBusExplorer.Forms
             "Both (User file will override)"
         };
 
-        ConfigFileUse originalConfigFileUse;
+        readonly ConfigFileUse originalConfigFileUse;
 
-        BindingList<NodeColorInfo> NodesColorInfoBindingList = new BindingList<NodeColorInfo>();
+        readonly BindingList<EntraTenantIdItem> EntraTenantIdBindingList = new BindingList<EntraTenantIdItem>();
+        readonly BindingList<NodeColorInfo> NodesColorInfoBindingList = new BindingList<NodeColorInfo>();
 
         #endregion
 
@@ -97,6 +102,7 @@ namespace ServiceBusExplorer.Forms
             ConfigFileUse = configFileUse;
             cboConfigFile.SelectedIndex = GetIndexForConfigFileUseUIString(ConfigFileUse);
 
+            EntraTenantIdBindingList.ListChanged += EntraTenantIdsListChanged;
             NodesColorInfoBindingList.ListChanged += NodesColorsListChanged;
             nodeColorsBindingSource.DataSource = NodesColorInfoBindingList;
 
@@ -154,7 +160,7 @@ namespace ServiceBusExplorer.Forms
         {
             MainSettings.SelectedEntities = GetSelectedEntities();
             MainSettings.SelectedMessageCounts = GetSelectedMessageCounts();
-            
+
             SaveSettings(GetConfigFileUseFromUIIndex(cboConfigFile.SelectedIndex));
 
             DialogResult = DialogResult.OK;
@@ -261,7 +267,32 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = MainSettings.ProxyUserName;
             txtProxyPassword.Text = MainSettings.ProxyPassword;
 
+            SetEntraTenantIdsIntoBindingList(MainSettings.EntraTenantIds);
+
             SetNodesColorsIntoBindingList(MainSettings.NodesColors);
+        }
+
+        private void SetEntraTenantIdsIntoBindingList(IEnumerable<EntraTenantIdItem> items)
+        {
+            try
+            {
+                items ??= Enumerable.Empty<EntraTenantIdItem>();
+
+                EntraTenantIdBindingList.RaiseListChangedEvents = false;
+                EntraTenantIdBindingList.Clear();
+                foreach (var entraTenantIdItem in items)
+                {
+                    EntraTenantIdBindingList.Add(entraTenantIdItem);
+                }
+            }
+            finally
+            {
+                EntraTenantIdBindingList.RaiseListChangedEvents = true;
+                EntraTenantIdBindingList.ResetBindings();
+                lbxTenantIds.DataSource = EntraTenantIdBindingList;
+                lbxTenantIds.DisplayMember = nameof(EntraTenantIdItem.DisplayText);
+                lbxTenantIds.ValueMember = nameof(EntraTenantIdItem.Value);
+            }
         }
 
         private void SetNodesColorsIntoBindingList(IEnumerable<NodeColorInfo> items)
@@ -513,10 +544,15 @@ namespace ServiceBusExplorer.Forms
             MainSettings.ProxyPassword = txtProxyPassword.Text;
         }
 
-        
+
         private void NodesColorsListChanged(object sender, ListChangedEventArgs e)
         {
             MainSettings.NodesColors = NodesColorInfoBindingList.ToList();
+        }
+
+        private void EntraTenantIdsListChanged(object sender, ListChangedEventArgs e)
+        {
+            MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
         }
 
         #endregion
@@ -569,7 +605,7 @@ namespace ServiceBusExplorer.Forms
             // Special case: if we have switched from user config file to application config file,
             // we still have to update that particular setting in the user config file, or it won't
             // persist through program restart.
-            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig 
+            if (originalConfigFileUse != ConfigFileUse.ApplicationConfig
                 && configFileUse == ConfigFileUse.ApplicationConfig)
             {
                 var userConfiguration = TwoFilesConfiguration.Create(ConfigFileUse.UserConfig);
@@ -659,7 +695,20 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.ProxyPassword,
                 MainSettings.ProxyPassword);
 
-            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, NodeColorInfo.FormatAll(MainSettings.NodesColors));
+
+            // Save the list of Entra Tenant IDs as a comma-separated string in the configuration file
+            MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
+
+            if (!readSettings.EntraTenantIds.SequenceEqual(MainSettings.EntraTenantIds))
+            {
+                var serializedTenantIds = MainSettings.EntraTenantIds.Count == 0
+                    ? ConfigurationParameters.EntraTenantIdsClearedMarker
+                    : string.Join(",", MainSettings.EntraTenantIds.Select(x => x.Value));
+                configuration.SetValue(ConfigurationParameters.EntraTenantIds, serializedTenantIds);
+            }
+
+            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
+                NodeColorInfo.FormatAll(MainSettings.NodesColors));
 
             configuration.Save();
         }
@@ -750,6 +799,8 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = mainSettings.ProxyUserName;
             txtProxyPassword.Text = mainSettings.ProxyPassword;
 
+            SetEntraTenantIdsIntoBindingList(mainSettings.EntraTenantIds);
+
             SetNodesColorsIntoBindingList(mainSettings.NodesColors);
         }
 
@@ -812,5 +863,65 @@ namespace ServiceBusExplorer.Forms
         }
 
         #endregion
+
+
+
+        private void btnAddTenantId_Click(object sender, EventArgs e)
+        {
+            var text = txtNewTenantId.Text.Trim();
+
+            AddTenantIdIfMissing(text);
+            txtNewTenantId.Clear();
+            txtNewTenantId.Focus();
+        }
+
+        private void btnDeleteTenantId_Click(object sender, EventArgs e)
+        {
+            if (lbxTenantIds.SelectedItem is EntraTenantIdItem item)
+            {
+                EntraTenantIdBindingList.Remove(item);
+            }
+        }
+
+        private void AddTenantIdIfMissing(string tenantId)
+        {
+            if (string.IsNullOrWhiteSpace(tenantId))
+            {
+                MessageBox.Show(
+                    "Tenant ID cannot be empty.",
+                    "Invalid Tenant ID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            // The list is persisted as a comma-separated value, so a comma would split one
+            // entry into two on the next start. A semicolon is also rejected because tenant IDs
+            // are later interpolated into the semicolon-delimited Entra connection string, where
+            // it could inject an extra field (e.g. "tenant;EntityPath=other").
+            if (tenantId.Contains(",") || tenantId.Contains(";"))
+            {
+                MessageBox.Show(
+                    "A Tenant ID cannot contain a comma or a semicolon.",
+                    "Invalid Tenant ID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            if (EntraTenantIdBindingList.Any(x => string.Equals(x.Value, tenantId, StringComparison.OrdinalIgnoreCase)))
+            {
+                MessageBox.Show(
+                    "That Tenant ID already exists.",
+                    "Duplicate Tenant ID",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            var item = new EntraTenantIdItem { Value = tenantId };
+            EntraTenantIdBindingList.Add(item);
+            lbxTenantIds.SelectedItem = item;
+        }
     }
 }

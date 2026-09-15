@@ -39,21 +39,21 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public ServiceBusTransportType TransportType { get; set; }
 
         /// <summary>
-        /// Fully qualified namespace (e.g. "mynamespace.servicebus.windows.net") used for AAD auth.
-        /// When set together with AadTokenCredential, SDK clients use token-based auth instead of connection strings.
+        /// Fully qualified namespace (e.g. "mynamespace.servicebus.windows.net") used for Entra auth.
+        /// When set together with EntraTokenCredential, SDK clients use token-based auth instead of connection strings.
         /// </summary>
         public string FullyQualifiedNamespace { get; set; }
 
         /// <summary>
-        /// Token credential for AAD auth with the new Azure.Messaging.ServiceBus SDK.
+        /// Token credential for Entra auth with the new Azure.Messaging.ServiceBus SDK.
         /// </summary>
-        public TokenCredential AadTokenCredential { get; set; }
+        public TokenCredential EntraTokenCredential { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the current connection uses Azure Active Directory
+        /// Gets a value indicating whether the current connection uses Entra
         /// token-based authentication instead of a connection string.
         /// </summary>
-        public bool IsAad => AadTokenCredential != null && !string.IsNullOrWhiteSpace(FullyQualifiedNamespace);
+        public bool IsEntra => EntraTokenCredential != null && !string.IsNullOrWhiteSpace(FullyQualifiedNamespace);
 
         public WriteToLogDelegate WriteToLog
         {
@@ -70,11 +70,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         /// <summary>
         /// Returns true when the connection string contains an EntityPath segment.
-        /// Always returns false for AAD connections.
+        /// Always returns false for Entra connections.
         /// </summary>
         public bool ConnectionStringContainsEntityPath()
         {
-            if (IsAad) return false;
+            if (IsEntra) return false;
 
             var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
 
@@ -92,11 +92,11 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
         public ServiceBusClient CreateServiceBusClient()
         {
-            if (IsAad)
+            if (IsEntra)
             {
                 return new ServiceBusClient(
                     FullyQualifiedNamespace,
-                    AadTokenCredential,
+                    EntraTokenCredential,
                     new ServiceBusClientOptions { TransportType = this.TransportType });
             }
 
@@ -106,13 +106,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         }
 
         /// <summary>
-        /// Creates a <see cref="ServiceBusAdministrationClient"/> using AAD credentials or
+        /// Creates a <see cref="ServiceBusAdministrationClient"/> using Entra credentials or
         /// a connection string depending on the current authentication mode.
         /// </summary>
         public ServiceBusAdministrationClient CreateAdministrationClient()
         {
-            return IsAad
-                ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, AadTokenCredential)
+            return IsEntra
+                ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
                 : new ServiceBusAdministrationClient(ConnectionString);
         }
 
