@@ -64,7 +64,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             int callCount = 0;
 
-            Func<Task> act = () => RetryHelper.RetryActionAsync(async () =>
+            var act = () => RetryHelper.RetryActionAsync(async () =>
             {
                 callCount++;
                 await Task.CompletedTask;

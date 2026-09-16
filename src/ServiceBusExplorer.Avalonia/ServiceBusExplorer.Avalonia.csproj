@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>ServiceBusExplorer.Avalonia</RootNamespace>
+    <AssemblyName>ServiceBusExplorer.Avalonia</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia 11 — cross-platform desktop (Windows, macOS, Linux) -->
+    <PackageReference Include="Avalonia"                 Version="11.1.0" />
+    <PackageReference Include="Avalonia.Desktop"         Version="11.1.0" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.1.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent"   Version="11.1.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter"     Version="11.1.0" />
+    <!-- MVVM helpers -->
+    <PackageReference Include="CommunityToolkit.Mvvm"    Version="8.2.2" />
+    <!-- Dev-time diagnostics overlay (not included in Release) -->
+    <PackageReference Include="Avalonia.Diagnostics"     Version="11.1.0"
+                      Condition="'$(Configuration)' == 'Debug'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Ensure AXAML files are picked up -->
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+</Project>
+

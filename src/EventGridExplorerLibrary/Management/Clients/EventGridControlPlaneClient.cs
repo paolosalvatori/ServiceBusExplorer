@@ -38,7 +38,7 @@ namespace EventGridExplorerLibrary
             this.armclient = new ArmClient(this.GetTokenCredential());
 
             // Setting this API version is needed to support name space topic event subscriptions with webhook as a destination.
-            ArmClientOptions options = new ArmClientOptions();
+            var options = new ArmClientOptions();
             options.SetApiVersion(NamespaceTopicEventSubscriptionsResourceType, NamespaceTopicEventSubscriptionsApiVersion);
             
         }
@@ -46,8 +46,8 @@ namespace EventGridExplorerLibrary
         /// <inheritdoc/>
         public async Task<string> CreateNamespaceTopicAsync(string resourceGroupName, string namespaceName, string namespaceTopicName)
         {
-            EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
-            NamespaceTopicCollection collection = namespaceResource.GetNamespaceTopics();
+            var namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
+            var collection = namespaceResource.GetNamespaceTopics();
 
             // check if exists
             if (await collection.ExistsAsync(namespaceTopicName))
@@ -55,23 +55,23 @@ namespace EventGridExplorerLibrary
                 return $"{namespaceTopicName} exists already";
             }
 
-            NamespaceTopicData namespaceTopicData = new NamespaceTopicData
+            var namespaceTopicData = new NamespaceTopicData
             {
                 PublisherType = PublisherType.Custom,
                 InputSchema = EventInputSchema.CloudEventSchemaV10,
             };
 
-            ArmOperation<NamespaceTopicResource> azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, namespaceTopicName, namespaceTopicData);
-            NamespaceTopicResource result = azureOperation.Value;
+            var azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, namespaceTopicName, namespaceTopicData);
+            var result = azureOperation.Value;
             return result.Id;
         }
 
         /// <inheritdoc/>
         public async Task<string> DeleteNamespaceTopicAsync(string resourceGroupName, string namespaceName, string namespaceTopicName)
         {
-            EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
-            NamespaceTopicResource namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
-            NamespaceTopicCollection collection = namespaceResource.GetNamespaceTopics();
+            var namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
+            var namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
+            var collection = namespaceResource.GetNamespaceTopics();
 
             // check if exists
             if (!(await collection.ExistsAsync(namespaceTopicName)).Value)
@@ -79,17 +79,17 @@ namespace EventGridExplorerLibrary
                 return $"{namespaceTopicName} does not exist";
             }
 
-            ArmOperation azureOperation = await namespaceTopicResource.DeleteAsync(WaitUntil.Completed);
+            var azureOperation = await namespaceTopicResource.DeleteAsync(WaitUntil.Completed);
             return string.Empty;
         }
 
         /// <inheritdoc/>
         public async Task<string> DeleteNamespaceTopicEventSubscriptionAsync(string resourceGroupName, string namespaceName, string namespaceTopicName, string subscriptionName)
         {
-            EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
-            NamespaceTopicResource namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
-            NamespaceTopicEventSubscriptionResource namespaceTopicEventSubscriptionResource = (await namespaceTopicResource.GetNamespaceTopicEventSubscriptionAsync(subscriptionName)).Value;
-            NamespaceTopicEventSubscriptionCollection collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
+            var namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
+            var namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
+            var namespaceTopicEventSubscriptionResource = (await namespaceTopicResource.GetNamespaceTopicEventSubscriptionAsync(subscriptionName)).Value;
+            var collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
 
             // check if exists
             if (!(await collection.ExistsAsync(subscriptionName)).Value)
@@ -97,19 +97,19 @@ namespace EventGridExplorerLibrary
                 return $"{subscriptionName} for topic {namespaceTopicName} does not exist";
             }
 
-            ArmOperation azureOperation = await namespaceTopicEventSubscriptionResource.DeleteAsync(WaitUntil.Completed);
+            var azureOperation = await namespaceTopicEventSubscriptionResource.DeleteAsync(WaitUntil.Completed);
             return string.Empty;
         }
 
         /// <inheritdoc/>
         public async Task<string> CreateNamespaceTopicEventSubscriptionAsync(string resourceGroupName, string namespaceName, string namespaceTopicName, string subscriptionName, string deliveryMode, List<Dictionary<string,string>> filters, List<string> eventTypes)
         {
-            EventGridNamespaceResource namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
-            NamespaceTopicResource namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
-            NamespaceTopicEventSubscriptionCollection collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
-            NamespaceTopicEventSubscriptionData namespaceTopicEventSubscriptionData = new NamespaceTopicEventSubscriptionData();
+            var namespaceResource = GetNamespaceResource(resourceGroupName, namespaceName);
+            var namespaceTopicResource = (await namespaceResource.GetNamespaceTopicAsync(namespaceTopicName)).Value;
+            var collection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
+            var namespaceTopicEventSubscriptionData = new NamespaceTopicEventSubscriptionData();
 
-             FiltersConfiguration filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
+             var filtersConfiguration = GetFiltersConfiguration(filters, eventTypes);
             if (filtersConfiguration.IncludedEventTypes.Count > 0 || filtersConfiguration.Filters.Count > 0)
             {
                 namespaceTopicEventSubscriptionData.DeliveryConfiguration = new DeliveryConfiguration
@@ -134,7 +134,7 @@ namespace EventGridExplorerLibrary
                 return $"{subscriptionName} for topic {namespaceTopicName} already exists";
             }
 
-            ArmOperation<NamespaceTopicEventSubscriptionResource> azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
+            var azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
             return azureOperation.Value.Id;
         }
 
@@ -142,9 +142,9 @@ namespace EventGridExplorerLibrary
         public EventGridNamespaceResource GetNamespaceResource(string resourceGroupName, string namespaceName)
         {
             var namespaceArmId = CreateArmId(this.subscriptionId, resourceGroupName) + namespaceName;
-            ArmClient client = GetArmClient();
-            ResourceIdentifier namespaceIdentifier = new ResourceIdentifier(namespaceArmId);
-            EventGridNamespaceResource namespaceResource = client.GetEventGridNamespaceResource(namespaceIdentifier);
+            var client = GetArmClient();
+            var namespaceIdentifier = new ResourceIdentifier(namespaceArmId);
+            var namespaceResource = client.GetEventGridNamespaceResource(namespaceIdentifier);
             return namespaceResource;
         }
 
@@ -169,7 +169,7 @@ namespace EventGridExplorerLibrary
                 AuthorityHost = new Uri(AuthorityHostUri)
             };
 
-            InteractiveBrowserCredential credential = new InteractiveBrowserCredential(credentialOption);
+            var credential = new InteractiveBrowserCredential(credentialOption);
             return credential;
         }
 
@@ -180,21 +180,21 @@ namespace EventGridExplorerLibrary
 
         private FiltersConfiguration GetFiltersConfiguration(List<Dictionary<string, string>> filters, List<string> eventTypes)
         {
-            FiltersConfiguration filtersConfiguration = new FiltersConfiguration();
-            EventGridFilterFactory eventGridFilterFactory = new EventGridFilterFactory(filtersConfiguration);
+            var filtersConfiguration = new FiltersConfiguration();
+            var eventGridFilterFactory = new EventGridFilterFactory(filtersConfiguration);
 
-            foreach (Dictionary<string, string> i in filters)
+            foreach (var i in filters)
             {
-                eventGridFilterFactory.Key = i["Key"].ToString();
-                eventGridFilterFactory.Value = i["Value"].ToString();
-                eventGridFilterFactory.OperatorType = i["Operator"].ToString();
+                eventGridFilterFactory.Key = i["Key"];
+                eventGridFilterFactory.Value = i["Value"];
+                eventGridFilterFactory.OperatorType = i["Operator"];
 
                 eventGridFilterFactory.FilterSelection();
             }
 
             if (eventTypes.Count > 0)
             {
-                foreach (string eventType in eventTypes)
+                foreach (var eventType in eventTypes)
                 {
                     filtersConfiguration.IncludedEventTypes.Add(eventType);
                 }
