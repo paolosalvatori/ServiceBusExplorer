@@ -12,11 +12,23 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 - **Copy message body** — one-click clipboard copy from the message preview pane
 - **Microsoft Entra ID sign-in** — interactive browser authentication for Azure Service Bus namespaces without storing SAS secrets locally
 - Import/export of namespace configuration
+- Configurable appearance with light and dark themes
 - Send, receive and peek messages for queues, topics and subscriptions
 - Dead-letter message management
 - Relay services, Notification Hubs and Event Hubs support
 
 ![Service Bus Explorer](./media/service-bus-explorer.png)
+
+## Appearance
+
+Choose `View > Theme` and select one of the following modes:
+
+- `Light` uses the light Service Bus Explorer appearance.
+- `Dark` applies the dark theme.
+
+Changing the theme asks for confirmation (OK/Cancel) and restarts the application so all controls are recreated with the selected appearance.
+
+The selected mode is saved as a per-user setting and is restored the next time Service Bus Explorer starts.
 
 # Software requirements
 The following software is required to run ServiceBusExplorer. It may run on other versions.

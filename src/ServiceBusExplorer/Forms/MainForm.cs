@@ -212,7 +212,7 @@ namespace ServiceBusExplorer.Forms
         private const int ConsumerGroupListIconIndex = 4;
         private const int ConsumerGroupIconIndex = 21;
         private const int EventGridNamespaceIconIndex = 24;
-        private const int EventGridTopicIconIndex = 25; 
+        private const int EventGridTopicIconIndex = 25;
         private const int EventGridSubscriptionIconIndex = 26;
         private const int EventGridEntityIconIndex = 27;
 
@@ -253,6 +253,7 @@ namespace ServiceBusExplorer.Forms
         private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
         private string _pendingSelectionName;
         private string _pendingSelectionType;
+        private bool restartRequested;
         #endregion
 
         #region Private Static Fields
@@ -276,6 +277,8 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            FormClosed += MainForm_FormClosed;
+            AddThemeMenuItem();
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
@@ -323,6 +326,92 @@ namespace ServiceBusExplorer.Forms
             InitializeDashboard();
 
             WriteToLog(logMessage);
+        }
+
+        private void AddThemeMenuItem()
+        {
+            var themeMenuItem = new ToolStripMenuItem("Theme")
+            {
+                Name = "themeMenuItem"
+            };
+            foreach (var mode in new[] { ThemeMode.Light, ThemeMode.Dark })
+            {
+                var modeMenuItem = new ToolStripMenuItem(mode.ToString())
+                {
+                    CheckOnClick = false,
+                    Checked = ThemeManager.CurrentMode == mode,
+                    Tag = mode,
+                    Name = $"{mode.ToString().ToLowerInvariant()}ThemeMenuItem"
+                };
+                modeMenuItem.Click += ThemeModeMenuItem_Click;
+                themeMenuItem.DropDownItems.Add(modeMenuItem);
+            }
+
+            // Defensive: viewToolStripMenuItem should be initialized by InitializeComponent(),
+            // but guard against null to avoid crashes if the menu structure changes.
+            if (viewToolStripMenuItem?.DropDownItems != null)
+            {
+                // Avoid inserting duplicate theme menu if this method is called more than once.
+                if (!viewToolStripMenuItem.DropDownItems.OfType<ToolStripItem>().Any(i => i.Name == themeMenuItem.Name))
+                {
+                    // Insert at position 2 if possible, otherwise append at the end.
+                    var insertIndex = Math.Min(2, viewToolStripMenuItem.DropDownItems.Count);
+                    viewToolStripMenuItem.DropDownItems.Insert(insertIndex, themeMenuItem);
+                }
+            }
+            else
+            {
+                // Log synchronously so the message is recorded even during shutdown.
+                WriteToLog("viewToolStripMenuItem or its DropDownItems is null; Theme menu not added.", false);
+            }
+        }
+
+        private void ThemeModeMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var selectedItem = (ToolStripMenuItem)sender;
+                var selectedMode = (ThemeMode)selectedItem.Tag;
+                if (ThemeManager.CurrentMode == selectedMode)
+                {
+                    return;
+                }
+
+                var result = MessageBox.Show(
+                    "The application will restart to apply the selected theme.",
+                    "Theme changed",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Information);
+                if (result != DialogResult.OK)
+                {
+                    return;
+                }
+
+                ThemeManager.CurrentMode = selectedMode;
+                restartRequested = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!restartRequested)
+            {
+                return;
+            }
+
+            try
+            {
+                Application.Restart();
+            }
+            catch (Exception ex)
+            {
+                WriteToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message), false);
+            }
         }
 
         private void InitializeDashboard()
@@ -499,7 +588,7 @@ namespace ServiceBusExplorer.Forms
             argumentName = argument;
             argumentValue = value;
         }
-#endregion
+        #endregion
 
         #region Event Handlers
         private void duplicateSubscriptionMenuItem_Click(object sender, EventArgs e)
@@ -535,7 +624,7 @@ namespace ServiceBusExplorer.Forms
                     var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
                         ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
-                    
+
                     serviceBusHelper.Connect(serviceBusNamespace);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -2156,7 +2245,7 @@ namespace ServiceBusExplorer.Forms
                     }
 
                     await eventGridLibrary.CreateTopicAsync(ResourceGroupName, NamespaceName, createTopicForm.TopicName);
-                    
+
                     WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicCreatedFormat, createTopicForm.TopicName));
 
                     await ShowEventGridEntities(EntityType.All);
@@ -2180,9 +2269,9 @@ namespace ServiceBusExplorer.Forms
                     }
 
                     await eventGridLibrary.CreateSubscriptionAsync(
-                        ResourceGroupName, 
-                        NamespaceName, 
-                        subscription.TopicDescription.Data.Name, 
+                        ResourceGroupName,
+                        NamespaceName,
+                        subscription.TopicDescription.Data.Name,
                         createSubscriptionForm.SubscriptionName,
                         EventGridSubscriptionDeliveryMode,
                         createSubscriptionForm.filterList,
@@ -2503,7 +2592,7 @@ namespace ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is NamespaceTopicResource topic)
                     {
                         await eventGridLibrary.DeleteTopicAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
-                        
+
                         WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicDeletedFormat, topic.Data.Name));
 
                         await ShowEventGridEntities(EntityType.All);
@@ -2644,9 +2733,9 @@ namespace ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is EventGridSubscriptionWrapper subscription)
                     {
                         await eventGridLibrary.DeleteSubscriptionAsync(
-                            ResourceGroupName, 
-                            NamespaceName, 
-                            subscription.TopicDescription.Data.Name, 
+                            ResourceGroupName,
+                            NamespaceName,
+                            subscription.TopicDescription.Data.Name,
                             subscription.SubscriptionDescription.Data.Name);
 
                         WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionDeletedFormat, subscription.SubscriptionDescription.Data.Name));
@@ -3671,7 +3760,7 @@ namespace ServiceBusExplorer.Forms
                 // Topics Node
                 if (node == topicListNode)
                 {
-                    var list = new List<ToolStripItem>(); 
+                    var list = new List<ToolStripItem>();
 
                     if (topicListNode.Tag != null && topicListNode.Tag is NamespaceTopic)
                     {
@@ -4419,7 +4508,7 @@ namespace ServiceBusExplorer.Forms
         #region Public Static Methods
         public static void StaticWriteToLog(string message, bool async = true)
         {
-            if(mainSingletonMainForm != null)
+            if (mainSingletonMainForm != null)
             {
                 mainSingletonMainForm.WriteToLog(message);
             }
@@ -5262,7 +5351,7 @@ namespace ServiceBusExplorer.Forms
 
                         var subscriptionsNode = entityNode.Nodes.Add(
                             SubscriptionEntities,
-                            SubscriptionEntities, 
+                            SubscriptionEntities,
                             EventGridEntityIconIndex,
                             EventGridEntityIconIndex);
                         subscriptionsNode.Text =
@@ -5514,7 +5603,7 @@ namespace ServiceBusExplorer.Forms
                 if (topicControl != null)
                 {
                     topicControl.ResumeDrawing();
-                } 
+                }
             }
         }
 
@@ -5551,7 +5640,7 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         /// <param name="wrapper">Wrapper to </param>
         /// <param name="duplicateCurrentSubscription">If set the rendered subscription panel will be a "Duplicate" form.</param>
-        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false) 
+        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false)
         {
             HandleSubscriptionControl subscriptionControl = null;
 
@@ -7115,10 +7204,10 @@ namespace ServiceBusExplorer.Forms
 
                         WriteToLog(string.Format(
                             CultureInfo.CurrentCulture,
-                            receivedEvents != null && receivedEvents.Value.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural, 
-                            receivedEvents != null ? receivedEvents.Value.Count : 0, 
+                            receivedEvents != null && receivedEvents.Value.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural,
+                            receivedEvents != null ? receivedEvents.Value.Count : 0,
                             subscription.SubscriptionDescription.Data.Name));
-                        
+
                         var control = panelMain.Controls[0] as HandleEventGridSubscriptionControl;
 
                         if (control != null)
@@ -7398,40 +7487,48 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 Refresh();
-                if (string.IsNullOrWhiteSpace(argumentName) || string.IsNullOrWhiteSpace(argumentValue))
+
+                if (!string.IsNullOrWhiteSpace(argumentName) && !string.IsNullOrWhiteSpace(argumentValue))
                 {
-                    return;
-                }
-                if (string.Compare(argumentName, "/n", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                    string.Compare(argumentName, "-n", StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    var item = serviceBusHelper.ServiceBusNamespaces.FirstOrDefault(s => string.Compare(s.Key, argumentValue, StringComparison.InvariantCultureIgnoreCase) == 0);
-                    if (item.Key == null && item.Value == null)
+                    if (string.Compare(argumentName, "/n", StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare(argumentName, "-n", StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
-                        WriteToLog(string.Format(NoNamespaceWithKeyMessageFormat, argumentValue));
-                        return;
+                        var item = serviceBusHelper.ServiceBusNamespaces.FirstOrDefault(s => string.Compare(s.Key, argumentValue, StringComparison.InvariantCultureIgnoreCase) == 0);
+                        if (item.Key == null && item.Value == null)
+                        {
+                            WriteToLog(string.Format(NoNamespaceWithKeyMessageFormat, argumentValue));
+                        }
+                        else
+                        {
+                            var ns = item.Value;
+                            if (ns != null)
+                            {
+                                serviceBusHelper.Connect(ns);
+                                SetTitle(ns.Namespace, "Service Bus");
+                            }
+                        }
                     }
-                    var ns = item.Value;
-                    if (ns != null)
+
+                    if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
-                        serviceBusHelper.Connect(ns);
-                        SetTitle(ns.Namespace, "Service Bus");
+                        var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
+                        serviceBusHelper.Connect(serviceBusNamespace);
+                        SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                     }
                 }
-                if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                    string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
-                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-                }
-                panelMain.Controls.Clear();
+
+panelMain.Controls.Clear();
                 panelMain.BackColor = SystemColors.Window;
                 await ShowEntities(EntityType.All);
             }
             catch (Exception ex)
             {
                 HandleException(ex);
+            }
+            finally
+            {
+                ThemeManager.ReapplyToOpenForms();
             }
         }
 
@@ -7688,13 +7785,13 @@ namespace ServiceBusExplorer.Forms
                     || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Topic))
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
-                    
+
                     List<TreeNode> topicTreeNodes = new List<TreeNode>();
                     this.FindTopicsNodesRecursive(topicTreeNodes, treeNode);
 
                     subscriptions.AddRange(topicTreeNodes.SelectMany(subscriptionsExtractor));
                 }
-                else if (treeNode == FindNode(Constants.QueueEntities, rootNode) 
+                else if (treeNode == FindNode(Constants.QueueEntities, rootNode)
                     || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Queue))
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all queues{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
