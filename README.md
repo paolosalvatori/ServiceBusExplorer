@@ -195,6 +195,7 @@ Here are a couple of alternatives. We do not take responsibility for them though
 | [Service Bus Cloud Explorer]             | paid with a free basic plan, SaaS, web based  |
 | [Service Bus TUI](https://github.com/MonsieurTib/service-bus-tui) | free, open source, cross platform, terminal based             |
 | [bussin](https://bussin.dev) | free, source-available, browser based PWA, no installation required |
+| [Queue Studio for Service Bus](https://marketplace.visualstudio.com/items?itemName=factodus.queue-studio-service-bus) | free with a paid Pro tier, VS Code extension, works with the Service Bus emulator |
 
 [PowerShell]: https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps
 [Purple Explorer]: https://github.com/philipmat/PurpleExplorer
