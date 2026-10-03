@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<ProjectGuid>{41D3C27D-37FF-43B8-AAC0-4F483E507698}</ProjectGuid>
 		<TargetFramework>net472</TargetFramework>
+		<IsTestProject>true</IsTestProject>
 		<LangVersion>latest</LangVersion>
 		<AssemblyTitle>ServiceBusExplorer.Tests</AssemblyTitle>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>
@@ -18,7 +19,11 @@
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
+		<Reference Include="FastColoredTextBox">
+			<HintPath>..\ServiceBusExplorer\Libraries\FastColoredTextBox.dll</HintPath>
+		</Reference>
 		<Reference Include="System.Configuration" />
+		<Reference Include="System.Windows.Forms.DataVisualization" />
 		<Reference Include="System.ServiceModel" />
 		<Reference Include="System.Data.DataSetExtensions" />
 		<Reference Include="Microsoft.CSharp" />
@@ -32,6 +37,9 @@
 		<ProjectReference Include="..\ServiceBusExplorer\ServiceBusExplorer.csproj" />
 		<ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\GetUpstreamReleaseVersion.ps1" Link="GetUpstreamReleaseVersion.ps1" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="FluentAssertions" Version="6.12.0" />

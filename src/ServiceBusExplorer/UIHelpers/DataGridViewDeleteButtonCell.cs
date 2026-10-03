@@ -33,6 +33,21 @@ namespace ServiceBusExplorer.UIHelpers
     {
         protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates elementState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
+            if (Theming.ThemeManager.IsThemed)
+            {
+                var palette = Theming.ThemeManager.Palette;
+                var selected = (elementState & DataGridViewElementStates.Selected) != 0;
+                using (var brush = new SolidBrush(selected ? palette.Selection : palette.Raised))
+                using (var border = new Pen(palette.Border))
+                {
+                    graphics.FillRectangle(brush, cellBounds);
+                    graphics.DrawRectangle(border, cellBounds.X, cellBounds.Y, cellBounds.Width - 1, cellBounds.Height - 1);
+                }
+                TextRenderer.DrawText(graphics, "X", cellStyle.Font, cellBounds,
+                    selected ? palette.SelectionText : palette.ErrorText,
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                return;
+            }
             var fillRectangle = new Rectangle(cellBounds.X, cellBounds.Y, cellBounds.Width - 1, cellBounds.Height - 1);
             var stringRectangle = new Rectangle(cellBounds.X + 5, cellBounds.Y + 3, cellBounds.Width - 8, cellBounds.Height - 8);
             graphics.SmoothingMode = SmoothingMode.AntiAlias;

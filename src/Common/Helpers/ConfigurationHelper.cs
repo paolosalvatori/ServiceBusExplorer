@@ -182,6 +182,10 @@ namespace ServiceBusExplorer.Common.Helpers
                 (ConfigurationParameters.ShowMessageCountParameter,
                 currentSettings.ShowMessageCount, writeToLog);
 
+            resultProperties.DarkMode = configuration.GetBoolValue
+                (ConfigurationParameters.DarkMode,
+                currentSettings.DarkMode, writeToLog);
+
             resultProperties.UseAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter,
                 currentSettings.UseAscii, writeToLog);
 

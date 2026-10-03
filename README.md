@@ -10,6 +10,7 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 - **Dashboard tab** — live overview of message counts (Active, Dead Letter, Scheduled, Total) for all queues and subscriptions, with auto-refresh and color-coded dead-letter alerts
 - **TreeView search/filter** — real-time filtering of queues, topics and subscriptions; press Ctrl+F to focus
 - **Copy message body** — one-click clipboard copy from the message preview pane
+- **Dark mode** - optional application-wide dark appearance, enabled in `View -> Options -> General`
 - **Microsoft Entra ID sign-in** — interactive browser authentication for Azure Service Bus namespaces without storing SAS secrets locally
 - Import/export of namespace configuration
 - Send, receive and peek messages for queues, topics and subscriptions
@@ -23,6 +24,14 @@ The following software is required to run ServiceBusExplorer. It may run on othe
 
 - Windows 10 or later
 - .NET Framework 4.6.2
+
+## Dark mode
+
+Enable **Dark mode** in `View -> Options -> General`, then click **Save** or **OK**.
+The setting uses the selected configuration file and updates open application windows
+without restarting. Turning it off restores the original light appearance.
+Windows high-contrast colors take precedence. Native Windows dialogs and scrollbars
+remain OS-managed; dark window captions depend on Windows support.
 
 # Installation
 
@@ -157,6 +166,22 @@ Here are some guidelines concerning contributions:
 ## Development Environment
 
 Visual Studio 2022 17.8.0 or later is required to build the solution. 
+
+The release banner's upstream baseline is derived at build time from the highest
+stable upstream release tag reachable from the current commit, independently of
+the fork's own version. Before building, fetch upstream tags into their separate
+namespace (repeat after incorporating newer upstream releases):
+
+```powershell
+git fetch --no-tags https://github.com/paolosalvatori/ServiceBusExplorer.git "+refs/tags/*:refs/upstream-release-tags/*"
+```
+
+Builds do not access the network to determine this baseline. Shallow clones must
+first fetch their full history with `git fetch --unshallow`. If the baseline is
+unavailable, the build warns and the banner skips the "new release dropped"
+suffix. For source archives or builds without Git, supply the upstream baseline
+explicitly with `dotnet build .\src\ServiceBusExplorer.sln -p:UpstreamReleaseVersion=<major.minor.patch>`.
+This does not change the assembly or file version.
 
 When editing UI elements Visual Studio should run as a DPI-unaware process. 
 For more information about this, see the 

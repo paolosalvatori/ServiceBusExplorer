@@ -30,6 +30,7 @@ namespace ServiceBusExplorer.Helpers
         public const string ConfigurationConfigFileParameter = "ConfigFile";
         public const string DebugFlagParameter = "debug";
         public const string ShowMessageCountParameter = "showMessageCount";
+        public const string DarkMode = "darkMode";
         public const string SaveMessageToFileParameter = "saveMessageToFile";
         public const string SavePropertiesToFileParameter = "savePropertiesToFile";
         public const string SaveCheckpointsToFileParameter = "saveCheckpointsToFile";

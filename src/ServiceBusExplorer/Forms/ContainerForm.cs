@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
@@ -46,7 +47,7 @@ namespace ServiceBusExplorer.Forms
     using ServiceBusExplorer.UIHelpers;
     using ServiceBusExplorer.Utilities.Helpers;
 
-    public sealed partial class ContainerForm : Form
+    public sealed partial class ContainerForm : ThemedForm
     {
         #region Private Constants
         //***************************
@@ -126,33 +127,39 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
                 if (formType == FormTypeEnum.Listener)
                 {
-                    var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
-                    {
-                        Location = new Point(1, panelMain.HeaderHeight + 1),
-                        Size = new Size(panelMain.Size.Width - 3, queueDescription.RequiresSession ? 544 : 520),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                    };
-                    listenerControl.Focus();
+                    ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () =>
+                        {
+                            var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
+                            {
+                                Location = new Point(1, panelMain.HeaderHeight + 1),
+                                Size = new Size(panelMain.Size.Width - 3, queueDescription.RequiresSession ? 544 : 520),
+                                Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                            };
+                            listenerControl.Focus();
 
-                    Text = string.Format(QueueListenerFormat, queueDescription.Path);
-                    mainSplitContainer.SplitterDistance = queueDescription.RequiresSession ? 570 : listenerControl.Size.Height + 26;
-                    panelMain.HeaderText = string.Format(HeaderTextQueueListenerFormat, queueDescription.Path);
-                    panelMain.Controls.Add(listenerControl);
+                            Text = string.Format(QueueListenerFormat, queueDescription.Path);
+                            mainSplitContainer.SplitterDistance = queueDescription.RequiresSession ? 570 : listenerControl.Size.Height + 26;
+                            panelMain.HeaderText = string.Format(HeaderTextQueueListenerFormat, queueDescription.Path);
+                            return listenerControl;
+                        },
+                        null);
                 }
                 else
                 {
-                    testQueueControl = new TestQueueControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription)
-                                           {
-                                               Location = new Point(1, panelMain.HeaderHeight + 1),
-                                               Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                                               Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                                           };
+                    testQueueControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new TestQueueControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), queueDescription),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                            control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                            control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                        });
 
 
                     if (formType == FormTypeEnum.Send)
@@ -182,13 +189,11 @@ namespace ServiceBusExplorer.Forms
                     testQueueControl.Focus();
 
                     panelMain.HeaderText = string.Format(HeaderTextTestQueueFormat, queueDescription.Path);
-                    panelMain.Controls.Add(testQueueControl);
                 }
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -208,16 +213,16 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                testTopicControl = new TestTopicControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList)
-                                       {
-                                           Location = new Point(1, panelMain.HeaderHeight + 1),
-                                           Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                                           Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                                       };
+                testTopicControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new TestTopicControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), topicDescription, subscriptionList),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                        control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                        control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    });
 
 
                 if (formType == FormTypeEnum.Send)
@@ -247,12 +252,10 @@ namespace ServiceBusExplorer.Forms
                 testTopicControl.Focus();
 
                 panelMain.HeaderText = string.Format(HeaderTextTestTopicFormat, topicDescription.Path);
-                panelMain.Controls.Add(testTopicControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -272,33 +275,39 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
                 if (formType == FormTypeEnum.Listener)
                 {
-                    var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper.SubscriptionDescription)
-                    {
-                        Location = new Point(1, panelMain.HeaderHeight + 1),
-                        Size = new Size(panelMain.Size.Width - 3, subscriptionWrapper.SubscriptionDescription.RequiresSession ? 544 : 520),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                    };
-                    listenerControl.Focus();
+                    ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () =>
+                        {
+                            var listenerControl = new ListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper.SubscriptionDescription)
+                            {
+                                Location = new Point(1, panelMain.HeaderHeight + 1),
+                                Size = new Size(panelMain.Size.Width - 3, subscriptionWrapper.SubscriptionDescription.RequiresSession ? 544 : 520),
+                                Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                            };
+                            listenerControl.Focus();
 
-                    Text = string.Format(SubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
-                    mainSplitContainer.SplitterDistance = subscriptionWrapper.SubscriptionDescription.RequiresSession ? 570 : listenerControl.Size.Height + 26;
-                    panelMain.HeaderText = string.Format(HeaderTextSubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
-                    panelMain.Controls.Add(listenerControl);
+                            Text = string.Format(SubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
+                            mainSplitContainer.SplitterDistance = subscriptionWrapper.SubscriptionDescription.RequiresSession ? 570 : listenerControl.Size.Height + 26;
+                            panelMain.HeaderText = string.Format(HeaderTextSubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
+                            return listenerControl;
+                        },
+                        null);
                 }
                 else
                 {
-                    testSubscriptionControl = new TestSubscriptionControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper)
-                    {
-                        Location = new Point(1, panelMain.HeaderHeight + 1),
-                        Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                    };
+                    testSubscriptionControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new TestSubscriptionControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), subscriptionWrapper),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                            control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                            control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                        });
 
                     testSubscriptionControl.btnCancel.Click -= testSubscriptionControl.btnCancel_Click;
                     testSubscriptionControl.btnCancel.Click += BtnCancelOnClick;
@@ -307,13 +316,11 @@ namespace ServiceBusExplorer.Forms
                     Text = string.Format(TestSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
 
                     panelMain.HeaderText = string.Format(HeaderTextTestSubscriptionFormat, subscriptionWrapper.SubscriptionDescription.Name);
-                    panelMain.Controls.Add(testSubscriptionControl);
                 }
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -333,16 +340,16 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                testEventHubControl = new TestEventHubControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), eventHubDescription, partitionDescription)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
+                testEventHubControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new TestEventHubControl(mainForm, WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), eventHubDescription, partitionDescription),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                        control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                        control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    });
 
                 Text = partitionDescription == null
                     ? string.Format(SendEventsToEventHubFormat, eventHubDescription.Path)
@@ -361,12 +368,10 @@ namespace ServiceBusExplorer.Forms
                                                      partitionDescription.PartitionId, 
                                                      eventHubDescription.Path);
 
-                panelMain.Controls.Add(testEventHubControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -391,16 +396,16 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), consumerGroupDescription, descriptions)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
+                var partitionListenerControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new PartitionListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), consumerGroupDescription, descriptions),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                        control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                        control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    });
 
                 if (descriptions.Count == 1)
                 {
@@ -413,12 +418,10 @@ namespace ServiceBusExplorer.Forms
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
                 }                
                 partitionListenerControl.Focus();
-                panelMain.Controls.Add(partitionListenerControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -442,16 +445,16 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                var partitionListenerControl = new PartitionListenerControl(WriteToLog, StopLog, StartLog, connectionString, hubName, consumerGroup)
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
+                var partitionListenerControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new PartitionListenerControl(WriteToLog, StopLog, StartLog, connectionString, hubName, consumerGroup),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                        control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                        control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    });
 
                 if (iotHub)
                 {
@@ -466,12 +469,10 @@ namespace ServiceBusExplorer.Forms
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, hubName, consumerGroup);
                 }
                 partitionListenerControl.Focus();
-                panelMain.Controls.Add(partitionListenerControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain?.ResumeDrawing();
                 ResumeLayout();
             }
         }
@@ -491,16 +492,16 @@ namespace ServiceBusExplorer.Forms
                 this.mainForm = mainForm;
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
-                panelMain.SuspendDrawing();
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
 
-                testRelayControl = new TestRelayControl(mainForm, WriteToLog, StopLog, StartLog, relayDescription, new ServiceBusHelper(WriteToLog, serviceBusHelper))
-                {
-                    Location = new Point(1, panelMain.HeaderHeight + 1),
-                    Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-                };
+                testRelayControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new TestRelayControl(mainForm, WriteToLog, StopLog, StartLog, relayDescription, new ServiceBusHelper(WriteToLog, serviceBusHelper)),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                        control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                        control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    });
 
                 Text = string.Format(TestRelayFormat, relayDescription.Path);
 
@@ -511,12 +512,10 @@ namespace ServiceBusExplorer.Forms
 
                 panelMain.HeaderText = string.Format(HeaderTextTestRelayFormat, relayDescription.Path);
 
-                panelMain.Controls.Add(testRelayControl);
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
             {
-                panelMain.ResumeDrawing();
                 ResumeLayout();
             }
         }

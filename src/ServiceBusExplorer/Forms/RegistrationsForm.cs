@@ -39,7 +39,7 @@ namespace ServiceBusExplorer.Forms
         PnsHandle
     }
 
-    public partial class RegistrationsForm : Form
+    public partial class RegistrationsForm : ThemedForm
     {
         #region Private Constants
         //***************************

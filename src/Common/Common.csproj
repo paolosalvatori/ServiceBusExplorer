@@ -54,4 +54,28 @@
     <ProjectReference Include="..\ServiceBus\ServiceBus.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
+  <Target Name="ResolveUpstreamReleaseVersion" BeforeTargets="GetAssemblyAttributes"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <_UpstreamRepositoryRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\..'))</_UpstreamRepositoryRoot>
+    </PropertyGroup>
+    <Exec Condition="'$(UpstreamReleaseVersion)' == ''"
+          Command="powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(_UpstreamRepositoryRoot)\GetUpstreamReleaseVersion.ps1&quot; -RepositoryRoot &quot;$(_UpstreamRepositoryRoot)&quot;"
+          ConsoleToMSBuild="true" StandardOutputImportance="Low">
+      <Output TaskParameter="ConsoleOutput" ItemName="_UpstreamReleaseVersionOutput" />
+    </Exec>
+    <PropertyGroup>
+      <UpstreamReleaseVersion Condition="'$(UpstreamReleaseVersion)' == ''">@(_UpstreamReleaseVersionOutput)</UpstreamReleaseVersion>
+    </PropertyGroup>
+    <Error Condition="'$(UpstreamReleaseVersion)' != '' and !$([System.Text.RegularExpressions.Regex]::IsMatch('$(UpstreamReleaseVersion)', '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'))"
+           Text="UpstreamReleaseVersion must be a stable major.minor.patch version." />
+    <Warning Condition="'$(UpstreamReleaseVersion)' == ''"
+             Text="Upstream release baseline is unavailable. Fetch upstream tags and full history as documented in README.md, or set UpstreamReleaseVersion explicitly. New-upstream-release notices will be disabled." />
+    <ItemGroup Condition="'$(UpstreamReleaseVersion)' != ''">
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>UpstreamReleaseVersion</_Parameter1>
+        <_Parameter2>$(UpstreamReleaseVersion)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
 </Project>

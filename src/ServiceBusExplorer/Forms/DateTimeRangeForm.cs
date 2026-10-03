@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class DateTimeRangeForm : Form
+    public partial class DateTimeRangeForm : ThemedForm
     {
         #region Public Constructor
         public DateTimeRangeForm(DateTime? DateTimeFrom, DateTime? DateTimeTo)
