@@ -425,19 +425,7 @@ namespace ServiceBusExplorer.Forms
             linkLabelNewVersionAvailable.Text = $"Debug Version";
 #else
             var isLatest = VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog);
-            var isAhead = VersionProvider.IsUnstampedBuild() || VersionProvider.GetCurrentVersion() > releaseInfo.Version;
-
-            if (isAhead)
-            {
-                var knownRelease = VersionProvider.GetKnownReleaseVersion(WriteToLog);
-                linkLabelNewVersionAvailable.Visible = true;
-                linkLabelNewVersionAvailable.Text = "HAHAAH ahead of the servicebusexplorer mainterns!! sckrs";
-                if (knownRelease != null && releaseInfo.Version > knownRelease)
-                {
-                    linkLabelNewVersionAvailable.Text += " <-- Hehe you thought, new release dropped :P:P";
-                }
-            }
-            else if (!isLatest)
+            if (!isLatest)
             {
                 linkLabelNewVersionAvailable.Visible = true;
                 linkLabelNewVersionAvailable.Text = $"New Version {releaseInfo.Version} is available";
