@@ -431,10 +431,10 @@ namespace ServiceBusExplorer.Forms
             {
                 var knownRelease = VersionProvider.GetKnownReleaseVersion(WriteToLog);
                 linkLabelNewVersionAvailable.Visible = true;
-                linkLabelNewVersionAvailable.Text = "Eyy you have surpassed the latest official release. Baller.";
+                linkLabelNewVersionAvailable.Text = "HAHAAH ahead of the servicebusexplorer mainterns!! sckrs";
                 if (knownRelease != null && releaseInfo.Version > knownRelease)
                 {
-                    linkLabelNewVersionAvailable.Text += " Hehe you thought, new release dropped";
+                    linkLabelNewVersionAvailable.Text += " <-- Hehe you thought, new release dropped :P:P";
                 }
             }
             else if (!isLatest)
