@@ -26,6 +26,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using ServiceBusExplorer.Forms;
 using System.Net;
+using ServiceBusExplorer.UIHelpers;
 
 
 #endregion
@@ -51,6 +52,7 @@ namespace ServiceBusExplorer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ThemeManager.Initialize();
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             ServicePointManager.DefaultConnectionLimit = 200;

@@ -36,12 +36,12 @@ namespace ServiceBusExplorer.UIHelpers
             var fillRectangle = new Rectangle(cellBounds.X, cellBounds.Y, cellBounds.Width - 1, cellBounds.Height - 1);
             var stringRectangle = new Rectangle(cellBounds.X + 5, cellBounds.Y + 3, cellBounds.Width - 8, cellBounds.Height - 8);
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)),
+            graphics.FillRectangle(new SolidBrush(ThemeManager.IsDarkEnabled ? ThemeManager.SurfaceColor : Color.FromArgb(215, 228, 242)),
                                    fillRectangle);
-            graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1),
+            graphics.DrawLine(new Pen(ThemeManager.IsDarkEnabled ? ThemeManager.SurfaceBorderColor : Color.FromArgb(153, 180, 209), 1),
                               new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y),
                               new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y + cellBounds.Height - 1));
-            graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1),
+            graphics.DrawLine(new Pen(ThemeManager.IsDarkEnabled ? ThemeManager.SurfaceBorderColor : Color.FromArgb(153, 180, 209), 1),
                               new Point(cellBounds.X, cellBounds.Y + cellBounds.Height - 1),
                               new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y + cellBounds.Height - 1));
             //var pen = new Pen(new LinearGradientBrush(new Rectangle(1, 1, 1, 1), 
@@ -61,7 +61,7 @@ namespace ServiceBusExplorer.UIHelpers
             //                 new Point(cellBounds.X + 7, cellBounds.Y + cellBounds.Height - 7));
             graphics.DrawString("X",
                                 new Font("Comic Sans MS", 9.0f, FontStyle.Regular),
-                                new SolidBrush(Color.FromArgb(0, 0, 0)),
+                                new SolidBrush(ThemeManager.IsDarkEnabled ? ThemeManager.TextColor : Color.FromArgb(0, 0, 0)),
                                 stringRectangle);
         }
     }
