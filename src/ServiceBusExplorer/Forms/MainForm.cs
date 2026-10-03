@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -213,7 +213,7 @@ namespace ServiceBusExplorer.Forms
         private const int ConsumerGroupListIconIndex = 4;
         private const int ConsumerGroupIconIndex = 21;
         private const int EventGridNamespaceIconIndex = 24;
-        private const int EventGridTopicIconIndex = 25; 
+        private const int EventGridTopicIconIndex = 25;
         private const int EventGridSubscriptionIconIndex = 26;
         private const int EventGridEntityIconIndex = 27;
 
@@ -550,7 +550,7 @@ namespace ServiceBusExplorer.Forms
                     var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
                         ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
-                    
+
                     serviceBusHelper.Connect(serviceBusNamespace);
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -2173,7 +2173,7 @@ namespace ServiceBusExplorer.Forms
                     }
 
                     await eventGridLibrary.CreateTopicAsync(ResourceGroupName, NamespaceName, createTopicForm.TopicName);
-                    
+
                     WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicCreatedFormat, createTopicForm.TopicName));
 
                     await ShowEventGridEntities(EntityType.All);
@@ -2197,9 +2197,9 @@ namespace ServiceBusExplorer.Forms
                     }
 
                     await eventGridLibrary.CreateSubscriptionAsync(
-                        ResourceGroupName, 
-                        NamespaceName, 
-                        subscription.TopicDescription.Data.Name, 
+                        ResourceGroupName,
+                        NamespaceName,
+                        subscription.TopicDescription.Data.Name,
                         createSubscriptionForm.SubscriptionName,
                         EventGridSubscriptionDeliveryMode,
                         createSubscriptionForm.filterList,
@@ -2520,7 +2520,7 @@ namespace ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is NamespaceTopicResource topic)
                     {
                         await eventGridLibrary.DeleteTopicAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
-                        
+
                         WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicDeletedFormat, topic.Data.Name));
 
                         await ShowEventGridEntities(EntityType.All);
@@ -2661,9 +2661,9 @@ namespace ServiceBusExplorer.Forms
                     if (serviceBusTreeView.SelectedNode.Tag is EventGridSubscriptionWrapper subscription)
                     {
                         await eventGridLibrary.DeleteSubscriptionAsync(
-                            ResourceGroupName, 
-                            NamespaceName, 
-                            subscription.TopicDescription.Data.Name, 
+                            ResourceGroupName,
+                            NamespaceName,
+                            subscription.TopicDescription.Data.Name,
                             subscription.SubscriptionDescription.Data.Name);
 
                         WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionDeletedFormat, subscription.SubscriptionDescription.Data.Name));
@@ -3688,7 +3688,7 @@ namespace ServiceBusExplorer.Forms
                 // Topics Node
                 if (node == topicListNode)
                 {
-                    var list = new List<ToolStripItem>(); 
+                    var list = new List<ToolStripItem>();
 
                     if (topicListNode.Tag != null && topicListNode.Tag is NamespaceTopic)
                     {
@@ -5167,7 +5167,7 @@ namespace ServiceBusExplorer.Forms
         }
 
         /// <summary>
-        /// Adds a Topic node to the 
+        /// Adds a Topic node to the
         /// </summary>
         /// <param name="entityNode">If <see cref="entityNode"/>.Tag is a <see cref="TopicDescription"/> then adds the subscriptions node,
         /// a <see cref="SubscriptionWrapper"/> node for each subscription, and an empty rules node. The <see cref="SubscriptionWrapper"/> node
@@ -5281,7 +5281,7 @@ namespace ServiceBusExplorer.Forms
 
                         var subscriptionsNode = entityNode.Nodes.Add(
                             SubscriptionEntities,
-                            SubscriptionEntities, 
+                            SubscriptionEntities,
                             EventGridEntityIconIndex,
                             EventGridEntityIconIndex);
                         subscriptionsNode.Text =
@@ -5516,7 +5516,7 @@ namespace ServiceBusExplorer.Forms
         /// </summary>
         /// <param name="wrapper">Wrapper to </param>
         /// <param name="duplicateCurrentSubscription">If set the rendered subscription panel will be a "Duplicate" form.</param>
-        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false) 
+        private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false)
         {
             try
             {
@@ -6914,10 +6914,10 @@ namespace ServiceBusExplorer.Forms
 
                         WriteToLog(string.Format(
                             CultureInfo.CurrentCulture,
-                            receivedEvents != null && receivedEvents.Value.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural, 
-                            receivedEvents != null ? receivedEvents.Value.Count : 0, 
+                            receivedEvents != null && receivedEvents.Value.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural,
+                            receivedEvents != null ? receivedEvents.Value.Count : 0,
                             subscription.SubscriptionDescription.Data.Name));
-                        
+
                         var control = panelMain.Controls[0] as HandleEventGridSubscriptionControl;
 
                         if (control != null)
@@ -7487,13 +7487,13 @@ namespace ServiceBusExplorer.Forms
                     || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Topic))
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all topics{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
-                    
+
                     List<TreeNode> topicTreeNodes = new List<TreeNode>();
                     this.FindTopicsNodesRecursive(topicTreeNodes, treeNode);
 
                     subscriptions.AddRange(topicTreeNodes.SelectMany(subscriptionsExtractor));
                 }
-                else if (treeNode == FindNode(Constants.QueueEntities, rootNode) 
+                else if (treeNode == FindNode(Constants.QueueEntities, rootNode)
                     || (treeNode.Tag is UrlSegmentWrapper && (treeNode.Tag as UrlSegmentWrapper).EntityType == EntityType.Queue))
                 {
                     deleteConfirmation = $"Are you sure you want to purge {strategyDescription} from all queues{(treeNode.Tag is UrlSegmentWrapper ? " in this folder" : string.Empty)}?";
