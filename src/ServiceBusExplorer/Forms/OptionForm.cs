@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.Forms
 
     using Utilities.Helpers;
 
-    public partial class OptionForm : Form
+    public partial class OptionForm : ThemedForm
     {
         #region Private Constants
         // Messages
@@ -105,7 +105,6 @@ namespace ServiceBusExplorer.Forms
             EntraTenantIdBindingList.ListChanged += EntraTenantIdsListChanged;
             NodesColorInfoBindingList.ListChanged += NodesColorsListChanged;
             nodeColorsBindingSource.DataSource = NodesColorInfoBindingList;
-
             ShowSettings(mainSettings);
         }
 
@@ -239,6 +238,7 @@ namespace ServiceBusExplorer.Forms
             useAmqpWebSocketsCheckBox.Checked = MainSettings.UseAmqpWebSockets;
             cboEncodingType.SelectedItem = EncodingType.ASCII;
 
+            darkModeCheckBox.Checked = MainSettings.DarkMode;
             saveMessageToFileCheckBox.Checked = MainSettings.SaveMessageToFile;
             showMessageCountCheckBox.Checked = MainSettings.ShowMessageCount;
             savePropertiesToFileCheckBox.Checked = MainSettings.SavePropertiesToFile;
@@ -252,7 +252,7 @@ namespace ServiceBusExplorer.Forms
 
             foreach (var item in ConfigurationHelper.MessageCounts)
             {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
+                cboSelectedMessageCounts.CheckBoxItems[item].Checked = true;
             }
 
             MainSettings.MessageBodyType = MainSettings.MessageBodyType; // .Stream.ToString();
@@ -346,6 +346,11 @@ namespace ServiceBusExplorer.Forms
         private void showMessageCountCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             MainSettings.ShowMessageCount = showMessageCountCheckBox.Checked;
+        }
+
+        private void darkModeCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            MainSettings.DarkMode = darkModeCheckBox.Checked;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -623,6 +628,8 @@ namespace ServiceBusExplorer.Forms
                 MainSettings.TreeViewFontSize);
             SaveSetting(configuration, readSettings, ConfigurationParameters.ShowMessageCountParameter,
                 MainSettings.ShowMessageCount);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.DarkMode,
+                MainSettings.DarkMode);
             SaveSetting(configuration, readSettings, ConfigurationParameters.SaveMessageToFileParameter,
                 MainSettings.SaveMessageToFile);
             SaveSetting(configuration, readSettings, ConfigurationParameters.UseAsciiParameter,
@@ -711,6 +718,7 @@ namespace ServiceBusExplorer.Forms
                 NodeColorInfo.FormatAll(MainSettings.NodesColors));
 
             configuration.Save();
+            ServiceBusExplorer.UIHelpers.Theming.ThemeManager.SetDarkMode(MainSettings.DarkMode);
         }
 
         void SaveSetting<T>(TwoFilesConfiguration configuration, MainSettings savedSettings,
@@ -764,6 +772,7 @@ namespace ServiceBusExplorer.Forms
             prefetchCountNumericUpDown.Value = mainSettings.PrefetchCount;
             topNumericUpDown.Value = mainSettings.TopCount;
             showMessageCountCheckBox.Checked = mainSettings.ShowMessageCount;
+            darkModeCheckBox.Checked = mainSettings.DarkMode;
             savePropertiesToFileCheckBox.Checked = mainSettings.SavePropertiesToFile;
             saveMessageToFileCheckBox.Checked = mainSettings.SaveMessageToFile;
             saveCheckpointsToFileCheckBox.Checked = mainSettings.SaveCheckpointsToFile;

@@ -31,6 +31,11 @@ jobs:
       run: git config --global core.autocrlf false
 
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Fetch upstream release tags
+      run: git fetch --no-tags https://github.com/paolosalvatori/ServiceBusExplorer.git "+refs/tags/*:refs/upstream-release-tags/*"
 
     - name: Restore NuGet packages
       working-directory: ${{env.SOLUTION_FILE_PATH}}

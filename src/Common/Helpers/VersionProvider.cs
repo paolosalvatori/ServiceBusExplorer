@@ -19,7 +19,9 @@
 //=======================================================================================
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using ServiceBusExplorer.Utilities.Helpers;
 using Microsoft.ServiceBus;
@@ -40,6 +42,46 @@ namespace ServiceBusExplorer.Helpers
             var assembly = Assembly.GetAssembly(typeof(NamespaceManager));
 
             return GetFormattedFileVersion(assembly);
+        }
+
+        public static Version GetCurrentVersion()
+        {
+            var v = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            return new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart);
+        }
+
+        public static Version GetKnownReleaseVersion(WriteToLogDelegate writeToLog = null)
+        {
+            return GetKnownReleaseVersion(Assembly.GetExecutingAssembly()
+                .GetCustomAttributes<AssemblyMetadataAttribute>(), writeToLog);
+        }
+
+        static Version GetKnownReleaseVersion(IEnumerable<AssemblyMetadataAttribute> metadata,
+            WriteToLogDelegate writeToLog)
+        {
+            var value = metadata.FirstOrDefault(attribute => attribute.Key == "UpstreamReleaseVersion")?.Value;
+            if (Version.TryParse(value, out var version) && version.Build >= 0 && version.Revision < 0)
+            {
+                return version;
+            }
+
+            const string message = "VersionProvider::Upstream release baseline is unavailable or invalid; newer upstream releases cannot be compared.";
+            if (writeToLog != null)
+            {
+                writeToLog(message);
+            }
+            else
+            {
+                Console.WriteLine(message);
+            }
+
+            return null;
+        }
+
+        // Unstamped local builds keep the default 1.0.x file version
+        public static bool IsUnstampedBuild()
+        {
+            return GetCurrentVersion() < new Version(2, 0, 0);
         }
 
         public static bool IsLatestVersion(out ReleaseInfo nextReleaseInfo, WriteToLogDelegate writeToLog = null)

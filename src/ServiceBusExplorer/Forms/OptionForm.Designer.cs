@@ -96,6 +96,8 @@ namespace ServiceBusExplorer.Forms
             this.lblTreeViewFontSize = new System.Windows.Forms.Label();
             this.logNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.lblLogFontSize = new System.Windows.Forms.Label();
+            this.darkModeCheckBox = new System.Windows.Forms.CheckBox();
+            this.lblDarkMode = new System.Windows.Forms.Label();
             this.tabPageReceiving = new System.Windows.Forms.TabPage();
             this.receiverThinkTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.lblReceiverThinkTime = new System.Windows.Forms.Label();
@@ -205,7 +207,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(255, 437);
+            this.btnOk.Location = new System.Drawing.Point(255, 468);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 1;
@@ -223,7 +225,7 @@ namespace ServiceBusExplorer.Forms
             this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReset.Location = new System.Drawing.Point(528, 437);
+            this.btnReset.Location = new System.Drawing.Point(528, 468);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(72, 24);
             this.btnReset.TabIndex = 4;
@@ -241,7 +243,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(435, 437);
+            this.btnSave.Location = new System.Drawing.Point(435, 468);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 3;
@@ -347,7 +349,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // tabOptionsControl
             // 
-            this.tabOptionsControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabOptionsControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabOptionsControl.Controls.Add(this.tabPageGeneral);
             this.tabOptionsControl.Controls.Add(this.tabPageReceiving);
@@ -360,12 +362,14 @@ namespace ServiceBusExplorer.Forms
             this.tabOptionsControl.Location = new System.Drawing.Point(16, 39);
             this.tabOptionsControl.Name = "tabOptionsControl";
             this.tabOptionsControl.SelectedIndex = 0;
-            this.tabOptionsControl.Size = new System.Drawing.Size(584, 386);
+            this.tabOptionsControl.Size = new System.Drawing.Size(584, 417);
             this.tabOptionsControl.TabIndex = 3;
             this.tabOptionsControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControlOptions_DrawItem);
             // 
             // tabPageGeneral
             // 
+            this.tabPageGeneral.AutoScroll = true;
+            this.tabPageGeneral.AutoScrollMargin = new System.Drawing.Size(0, 12);
             this.tabPageGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.tabPageGeneral.Controls.Add(this.cboSelectedMessageCounts);
             this.tabPageGeneral.Controls.Add(this.lblMessageCounts);
@@ -389,10 +393,12 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral.Controls.Add(this.lblTreeViewFontSize);
             this.tabPageGeneral.Controls.Add(this.logNumericUpDown);
             this.tabPageGeneral.Controls.Add(this.lblLogFontSize);
+            this.tabPageGeneral.Controls.Add(this.lblDarkMode);
+            this.tabPageGeneral.Controls.Add(this.darkModeCheckBox);
             this.tabPageGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabPageGeneral.Name = "tabPageGeneral";
             this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(576, 360);
+            this.tabPageGeneral.Size = new System.Drawing.Size(576, 391);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
             this.tabPageGeneral.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageGeneral_Paint);
@@ -665,6 +671,28 @@ namespace ServiceBusExplorer.Forms
             this.lblLogFontSize.Size = new System.Drawing.Size(75, 13);
             this.lblLogFontSize.TabIndex = 0;
             this.lblLogFontSize.Text = "Log Font Size:";
+            //
+            // darkModeCheckBox
+            //
+            this.darkModeCheckBox.AccessibleName = "Dark mode";
+            this.darkModeCheckBox.AutoSize = true;
+            this.darkModeCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.darkModeCheckBox.Location = new System.Drawing.Point(260, 360);
+            this.darkModeCheckBox.Name = "darkModeCheckBox";
+            this.darkModeCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.darkModeCheckBox.TabIndex = 23;
+            this.darkModeCheckBox.UseVisualStyleBackColor = true;
+            this.darkModeCheckBox.CheckedChanged += new System.EventHandler(this.darkModeCheckBox_CheckedChanged);
+            //
+            // lblDarkMode
+            //
+            this.lblDarkMode.AutoSize = true;
+            this.lblDarkMode.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblDarkMode.Location = new System.Drawing.Point(16, 360);
+            this.lblDarkMode.Name = "lblDarkMode";
+            this.lblDarkMode.Size = new System.Drawing.Size(65, 13);
+            this.lblDarkMode.TabIndex = 22;
+            this.lblDarkMode.Text = "Dark mode:";
             // 
             // tabPageReceiving
             // 
@@ -684,7 +712,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageReceiving.Location = new System.Drawing.Point(4, 22);
             this.tabPageReceiving.Name = "tabPageReceiving";
             this.tabPageReceiving.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageReceiving.Size = new System.Drawing.Size(576, 360);
+            this.tabPageReceiving.Size = new System.Drawing.Size(576, 391);
             this.tabPageReceiving.TabIndex = 1;
             this.tabPageReceiving.Text = "Receiving";
             // 
@@ -888,7 +916,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageSending.Controls.Add(this.savePropertiesToFileCheckBox);
             this.tabPageSending.Location = new System.Drawing.Point(4, 22);
             this.tabPageSending.Name = "tabPageSending";
-            this.tabPageSending.Size = new System.Drawing.Size(576, 360);
+            this.tabPageSending.Size = new System.Drawing.Size(576, 391);
             this.tabPageSending.TabIndex = 2;
             this.tabPageSending.Text = "Sending";
             this.tabPageSending.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageSending_Paint);
@@ -1105,7 +1133,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageConnectivity.Controls.Add(this.lblConnectivityMode);
             this.tabPageConnectivity.Location = new System.Drawing.Point(4, 22);
             this.tabPageConnectivity.Name = "tabPageConnectivity";
-            this.tabPageConnectivity.Size = new System.Drawing.Size(576, 360);
+            this.tabPageConnectivity.Size = new System.Drawing.Size(576, 391);
             this.tabPageConnectivity.TabIndex = 3;
             this.tabPageConnectivity.Text = "Connectivity";
             this.tabPageConnectivity.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageConnectivity_Paint);
@@ -1172,7 +1200,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageProxy.Location = new System.Drawing.Point(4, 22);
             this.tabPageProxy.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageProxy.Name = "tabPageProxy";
-            this.tabPageProxy.Size = new System.Drawing.Size(576, 360);
+            this.tabPageProxy.Size = new System.Drawing.Size(576, 391);
             this.tabPageProxy.TabIndex = 4;
             this.tabPageProxy.Text = "Proxy";
             // 
@@ -1349,7 +1377,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageAuthentication.Controls.Add(this.label6);
             this.tabPageAuthentication.Location = new System.Drawing.Point(4, 22);
             this.tabPageAuthentication.Name = "tabPageAuthentication";
-            this.tabPageAuthentication.Size = new System.Drawing.Size(576, 360);
+            this.tabPageAuthentication.Size = new System.Drawing.Size(576, 391);
             this.tabPageAuthentication.TabIndex = 6;
             this.tabPageAuthentication.Text = "&Authentication";
             //
@@ -1431,7 +1459,7 @@ namespace ServiceBusExplorer.Forms
             this.tabPageColors.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageColors.Name = "tabPageColors";
             this.tabPageColors.Padding = new System.Windows.Forms.Padding(16, 25, 16, 25);
-            this.tabPageColors.Size = new System.Drawing.Size(576, 360);
+            this.tabPageColors.Size = new System.Drawing.Size(576, 391);
             this.tabPageColors.TabIndex = 5;
             this.tabPageColors.Text = "Colors";
             this.tabPageColors.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageColors_Paint);
@@ -1558,7 +1586,7 @@ namespace ServiceBusExplorer.Forms
             // 
             // mainPanel
             // 
-            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.mainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.mainPanel.Controls.Add(this.tabOptionsControl);
@@ -1567,7 +1595,7 @@ namespace ServiceBusExplorer.Forms
             this.mainPanel.Controls.Add(this.label1);
             this.mainPanel.Location = new System.Drawing.Point(0, 0);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(614, 432);
+            this.mainPanel.Size = new System.Drawing.Size(614, 463);
             this.mainPanel.TabIndex = 0;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
@@ -1581,7 +1609,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(343, 437);
+            this.btnCancel.Location = new System.Drawing.Point(343, 468);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 2;
@@ -1620,7 +1648,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(615, 473);
+            this.ClientSize = new System.Drawing.Size(615, 504);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnReset);
@@ -1704,6 +1732,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label lblTreeViewFontSize;
         private System.Windows.Forms.NumericUpDown logNumericUpDown;
         private System.Windows.Forms.Label lblLogFontSize;
+        private System.Windows.Forms.CheckBox darkModeCheckBox;
+        private System.Windows.Forms.Label lblDarkMode;
         private System.Windows.Forms.TabPage tabPageReceiving;
         private System.Windows.Forms.NumericUpDown receiverThinkTimeNumericUpDown;
         private System.Windows.Forms.Label lblReceiverThinkTime;

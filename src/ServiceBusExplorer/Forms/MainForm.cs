@@ -53,11 +53,12 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers.Theming;
 #endregion
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class MainForm : Form
+    public partial class MainForm : ThemedForm
     {
         #region Private Constants
         //***************************
@@ -317,6 +318,7 @@ namespace ServiceBusExplorer.Forms
             GetBrokeredMessageGeneratorsFromConfiguration();
             GetEventDataGeneratorsFromConfiguration();
             GetServiceBusNamespaceSettingsFromConfiguration();
+            ThemeManager.RegisterComponents(components);
             ReadEventHubPartitionCheckpointFile();
             UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
@@ -422,7 +424,20 @@ namespace ServiceBusExplorer.Forms
             linkLabelNewVersionAvailable.Enabled = false;
             linkLabelNewVersionAvailable.Text = $"Debug Version";
 #else
-            if (!VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog))
+            var isLatest = VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog);
+            var isAhead = VersionProvider.IsUnstampedBuild() || VersionProvider.GetCurrentVersion() > releaseInfo.Version;
+
+            if (isAhead)
+            {
+                var knownRelease = VersionProvider.GetKnownReleaseVersion(WriteToLog);
+                linkLabelNewVersionAvailable.Visible = true;
+                linkLabelNewVersionAvailable.Text = "Eyy you have surpassed the latest official release. Baller.";
+                if (knownRelease != null && releaseInfo.Version > knownRelease)
+                {
+                    linkLabelNewVersionAvailable.Text += " Hehe you thought, new release dropped";
+                }
+            }
+            else if (!isLatest)
             {
                 linkLabelNewVersionAvailable.Visible = true;
                 linkLabelNewVersionAvailable.Text = $"New Version {releaseInfo.Version} is available";
@@ -611,6 +626,7 @@ namespace ServiceBusExplorer.Forms
         {
             var mainSettings = new MainSettings
             {
+                DarkMode = ThemeManager.DarkMode,
                 LogFontSize = (decimal)lstLog.Font.Size,
                 TreeViewFontSize = (decimal)serviceBusTreeView.Font.Size,
                 RetryCount = RetryHelper.RetryCount,
@@ -731,6 +747,7 @@ namespace ServiceBusExplorer.Forms
                 EntraTenantIds = optionForm.MainSettings.EntraTenantIds;
 
                 NodesColors = optionForm.MainSettings.NodesColors;
+                ThemeManager.SetDarkMode(optionForm.MainSettings.DarkMode);
             }
 
             ReapplyColors(rootNode);
@@ -4156,6 +4173,7 @@ namespace ServiceBusExplorer.Forms
 
             var currentSettings = new MainSettings
             {
+                DarkMode = ThemeManager.DarkMode,
                 LogFontSize = logFontSize,
                 TreeViewFontSize = treeViewFontSize,
                 RetryCount = RetryHelper.RetryCount,
@@ -4193,6 +4211,7 @@ namespace ServiceBusExplorer.Forms
             };
 
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
+            ThemeManager.SetDarkMode(readSettings.DarkMode);
 
             var tempLogFontSize = readSettings.LogFontSize;
             if (tempLogFontSize != logFontSize)
@@ -5414,56 +5433,36 @@ namespace ServiceBusExplorer.Forms
 
         private void ShowEventGridNamespace(EventGridNamespaceResource eventGridNamespace)
         {
-            HandleEventGridNamespaceControl eventGridNamespaceControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                eventGridNamespaceControl = new HandleEventGridNamespaceControl(eventGridNamespace);
-                eventGridNamespaceControl.SuspendDrawing();
-                eventGridNamespaceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(eventGridNamespaceControl);
-                SetControlSize(eventGridNamespaceControl);
+                ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleEventGridNamespaceControl(eventGridNamespace),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (eventGridNamespaceControl != null)
-                {
-                    eventGridNamespaceControl.ResumeDrawing();
-                }
-            }
         }
 
         private void ShowQueue(QueueDescription queue, string path, bool duplicateQueue = false)
         {
-            HandleQueueControl queueControl = null;
-
             try
             {
                 var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                queueControl = new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path, duplicateQueue);
-                queueControl.SuspendDrawing();
-                queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(queueControl);
-                SetControlSize(queueControl);
+                var queueControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleQueueControl(WriteToLog, serviceBusHelper, queue, path, duplicateQueue),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 queueControl.OnCancel += MainForm_OnCancel;
                 queueControl.OnRefresh += MainForm_OnRefresh;
                 queueControl.OnChangeStatus += MainForm_OnChangeStatus;
@@ -5472,34 +5471,20 @@ namespace ServiceBusExplorer.Forms
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (queueControl != null)
-                {
-                    ControlHelper.ResumeDrawing(queueControl);
-                }
-            }
         }
 
         private void ShowTopic(TopicDescription topic, string path)
         {
-            HandleTopicControl topicControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                topicControl = new HandleTopicControl(WriteToLog, serviceBusHelper, topic, path);
-                topicControl.SuspendDrawing();
-                topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(topicControl);
-                SetControlSize(topicControl);
+                var topicControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleTopicControl(WriteToLog, serviceBusHelper, topic, path),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 topicControl.OnCancel += MainForm_OnCancel;
                 topicControl.OnRefresh += MainForm_OnRefresh;
                 topicControl.OnChangeStatus += MainForm_OnChangeStatus;
@@ -5508,40 +5493,20 @@ namespace ServiceBusExplorer.Forms
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (topicControl != null)
-                {
-                    topicControl.ResumeDrawing();
-                } 
-            }
         }
 
         private void ShowEventGridTopic(NamespaceTopicResource topic, string path)
         {
-            HandleEventGridTopicControl topicControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                topicControl = new HandleEventGridTopicControl(topic, NamespaceHostname);
-                topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(topicControl);
+                ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleEventGridTopicControl(topic, NamespaceHostname),
+                    control => control.Location = new Point(1, panelLog.HeaderHeight + 1));
             }
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
             }
         }
 
@@ -5553,22 +5518,16 @@ namespace ServiceBusExplorer.Forms
         /// <param name="duplicateCurrentSubscription">If set the rendered subscription panel will be a "Duplicate" form.</param>
         private void ShowSubscription(SubscriptionWrapper wrapper, bool duplicateCurrentSubscription = false) 
         {
-            HandleSubscriptionControl subscriptionControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                subscriptionControl = new HandleSubscriptionControl(WriteToLog, serviceBusHelper, wrapper, duplicateCurrentSubscription);
-                subscriptionControl.SuspendDrawing();
-                subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(subscriptionControl);
-                SetControlSize(subscriptionControl);
+                var subscriptionControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleSubscriptionControl(WriteToLog, serviceBusHelper, wrapper, duplicateCurrentSubscription),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 subscriptionControl.OnCancel += MainForm_OnCancel;
                 subscriptionControl.OnRefresh += MainForm_OnRefresh;
                 subscriptionControl.OnChangeStatus += MainForm_OnChangeStatus;
@@ -5577,67 +5536,39 @@ namespace ServiceBusExplorer.Forms
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (subscriptionControl != null)
-                {
-                    subscriptionControl.ResumeDrawing();
-                }
-            }
         }
 
         private void ShowEventGridSubscription(EventGridSubscriptionWrapper subscription)
         {
-            HandleEventGridSubscriptionControl subscriptionControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                subscriptionControl = new HandleEventGridSubscriptionControl(WriteToLog, subscription, eventGridLibrary);
-                subscriptionControl.SuspendDrawing();
-                subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(subscriptionControl);
-                SetControlSize(subscriptionControl);
+                ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleEventGridSubscriptionControl(WriteToLog, subscription, eventGridLibrary),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (subscriptionControl != null)
-                {
-                    subscriptionControl.ResumeDrawing();
-                }
-            }
         }
 
         private void ShowRelay(RelayDescription relayService, string path)
         {
-            HandleRelayControl relayServiceControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                relayServiceControl = new HandleRelayControl(WriteToLog, serviceBusHelper, relayService, path);
-                relayServiceControl.SuspendDrawing();
-                relayServiceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(relayServiceControl);
-                SetControlSize(relayServiceControl);
+                var relayServiceControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleRelayControl(WriteToLog, serviceBusHelper, relayService, path),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 relayServiceControl.OnCancel += MainForm_OnCancel;
                 relayServiceControl.OnRefresh += MainForm_OnRefresh;
             }
@@ -5645,68 +5576,40 @@ namespace ServiceBusExplorer.Forms
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (relayServiceControl != null)
-                {
-                    relayServiceControl.ResumeDrawing();
-                }
-            }
         }
 
         private void ShowRule(RuleWrapper wrapper, bool? isFirstRule)
         {
-            HandleRuleControl ruleControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                ruleControl = new HandleRuleControl(WriteToLog, serviceBusHelper, wrapper, isFirstRule);
-                ruleControl.SuspendDrawing();
-                ruleControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(ruleControl);
-                SetControlSize(ruleControl);
+                var ruleControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleRuleControl(WriteToLog, serviceBusHelper, wrapper, isFirstRule),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 ruleControl.OnCancel += MainForm_OnCancel;
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (ruleControl != null)
-                {
-                    ruleControl.ResumeDrawing();
-                }
-            }
         }
 
         private void ShowEventHub(EventHubDescription eventHub)
         {
-            HandleEventHubControl eventHubControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                eventHubControl = new HandleEventHubControl(WriteToLog, serviceBusHelper, eventHub);
-                eventHubControl.SuspendDrawing();
-                eventHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(eventHubControl);
-                SetControlSize(eventHubControl);
+                var eventHubControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleEventHubControl(WriteToLog, serviceBusHelper, eventHub),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 eventHubControl.OnCancel += MainForm_OnCancel;
                 eventHubControl.OnRefresh += MainForm_OnRefresh;
                 eventHubControl.OnChangeStatus += MainForm_OnChangeStatus;
@@ -5715,126 +5618,78 @@ namespace ServiceBusExplorer.Forms
             {
                 HandleException(ex);
             }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (eventHubControl != null)
-                {
-                    eventHubControl.ResumeDrawing();
-                }
-            }
         }
 
         private void ShowPartition(PartitionDescription partition)
         {
-            HandlePartitionControl partitionControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-
-                if (string.IsNullOrWhiteSpace(partition.LastEnqueuedOffset))
-                {
-                    var consumerGroup = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
-                    var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
-                    partition = serviceBusHelper.GetPartition(partition.EventHubPath,
-                                                              consumerGroupName,
-                                                              partition.PartitionId);
-                }
-                partitionControl = new HandlePartitionControl(WriteToLog, serviceBusHelper, partition);
-                partitionControl.SuspendDrawing();
-                partitionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(partitionControl);
+                var partitionControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () =>
+                    {
+                        if (string.IsNullOrWhiteSpace(partition.LastEnqueuedOffset))
+                        {
+                            var consumerGroup = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
+                            var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
+                            partition = serviceBusHelper.GetPartition(partition.EventHubPath,
+                                                                      consumerGroupName,
+                                                                      partition.PartitionId);
+                        }
+                        return new HandlePartitionControl(WriteToLog, serviceBusHelper, partition);
+                    },
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 partitionControl.OnRefresh += MainForm_OnRefresh;
-                SetControlSize(partitionControl);
             }
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (partitionControl != null)
-                {
-                    partitionControl.ResumeDrawing();
-                }
             }
         }
 
         private void ShowConsumerGroup(ConsumerGroupDescription notificationHub, string eventHubname)
         {
-            HandleConsumerGroupControl notificationHubControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                notificationHubControl = new HandleConsumerGroupControl(WriteToLog, serviceBusHelper, notificationHub, eventHubname);
-                notificationHubControl.SuspendDrawing();
-                notificationHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(notificationHubControl);
-                SetControlSize(notificationHubControl);
+                var notificationHubControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleConsumerGroupControl(WriteToLog, serviceBusHelper, notificationHub, eventHubname),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 notificationHubControl.OnCancel += MainForm_OnCancel;
                 notificationHubControl.OnRefresh += MainForm_OnRefresh;
             }
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (notificationHubControl != null)
-                {
-                    notificationHubControl.ResumeDrawing();
-                }
             }
         }
 
         private void ShowNotificationHub(NotificationHubDescription notificationHub)
         {
-            HandleNotificationHubControl notificationHubControl = null;
-
             try
             {
-                panelMain.SuspendDrawing();
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                notificationHubControl = new HandleNotificationHubControl(WriteToLog, serviceBusHelper, notificationHub);
-                notificationHubControl.SuspendDrawing();
-                notificationHubControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                panelMain.Controls.Add(notificationHubControl);
-                SetControlSize(notificationHubControl);
+                var notificationHubControl = ThemeManager.ReplaceHostedContent(
+                    panelMain,
+                    () => new HandleNotificationHubControl(WriteToLog, serviceBusHelper, notificationHub),
+                    control =>
+                    {
+                        control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                        SetControlSize(control);
+                    });
                 notificationHubControl.OnCancel += MainForm_OnCancel;
                 notificationHubControl.OnRefresh += MainForm_OnRefresh;
             }
             catch (Exception ex)
             {
                 HandleException(ex);
-            }
-            finally
-            {
-                panelMain.ResumeDrawing();
-                if (notificationHubControl != null)
-                {
-                    notificationHubControl.ResumeDrawing();
-                }
             }
         }
 
@@ -5842,40 +5697,26 @@ namespace ServiceBusExplorer.Forms
         {
             if (sdi)
             {
-                TestQueueControl queueControl = null;
-
                 try
                 {
-                    panelMain.SuspendDrawing();
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    queueControl = new TestQueueControl(this,
-                                                        WriteToLog,
-                                                        StopLog,
-                                                        StartLog,
-                                                        serviceBusHelper,
-                                                        queueDescription);
-                    queueControl.SuspendDrawing();
-                    queueControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                    panelMain.Controls.Add(queueControl);
-                    SetControlSize(queueControl);
+                    var queueControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new TestQueueControl(this,
+                                                   WriteToLog,
+                                                   StopLog,
+                                                   StartLog,
+                                                   serviceBusHelper,
+                                                   queueDescription),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                            SetControlSize(control);
+                        });
                     queueControl.OnCancel += MainForm_OnCancel;
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                }
-                finally
-                {
-                    panelMain.ResumeDrawing();
-                    if (queueControl != null)
-                    {
-                        queueControl.ResumeDrawing();
-                    }
                 }
             }
             else
@@ -5889,41 +5730,27 @@ namespace ServiceBusExplorer.Forms
         {
             if (sdi)
             {
-                TestTopicControl topicControl = null;
-
                 try
                 {
-                    panelMain.SuspendDrawing();
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    topicControl = new TestTopicControl(this,
-                                                        WriteToLog,
-                                                        StopLog,
-                                                        StartLog,
-                                                        serviceBusHelper,
-                                                        topicDescription,
-                                                        subscriptionList);
-                    topicControl.SuspendDrawing();
-                    topicControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                    panelMain.Controls.Add(topicControl);
-                    SetControlSize(topicControl);
+                    var topicControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new TestTopicControl(this,
+                                                   WriteToLog,
+                                                   StopLog,
+                                                   StartLog,
+                                                   serviceBusHelper,
+                                                   topicDescription,
+                                                   subscriptionList),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                            SetControlSize(control);
+                        });
                     topicControl.OnCancel += MainForm_OnCancel;
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                }
-                finally
-                {
-                    panelMain.ResumeDrawing();
-                    if (topicControl != null)
-                    {
-                        topicControl.ResumeDrawing();
-                    }
                 }
             }
             else
@@ -5937,40 +5764,26 @@ namespace ServiceBusExplorer.Forms
         {
             if (sdi)
             {
-                TestSubscriptionControl subscriptionControl = null;
-
                 try
                 {
-                    panelMain.SuspendDrawing();
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    subscriptionControl = new TestSubscriptionControl(this,
-                                                                      WriteToLog,
-                                                                      StopLog,
-                                                                      StartLog,
-                                                                      serviceBusHelper,
-                                                                      subscriptionWrapper);
-                    subscriptionControl.SuspendDrawing();
-                    subscriptionControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                    panelMain.Controls.Add(subscriptionControl);
-                    SetControlSize(subscriptionControl);
+                    var subscriptionControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new TestSubscriptionControl(this,
+                                                          WriteToLog,
+                                                          StopLog,
+                                                          StartLog,
+                                                          serviceBusHelper,
+                                                          subscriptionWrapper),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                            SetControlSize(control);
+                        });
                     subscriptionControl.OnCancel += MainForm_OnCancel;
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                }
-                finally
-                {
-                    panelMain.ResumeDrawing();
-                    if (subscriptionControl != null)
-                    {
-                        subscriptionControl.ResumeDrawing();
-                    }
                 }
             }
             else
@@ -5984,40 +5797,26 @@ namespace ServiceBusExplorer.Forms
         {
             if (sdi)
             {
-                TestRelayControl relayServiceControl = null;
-
                 try
                 {
-                    panelMain.SuspendDrawing();
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.GradientInactiveCaption;
-                    relayServiceControl = new TestRelayControl(this,
-                                                               WriteToLog,
-                                                               StopLog,
-                                                               StartLog,
-                                                               relayDescription,
-                                                               serviceBusHelper);
-                    relayServiceControl.SuspendDrawing();
-                    relayServiceControl.Location = new Point(1, panelLog.HeaderHeight + 1);
-                    panelMain.Controls.Add(relayServiceControl);
-                    SetControlSize(relayServiceControl);
+                    var relayServiceControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new TestRelayControl(this,
+                                                   WriteToLog,
+                                                   StopLog,
+                                                   StartLog,
+                                                   relayDescription,
+                                                   serviceBusHelper),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelLog.HeaderHeight + 1);
+                            SetControlSize(control);
+                        });
                     relayServiceControl.OnCancel += MainForm_OnCancel;
                 }
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                }
-                finally
-                {
-                    panelMain.ResumeDrawing();
-                    if (relayServiceControl != null)
-                    {
-                        relayServiceControl.ResumeDrawing();
-                    }
                 }
             }
             else

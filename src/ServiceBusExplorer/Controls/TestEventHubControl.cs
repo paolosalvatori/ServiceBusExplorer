@@ -44,6 +44,7 @@ namespace ServiceBusExplorer.Controls
 {
     using Enums;
     using ServiceBusExplorer.UIHelpers;
+    using ServiceBusExplorer.UIHelpers.Theming;
     using ServiceBusExplorer.Utilities.Helpers;
     using static ServiceBusExplorer.ServiceBusHelper;
 
@@ -1014,6 +1015,7 @@ namespace ServiceBusExplorer.Controls
 
             chart.Titles.Clear();
             chart.Titles.Add(title);
+            ThemeManager.Apply(chart);
             tabPageGraph.Refresh();
         }
 

@@ -15,7 +15,7 @@ using System.Windows.Markup;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class CreateEventGridSubscriptionForm : Form
+    public partial class CreateEventGridSubscriptionForm : ThemedForm
     {
         #region Private Constants
         private const string ExceptionFormat = "Exception: {0}";

@@ -54,6 +54,7 @@ namespace ServiceBusExplorer.Helpers
         public int ReceiverThinkTime { get; set; }
         public int MonitorRefreshInterval { get; set; }
         public bool ShowMessageCount { get; set; }
+        public bool DarkMode { get; set; }
         public bool UseAscii { get; set; }
         public bool SaveMessageToFile { get; set; }
         public bool SavePropertiesToFile { get; set; }
@@ -120,6 +121,7 @@ namespace ServiceBusExplorer.Helpers
             MonitorRefreshInterval = 30;
 
             ShowMessageCount = true;
+            DarkMode = true;
             UseAscii = true;
             SaveMessageToFile = true;
             SavePropertiesToFile = true;
@@ -170,6 +172,7 @@ namespace ServiceBusExplorer.Helpers
             if (ReceiverThinkTime != otherProperties.ReceiverThinkTime) return false;
             if (MonitorRefreshInterval != otherProperties.MonitorRefreshInterval) return false;
             if (ShowMessageCount != otherProperties.ShowMessageCount) return false;
+            if (DarkMode != otherProperties.DarkMode) return false;
             if (UseAscii != otherProperties.UseAscii) return false;
             if (SaveMessageToFile != otherProperties.SaveMessageToFile) return false;
             if (SavePropertiesToFile != otherProperties.SavePropertiesToFile) return false;
@@ -256,6 +259,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ShowMessageCountParameter:
                     return ShowMessageCount;
+
+                case ConfigurationParameters.DarkMode:
+                    return DarkMode;
 
                 case ConfigurationParameters.UseAsciiParameter:
                     return UseAscii;
