@@ -152,36 +152,11 @@ Endpoint=sb://<namespace>.servicebus.windows.net/;AuthMode=AAD
 - Local persistence stores metadata only, not passwords or SAS keys
 - Managed identity, Azure CLI auth and service principal auth are not included in this feature
 
-# Contributions
-There are no dedicated developers so development is entirely based on voluntary effort.
+# Installation
 
-Here are some guidelines concerning contributions:
-
-- All contributions should be done on `main`.
-- Every pull request is built by GitHub Actions and should preferably be linked to a GitHub issue.
-- Write unit tests, if applicable.
-- We have started to migrate from the old SDK to the latest SDKs for Service Bus, Event Hubs, Relay and Notification Hubs. Therefore, new classes should not depend on the old SDK unless absolutely necessary.  
-
-
-## Development Environment
+It is strongly recommended to set `Configuration File for Settings and Connection Strings` to `User Configuration File` as shown in the figure below to reduce problems when upgrading. 
 
 Visual Studio 2022 17.8.0 or later is required to build the solution. 
-
-The release banner's upstream baseline is derived at build time from the highest
-stable upstream release tag reachable from the current commit, independently of
-the fork's own version. Before building, fetch upstream tags into their separate
-namespace (repeat after incorporating newer upstream releases):
-
-```powershell
-git fetch --no-tags https://github.com/paolosalvatori/ServiceBusExplorer.git "+refs/tags/*:refs/upstream-release-tags/*"
-```
-
-Builds do not access the network to determine this baseline. Shallow clones must
-first fetch their full history with `git fetch --unshallow`. If the baseline is
-unavailable, the build warns and the banner skips the "new release dropped"
-suffix. For source archives or builds without Git, supply the upstream baseline
-explicitly with `dotnet build .\src\ServiceBusExplorer.sln -p:UpstreamReleaseVersion=<major.minor.patch>`.
-This does not change the assembly or file version.
 
 When editing UI elements Visual Studio should run as a DPI-unaware process. 
 For more information about this, see the 
