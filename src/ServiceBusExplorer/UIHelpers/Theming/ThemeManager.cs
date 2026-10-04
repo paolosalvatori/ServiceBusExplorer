@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using ServiceBusExplorer.Controls;
@@ -20,7 +21,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         private static readonly object rootsLock = new object();
         private static bool initialized;
 
-        public static bool DarkMode { get; private set; }
+        public static bool DarkMode { get; private set; } = true;
         public static bool IsDark => DarkMode && !SystemInformation.HighContrast;
         public static bool IsThemed => DarkMode || SystemInformation.HighContrast;
         public static ThemePalette Palette => SystemInformation.HighContrast ? ThemePalette.HighContrast : ThemePalette.Dark;
@@ -44,15 +45,15 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         {
             if (root == null)
                 throw new ArgumentNullException(nameof(root));
-            if (IsThemeExcludedControl(root))
+            if (root.IsDisposed || root.Disposing || IsThemeExcludedControl(root))
                 return;
+            Apply(root);
             lock (rootsLock)
             {
-                roots.RemoveAll(reference => !reference.TryGetTarget(out var target) || target.IsDisposed);
+                roots.RemoveAll(reference => !IsLiveRoot(reference));
                 if (!roots.Any(reference => reference.TryGetTarget(out var target) && target == root))
                     roots.Add(new WeakReference<Control>(root));
             }
-            Apply(root);
         }
 
         public static void RegisterComponents(IContainer components)
@@ -73,7 +74,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return;
             if (IsThemeExcludedControl(root))
                 return;
-            if (root.InvokeRequired)
+            if (root.InvokeRequired ||
+                controls.TryGetValue(root, out var state) && state.UiThread != Thread.CurrentThread)
                 throw new InvalidOperationException("Apply themes on the control's UI thread.");
 
             root.SuspendLayout();
@@ -187,7 +189,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             Control[] live;
             lock (rootsLock)
             {
-                roots.RemoveAll(reference => !reference.TryGetTarget(out var target) || target.IsDisposed);
+                roots.RemoveAll(reference => !IsLiveRoot(reference));
                 live = roots.Select(reference =>
                 {
                     reference.TryGetTarget(out var target);
@@ -196,10 +198,35 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             }
             foreach (var root in live)
             {
-                if (root.InvokeRequired)
-                    QueueApply(root, root);
+                if (!controls.TryGetValue(root, out var state))
+                    continue;
+                if (state.UiThread != Thread.CurrentThread)
+                    QueueApply(state, root);
                 else
                     Apply(root);
+            }
+        }
+
+        private static bool IsLiveRoot(WeakReference<Control> reference) =>
+            reference.TryGetTarget(out var target) && !target.IsDisposed &&
+            controls.TryGetValue(target, out var state) && state.UiThread.IsAlive;
+
+        private static void QueueApply(ControlState state, Control target)
+        {
+            if (target.IsDisposed || target.Disposing)
+                return;
+            try
+            {
+                // A detached menu may never have a handle; dispatch through its captured UI context.
+                state.UiContext.Post(_ =>
+                {
+                    if (!target.IsDisposed && !target.Disposing)
+                        Apply(target);
+                }, null);
+            }
+            catch (InvalidOperationException exception) when (target.IsDisposed || target.Disposing || !state.UiThread.IsAlive)
+            {
+                Trace.WriteLine($"Theme update cancelled for a closing window: {exception.Message}");
             }
         }
 
@@ -232,6 +259,9 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         private sealed class ControlState : IDisposable
         {
+            public Thread UiThread { get; } = Thread.CurrentThread;
+            public SynchronizationContext UiContext { get; } =
+                SynchronizationContext.Current as WindowsFormsSynchronizationContext ?? new WindowsFormsSynchronizationContext();
             public ThemeSnapshot Snapshot { get; } = new ThemeSnapshot();
             public ThemeNativeMethods.TabWindow TabWindow { get; set; }
             public IDisposable InputBorder { get; set; }

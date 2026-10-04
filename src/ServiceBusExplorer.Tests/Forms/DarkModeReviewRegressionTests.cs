@@ -1,13 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using FastColoredTextBoxNS;
+using TextStyle = FastColoredTextBoxNS.TextStyle;
 using FluentAssertions;
+using Microsoft.Win32;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.UIHelpers.Theming;
@@ -18,6 +23,150 @@ namespace ServiceBusExplorer.Tests.Forms
     [Collection("Theme UI")]
     public class DarkModeReviewRegressionTests
     {
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void PreferenceRefresh_DispatchesHandlelessMenusToTheirOwningUiThread(bool registerComponents)
+        {
+            RunOnSta(() =>
+            {
+                using (var components = new Container())
+                using (var form = new ThemedForm())
+                using (var menu = new ContextMenuStrip(components))
+                {
+                    menu.Items.Add("Detached");
+                    if (registerComponents)
+                        ThemeManager.RegisterComponents(components);
+                    else
+                    {
+                        form.ContextMenuStrip = menu;
+                        ThemeManager.Register(form);
+                    }
+                    ThemeManager.SetDarkMode(true);
+                    menu.IsHandleCreated.Should().BeFalse();
+                    menu.BackColor = Color.Orange;
+                    var updates = new List<int>();
+                    menu.BackColorChanged += (sender, args) => updates.Add(Thread.CurrentThread.ManagedThreadId);
+
+                    RunOnWorker(() => typeof(ThemeManager).GetMethod("PreferencesChanged",
+                        BindingFlags.Static | BindingFlags.NonPublic).Invoke(null,
+                        new object[] { null, new UserPreferenceChangedEventArgs(UserPreferenceCategory.Color) }));
+
+                    updates.Should().BeEmpty("the UI thread has not processed the queued update yet");
+                    menu.BackColor.Should().Be(Color.Orange);
+                    Application.DoEvents();
+                    menu.BackColor.Should().Be(ThemeManager.Palette.Background);
+                    updates.Should().ContainSingle().Which.Should().Be(Thread.CurrentThread.ManagedThreadId);
+                    menu.IsHandleCreated.Should().BeFalse();
+                }
+            });
+        }
+
+        [Fact]
+        public void Apply_RejectsBackgroundCallsForRegisteredHandlelessControls()
+        {
+            RunOnSta(() =>
+            {
+                using (var panel = new Panel())
+                {
+                    ThemeManager.Register(panel);
+                    panel.IsHandleCreated.Should().BeFalse();
+                    RunOnWorker(() =>
+                    {
+                        Action apply = () => ThemeManager.Apply(panel);
+                        apply.Should().Throw<InvalidOperationException>()
+                            .WithMessage("Apply themes on the control's UI thread.");
+                    });
+                }
+            });
+        }
+
+        [Fact]
+        public void QueuedThemeRefresh_SkipsControlsDisposedBeforeDispatch()
+        {
+            RunOnSta(() =>
+            {
+                using (var menu = new ContextMenuStrip())
+                {
+                    ThemeManager.Register(menu);
+                    RunOnWorker(() => ThemeManager.SetDarkMode(true));
+                    menu.Dispose();
+                    Action dispatch = Application.DoEvents;
+                    dispatch.Should().NotThrow();
+                    menu.IsHandleCreated.Should().BeFalse();
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void ListDrawing_PreservesDisabledForegroundAndSelectionColors(bool disabled, bool selected)
+        {
+            RunOnSta(() =>
+            {
+                ThemeManager.SetDarkMode(true);
+                using (var list = new ListView { View = View.Details })
+                using (var image = new Bitmap(180, 40))
+                using (var expected = new Bitmap(180, 40))
+                using (var graphics = Graphics.FromImage(image))
+                using (var expectedGraphics = Graphics.FromImage(expected))
+                {
+                    var header = list.Columns.Add("Choice");
+                    var item = list.Items.Add("Unavailable");
+                    item.ForeColor = disabled ? SystemColors.GrayText : SystemColors.ControlText;
+                    item.Selected = selected;
+                    var bounds = new Rectangle(Point.Empty, image.Size);
+                    var args = new DrawListViewSubItemEventArgs(graphics, bounds, item,
+                        item.SubItems[0], 0, 0, header, ListViewItemStates.Default);
+
+                    typeof(ThemeManager).GetMethod("DrawListSubItem", BindingFlags.Static | BindingFlags.NonPublic)
+                        .Invoke(null, new object[] { list, args });
+
+                    expectedGraphics.Clear(selected ? ThemeManager.Palette.Selection : ThemeManager.Palette.Surface);
+                    TextRenderer.DrawText(expectedGraphics, item.Text, item.Font, Rectangle.Inflate(bounds, -4, 0),
+                        selected ? ThemeManager.Palette.SelectionText :
+                        disabled ? ThemeManager.Palette.MutedText : ThemeManager.Palette.Text,
+                        TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                        TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+                    for (var y = 0; y < image.Height; y++)
+                        for (var x = 0; x < image.Width; x++)
+                            image.GetPixel(x, y).Should().Be(expected.GetPixel(x, y));
+                }
+            });
+        }
+
+        [Fact]
+        public void EditorStyles_RestoreSyntaxColorsAfterHighContrastBrushReplacementAndRepeatedApplications()
+        {
+            RunOnSta(() =>
+            {
+                using (var editor = new FastColoredTextBox { Language = Language.JSON, Text = "{\"key\": 42}" })
+                {
+                    var styles = new[] { (TextStyle)editor.SyntaxHighlighter.BlueStyle,
+                        (TextStyle)editor.SyntaxHighlighter.GreenStyle, (TextStyle)editor.SyntaxHighlighter.RedStyle };
+                    var originals = styles.Select(style => style.ForeBrush).ToArray();
+                    ThemeManager.Register(editor);
+                    ThemeManager.SetDarkMode(true);
+                    var dark = styles.Select(style => style.ForeBrush).ToArray();
+
+                    // Reproduce the brush replacement performed by the high-contrast pass without changing OS settings.
+                    foreach (var style in styles)
+                        style.ForeBrush = SystemBrushes.WindowText;
+                    for (var i = 0; i < 3; i++)
+                    {
+                        ThemeManager.ApplyEditorStyles(editor);
+                        styles.Select(style => style.ForeBrush).Should().Equal(dark);
+                    }
+                    dark.Distinct().Should().HaveCountGreaterThan(1);
+                    ThemeManager.SetDarkMode(false);
+                    styles.Select(style => style.ForeBrush).Should().Equal(originals);
+                }
+            });
+        }
+
         [Fact]
         public void TextFormButtons_ReapplyReadableForegroundAfterMouseLeaveAndEnableChanges()
         {
@@ -322,6 +471,26 @@ namespace ServiceBusExplorer.Tests.Forms
             thread.Start();
             thread.Join();
 
+            if (failure != null)
+                ExceptionDispatchInfo.Capture(failure).Throw();
+        }
+
+        private static void RunOnWorker(Action action)
+        {
+            Exception failure = null;
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception exception)
+                {
+                    failure = exception;
+                }
+            });
+            thread.Start();
+            thread.Join();
             if (failure != null)
                 ExceptionDispatchInfo.Capture(failure).Throw();
         }

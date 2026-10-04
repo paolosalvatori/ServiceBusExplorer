@@ -129,14 +129,12 @@ namespace ServiceBusExplorer.Tests.Helpers
                 RedirectStandardError = true
             };
 
-            using (var process = Process.Start(startInfo))
-            {
-                var output = process.StandardOutput.ReadToEndAsync();
-                var error = process.StandardError.ReadToEndAsync();
-                process.WaitForExit();
-                process.ExitCode.Should().Be(0, error.GetAwaiter().GetResult());
-                return output.GetAwaiter().GetResult();
-            }
+            using var process = Process.Start(startInfo);
+            var output = process.StandardOutput.ReadToEndAsync();
+            var error = process.StandardError.ReadToEndAsync();
+            process.WaitForExit();
+            process.ExitCode.Should().Be(0, error.GetAwaiter().GetResult());
+            return output.GetAwaiter().GetResult();
         }
     }
 }

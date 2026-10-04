@@ -252,7 +252,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             var alignment = e.Header.TextAlign == HorizontalAlignment.Right ? TextFormatFlags.Right :
                 e.Header.TextAlign == HorizontalAlignment.Center ? TextFormatFlags.HorizontalCenter : TextFormatFlags.Left;
             TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.SubItem.Font, bounds,
-                selected ? Palette.SelectionText : ReadableText(e.SubItem.ForeColor),
+                selected ? Palette.SelectionText :
+                e.SubItem.ForeColor == SystemColors.GrayText ? Palette.MutedText : ReadableText(e.SubItem.ForeColor),
                 alignment | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
         }
 

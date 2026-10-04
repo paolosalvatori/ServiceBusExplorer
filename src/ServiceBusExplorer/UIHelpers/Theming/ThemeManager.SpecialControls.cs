@@ -103,6 +103,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             foreach (var style in EditorStyles(editor))
             {
                 var state = Snapshot(style);
+                state.Restore();
                 state.Capture("ForeBrush", () => style.ForeBrush, value => style.ForeBrush = value);
                 state.Applied = true;
                 controls.GetValue(editor, CreateState).EditorStyles.Add(style);
