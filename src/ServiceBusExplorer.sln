@@ -30,6 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationHubs", "Notific
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{BE2F817A-76F4-4E0C-96F7-7430CD94D08B}"
 	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build-test.yml = ..\.github\workflows\build-test.yml
 		..\.github\workflows\handle-pull-request.yml = ..\.github\workflows\handle-pull-request.yml
 		..\.github\workflows\handle-tag.yml = ..\.github\workflows\handle-tag.yml
 		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
