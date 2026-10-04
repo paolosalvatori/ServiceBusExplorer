@@ -26,8 +26,9 @@ if ($LASTEXITCODE -ne 0) {
 
 $versions = foreach ($tag in $tags) {
     if ($tag -match '^v?((0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*))$') {
-        $version = $null
-        if ([Version]::TryParse($Matches[1], [ref]$version)) {
+        # Avoid [ref] casts, which are blocked in ConstrainedLanguage mode.
+        $version = $Matches[1] -as [Version]
+        if ($null -ne $version) {
             $version
         }
     }
