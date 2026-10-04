@@ -10,7 +10,6 @@ The Service Bus Explorer allows users to efficiently administer messaging entiti
 - **Dashboard tab** — live overview of message counts (Active, Dead Letter, Scheduled, Total) for all queues and subscriptions, with auto-refresh and color-coded dead-letter alerts
 - **TreeView search/filter** — real-time filtering of queues, topics and subscriptions; press Ctrl+F to focus
 - **Copy message body** — one-click clipboard copy from the message preview pane
-- **Dark mode** - optional application-wide dark appearance, enabled in `View -> Options -> General`
 - **Microsoft Entra ID sign-in** — interactive browser authentication for Azure Service Bus namespaces without storing SAS secrets locally
 - Import/export of namespace configuration
 - Send, receive and peek messages for queues, topics and subscriptions
@@ -24,14 +23,6 @@ The following software is required to run ServiceBusExplorer. It may run on othe
 
 - Windows 10 or later
 - .NET Framework 4.6.2
-
-## Dark mode
-
-Enable **Dark mode** in `View -> Options -> General`, then click **Save** or **OK**.
-The setting uses the selected configuration file and updates open application windows
-without restarting. Turning it off restores the original light appearance.
-Windows high-contrast colors take precedence. Native Windows dialogs and scrollbars
-remain OS-managed; dark window captions depend on Windows support.
 
 # Installation
 
