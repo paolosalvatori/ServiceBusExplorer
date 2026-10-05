@@ -1,0 +1,31 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="../LICENSE.txt" />
+    <File Path="../README.md" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="EventGridExplorer_README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Workflows/">
+    <File Path="../.github/workflows/build-test.yml" />
+    <File Path="../.github/workflows/handle-pull-request.yml" />
+    <File Path="../.github/workflows/handle-tag.yml" />
+    <File Path="../.github/workflows/publish.yml" />
+    <File Path="../.github/workflows/winget-submission.yml" />
+  </Folder>
+  <Project Path="Common/Common.csproj" />
+  <Project Path="EventGridExplorerLibrary/EventGridExplorerLibrary.csproj" />
+  <Project Path="EventHubs/EventHubs.csproj" />
+  <Project Path="NotificationHubs/NotificationHubs.csproj" />
+  <Project Path="Relay/Relay.csproj" />
+  <Project Path="ServiceBus/ServiceBus.csproj" />
+  <Project Path="ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj" />
+  <Project Path="ServiceBusExplorer/ServiceBusExplorer.csproj">
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+  <Project Path="Utilities/Utilities.csproj" />
+</Solution>
