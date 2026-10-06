@@ -15,6 +15,9 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             state.CaptureAmbientColors(control);
             switch (control)
             {
+                case Form form:
+                    state.Capture("BackgroundImage", () => form.BackgroundImage, value => form.BackgroundImage = value);
+                    break;
                 case Button button:
                     state.Capture("FlatStyle", () => button.FlatStyle, value => button.FlatStyle = value);
                     state.Capture("VisualStyle", () => button.UseVisualStyleBackColor, value => button.UseVisualStyleBackColor = value);
@@ -92,6 +95,9 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
             switch (control)
             {
+                case Form form:
+                    form.BackgroundImage = null;
+                    break;
                 case Button button:
                     button.FlatStyle = FlatStyle.Flat;
                     button.UseVisualStyleBackColor = false;

@@ -421,7 +421,6 @@ namespace ServiceBusExplorer.Forms
         {
 #if DEBUG
             linkLabelNewVersionAvailable.Visible = true;
-            linkLabelNewVersionAvailable.Enabled = false;
             linkLabelNewVersionAvailable.Text = $"Debug Version";
 #else
             var isLatest = VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog);

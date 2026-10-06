@@ -62,6 +62,79 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void VersionChecker_HidesBackgroundImageAndRestoresLightAppearance(bool initiallyDark)
+        {
+            RunOnSta(() =>
+            {
+                using (var form = new NewVersionAvailableForm())
+                {
+                    var backgroundImage = form.BackgroundImage;
+                    var backColor = form.BackColor;
+                    var originalColors = form.Controls.Cast<Control>().ToDictionary(
+                        control => control, control => new { control.BackColor, control.ForeColor });
+                    var link = form.Controls.OfType<LinkLabel>().Single();
+                    var linkColor = link.LinkColor;
+                    backgroundImage.Should().NotBeNull();
+                    ThemeManager.SetDarkMode(initiallyDark);
+                    ThemeManager.Register(form);
+
+                    for (var i = 0; i < 3; i++)
+                    {
+                        ThemeManager.SetDarkMode(true);
+                        form.BackgroundImage.Should().BeNull();
+                        form.BackColor.Should().Be(ThemeManager.Palette.Background);
+                        foreach (Control control in form.Controls)
+                        {
+                            control.BackColor.Should().Be(ThemeManager.Palette.Background);
+                            Contrast(control.ForeColor, control.BackColor).Should().BeGreaterThanOrEqualTo(4.5);
+                        }
+                        Contrast(link.LinkColor, link.BackColor).Should().BeGreaterThanOrEqualTo(4.5);
+                        using (var image = new Bitmap(form.Width, form.Height))
+                        {
+                            form.DrawToBitmap(image, new Rectangle(Point.Empty, form.Size));
+                            image.GetPixel(form.Width - 24, form.Height - 24).ToArgb()
+                                .Should().Be(ThemeManager.Palette.Background.ToArgb());
+                        }
+
+                        ThemeManager.SetDarkMode(false);
+                        form.BackgroundImage.Should().BeSameAs(backgroundImage);
+                        form.BackgroundImageLayout.Should().Be(ImageLayout.Stretch);
+                        form.BackColor.Should().Be(backColor);
+                        foreach (var original in originalColors)
+                        {
+                            original.Key.BackColor.Should().Be(original.Value.BackColor);
+                            original.Key.ForeColor.Should().Be(original.Value.ForeColor);
+                        }
+                        link.LinkColor.Should().Be(linkColor);
+                    }
+                }
+            });
+        }
+
+        [Fact]
+        public void FormBackgroundImages_AreHiddenWithoutHidingPictureBoxImages()
+        {
+            RunOnSta(() =>
+            {
+                using (var image = new Bitmap(20, 20))
+                using (var form = new ThemedForm { BackgroundImage = image })
+                using (var picture = new PictureBox { BackgroundImage = image, Image = image })
+                {
+                    form.Controls.Add(picture);
+                    ThemeManager.Register(form);
+                    ThemeManager.SetDarkMode(true);
+                    form.BackgroundImage.Should().BeNull();
+                    picture.BackgroundImage.Should().BeSameAs(image);
+                    picture.Image.Should().BeSameAs(image);
+                    ThemeManager.SetDarkMode(false);
+                    form.BackgroundImage.Should().BeSameAs(image);
+                }
+            });
+        }
+
         [Fact]
         public void DynamicControls_UseThemeAndRestoreTheirOwnOriginalColors()
         {
