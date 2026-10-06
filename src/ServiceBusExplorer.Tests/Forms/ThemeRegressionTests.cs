@@ -14,6 +14,7 @@ using TextStyle = FastColoredTextBoxNS.TextStyle;
 using FluentAssertions;
 using Microsoft.Win32;
 using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.UIHelpers.Theming;
 using Xunit;
@@ -21,7 +22,7 @@ using Xunit;
 namespace ServiceBusExplorer.Tests.Forms
 {
     [Collection("Theme UI")]
-    public class DarkModeReviewRegressionTests
+    public class ThemeRegressionTests
     {
         [Theory]
         [InlineData(false)]
@@ -42,7 +43,7 @@ namespace ServiceBusExplorer.Tests.Forms
                         form.ContextMenuStrip = menu;
                         ThemeManager.Register(form);
                     }
-                    ThemeManager.SetDarkMode(true);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
                     menu.IsHandleCreated.Should().BeFalse();
                     menu.BackColor = Color.Orange;
                     var updates = new List<int>();
@@ -89,7 +90,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 using (var menu = new ContextMenuStrip())
                 {
                     ThemeManager.Register(menu);
-                    RunOnWorker(() => ThemeManager.SetDarkMode(true));
+                    RunOnWorker(() => ThemeManager.SetThemeMode(ThemeMode.Dark));
                     menu.Dispose();
                     Action dispatch = Application.DoEvents;
                     dispatch.Should().NotThrow();
@@ -107,7 +108,7 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(true);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
                 using (var list = new ListView { View = View.Details })
                 using (var image = new Bitmap(180, 40))
                 using (var expected = new Bitmap(180, 40))
@@ -149,7 +150,7 @@ namespace ServiceBusExplorer.Tests.Forms
                         (TextStyle)editor.SyntaxHighlighter.GreenStyle, (TextStyle)editor.SyntaxHighlighter.RedStyle };
                     var originals = styles.Select(style => style.ForeBrush).ToArray();
                     ThemeManager.Register(editor);
-                    ThemeManager.SetDarkMode(true);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
                     var dark = styles.Select(style => style.ForeBrush).ToArray();
 
                     // Reproduce the brush replacement performed by the high-contrast pass without changing OS settings.
@@ -161,7 +162,7 @@ namespace ServiceBusExplorer.Tests.Forms
                         styles.Select(style => style.ForeBrush).Should().Equal(dark);
                     }
                     dark.Distinct().Should().HaveCountGreaterThan(1);
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                     styles.Select(style => style.ForeBrush).Should().Equal(originals);
                 }
             });
@@ -175,7 +176,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 using (var form = new TextForm("Message", "payload"))
                 {
                     form.Show();
-                    ThemeManager.SetDarkMode(true);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
                     Application.DoEvents();
 
                     var button = FindControl<Button>(form, "btnOk");
@@ -211,7 +212,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     form.Controls.Add(button);
                     form.Show();
 
-                    ThemeManager.SetDarkMode(true);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
                     Application.DoEvents();
 
                     button.ForeColor.Should().Be(ThemeManager.Palette.WarningText);
@@ -255,7 +256,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     form.Show();
 
                     ThemeManager.RegisterComponents(components);
-                    ThemeManager.SetDarkMode(true);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
                     Application.DoEvents();
 
                     staticMenu.Renderer.GetType().Name.Should().Be("DarkToolStripRenderer");
@@ -269,7 +270,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     dynamicMenu.Renderer.GetType().Name.Should().Be("DarkToolStripRenderer");
                     dynamicMenu.Items[0].ForeColor.Should().Be(ThemeManager.Palette.Text);
 
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
 
                     staticMenu.Renderer.Should().BeSameAs(staticRenderer);
                     staticMenu.RenderMode.Should().Be(staticRenderMode);
@@ -321,7 +322,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     form.Controls.Add(grid);
                     form.Show();
 
-                    ThemeManager.SetDarkMode(true);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
                     Application.DoEvents();
 
                     grid.CurrentCell = grid[0, 0];
@@ -346,7 +347,7 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(true);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
 
                 var original = Color.Purple;
                 var node = new TreeNode("Colored") { ForeColor = original };
@@ -363,7 +364,7 @@ namespace ServiceBusExplorer.Tests.Forms
 
         private static void VerifyGraphLayoutThemesRecreatedTitles(Type controlType, Action<object> configure = null)
         {
-            ThemeManager.SetDarkMode(true);
+            ThemeManager.SetThemeMode(ThemeMode.Dark);
 
             var control = FormatterServices.GetUninitializedObject(controlType);
             var chart = CreateChart();
@@ -380,7 +381,7 @@ namespace ServiceBusExplorer.Tests.Forms
             chart.Titles[0].ForeColor.Should().Be(ThemeManager.Palette.Text);
             chart.Legends[0].ForeColor.Should().Be(ThemeManager.Palette.Text);
 
-            ThemeManager.SetDarkMode(false);
+            ThemeManager.SetThemeMode(ThemeMode.Light);
             ThemeManager.Apply(chart);
 
             chart.Titles[0].ForeColor.ToArgb().Should().NotBe(ThemeManager.Palette.Text.ToArgb());
@@ -454,7 +455,7 @@ namespace ServiceBusExplorer.Tests.Forms
             {
                 try
                 {
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                     action();
                 }
                 catch (Exception exception)
@@ -463,7 +464,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 }
                 finally
                 {
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                 }
             });
 

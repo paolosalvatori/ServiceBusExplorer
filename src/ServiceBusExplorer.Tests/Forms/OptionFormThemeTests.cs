@@ -18,7 +18,7 @@ using Xunit;
 namespace ServiceBusExplorer.Tests.Forms
 {
     [Collection("Theme UI")]
-    public class OptionFormDarkModeTests
+    public class OptionFormThemeTests
     {
         [Theory]
         [InlineData(ThemeMode.FollowOperatingSystem)]
@@ -28,7 +28,7 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(false);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
 
                 var settings = new MainSettings();
                 settings.SetDefault();
@@ -41,7 +41,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     comboBox.DropDownStyle.Should().Be(ComboBoxStyle.DropDownList);
                     comboBox.Items.Cast<string>().Should().Equal("Follow operating system theme", "Light", "Dark");
                     settings.ThemeMode.Should().Be(mode);
-                    ThemeManager.DarkMode.Should().BeFalse();
+                    ThemeManager.IsDark.Should().BeFalse();
                 }
             });
         }
@@ -54,11 +54,11 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(false);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
 
                 var settings = new MainSettings();
                 settings.SetDefault();
-                settings.DarkMode = false;
+                settings.ThemeMode = ThemeMode.Light;
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
@@ -68,7 +68,7 @@ namespace ServiceBusExplorer.Tests.Forms
 
                     settings.ThemeMode.Should().Be(mode);
                     ThemeManager.Mode.Should().Be(ThemeMode.Light);
-                    ThemeManager.DarkMode.Should().BeFalse();
+                    ThemeManager.IsDark.Should().BeFalse();
                 }
             });
         }
@@ -80,11 +80,11 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(true);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
 
                 var settings = new MainSettings();
                 settings.SetDefault();
-                settings.DarkMode = true;
+                settings.ThemeMode = ThemeMode.Dark;
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
@@ -93,28 +93,28 @@ namespace ServiceBusExplorer.Tests.Forms
                         form.BeginInvoke(new Action(() =>
                         {
                             FindControl<ComboBox>(form, "cboTheme").SelectedIndex = (int)mode;
-                            ThemeManager.DarkMode.Should().BeTrue();
+                            ThemeManager.IsDark.Should().Be(!SystemInformation.HighContrast);
                             GetButton(form, "btnCancel").PerformClick();
                         }));
                     };
 
                     form.ShowDialog().Should().Be(DialogResult.Cancel);
                     ThemeManager.Mode.Should().Be(ThemeMode.Dark);
-                    ThemeManager.DarkMode.Should().BeTrue();
+                    ThemeManager.IsDark.Should().Be(!SystemInformation.HighContrast);
                 }
             });
         }
 
         [Fact]
-        public void Reset_SetsThemeDropdownBackToDark()
+        public void Reset_SetsThemeDropdownBackToFollowOperatingSystem()
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(true);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
 
                 var settings = new MainSettings();
                 settings.SetDefault();
-                settings.DarkMode = false;
+                settings.ThemeMode = ThemeMode.Light;
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
@@ -122,25 +122,26 @@ namespace ServiceBusExplorer.Tests.Forms
 
                     InvokePrivateMethod(form, "btnReset_Click", GetButton(form, "btnReset"), EventArgs.Empty);
 
-                    FindControl<ComboBox>(form, "cboTheme").SelectedIndex.Should().Be((int)ThemeMode.Dark);
-                    settings.ThemeMode.Should().Be(ThemeMode.Dark);
-                    ThemeManager.DarkMode.Should().BeTrue();
+                    FindControl<ComboBox>(form, "cboTheme").SelectedIndex.Should().Be((int)ThemeMode.FollowOperatingSystem);
+                    settings.ThemeMode.Should().Be(ThemeMode.FollowOperatingSystem);
+                    ThemeManager.Mode.Should().Be(ThemeMode.Dark);
                 }
             });
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void GeneralTab_WhenShown_KeepsEveryOptionInsideTheVisiblePage(bool darkMode)
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void GeneralTab_WhenShown_KeepsEveryOptionInsideTheVisiblePage(ThemeMode mode)
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(darkMode);
+                ThemeManager.SetThemeMode(mode);
 
                 var settings = new MainSettings();
                 settings.SetDefault();
-                settings.DarkMode = darkMode;
+                settings.ThemeMode = mode;
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
@@ -176,17 +177,18 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void GeneralTab_WhenDialogHeightIsReduced_CanScrollToTheWholeThemeRow(bool darkMode)
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void GeneralTab_WhenDialogHeightIsReduced_CanScrollToTheWholeThemeRow(ThemeMode mode)
         {
             RunOnSta(() =>
             {
-                ThemeManager.SetDarkMode(darkMode);
+                ThemeManager.SetThemeMode(mode);
 
                 var settings = new MainSettings();
                 settings.SetDefault();
-                settings.DarkMode = darkMode;
+                settings.ThemeMode = mode;
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
@@ -232,7 +234,7 @@ namespace ServiceBusExplorer.Tests.Forms
             {
                 try
                 {
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                     action();
                 }
                 catch (Exception exception)
@@ -241,7 +243,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 }
                 finally
                 {
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                 }
             });
 

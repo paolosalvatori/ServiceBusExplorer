@@ -27,24 +27,24 @@ namespace ServiceBusExplorer.Tests.Forms
 
                 ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
 
-                ThemeManager.DarkMode.Should().Be(Equals(appsUseLightTheme, 0));
+                ThemeManager.IsDark.Should().Be(Equals(appsUseLightTheme, 0) && !SystemInformation.HighContrast);
             });
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void FollowOperatingSystem_AppliesCurrentApplicationTheme(bool systemDarkMode)
+        public void FollowOperatingSystem_AppliesCurrentApplicationTheme(bool systemUsesDarkTheme)
         {
             RunOnSta(() =>
             {
-                ThemeManager.SystemDarkModeProvider = () => systemDarkMode;
+                ThemeManager.SystemDarkThemeProvider = () => systemUsesDarkTheme;
 
                 ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
 
                 ThemeManager.Mode.Should().Be(ThemeMode.FollowOperatingSystem);
-                ThemeManager.DarkMode.Should().Be(systemDarkMode);
-                ThemeManager.IsDark.Should().Be(systemDarkMode && !SystemInformation.HighContrast);
+                ThemeManager.IsThemed.Should().Be(systemUsesDarkTheme || SystemInformation.HighContrast);
+                ThemeManager.IsDark.Should().Be(systemUsesDarkTheme && !SystemInformation.HighContrast);
             });
         }
 
@@ -53,8 +53,8 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                var systemDarkMode = false;
-                ThemeManager.SystemDarkModeProvider = () => systemDarkMode;
+                var systemUsesDarkTheme = false;
+                ThemeManager.SystemDarkThemeProvider = () => systemUsesDarkTheme;
                 ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
 
                 using (var first = new ThemedForm { BackColor = Color.Beige })
@@ -63,18 +63,18 @@ namespace ServiceBusExplorer.Tests.Forms
                     first.Show();
                     second.Show();
 
-                    systemDarkMode = true;
+                    systemUsesDarkTheme = true;
                     NotifyPreferencesChanged();
 
-                    ThemeManager.DarkMode.Should().BeTrue();
+                    ThemeManager.IsDark.Should().Be(!SystemInformation.HighContrast);
                     first.BackColor.Should().Be(ThemeManager.Palette.Background);
                     second.BackColor.Should().Be(ThemeManager.Palette.Background);
 
-                    systemDarkMode = false;
+                    systemUsesDarkTheme = false;
                     NotifyPreferencesChanged();
 
                     ThemeManager.Mode.Should().Be(ThemeMode.FollowOperatingSystem);
-                    ThemeManager.DarkMode.Should().BeFalse();
+                    ThemeManager.IsDark.Should().BeFalse();
                     if (!SystemInformation.HighContrast)
                     {
                         first.BackColor.Should().Be(Color.Beige);
@@ -89,14 +89,14 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                var systemDarkMode = false;
-                ThemeManager.SystemDarkModeProvider = () => systemDarkMode;
+                var systemUsesDarkTheme = false;
+                ThemeManager.SystemDarkThemeProvider = () => systemUsesDarkTheme;
                 ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
 
                 using (var form = new ThemedForm { BackColor = Color.Beige })
                 {
                     form.Show();
-                    systemDarkMode = true;
+                    systemUsesDarkTheme = true;
                     Exception failure = null;
                     var notificationThread = new Thread(() =>
                     {
@@ -117,7 +117,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     Application.DoEvents();
 
                     ThemeManager.Mode.Should().Be(ThemeMode.FollowOperatingSystem);
-                    ThemeManager.DarkMode.Should().BeTrue();
+                    ThemeManager.IsDark.Should().Be(!SystemInformation.HighContrast);
                     form.BackColor.Should().Be(ThemeManager.Palette.Background);
                 }
             });
@@ -126,18 +126,18 @@ namespace ServiceBusExplorer.Tests.Forms
         [Theory]
         [InlineData(ThemeMode.Light, false)]
         [InlineData(ThemeMode.Dark, true)]
-        public void PreferencesChanged_WhenThemeIsExplicit_IgnoresOperatingSystemTheme(ThemeMode mode, bool darkMode)
+        public void PreferencesChanged_WhenThemeIsExplicit_IgnoresOperatingSystemTheme(ThemeMode mode, bool usesDarkTheme)
         {
             RunOnSta(() =>
             {
-                ThemeManager.SystemDarkModeProvider = () =>
+                ThemeManager.SystemDarkThemeProvider = () =>
                     throw new InvalidOperationException("An explicit theme must not read the OS preference.");
                 ThemeManager.SetThemeMode(mode);
 
                 NotifyPreferencesChanged();
 
                 ThemeManager.Mode.Should().Be(mode);
-                ThemeManager.DarkMode.Should().Be(darkMode);
+                ThemeManager.IsDark.Should().Be(usesDarkTheme && !SystemInformation.HighContrast);
             });
         }
 
@@ -152,7 +152,7 @@ namespace ServiceBusExplorer.Tests.Forms
 
                 selectInvalidMode.Should().Throw<ArgumentOutOfRangeException>();
                 ThemeManager.Mode.Should().Be(ThemeMode.Light);
-                ThemeManager.DarkMode.Should().BeFalse();
+                ThemeManager.IsDark.Should().BeFalse();
             });
         }
 
@@ -169,10 +169,10 @@ namespace ServiceBusExplorer.Tests.Forms
             Exception failure = null;
             var thread = new Thread(() =>
             {
-                var originalProvider = ThemeManager.SystemDarkModeProvider;
+                var originalProvider = ThemeManager.SystemDarkThemeProvider;
                 try
                 {
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                     action();
                 }
                 catch (Exception exception)
@@ -181,8 +181,8 @@ namespace ServiceBusExplorer.Tests.Forms
                 }
                 finally
                 {
-                    ThemeManager.SystemDarkModeProvider = originalProvider;
-                    ThemeManager.SetDarkMode(false);
+                    ThemeManager.SystemDarkThemeProvider = originalProvider;
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
                 }
             });
             thread.SetApartmentState(ApartmentState.STA);

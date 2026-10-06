@@ -629,8 +629,6 @@ namespace ServiceBusExplorer.Forms
                 MainSettings.TreeViewFontSize);
             SaveSetting(configuration, readSettings, ConfigurationParameters.ShowMessageCountParameter,
                 MainSettings.ShowMessageCount);
-            SaveSetting(configuration, readSettings, ConfigurationParameters.DarkMode,
-                MainSettings.DarkMode);
             SaveSetting(configuration, readSettings, ConfigurationParameters.ThemeMode,
                 MainSettings.ThemeMode);
             SaveSetting(configuration, readSettings, ConfigurationParameters.SaveMessageToFileParameter,

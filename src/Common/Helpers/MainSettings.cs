@@ -54,12 +54,7 @@ namespace ServiceBusExplorer.Helpers
         public int ReceiverThinkTime { get; set; }
         public int MonitorRefreshInterval { get; set; }
         public bool ShowMessageCount { get; set; }
-        public Enums.ThemeMode ThemeMode { get; set; } = Enums.ThemeMode.Light;
-        public bool DarkMode
-        {
-            get => ThemeMode == Enums.ThemeMode.Dark;
-            set => ThemeMode = value ? Enums.ThemeMode.Dark : Enums.ThemeMode.Light;
-        }
+        public Enums.ThemeMode ThemeMode { get; set; } = Enums.ThemeMode.FollowOperatingSystem;
         public bool UseAscii { get; set; }
         public bool SaveMessageToFile { get; set; }
         public bool SavePropertiesToFile { get; set; }
@@ -126,7 +121,7 @@ namespace ServiceBusExplorer.Helpers
             MonitorRefreshInterval = 30;
 
             ShowMessageCount = true;
-            ThemeMode = Enums.ThemeMode.Dark;
+            ThemeMode = Enums.ThemeMode.FollowOperatingSystem;
             UseAscii = true;
             SaveMessageToFile = true;
             SavePropertiesToFile = true;
@@ -264,9 +259,6 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ShowMessageCountParameter:
                     return ShowMessageCount;
-
-                case ConfigurationParameters.DarkMode:
-                    return DarkMode;
 
                 case ConfigurationParameters.ThemeMode:
                     return ThemeMode;
