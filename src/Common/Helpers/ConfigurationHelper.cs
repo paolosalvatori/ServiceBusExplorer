@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -165,7 +165,7 @@ namespace ServiceBusExplorer.Common.Helpers
             resultProperties.PrefetchCount = configuration.GetIntValue(ConfigurationParameters.PrefetchCountParameter,
                 currentSettings.PrefetchCount, writeToLog);
 
-            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter, 
+            resultProperties.TopCount = configuration.GetIntValue(ConfigurationParameters.TopParameter,
                 currentSettings.TopCount, writeToLog);
 
             resultProperties.SenderThinkTime = configuration.GetIntValue
@@ -175,16 +175,22 @@ namespace ServiceBusExplorer.Common.Helpers
                 (ConfigurationParameters.ReceiverThinkTimeParameter, currentSettings.ReceiverThinkTime, writeToLog);
 
             resultProperties.MonitorRefreshInterval = configuration.GetIntValue
-                (ConfigurationParameters.MonitorRefreshIntervalParameter, 
+                (ConfigurationParameters.MonitorRefreshIntervalParameter,
                 currentSettings.MonitorRefreshInterval, writeToLog);
 
             resultProperties.ShowMessageCount = configuration.GetBoolValue
                 (ConfigurationParameters.ShowMessageCountParameter,
                 currentSettings.ShowMessageCount, writeToLog);
 
-            resultProperties.DarkMode = configuration.GetBoolValue
-                (ConfigurationParameters.DarkMode,
-                currentSettings.DarkMode, writeToLog);
+            var defaultThemeMode = currentSettings.ThemeMode;
+            if (!string.IsNullOrEmpty(configuration.GetStringValue(ConfigurationParameters.DarkMode)))
+            {
+                var darkMode = configuration.GetBoolValue(ConfigurationParameters.DarkMode,
+                    currentSettings.DarkMode, writeToLog);
+                defaultThemeMode = darkMode ? Enums.ThemeMode.Dark : Enums.ThemeMode.Light;
+            }
+            resultProperties.ThemeMode = configuration.GetEnumValue(ConfigurationParameters.ThemeMode,
+                defaultThemeMode, writeToLog);
 
             resultProperties.UseAscii = configuration.GetBoolValue(ConfigurationParameters.UseAsciiParameter,
                 currentSettings.UseAscii, writeToLog);
@@ -200,14 +206,14 @@ namespace ServiceBusExplorer.Common.Helpers
                 (ConfigurationParameters.SaveCheckpointsToFileParameter,
                 currentSettings.SaveCheckpointsToFile, writeToLog);
 
-            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter, 
+            resultProperties.Label = configuration.GetStringValue(ConfigurationParameters.LabelParameter,
                 MainSettings.DefaultLabel);
 
             MessageAndPropertiesHelper.GetMessageTextAndFile(configuration,
                 out string messageText, out string messageFile);
             resultProperties.MessageText = messageText;
             resultProperties.MessageFile = messageFile;
-            
+
             resultProperties.MessageContentType = configuration.GetStringValue(ConfigurationParameters.MessageContentTypeParameter,
                 string.Empty);
 
@@ -234,7 +240,7 @@ namespace ServiceBusExplorer.Common.Helpers
             resultProperties.ProxyBypassList = configuration.GetStringValue(ConfigurationParameters.ProxyBypassList, string.Empty);
             resultProperties.ProxyUserName = configuration.GetStringValue(ConfigurationParameters.ProxyUserName, string.Empty);
             resultProperties.ProxyPassword = configuration.GetStringValue(ConfigurationParameters.ProxyPassword, string.Empty);
-            
+
             var entraTenantIdsValue = configuration.GetStringValue(ConfigurationParameters.EntraTenantIds, string.Empty);
             resultProperties.EntraTenantIds = entraTenantIdsValue == ConfigurationParameters.EntraTenantIdsClearedMarker
                 ? new List<EntraTenantIdItem>()

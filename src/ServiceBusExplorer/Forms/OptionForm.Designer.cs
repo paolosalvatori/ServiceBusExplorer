@@ -96,8 +96,8 @@ namespace ServiceBusExplorer.Forms
             this.lblTreeViewFontSize = new System.Windows.Forms.Label();
             this.logNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.lblLogFontSize = new System.Windows.Forms.Label();
-            this.darkModeCheckBox = new System.Windows.Forms.CheckBox();
-            this.lblDarkMode = new System.Windows.Forms.Label();
+            this.cboTheme = new System.Windows.Forms.ComboBox();
+            this.lblTheme = new System.Windows.Forms.Label();
             this.tabPageReceiving = new System.Windows.Forms.TabPage();
             this.receiverThinkTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.lblReceiverThinkTime = new System.Windows.Forms.Label();
@@ -393,8 +393,8 @@ namespace ServiceBusExplorer.Forms
             this.tabPageGeneral.Controls.Add(this.lblTreeViewFontSize);
             this.tabPageGeneral.Controls.Add(this.logNumericUpDown);
             this.tabPageGeneral.Controls.Add(this.lblLogFontSize);
-            this.tabPageGeneral.Controls.Add(this.lblDarkMode);
-            this.tabPageGeneral.Controls.Add(this.darkModeCheckBox);
+            this.tabPageGeneral.Controls.Add(this.lblTheme);
+            this.tabPageGeneral.Controls.Add(this.cboTheme);
             this.tabPageGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabPageGeneral.Name = "tabPageGeneral";
             this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
@@ -672,27 +672,28 @@ namespace ServiceBusExplorer.Forms
             this.lblLogFontSize.TabIndex = 0;
             this.lblLogFontSize.Text = "Log Font Size:";
             //
-            // darkModeCheckBox
+            // cboTheme
             //
-            this.darkModeCheckBox.AccessibleName = "Dark mode";
-            this.darkModeCheckBox.AutoSize = true;
-            this.darkModeCheckBox.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.darkModeCheckBox.Location = new System.Drawing.Point(260, 360);
-            this.darkModeCheckBox.Name = "darkModeCheckBox";
-            this.darkModeCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.darkModeCheckBox.TabIndex = 23;
-            this.darkModeCheckBox.UseVisualStyleBackColor = true;
-            this.darkModeCheckBox.CheckedChanged += new System.EventHandler(this.darkModeCheckBox_CheckedChanged);
+            this.cboTheme.AccessibleName = "Theme";
+            this.cboTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTheme.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboTheme.FormattingEnabled = true;
+            this.cboTheme.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.cboTheme.Location = new System.Drawing.Point(260, 356);
+            this.cboTheme.Name = "cboTheme";
+            this.cboTheme.Size = new System.Drawing.Size(298, 21);
+            this.cboTheme.TabIndex = 23;
+            this.cboTheme.SelectedIndexChanged += new System.EventHandler(this.cboTheme_SelectedIndexChanged);
             //
-            // lblDarkMode
+            // lblTheme
             //
-            this.lblDarkMode.AutoSize = true;
-            this.lblDarkMode.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblDarkMode.Location = new System.Drawing.Point(16, 360);
-            this.lblDarkMode.Name = "lblDarkMode";
-            this.lblDarkMode.Size = new System.Drawing.Size(65, 13);
-            this.lblDarkMode.TabIndex = 22;
-            this.lblDarkMode.Text = "Dark mode:";
+            this.lblTheme.AutoSize = true;
+            this.lblTheme.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblTheme.Location = new System.Drawing.Point(16, 360);
+            this.lblTheme.Name = "lblTheme";
+            this.lblTheme.Size = new System.Drawing.Size(43, 13);
+            this.lblTheme.TabIndex = 22;
+            this.lblTheme.Text = "Theme:";
             //
             // tabPageReceiving
             //
@@ -1732,8 +1733,8 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.Label lblTreeViewFontSize;
         private System.Windows.Forms.NumericUpDown logNumericUpDown;
         private System.Windows.Forms.Label lblLogFontSize;
-        private System.Windows.Forms.CheckBox darkModeCheckBox;
-        private System.Windows.Forms.Label lblDarkMode;
+        private System.Windows.Forms.ComboBox cboTheme;
+        private System.Windows.Forms.Label lblTheme;
         private System.Windows.Forms.TabPage tabPageReceiving;
         private System.Windows.Forms.NumericUpDown receiverThinkTimeNumericUpDown;
         private System.Windows.Forms.Label lblReceiverThinkTime;

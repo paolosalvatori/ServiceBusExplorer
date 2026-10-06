@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Enums;
 
 namespace ServiceBusExplorer.UIHelpers.Theming
 {
@@ -19,9 +20,12 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             new ConditionalWeakTable<object, ThemeSnapshot>();
         private static readonly List<WeakReference<Control>> roots = new List<WeakReference<Control>>();
         private static readonly object rootsLock = new object();
+        private static readonly object themeLock = new object();
         private static bool initialized;
 
+        public static ThemeMode Mode { get; private set; } = ThemeMode.Dark;
         public static bool DarkMode { get; private set; } = true;
+        internal static Func<bool> SystemDarkModeProvider { get; set; } = ReadSystemDarkMode;
         public static bool IsDark => DarkMode && !SystemInformation.HighContrast;
         public static bool IsThemed => DarkMode || SystemInformation.HighContrast;
         public static ThemePalette Palette => SystemInformation.HighContrast ? ThemePalette.HighContrast : ThemePalette.Dark;
@@ -37,8 +41,41 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         public static void SetDarkMode(bool enabled)
         {
-            DarkMode = enabled;
+            SetThemeMode(enabled ? ThemeMode.Dark : ThemeMode.Light);
+        }
+
+        public static void SetThemeMode(ThemeMode mode)
+        {
+            if (!Enum.IsDefined(typeof(ThemeMode), mode))
+                throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown theme mode.");
+
+            lock (themeLock)
+            {
+                Mode = mode;
+                UpdateDarkMode();
+            }
             RefreshWindows();
+        }
+
+        private static void UpdateDarkMode()
+        {
+            DarkMode = Mode switch
+            {
+                ThemeMode.FollowOperatingSystem => SystemDarkModeProvider(),
+                ThemeMode.Light => false,
+                ThemeMode.Dark => true,
+                _ => throw new InvalidOperationException("Unknown theme mode.")
+            };
+        }
+
+        private static bool ReadSystemDarkMode()
+        {
+            using (var key = Registry.CurrentUser.OpenSubKey(
+                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+            {
+                // Older Windows versions without this preference use the light theme.
+                return Equals(key?.GetValue("AppsUseLightTheme", 1), 0);
+            }
         }
 
         public static void Register(Control root)
@@ -248,7 +285,12 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             }
         }
 
-        private static void PreferencesChanged(object sender, UserPreferenceChangedEventArgs e) => RefreshWindows();
+        private static void PreferencesChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            lock (themeLock)
+                UpdateDarkMode();
+            RefreshWindows();
+        }
 
         private static void ApplicationExit(object sender, EventArgs e)
         {

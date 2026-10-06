@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using FluentAssertions;
 
 using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers.Theming;
 
@@ -19,8 +20,11 @@ namespace ServiceBusExplorer.Tests.Forms
     [Collection("Theme UI")]
     public class OptionFormDarkModeTests
     {
-        [Fact]
-        public void Constructor_UsesSuppliedDarkModeForInitialCheckboxState()
+        [Theory]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void Constructor_UsesSuppliedThemeModeForInitialDropdownSelection(ThemeMode mode)
         {
             RunOnSta(() =>
             {
@@ -28,19 +32,25 @@ namespace ServiceBusExplorer.Tests.Forms
 
                 var settings = new MainSettings();
                 settings.SetDefault();
-                settings.DarkMode = true;
+                settings.ThemeMode = mode;
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
-                    GetCheckBox(form, "darkModeCheckBox").Checked.Should().BeTrue();
-                    settings.DarkMode.Should().BeTrue();
+                    var comboBox = FindControl<ComboBox>(form, "cboTheme");
+                    comboBox.SelectedIndex.Should().Be((int)mode);
+                    comboBox.DropDownStyle.Should().Be(ComboBoxStyle.DropDownList);
+                    comboBox.Items.Cast<string>().Should().Equal("Follow operating system theme", "Light", "Dark");
+                    settings.ThemeMode.Should().Be(mode);
                     ThemeManager.DarkMode.Should().BeFalse();
                 }
             });
         }
 
-        [Fact]
-        public void DarkModeCheckbox_ChangingSelection_DoesNotSwitchGlobalThemeBeforeSave()
+        [Theory]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void ThemeDropdown_ChangingSelection_DoesNotSwitchGlobalThemeBeforeSave(ThemeMode mode)
         {
             RunOnSta(() =>
             {
@@ -52,18 +62,21 @@ namespace ServiceBusExplorer.Tests.Forms
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
-                    var checkBox = GetCheckBox(form, "darkModeCheckBox");
+                    var comboBox = FindControl<ComboBox>(form, "cboTheme");
 
-                    checkBox.Checked = true;
+                    comboBox.SelectedIndex = (int)mode;
 
-                    settings.DarkMode.Should().BeTrue();
+                    settings.ThemeMode.Should().Be(mode);
+                    ThemeManager.Mode.Should().Be(ThemeMode.Light);
                     ThemeManager.DarkMode.Should().BeFalse();
                 }
             });
         }
 
-        [Fact]
-        public void Cancel_AfterUnsavedDarkModeChange_PreservesGlobalTheme()
+        [Theory]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        public void Cancel_AfterUnsavedThemeChange_PreservesGlobalTheme(ThemeMode mode)
         {
             RunOnSta(() =>
             {
@@ -79,20 +92,21 @@ namespace ServiceBusExplorer.Tests.Forms
                     {
                         form.BeginInvoke(new Action(() =>
                         {
-                            GetCheckBox(form, "darkModeCheckBox").Checked = false;
+                            FindControl<ComboBox>(form, "cboTheme").SelectedIndex = (int)mode;
                             ThemeManager.DarkMode.Should().BeTrue();
                             GetButton(form, "btnCancel").PerformClick();
                         }));
                     };
 
                     form.ShowDialog().Should().Be(DialogResult.Cancel);
+                    ThemeManager.Mode.Should().Be(ThemeMode.Dark);
                     ThemeManager.DarkMode.Should().BeTrue();
                 }
             });
         }
 
         [Fact]
-        public void Reset_SetsDarkModeCheckboxBackToTrue()
+        public void Reset_SetsThemeDropdownBackToDark()
         {
             RunOnSta(() =>
             {
@@ -104,12 +118,12 @@ namespace ServiceBusExplorer.Tests.Forms
 
                 using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
                 {
-                    GetCheckBox(form, "darkModeCheckBox").Checked.Should().BeFalse();
+                    FindControl<ComboBox>(form, "cboTheme").SelectedIndex.Should().Be((int)ThemeMode.Light);
 
                     InvokePrivateMethod(form, "btnReset_Click", GetButton(form, "btnReset"), EventArgs.Empty);
 
-                    GetCheckBox(form, "darkModeCheckBox").Checked.Should().BeTrue();
-                    settings.DarkMode.Should().BeTrue();
+                    FindControl<ComboBox>(form, "cboTheme").SelectedIndex.Should().Be((int)ThemeMode.Dark);
+                    settings.ThemeMode.Should().Be(ThemeMode.Dark);
                     ThemeManager.DarkMode.Should().BeTrue();
                 }
             });
@@ -148,11 +162,11 @@ namespace ServiceBusExplorer.Tests.Forms
                         }
                     }
 
-                    var checkBox = GetCheckBox(form, "darkModeCheckBox");
-                    var label = FindControl<Label>(form, "lblDarkMode");
-                    checkBox.Left.Should().Be(GetCheckBox(form, "useAsciiCheckBox").Left);
+                    var comboBox = FindControl<ComboBox>(form, "cboTheme");
+                    var label = FindControl<Label>(form, "lblTheme");
+                    comboBox.Left.Should().Be(GetCheckBox(form, "useAsciiCheckBox").Left);
                     label.Left.Should().Be(FindControl<Label>(form, "lblUseAscii").Left);
-                    checkBox.Top.Should().BeGreaterThan(
+                    comboBox.Top.Should().BeGreaterThan(
                         GetCheckBox(form, "disableAccidentalDeletionPrevention").Bottom);
                     page.VerticalScroll.Visible.Should().BeFalse();
 
@@ -164,7 +178,7 @@ namespace ServiceBusExplorer.Tests.Forms
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void GeneralTab_WhenDialogHeightIsReduced_CanScrollToTheWholeDarkModeRow(bool darkMode)
+        public void GeneralTab_WhenDialogHeightIsReduced_CanScrollToTheWholeThemeRow(bool darkMode)
         {
             RunOnSta(() =>
             {
@@ -181,14 +195,14 @@ namespace ServiceBusExplorer.Tests.Forms
                     form.PerformLayout();
 
                     var page = FindControl<TabPage>(form, "tabPageGeneral");
-                    var checkBox = GetCheckBox(form, "darkModeCheckBox");
-                    var label = FindControl<Label>(form, "lblDarkMode");
+                    var comboBox = FindControl<ComboBox>(form, "cboTheme");
+                    var label = FindControl<Label>(form, "lblTheme");
 
                     page.AutoScroll.Should().BeTrue();
                     page.VerticalScroll.Visible.Should().BeTrue();
-                    page.ScrollControlIntoView(checkBox);
+                    page.ScrollControlIntoView(comboBox);
 
-                    page.ClientRectangle.Contains(checkBox.Bounds).Should().BeTrue();
+                    page.ClientRectangle.Contains(comboBox.Bounds).Should().BeTrue();
                     page.ClientRectangle.Contains(label.Bounds).Should().BeTrue();
                     AssertContainersAndButtonsFit(form, page);
                 }

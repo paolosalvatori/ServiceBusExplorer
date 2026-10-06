@@ -5,6 +5,7 @@ using System.Reflection;
 using FluentAssertions;
 
 using ServiceBusExplorer.Common.Helpers;
+using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 
 using Xunit;
@@ -26,6 +27,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             settings.SetDefault();
 
             settings.DarkMode.Should().BeTrue();
+            settings.ThemeMode.Should().Be(ThemeMode.Dark);
         }
 
         [Fact]
@@ -88,6 +90,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig, currentSettings);
                 loaded.DarkMode.Should().BeTrue();
+                loaded.ThemeMode.Should().Be(ThemeMode.Dark);
                 loaded.GetValue(ConfigurationParameters.DarkMode).Should().Be(expected.DarkMode);
             }
             finally
@@ -116,6 +119,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig, currentSettings);
                 loaded.DarkMode.Should().BeFalse();
+                loaded.ThemeMode.Should().Be(ThemeMode.Light);
                 loaded.GetValue(ConfigurationParameters.DarkMode).Should().Be(expected.DarkMode);
             }
             finally
@@ -145,6 +149,80 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 DeleteUserConfigFilePath(userConfigFilePath);
             }
+        }
+
+        [Theory]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void LoadUsingConfiguration_WhenThemeModeIsPersisted_OverridesLegacyDarkMode(ThemeMode mode)
+        {
+            var userConfigFilePath = CreateUserConfigFilePath();
+
+            try
+            {
+                var configuration = TwoFilesConfiguration.Create(userConfigFilePath, ConfigFileUse.UserConfig);
+                configuration.SetValue(ConfigurationParameters.DarkMode, mode != ThemeMode.Dark);
+                configuration.SetValue(ConfigurationParameters.ThemeMode, mode);
+                configuration.Save();
+
+                var currentSettings = new MainSettings();
+                currentSettings.SetDefault();
+
+                var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig, currentSettings);
+                loaded.ThemeMode.Should().Be(mode);
+                loaded.GetValue(ConfigurationParameters.ThemeMode).Should().Be(mode);
+            }
+            finally
+            {
+                DeleteUserConfigFilePath(userConfigFilePath);
+            }
+        }
+
+        [Fact]
+        public void LoadUsingConfiguration_WhenThemeSettingsAreMissing_PreservesFollowOperatingSystem()
+        {
+            var userConfigFilePath = CreateUserConfigFilePath();
+
+            try
+            {
+                var currentSettings = new MainSettings();
+                currentSettings.SetDefault();
+                currentSettings.ThemeMode = ThemeMode.FollowOperatingSystem;
+
+                var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig, currentSettings);
+
+                loaded.ThemeMode.Should().Be(ThemeMode.FollowOperatingSystem);
+            }
+            finally
+            {
+                DeleteUserConfigFilePath(userConfigFilePath);
+            }
+        }
+
+        [Fact]
+        public void Equals_WhenLightAndFollowOperatingSystemDiffer_ReturnsFalse()
+        {
+            var first = new MainSettings();
+            first.SetDefault();
+            first.ThemeMode = ThemeMode.Light;
+
+            var second = new MainSettings();
+            second.SetDefault();
+            second.ThemeMode = ThemeMode.FollowOperatingSystem;
+
+            first.DarkMode.Should().Be(second.DarkMode);
+            first.Equals(second).Should().BeFalse();
+        }
+
+        [Fact]
+        public void SetDefault_WhenFollowingOperatingSystem_ResetsThemeToDark()
+        {
+            var settings = new MainSettings { ThemeMode = ThemeMode.FollowOperatingSystem };
+
+            settings.SetDefault();
+
+            settings.ThemeMode.Should().Be(ThemeMode.Dark);
         }
 
         static MainSettings LoadMainSettings(string userConfigFilePath, ConfigFileUse configFileUse,

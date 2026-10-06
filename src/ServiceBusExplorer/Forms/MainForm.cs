@@ -613,7 +613,7 @@ namespace ServiceBusExplorer.Forms
         {
             var mainSettings = new MainSettings
             {
-                DarkMode = ThemeManager.DarkMode,
+                ThemeMode = ThemeManager.Mode,
                 LogFontSize = (decimal)lstLog.Font.Size,
                 TreeViewFontSize = (decimal)serviceBusTreeView.Font.Size,
                 RetryCount = RetryHelper.RetryCount,
@@ -734,7 +734,7 @@ namespace ServiceBusExplorer.Forms
                 EntraTenantIds = optionForm.MainSettings.EntraTenantIds;
 
                 NodesColors = optionForm.MainSettings.NodesColors;
-                ThemeManager.SetDarkMode(optionForm.MainSettings.DarkMode);
+                ThemeManager.SetThemeMode(optionForm.MainSettings.ThemeMode);
             }
 
             ReapplyColors(rootNode);
@@ -4160,7 +4160,7 @@ namespace ServiceBusExplorer.Forms
 
             var currentSettings = new MainSettings
             {
-                DarkMode = ThemeManager.DarkMode,
+                ThemeMode = ThemeManager.Mode,
                 LogFontSize = logFontSize,
                 TreeViewFontSize = treeViewFontSize,
                 RetryCount = RetryHelper.RetryCount,
@@ -4198,7 +4198,7 @@ namespace ServiceBusExplorer.Forms
             };
 
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
-            ThemeManager.SetDarkMode(readSettings.DarkMode);
+            ThemeManager.SetThemeMode(readSettings.ThemeMode);
 
             var tempLogFontSize = readSettings.LogFontSize;
             if (tempLogFontSize != logFontSize)
