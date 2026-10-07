@@ -4,7 +4,7 @@
 		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageVersion Include="Azure.Identity" Version="1.13.2" />
+		<PackageVersion Include="Azure.Identity" Version="1.21.0" />
 		<PackageVersion Include="Azure.Messaging.EventGrid" Version="4.22.0-beta.1" />
 		<PackageVersion Include="Azure.Messaging.EventHubs" Version="5.12.1" />
 		<PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
