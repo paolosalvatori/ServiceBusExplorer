@@ -346,6 +346,16 @@ namespace ServiceBusExplorer.Forms
             dashboardControl.OnSyncWithTreeViewChanged = () => dashboardControl.ApplyFilter(filterTreeViewTextBox.Text);
         }
 
+        internal static void SetEmptyMainPanelBackground(Control panel)
+        {
+            if (panel == null)
+                throw new ArgumentNullException(nameof(panel));
+
+            panel.BackColor = ThemeManager.IsThemed
+                ? ThemeManager.Palette.Background
+                : SystemColors.Window;
+        }
+
         private void DashboardRowSelected(string name, string type)
         {
             if (rootNode == null) return;
@@ -486,7 +496,7 @@ namespace ServiceBusExplorer.Forms
                 userControl.Dispose();
             }
             panelMain.Controls.Clear();
-            panelMain.BackColor = SystemColors.Window;
+            SetEmptyMainPanelBackground(panelMain);
             await ShowEntities(EntityType.All);
         }
 
@@ -548,7 +558,7 @@ namespace ServiceBusExplorer.Forms
                         userControl.Dispose();
                     }
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
+                    SetEmptyMainPanelBackground(panelMain);
                     await ShowEntities(EntityType.All);
                 }
             }
@@ -592,7 +602,7 @@ namespace ServiceBusExplorer.Forms
                     }
 
                     panelMain.Controls.Clear();
-                    panelMain.BackColor = SystemColors.Window;
+                    SetEmptyMainPanelBackground(panelMain);
 
                     await ShowEventGridEntities(EntityType.All);
                 }
@@ -764,7 +774,7 @@ namespace ServiceBusExplorer.Forms
                 userControl.Dispose();
             }
             panelMain.Controls.Clear();
-            panelMain.BackColor = SystemColors.Window;
+            SetEmptyMainPanelBackground(panelMain);
             panelMain.HeaderText = Entity;
             if (currentNode != null)
             {
@@ -821,7 +831,7 @@ namespace ServiceBusExplorer.Forms
                     userControl.Dispose();
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.Window;
+                SetEmptyMainPanelBackground(panelMain);
                 panelMain.HeaderText = Entity;
                 serviceBusTreeView.SelectedNode = rootNode;
                 rootNode.EnsureVisible();
@@ -7212,7 +7222,7 @@ namespace ServiceBusExplorer.Forms
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                 }
                 panelMain.Controls.Clear();
-                panelMain.BackColor = SystemColors.Window;
+                SetEmptyMainPanelBackground(panelMain);
                 await ShowEntities(EntityType.All);
             }
             catch (Exception ex)

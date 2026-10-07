@@ -161,6 +161,32 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
+        public void EmptyMainPanelBackground_FollowsThemeAndPreservesLightAppearance()
+        {
+            RunOnSta(() =>
+            {
+                var originalMode = ThemeManager.Mode;
+                try
+                {
+                    using var panel = new Panel { BackColor = Color.White };
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                    MainForm.SetEmptyMainPanelBackground(panel);
+                    panel.BackColor.Should().Be(ThemeManager.Palette.Background);
+
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
+                    MainForm.SetEmptyMainPanelBackground(panel);
+                    panel.BackColor.Should().Be(ThemeManager.IsThemed
+                        ? ThemeManager.Palette.Background
+                        : SystemColors.Window);
+                }
+                finally
+                {
+                    ThemeManager.SetThemeMode(originalMode);
+                }
+            });
+        }
+
+        [Fact]
         public void ReplaceHostedContent_AppliesDarkThemeAndKeepsContentVisibleBeforeDrawingResumes()
         {
             RunOnSta(() =>
