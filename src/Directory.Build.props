@@ -7,8 +7,4 @@
 		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.1" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
-	</ItemGroup>
 </Project>
