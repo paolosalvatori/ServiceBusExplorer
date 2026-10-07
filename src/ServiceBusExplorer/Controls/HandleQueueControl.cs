@@ -3455,15 +3455,18 @@ namespace ServiceBusExplorer.Controls
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
 
-            using var waitCursorScope = new WaitCursorScope();
             try
             {
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
                 var messagesDeleteCount = sequenceNumbersToDelete.Count;
-                var result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete,
-                    TransferDLQ : dataGridView == transferDeadletterDataGridView);
+                DeletedDlqMessagesResult result;
+                using (new WaitCursorScope())
+                {
+                    result = await deadLetterMessageHandler.DeleteMessages(sequenceNumbersToDelete,
+                        TransferDLQ : dataGridView == transferDeadletterDataGridView);
+                }
 
                 DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(dataGridView, result.DeletedSequenceNumbers);
 
@@ -3557,6 +3560,10 @@ namespace ServiceBusExplorer.Controls
             {
                 messagesDataGridView.SuspendDrawing();
                 messagesDataGridView.SuspendLayout();
+                if (messageBindingList == null)
+                {
+                    return;
+                }
                 using var form = new TextForm(FilterExpressionTitle, FilterExpressionLabel, messagesFilterExpression);
                 form.Size = new Size(600, 200);
                 if (form.ShowDialog() != DialogResult.OK)
@@ -3583,6 +3590,10 @@ namespace ServiceBusExplorer.Controls
             {
                 messagesDataGridView.SuspendDrawing();
                 messagesDataGridView.SuspendLayout();
+                if (messageBindingList == null)
+                {
+                    return;
+                }
 
                 using var form = new DateTimeRangeForm(messagesFilterFromDate, messagesFilterToDate);
                 form.Size = new Size(600, 200);
@@ -3761,6 +3772,10 @@ namespace ServiceBusExplorer.Controls
             {
                 deadletterDataGridView.SuspendDrawing();
                 deadletterDataGridView.SuspendLayout();
+                if (deadletterBindingList == null)
+                {
+                    return;
+                }
                 using (var form = new DateTimeRangeForm(deadletterFilterFromDate, deadletterFilterToDate))
                 {
                     if (form.ShowDialog() != DialogResult.OK)
@@ -3789,6 +3804,10 @@ namespace ServiceBusExplorer.Controls
             {
                 deadletterDataGridView.SuspendDrawing();
                 deadletterDataGridView.SuspendLayout();
+                if (deadletterBindingList == null)
+                {
+                    return;
+                }
                 using (var form = new TextForm(FilterExpressionTitle, FilterExpressionLabel, deadletterFilterExpression)
                       )
                 {

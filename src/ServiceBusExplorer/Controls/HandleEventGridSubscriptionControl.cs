@@ -267,7 +267,7 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        async Task btnEventAction_Click(object sender, EventArgs e)
+        private async void btnEventAction_Click(object sender, EventArgs e)
         {
             var lockTokens = new List<string>();
             var selectedRows = new List<int>();
