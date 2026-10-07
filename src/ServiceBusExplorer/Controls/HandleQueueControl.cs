@@ -3431,15 +3431,15 @@ namespace ServiceBusExplorer.Controls
             string confirmationText;
             var transferText = dataGridView == transferDeadletterDataGridView ? "transfer " : string.Empty;
 
-            var brokeredMessages = messages as BrokeredMessage[] ?? messages.ToArray();
-            if (brokeredMessages.Count() == 1)
+            var brokeredMessages = messages.ToArray();
+            if (brokeredMessages.Length == 1)
             {
                 confirmationText = "Are you sure you want to delete the selected message from the " +
                     $"{transferText}dead-letter subqueue for the {queueDescription.Path} queue?";
             }
             else
             {
-                confirmationText = $"Are you sure you want to delete {brokeredMessages.Count()} messages from the " +
+                confirmationText = $"Are you sure you want to delete {brokeredMessages.Length} messages from the " +
                     $"{transferText}dead-letter subqueue for {queueDescription.Path} queue?";
             }
 
@@ -3596,10 +3596,11 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 using var form = new DateTimeRangeForm(messagesFilterFromDate, messagesFilterToDate);
-                form.Size = new Size(600, 200);
                 if (form.ShowDialog() != DialogResult.OK)
+                {
                     return;
-                
+                }
+
                 messagesFilterFromDate = form.DateTimeFrom;
                 messagesFilterToDate = form.DateTimeTo;
                 FilterMessages();
