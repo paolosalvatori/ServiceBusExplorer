@@ -713,6 +713,14 @@ namespace ServiceBusExplorer.Forms
             }
 
             var switchingToEntra = SelectedAuthMode == ServiceBusAuthMode.Entra;
+            if (switchingToEntra && cboServiceBusNamespace.SelectedIndex == 0)
+            {
+                ignoreSelectedIndexChange = true;
+                cboServiceBusNamespace.SelectedIndex = 1;
+                ignoreSelectedIndexChange = false;
+                btnSave.Visible = true;
+            }
+
             var currentUri = txtUri.Text?.Trim() ?? string.Empty;
 
             if (switchingToEntra)
