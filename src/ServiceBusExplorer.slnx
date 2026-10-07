@@ -8,7 +8,7 @@
     <File Path="../README.md" />
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
-    <File Path="EventGridExplorer_README.md" />
+    <File Path="../EventGridExplorer_README.md" />
   </Folder>
   <Folder Name="/Solution Items/Workflows/">
     <File Path="../.github/workflows/build-test.yml" />
