@@ -1,20 +1,19 @@
 // <copyright file="EventGridClient.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Azure;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Messaging.EventGrid.Namespaces;
+using Azure.ResourceManager;
+using Azure.ResourceManager.EventGrid;
+using Azure.ResourceManager.EventGrid.Models;
 
 namespace EventGridExplorerLibrary
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using global::Azure;
-    using global::Azure.Core;
-    using global::Azure.Identity;
-    using global::Azure.Messaging.EventGrid.Namespaces;
-    using global::Azure.ResourceManager;
-    using global::Azure.ResourceManager.EventGrid;
-    using global::Azure.ResourceManager.EventGrid.Models;
-
     /// <summary>
     /// Implementation of the event grid client interface.
     /// </summary>
@@ -61,7 +60,7 @@ namespace EventGridExplorerLibrary
                 InputSchema = EventInputSchema.CloudEventSchemaV10,
             };
 
-            ArmOperation<NamespaceTopicResource> azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, namespaceTopicName, namespaceTopicData);
+            var azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, namespaceTopicName, namespaceTopicData);
             NamespaceTopicResource result = azureOperation.Value;
             return result.Id;
         }
@@ -134,7 +133,7 @@ namespace EventGridExplorerLibrary
                 return $"{subscriptionName} for topic {namespaceTopicName} already exists";
             }
 
-            ArmOperation<NamespaceTopicEventSubscriptionResource> azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
+            var azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
             return azureOperation.Value.Id;
         }
 
@@ -183,18 +182,18 @@ namespace EventGridExplorerLibrary
             FiltersConfiguration filtersConfiguration = new FiltersConfiguration();
             EventGridFilterFactory eventGridFilterFactory = new EventGridFilterFactory(filtersConfiguration);
 
-            foreach (Dictionary<string, string> i in filters)
+            foreach (var i in filters)
             {
-                eventGridFilterFactory.Key = i["Key"].ToString();
-                eventGridFilterFactory.Value = i["Value"].ToString();
-                eventGridFilterFactory.OperatorType = i["Operator"].ToString();
+                eventGridFilterFactory.Key = i["Key"];
+                eventGridFilterFactory.Value = i["Value"];
+                eventGridFilterFactory.OperatorType = i["Operator"];
 
                 eventGridFilterFactory.FilterSelection();
             }
 
             if (eventTypes.Count > 0)
             {
-                foreach (string eventType in eventTypes)
+                foreach (var eventType in eventTypes)
                 {
                     filtersConfiguration.IncludedEventTypes.Add(eventType);
                 }
