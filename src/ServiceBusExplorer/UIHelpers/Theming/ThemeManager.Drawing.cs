@@ -263,9 +263,10 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return;
             var grid = (DataGridView)sender;
             var color = e.CellStyle.BackColor;
-            if (color.R > 200 && color.G < color.R - 10 && color.B < color.R - 10)
+            var semantic = ClassifySemanticColor(color);
+            if (semantic == SemanticColor.Error)
                 e.CellStyle.BackColor = Palette.ErrorBackground;
-            else if (color.R > 200 && color.G > 170 && color.B < color.G - 20)
+            else if (semantic == SemanticColor.Warning)
                 e.CellStyle.BackColor = Palette.WarningBackground;
             else if (color.GetBrightness() > 0.5)
                 e.CellStyle.BackColor = e.RowIndex % 2 == 0 ? Palette.Surface : Palette.Background;

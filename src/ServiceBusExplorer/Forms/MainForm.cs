@@ -351,9 +351,7 @@ namespace ServiceBusExplorer.Forms
             if (panel == null)
                 throw new ArgumentNullException(nameof(panel));
 
-            panel.BackColor = ThemeManager.IsThemed
-                ? ThemeManager.Palette.Background
-                : SystemColors.Window;
+            ThemeManager.SetHostedBackground(panel);
         }
 
         private void DashboardRowSelected(string name, string type)
@@ -431,6 +429,7 @@ namespace ServiceBusExplorer.Forms
         {
 #if DEBUG
             linkLabelNewVersionAvailable.Visible = true;
+            linkLabelNewVersionAvailable.Enabled = false;
             linkLabelNewVersionAvailable.Text = $"Debug Version";
 #else
             var isLatest = VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog);
@@ -744,7 +743,6 @@ namespace ServiceBusExplorer.Forms
                 EntraTenantIds = optionForm.MainSettings.EntraTenantIds;
 
                 NodesColors = optionForm.MainSettings.NodesColors;
-                ThemeManager.SetThemeMode(optionForm.MainSettings.ThemeMode);
             }
 
             ReapplyColors(rootNode);

@@ -117,6 +117,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -203,6 +204,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -265,6 +267,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -330,6 +333,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -386,6 +390,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -435,6 +440,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)
@@ -482,6 +488,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception != null)

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -12,7 +14,7 @@ using ServiceBusExplorer.Enums;
 
 namespace ServiceBusExplorer.UIHelpers.Theming
 {
-    public static partial class ThemeManager
+    public partial class ThemeManager
     {
         private static readonly ConditionalWeakTable<Control, ControlState> controls =
             new ConditionalWeakTable<Control, ControlState>();
@@ -65,11 +67,26 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         private static bool ReadSystemDarkTheme()
         {
-            using (var key = Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+            return ReadSystemDarkTheme(() =>
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                return key?.GetValue("AppsUseLightTheme", 1);
+            });
+        }
+
+        private static bool ReadSystemDarkTheme(Func<object> readPreference)
+        {
+            try
             {
                 // Older Windows versions without this preference use the light theme.
-                return Equals(key?.GetValue("AppsUseLightTheme", 1), 0);
+                return Equals(readPreference(), 0);
+            }
+            catch (Exception exception) when (exception is SecurityException ||
+                exception is UnauthorizedAccessException || exception is IOException)
+            {
+                Trace.WriteLine($"Windows application theme unavailable; using the light theme: {exception.Message}");
+                return false;
             }
         }
 
@@ -106,22 +123,30 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return;
             if (IsThemeExcludedControl(root))
                 return;
-            if (root.InvokeRequired ||
-                controls.TryGetValue(root, out var state) && state.UiThread != Thread.CurrentThread)
-                throw new InvalidOperationException("Apply themes on the control's UI thread.");
+            EnsureUiThread(root);
 
-            root.SuspendLayout();
-            try
+            lock (themeLock)
             {
-                // Capture the whole tree before changing inherited parent colors.
-                PrepareTree(root);
-                ApplyTree(root);
+                root.SuspendLayout();
+                try
+                {
+                    // Capture and apply against the same theme before changing inherited parent colors.
+                    PrepareTree(root);
+                    ApplyTree(root);
+                }
+                finally
+                {
+                    root.ResumeLayout(true);
+                }
+                root.Invalidate(true);
             }
-            finally
-            {
-                root.ResumeLayout(true);
-            }
-            root.Invalidate(true);
+        }
+
+        private static void EnsureUiThread(Control control)
+        {
+            if (control.InvokeRequired ||
+                controls.TryGetValue(control, out var state) && state.UiThread != Thread.CurrentThread)
+                throw new InvalidOperationException("Apply themes on the control's UI thread.");
         }
 
         private static void PrepareTree(Control control)
@@ -156,6 +181,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 state.Snapshot.Restore();
                 RestoreExtraColors(control);
             }
+            if (state.IsContentHost)
+                control.BackColor = HostedBackground;
             ThemeNativeMethods.RefreshInputBorder(control);
             if (control is Form form)
                 ThemeNativeMethods.ApplyCaption(form, IsDark);
@@ -282,6 +309,12 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         private static void PreferencesChanged(object sender, UserPreferenceChangedEventArgs e)
         {
+            if (e.Category != UserPreferenceCategory.Color &&
+                e.Category != UserPreferenceCategory.General &&
+                e.Category != UserPreferenceCategory.Accessibility &&
+                e.Category != UserPreferenceCategory.VisualStyle)
+                return;
+
             lock (themeLock)
                 UpdateTheme();
             RefreshWindows();
@@ -304,6 +337,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             public IDisposable InputBorder { get; set; }
             public HashSet<FastColoredTextBoxNS.TextStyle> EditorStyles { get; } = new HashSet<FastColoredTextBoxNS.TextStyle>();
             public bool UpdatingButtonForeground { get; set; }
+            public bool IsContentHost { get; set; }
             public void Dispose()
             {
                 InputBorder?.Dispose();

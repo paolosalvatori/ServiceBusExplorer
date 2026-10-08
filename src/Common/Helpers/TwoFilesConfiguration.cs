@@ -372,62 +372,6 @@ namespace ServiceBusExplorer.Helpers
             return sectionValues;
         }
 
-        public Hashtable GetHashtableFromAppSettingsPrefix(string prefix)
-        {
-            if (string.IsNullOrWhiteSpace(prefix))
-            {
-                return null;
-            }
-
-            Hashtable sectionValues = null;
-
-            void MergeAppSettings(KeyValueConfigurationCollection settings)
-            {
-                if (settings == null)
-                {
-                    return;
-                }
-
-                var appSettings = new Hashtable();
-                foreach (KeyValueConfigurationElement item in settings)
-                {
-                    if (item.Key != null && item.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                    {
-                        appSettings[item.Key.Substring(prefix.Length)] = item.Value;
-                    }
-                }
-
-                if (appSettings.Count == 0)
-                {
-                    return;
-                }
-
-                if (sectionValues == null || ConfigFileUse == ConfigFileUse.UserConfig)
-                {
-                    sectionValues = appSettings;
-                }
-                else
-                {
-                    foreach (DictionaryEntry item in appSettings)
-                    {
-                        sectionValues[item.Key] = item.Value;
-                    }
-                }
-            }
-
-            if (UseApplicationConfig())
-            {
-                MergeAppSettings(applicationConfiguration?.AppSettings?.Settings);
-            }
-
-            if (UseUserConfig())
-            {
-                MergeAppSettings(userConfiguration?.AppSettings?.Settings);
-            }
-
-            return sectionValues;
-        }
-
         public bool SettingExists(string AppSettingKey)
         {
             if (userConfiguration != null && UseUserConfig())

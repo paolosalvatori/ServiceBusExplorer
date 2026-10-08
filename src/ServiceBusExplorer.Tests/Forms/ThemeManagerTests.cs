@@ -32,34 +32,38 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var form = new ThemedForm { BackColor = Color.Beige, ForeColor = Color.Navy })
-                using (var panel = new Panel())
-                using (var label = new Label { Text = "Inherited" })
-                using (var button = new Button { BackColor = Color.LightBlue, FlatStyle = FlatStyle.System })
+                using var panel = new Panel();
+                using var form = new ThemedForm();
+                form.BackColor = Color.Beige;
+                form.ForeColor = Color.Navy;
+                using var label = new Label();
+                label.Text = "Inherited";
+                using var button = new Button();
+                button.BackColor = Color.LightBlue;
+                button.FlatStyle = FlatStyle.System;
+
+                panel.Controls.Add(label);
+                form.Controls.Add(panel);
+                form.Controls.Add(button);
+                var labelBack = label.BackColor;
+                var labelFore = label.ForeColor;
+                var visualStyle = button.UseVisualStyleBackColor;
+                ThemeManager.Register(form);
+                for (var i = 0; i < 3; i++)
                 {
-                    panel.Controls.Add(label);
-                    form.Controls.Add(panel);
-                    form.Controls.Add(button);
-                    var labelBack = label.BackColor;
-                    var labelFore = label.ForeColor;
-                    var visualStyle = button.UseVisualStyleBackColor;
-                    ThemeManager.Register(form);
-                    for (var i = 0; i < 3; i++)
-                    {
-                        ThemeManager.SetThemeMode(ThemeMode.Dark);
-                        form.BackColor.Should().Be(ThemeManager.Palette.Background);
-                        button.FlatStyle.Should().Be(FlatStyle.Flat);
-                        ThemeManager.SetThemeMode(ThemeMode.Light);
-                        form.BackColor.Should().Be(Color.Beige);
-                        label.BackColor.Should().Be(labelBack);
-                        label.ForeColor.Should().Be(labelFore);
-                        button.BackColor.Should().Be(Color.LightBlue);
-                        button.FlatStyle.Should().Be(FlatStyle.System);
-                        button.UseVisualStyleBackColor.Should().Be(visualStyle);
-                    }
-                    form.BackColor = Color.Pink;
-                    label.BackColor.Should().Be(Color.Pink);
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                    form.BackColor.Should().Be(ThemeManager.Palette.Background);
+                    button.FlatStyle.Should().Be(FlatStyle.Flat);
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
+                    form.BackColor.Should().Be(Color.Beige);
+                    label.BackColor.Should().Be(labelBack);
+                    label.ForeColor.Should().Be(labelFore);
+                    button.BackColor.Should().Be(Color.LightBlue);
+                    button.FlatStyle.Should().Be(FlatStyle.System);
+                    button.UseVisualStyleBackColor.Should().Be(visualStyle);
                 }
+                form.BackColor = Color.Pink;
+                label.BackColor.Should().Be(Color.Pink);
             });
         }
 
@@ -120,19 +124,22 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var image = new Bitmap(20, 20))
-                using (var form = new ThemedForm { BackgroundImage = image })
-                using (var picture = new PictureBox { BackgroundImage = image, Image = image })
-                {
-                    form.Controls.Add(picture);
-                    ThemeManager.Register(form);
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    form.BackgroundImage.Should().BeNull();
-                    picture.BackgroundImage.Should().BeSameAs(image);
-                    picture.Image.Should().BeSameAs(image);
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    form.BackgroundImage.Should().BeSameAs(image);
-                }
+                using var image = new Bitmap(20, 20);
+                image.Tag = null;
+                image.Palette = null!;
+                using var form = new ThemedForm();
+                form.BackgroundImage = image;
+                using var picture = new PictureBox();
+                picture.BackgroundImage = image;
+                picture.Image = image;
+                form.Controls.Add(picture);
+                ThemeManager.Register(form);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                form.BackgroundImage.Should().BeNull();
+                picture.BackgroundImage.Should().BeSameAs(image);
+                picture.Image.Should().BeSameAs(image);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                form.BackgroundImage.Should().BeSameAs(image);
             });
         }
 
@@ -168,7 +175,8 @@ namespace ServiceBusExplorer.Tests.Forms
                 var originalMode = ThemeManager.Mode;
                 try
                 {
-                    using var panel = new Panel { BackColor = Color.White };
+                    using var panel = new Panel();
+                    panel.BackColor = Color.White;
                     ThemeManager.SetThemeMode(ThemeMode.Dark);
                     MainForm.SetEmptyMainPanelBackground(panel);
                     panel.BackColor.Should().Be(ThemeManager.Palette.Background);
@@ -191,36 +199,36 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var form = new ThemedForm { Size = new Size(400, 300) })
-                using (var host = new Panel { Dock = DockStyle.Fill })
+                using var form = new ThemedForm();
+                form.Size = new Size(400, 300);
+                using var host = new Panel();
+                host.Dock = DockStyle.Fill;
+                form.Controls.Add(host);
+                form.Show();
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                var painted = false;
+                host.Paint += (_, _) =>
                 {
-                    form.Controls.Add(host);
-                    form.Show();
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    var painted = false;
-                    host.Paint += (sender, args) =>
-                    {
-                        painted = true;
-                        host.BackColor.Should().Be(ThemeManager.Palette.Background);
-                        var child = host.Controls.Cast<Control>().Single();
-                        child.BackColor.Should().Be(ThemeManager.Palette.Background);
-                        child.Bounds.Should().Be(new Rectangle(12, 18, 240, 160));
-                    };
-
-                    var content = ThemeManager.ReplaceHostedContent(
-                        host,
-                        () => new Panel { Size = new Size(240, 160), Visible = true },
-                        control => control.Location = new Point(12, 18));
-
-                    painted.Should().BeTrue();
+                    painted = true;
                     host.BackColor.Should().Be(ThemeManager.Palette.Background);
-                    content.BackColor.Should().Be(ThemeManager.Palette.Background);
-                    content.Visible.Should().BeTrue();
-                    content.Bounds.Should().Be(new Rectangle(12, 18, 240, 160));
-                    host.Controls.Cast<Control>().Should().ContainSingle().Which.Should().BeSameAs(content);
+                    var child = host.Controls.Cast<Control>().Single();
+                    child.BackColor.Should().Be(ThemeManager.Palette.Background);
+                    child.Bounds.Should().Be(new Rectangle(12, 18, 240, 160));
+                };
 
-                    form.Close();
-                }
+                var content = ThemeManager.ReplaceHostedContent(
+                    host,
+                    () => new Panel { Size = new Size(240, 160), Visible = true },
+                    control => control.Location = new Point(12, 18));
+
+                painted.Should().BeTrue();
+                host.BackColor.Should().Be(ThemeManager.Palette.Background);
+                content.BackColor.Should().Be(ThemeManager.Palette.Background);
+                content.Visible.Should().BeTrue();
+                content.Bounds.Should().Be(new Rectangle(12, 18, 240, 160));
+                host.Controls.Cast<Control>().Should().ContainSingle().Which.Should().BeSameAs(content);
+
+                form.Close();
             });
         }
 
@@ -229,49 +237,50 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                var helper = new ServiceBusHelper((message, asynchronous) => { })
+                var helper = new ServiceBusHelper((_, _) => { })
                 {
                     NamespaceUri = new Uri("sb://localhost/")
                 };
                 typeof(ServiceBusHelper).GetProperty(nameof(ServiceBusHelper.ConnectionString),
-                    BindingFlags.Public | BindingFlags.Instance).SetValue(helper,
+                    BindingFlags.Public | BindingFlags.Instance)
+                    ?.SetValue(helper,
                     "Endpoint=sb://localhost/;SharedAccessKeyName=test;SharedAccessKey=dGVzdA==;EntityPath=queue-a");
                 var queue = new QueueDescription("queue-a");
 
-                using (var form = new ThemedForm { Size = new Size(1200, 800) })
-                using (var host = new Panel { Dock = DockStyle.Fill })
-                {
-                    form.Controls.Add(host);
-                    form.Show();
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                using var form = new ThemedForm();
+                form.Size = new Size(1200, 800);
+                using var host = new Panel();
+                host.Dock = DockStyle.Fill;
+                form.Controls.Add(host);
+                form.Show();
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
 
-                    var content = ThemeManager.ReplaceHostedContent(
-                        host,
-                        () => new HandleQueueControl((message, asynchronous) => { }, helper, queue, queue.Path, false),
-                        control =>
-                        {
-                            control.Location = new Point(1, 25);
-                            control.Size = new Size(host.Width - 4, host.Height - 26);
-                        });
-
-                    foreach (var processEvents in new[] { false, true })
+                var content = ThemeManager.ReplaceHostedContent(
+                    host,
+                    () => new HandleQueueControl((_, _) => { }, helper, queue, queue.Path, false),
+                    control =>
                     {
-                        if (processEvents)
-                            Application.DoEvents();
-                        content.Visible.Should().BeTrue();
-                        content.BackColor.Should().Be(ThemeManager.Palette.Background);
-                        foreach (var name in new[] { "btnRefresh", "btnChangeStatus", "btnMessages",
-                            "btnDeadletter", "btnCancelUpdate", "btnCreateDelete" })
-                        {
-                            var button = content.Controls.Find(name, true).Single().Should().BeOfType<Button>().Which;
-                            button.Visible.Should().BeTrue("{0} must remain visible after queue initialization", name);
-                            button.Parent.ClientRectangle.Contains(button.Bounds).Should().BeTrue();
-                            button.BackColor.Should().Be(ThemeManager.Palette.Raised);
-                            button.ForeColor.Should().Be(ThemeManager.Palette.Text);
-                        }
+                        control.Location = new Point(1, 25);
+                        control.Size = new Size(host.Width - 4, host.Height - 26);
+                    });
+
+                foreach (var processEvents in new[] { false, true })
+                {
+                    if (processEvents)
+                        Application.DoEvents();
+                    content.Visible.Should().BeTrue();
+                    content.BackColor.Should().Be(ThemeManager.Palette.Background);
+                    foreach (var name in new[] { "btnRefresh", "btnChangeStatus", "btnMessages",
+                                 "btnDeadletter", "btnCancelUpdate", "btnCreateDelete" })
+                    {
+                        var button = content.Controls.Find(name, true).Single().Should().BeOfType<Button>().Which;
+                        button.Visible.Should().BeTrue("{0} must remain visible after queue initialization", name);
+                        button.Parent.ClientRectangle.Contains(button.Bounds).Should().BeTrue();
+                        button.BackColor.Should().Be(ThemeManager.Palette.Raised);
+                        button.ForeColor.Should().Be(ThemeManager.Palette.Text);
                     }
-                    form.Close();
                 }
+                form.Close();
             });
         }
 
@@ -280,21 +289,20 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var host = new Panel())
-                using (var first = new UserControl())
-                using (var second = new UserControl())
-                using (var other = new Panel())
-                {
-                    host.Controls.AddRange(new Control[] { first, second, other });
+                using var host = new Panel();
+                using var first = new UserControl();
+                using var second = new UserControl();
+                using var other = new Panel();
+                host.Controls.AddRange([first, second, other]);
+                ThemeManager.Register(host);
 
-                    var content = ThemeManager.ReplaceHostedContent(host, () => new UserControl(), null);
+                var content = ThemeManager.ReplaceHostedContent(host, () => new UserControl(), null);
 
-                    first.IsDisposed.Should().BeTrue();
-                    second.IsDisposed.Should().BeTrue();
-                    other.IsDisposed.Should().BeFalse();
-                    other.Parent.Should().BeNull();
-                    host.Controls.Cast<Control>().Should().ContainSingle().Which.Should().BeSameAs(content);
-                }
+                first.IsDisposed.Should().BeTrue();
+                second.IsDisposed.Should().BeTrue();
+                other.IsDisposed.Should().BeFalse();
+                other.Parent.Should().BeNull();
+                host.Controls.Cast<Control>().Should().ContainSingle().Which.Should().BeSameAs(content);
             });
         }
 
@@ -303,18 +311,17 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var host = new Panel())
-                {
-                    var content = ThemeManager.ReplaceHostedContent(
-                        host, () => new Panel { BackColor = Color.LightBlue }, null);
+                using var host = new Panel();
+                ThemeManager.Register(host);
+                var content = ThemeManager.ReplaceHostedContent(
+                    host, () => new Panel { BackColor = Color.LightBlue }, null);
 
-                    host.BackColor.Should().Be(ThemeManager.IsThemed
-                        ? ThemeManager.Palette.Background
-                        : SystemColors.GradientInactiveCaption);
-                    content.BackColor.Should().Be(ThemeManager.IsThemed
-                        ? ThemeManager.Palette.Background
-                        : Color.LightBlue);
-                }
+                host.BackColor.Should().Be(ThemeManager.IsThemed
+                    ? ThemeManager.Palette.Background
+                    : SystemColors.Window);
+                content.BackColor.Should().Be(ThemeManager.IsThemed
+                    ? ThemeManager.Palette.Background
+                    : Color.LightBlue);
             });
         }
 
@@ -325,34 +332,34 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var form = new ThemedForm { Size = new Size(400, 300) })
-                using (var host = new Panel { Dock = DockStyle.Fill })
-                {
-                    form.Controls.Add(host);
-                    form.Show();
-                    var expected = new InvalidOperationException("Hosted view initialization failed.");
-                    Panel content = null;
+                using var form = new ThemedForm();
+                form.Size = new Size(400, 300);
+                using var host = new Panel();
+                host.Dock = DockStyle.Fill;
+                form.Controls.Add(host);
+                form.Show();
+                var expected = new InvalidOperationException("Hosted view initialization failed.");
+                Panel content = null;
 
-                    Action replace = () => ThemeManager.ReplaceHostedContent(
-                        host,
-                        () =>
-                        {
-                            if (!configureThrows)
-                                throw expected;
-                            content = new Panel();
-                            return content;
-                        },
-                        control => throw expected);
-
-                    replace.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expected);
-                    host.Visible.Should().BeTrue();
-                    if (configureThrows)
+                Action replace = () => ThemeManager.ReplaceHostedContent(
+                    host,
+                    () =>
                     {
-                        content.Visible.Should().BeTrue();
-                        content.Parent.Should().BeSameAs(host);
-                    }
-                    form.Close();
+                        if (!configureThrows)
+                            throw expected;
+                        content = new Panel();
+                        return content;
+                    },
+                    _ => throw expected);
+
+                replace.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expected);
+                host.Visible.Should().BeTrue();
+                if (configureThrows)
+                {
+                    content.Visible.Should().BeTrue();
+                    content.Parent.Should().BeSameAs(host);
                 }
+                form.Close();
             });
         }
 
@@ -361,19 +368,19 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var form = new ThemedForm { Size = new Size(400, 300) })
-                using (var host = new Panel { Dock = DockStyle.Fill })
-                {
-                    form.Controls.Add(host);
-                    form.Show();
+                using var form = new ThemedForm();
+                form.Size = new Size(400, 300);
+                using var host = new Panel();
+                host.Dock = DockStyle.Fill;
+                form.Controls.Add(host);
+                form.Show();
 
-                    Action replace = () => ThemeManager.ReplaceHostedContent<Panel>(host, () => null, null);
+                Action replace = () => ThemeManager.ReplaceHostedContent<Panel>(host, () => null, null);
 
-                    replace.Should().Throw<InvalidOperationException>()
-                        .WithMessage("The hosted content factory returned null.");
-                    host.Visible.Should().BeTrue();
-                    form.Close();
-                }
+                replace.Should().Throw<InvalidOperationException>()
+                    .WithMessage("The hosted content factory returned null.");
+                host.Visible.Should().BeTrue();
+                form.Close();
             });
         }
 
@@ -382,19 +389,17 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                Action nullHost = () => ThemeManager.ReplaceHostedContent<Panel>(null, () => new Panel(), null);
+                Action nullHost = () => ThemeManager.ReplaceHostedContent(null, () => new Panel(), null);
                 nullHost.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("host");
 
-                using (var host = new Panel())
-                using (var original = new UserControl())
-                {
-                    host.Controls.Add(original);
-                    Action nullFactory = () => ThemeManager.ReplaceHostedContent<Panel>(host, null, null);
+                using var host = new Panel();
+                using var original = new UserControl();
+                host.Controls.Add(original);
+                Action nullFactory = () => ThemeManager.ReplaceHostedContent<Panel>(host, null, null);
 
-                    nullFactory.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("createContent");
-                    original.IsDisposed.Should().BeFalse();
-                    original.Parent.Should().BeSameAs(host);
-                }
+                nullFactory.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("createContent");
+                original.IsDisposed.Should().BeFalse();
+                original.Parent.Should().BeSameAs(host);
             });
         }
 
@@ -403,26 +408,25 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var first = new ThemedForm())
-                using (var second = new ThemedForm())
+                using var first = new ThemedForm();
+                using var second = new ThemedForm();
+                first.Show();
+                second.Show();
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                first.BackColor.Should().Be(ThemeManager.Palette.Background);
+                second.BackColor.Should().Be(ThemeManager.Palette.Background);
+                using (var modal = new ThemedForm())
                 {
-                    first.Show();
-                    second.Show();
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    first.BackColor.Should().Be(ThemeManager.Palette.Background);
-                    second.BackColor.Should().Be(ThemeManager.Palette.Background);
-                    using (var modal = new ThemedForm())
+                    modal.Shown += (_, _) =>
                     {
-                        modal.Shown += (sender, args) =>
-                        {
-                            modal.BackColor.Should().Be(ThemeManager.Palette.Background);
-                            modal.Close();
-                        };
-                        modal.ShowDialog(first);
-                    }
-                    first.Close();
-                    second.Close();
+                        modal.BackColor.Should().Be(ThemeManager.Palette.Background);
+                        modal.Close();
+                    };
+                    modal.ShowDialog(first);
                 }
+
+                first.Close();
+                second.Close();
             });
         }
 
@@ -431,31 +435,29 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var grid = new DataGridView())
-                {
-                    grid.Columns.Add("Count", "Count");
-                    grid.Columns[0].DefaultCellStyle.Format = "N0";
-                    grid.DefaultCellStyle.BackColor = Color.Bisque;
-                    grid.AlternatingRowsDefaultCellStyle.BackColor = Color.Lavender;
-                    grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.Navy;
-                    var defaultSelection = grid.DefaultCellStyle.SelectionBackColor;
-                    var headersVisual = grid.EnableHeadersVisualStyles;
-                    ThemeManager.Register(grid);
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    grid.DefaultCellStyle.BackColor.Should().Be(ThemeManager.Palette.Surface);
-                    grid.ColumnHeadersDefaultCellStyle.ForeColor.Should().Be(ThemeManager.Palette.Text);
-                    grid.EnableHeadersVisualStyles.Should().BeFalse();
-                    grid.Columns.Add("New", "New");
-                    grid.Columns[1].DefaultCellStyle.ForeColor.Should().Be(ThemeManager.Palette.Text);
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    grid.DefaultCellStyle.BackColor.Should().Be(Color.Bisque);
-                    grid.AlternatingRowsDefaultCellStyle.BackColor.Should().Be(Color.Lavender);
-                    grid.ColumnHeadersDefaultCellStyle.ForeColor.Should().Be(Color.Navy);
-                    grid.DefaultCellStyle.SelectionBackColor.Should().Be(defaultSelection);
-                    grid.EnableHeadersVisualStyles.Should().Be(headersVisual);
-                    grid.Columns[0].DefaultCellStyle.Format.Should().Be("N0");
-                    grid.Columns[1].DefaultCellStyle.ForeColor.Should().Be(Color.Empty);
-                }
+                using var grid = new DataGridView();
+                grid.Columns.Add("Count", "Count");
+                grid.Columns[0].DefaultCellStyle.Format = "N0";
+                grid.DefaultCellStyle.BackColor = Color.Bisque;
+                grid.AlternatingRowsDefaultCellStyle.BackColor = Color.Lavender;
+                grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.Navy;
+                var defaultSelection = grid.DefaultCellStyle.SelectionBackColor;
+                var headersVisual = grid.EnableHeadersVisualStyles;
+                ThemeManager.Register(grid);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                grid.DefaultCellStyle.BackColor.Should().Be(ThemeManager.Palette.Surface);
+                grid.ColumnHeadersDefaultCellStyle.ForeColor.Should().Be(ThemeManager.Palette.Text);
+                grid.EnableHeadersVisualStyles.Should().BeFalse();
+                grid.Columns.Add("New", "New");
+                grid.Columns[1].DefaultCellStyle.ForeColor.Should().Be(ThemeManager.Palette.Text);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                grid.DefaultCellStyle.BackColor.Should().Be(Color.Bisque);
+                grid.AlternatingRowsDefaultCellStyle.BackColor.Should().Be(Color.Lavender);
+                grid.ColumnHeadersDefaultCellStyle.ForeColor.Should().Be(Color.Navy);
+                grid.DefaultCellStyle.SelectionBackColor.Should().Be(defaultSelection);
+                grid.EnableHeadersVisualStyles.Should().Be(headersVisual);
+                grid.Columns[0].DefaultCellStyle.Format.Should().Be("N0");
+                grid.Columns[1].DefaultCellStyle.ForeColor.Should().Be(Color.Empty);
             });
         }
 
@@ -493,27 +495,29 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var form = new ThemedForm())
-                using (var group = new Grouper { BackgroundColor = Color.Azure, BorderColor = Color.Blue })
-                using (var track = new CustomTrackBar { TickColor = Color.Black, TrackLineColor = Color.Cyan })
-                using (var tabs = new TabControl())
-                {
-                    tabs.TabPages.Add("Messages");
-                    form.Controls.Add(group);
-                    form.Controls.Add(track);
-                    form.Controls.Add(tabs);
-                    ThemeManager.Register(form);
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    group.BackgroundColor.Should().Be(ThemeManager.Palette.Background);
-                    track.TickColor.Should().Be(ThemeManager.Palette.MutedText);
-                    tabs.DrawMode.Should().Be(TabDrawMode.OwnerDrawFixed);
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    group.BackgroundColor.Should().Be(Color.Azure);
-                    group.BorderColor.Should().Be(Color.Blue);
-                    track.TickColor.Should().Be(Color.Black);
-                    track.TrackLineColor.Should().Be(Color.Cyan);
-                    tabs.DrawMode.Should().Be(TabDrawMode.Normal);
-                }
+                using var form = new ThemedForm();
+                using var group = new Grouper();
+                group.BackgroundColor = Color.Azure;
+                group.BorderColor = Color.Blue;
+                using var track = new CustomTrackBar();
+                track.TickColor = Color.Black;
+                track.TrackLineColor = Color.Cyan;
+                using var tabs = new TabControl();
+                tabs.TabPages.Add("Messages");
+                form.Controls.Add(group);
+                form.Controls.Add(track);
+                form.Controls.Add(tabs);
+                ThemeManager.Register(form);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                group.BackgroundColor.Should().Be(ThemeManager.Palette.Background);
+                track.TickColor.Should().Be(ThemeManager.Palette.MutedText);
+                tabs.DrawMode.Should().Be(TabDrawMode.OwnerDrawFixed);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                group.BackgroundColor.Should().Be(Color.Azure);
+                group.BorderColor.Should().Be(Color.Blue);
+                track.TickColor.Should().Be(Color.Black);
+                track.TrackLineColor.Should().Be(Color.Cyan);
+                tabs.DrawMode.Should().Be(TabDrawMode.Normal);
             });
         }
 
@@ -522,22 +526,22 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var editor = new FastColoredTextBox { Language = Language.JSON, Text = "{\"key\": 42}" })
-                {
-                    var brush = ((TextStyle)editor.SyntaxHighlighter.BlueStyle).ForeBrush;
-                    var indent = editor.IndentBackColor;
-                    ThemeManager.Register(editor);
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    editor.BackColor.Should().Be(ThemeManager.Palette.Surface);
-                    editor.CaretColor.Should().Be(ThemeManager.Palette.Text);
-                    ((TextStyle)editor.SyntaxHighlighter.BlueStyle).ForeBrush.Should().NotBeSameAs(brush);
-                    editor.Language = Language.HTML;
-                    editor.Text = "<message>value</message>";
-                    ThemeManager.ApplyEditorStyles(editor);
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    editor.IndentBackColor.Should().Be(indent);
-                    ((TextStyle)editor.SyntaxHighlighter.BlueStyle).ForeBrush.Should().BeSameAs(brush);
-                }
+                using var editor = new FastColoredTextBox();
+                editor.Language = Language.JSON;
+                editor.Text = "{\"key\": 42}";
+                var brush = ((TextStyle)editor.SyntaxHighlighter.BlueStyle).ForeBrush;
+                var indent = editor.IndentBackColor;
+                ThemeManager.Register(editor);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                editor.BackColor.Should().Be(ThemeManager.Palette.Surface);
+                editor.CaretColor.Should().Be(ThemeManager.Palette.Text);
+                ((TextStyle)editor.SyntaxHighlighter.BlueStyle).ForeBrush.Should().NotBeSameAs(brush);
+                editor.Language = Language.HTML;
+                editor.Text = "<message>value</message>";
+                ThemeManager.ApplyEditorStyles(editor);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                editor.IndentBackColor.Should().Be(indent);
+                ((TextStyle)editor.SyntaxHighlighter.BlueStyle).ForeBrush.Should().BeSameAs(brush);
             });
         }
 
@@ -546,21 +550,19 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var dashboard = new DashboardControl())
-                {
-                    dashboard.AddRow("queue", "Queue");
-                    dashboard.UpdateRow("queue", 1, 2, 3);
-                    var grid = dashboard.Controls.OfType<DataGridView>().Single();
-                    ThemeManager.Register(dashboard);
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(ThemeManager.Palette.ErrorBackground);
-                    dashboard.UpdateRow("queue", 2, 3, 4);
-                    grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(ThemeManager.Palette.ErrorBackground);
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(Color.FromArgb(255, 235, 230));
-                    dashboard.UpdateRow("queue", 2, 0, 4);
-                    grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(Color.Empty);
-                }
+                using var dashboard = new DashboardControl();
+                dashboard.AddRow("queue", "Queue");
+                dashboard.UpdateRow("queue", 1, 2, 3);
+                var grid = dashboard.Controls.OfType<DataGridView>().Single();
+                ThemeManager.Register(dashboard);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(ThemeManager.Palette.ErrorBackground);
+                dashboard.UpdateRow("queue", 2, 3, 4);
+                grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(ThemeManager.Palette.ErrorBackground);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(Color.FromArgb(255, 235, 230));
+                dashboard.UpdateRow("queue", 2, 0, 4);
+                grid.Rows[0].DefaultCellStyle.BackColor.Should().Be(Color.Empty);
             });
         }
 
@@ -590,21 +592,19 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var chart = new Chart())
-                {
-                    chart.ChartAreas.Add(new ChartArea("Area") { BackColor = Color.White });
-                    chart.Legends.Add(new Legend { ForeColor = Color.Black });
-                    chart.Series.Add(new Series { Color = Color.Red });
-                    ThemeManager.Register(chart);
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    chart.ChartAreas[0].BackColor.Should().Be(ThemeManager.Palette.Surface);
-                    chart.ChartAreas[0].AxisX.LabelStyle.ForeColor.Should().Be(ThemeManager.Palette.Text);
-                    chart.Legends[0].ForeColor.Should().Be(ThemeManager.Palette.Text);
-                    chart.Series[0].Color.Should().Be(Color.Red);
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    chart.ChartAreas[0].BackColor.Should().Be(Color.White);
-                    chart.Legends[0].ForeColor.Should().Be(Color.Black);
-                }
+                using var chart = new Chart();
+                chart.ChartAreas.Add(new ChartArea("Area") { BackColor = Color.White });
+                chart.Legends.Add(new Legend { ForeColor = Color.Black });
+                chart.Series.Add(new Series { Color = Color.Red });
+                ThemeManager.Register(chart);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                chart.ChartAreas[0].BackColor.Should().Be(ThemeManager.Palette.Surface);
+                chart.ChartAreas[0].AxisX.LabelStyle.ForeColor.Should().Be(ThemeManager.Palette.Text);
+                chart.Legends[0].ForeColor.Should().Be(ThemeManager.Palette.Text);
+                chart.Series[0].Color.Should().Be(Color.Red);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                chart.ChartAreas[0].BackColor.Should().Be(Color.White);
+                chart.Legends[0].ForeColor.Should().Be(Color.Black);
             });
         }
 
@@ -613,26 +613,23 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
-                using (var form = new ThemedForm { Size = new Size(700, 300) })
-                {
-                    var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(3, 3) };
-                    tabs.TabPages.Add("Dashboard");
-                    tabs.TabPages.Add("Explorer");
-                    form.Controls.Add(tabs);
-                    form.Show();
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
-                    Application.DoEvents();
-                    var measured = TextRenderer.MeasureText(tabs.TabPages[0].Text, tabs.Font);
-                    tabs.GetTabRect(0).Width.Should().BeGreaterThanOrEqualTo(measured.Width + 4);
-                    using (var image = new Bitmap(tabs.Width, tabs.Height))
-                    {
-                        tabs.DrawToBitmap(image, new Rectangle(Point.Empty, tabs.Size));
-                        image.GetPixel(tabs.Width - 10, 10).ToArgb().Should().Be(ThemeManager.Palette.Background.ToArgb());
-                    }
-                    ThemeManager.SetThemeMode(ThemeMode.Light);
-                    tabs.Padding.Should().Be(new Point(3, 3));
-                    form.Close();
-                }
+                using var form = new ThemedForm();
+                form.Size = new Size(700, 300);
+                var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(3, 3) };
+                tabs.TabPages.Add("Dashboard");
+                tabs.TabPages.Add("Explorer");
+                form.Controls.Add(tabs);
+                form.Show();
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                Application.DoEvents();
+                var measured = TextRenderer.MeasureText(tabs.TabPages[0].Text, tabs.Font);
+                tabs.GetTabRect(0).Width.Should().BeGreaterThanOrEqualTo(measured.Width + 4);
+                using var image = new Bitmap(tabs.Width, tabs.Height);
+                tabs.DrawToBitmap(image, new Rectangle(Point.Empty, tabs.Size));
+                image.GetPixel(tabs.Width - 10, 10).ToArgb().Should().Be(ThemeManager.Palette.Background.ToArgb());
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                tabs.Padding.Should().Be(new Point(3, 3));
+                form.Close();
             });
         }
 
@@ -644,31 +641,30 @@ namespace ServiceBusExplorer.Tests.Forms
                 Application.EnableVisualStyles();
                 var settings = new MainSettings();
                 settings.SetDefault();
-                using (var options = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
-                    PaintWindow(options, "options");
-                using (var editor = new TextForm("Message", "{\"name\":\"hello\", \"active\":true, \"count\":42}"))
-                    PaintWindow(editor, "editor");
-                using (var form = new ThemedForm { Size = new Size(1000, 600) })
-                {
-                    var tabs = new TabControl { Dock = DockStyle.Fill };
-                    var dashboard = new DashboardControl { Dock = DockStyle.Fill };
-                    dashboard.AddRow("orders", "Queue");
-                    dashboard.UpdateRow("orders", 18, 0, 3);
-                    dashboard.AddRow("notifications / emails", "Subscription");
-                    dashboard.UpdateRow("notifications / emails", 6, 4, 0);
-                    var page = new TabPage("Dashboard");
-                    page.Controls.Add(dashboard);
-                    tabs.TabPages.Add(page);
-                    tabs.TabPages.Add("Explorer");
-                    var menu = new MenuStrip();
-                    var file = new ToolStripMenuItem("File");
-                    file.DropDownItems.Add("Connect");
-                    menu.Items.Add(file);
-                    menu.Items.Add("View");
-                    form.Controls.Add(tabs);
-                    form.Controls.Add(menu);
-                    PaintWindow(form, "dashboard");
-                }
+                using var options = new OptionForm(settings, ConfigFileUse.ApplicationConfig);
+                PaintWindow(options, "options");
+                using var editor = new TextForm("Message", "{\"name\":\"hello\", \"active\":true, \"count\":42}");
+                PaintWindow(editor, "editor");
+                using var form = new ThemedForm();
+                form.Size = new Size(1000, 600);
+                var tabs = new TabControl { Dock = DockStyle.Fill };
+                var dashboard = new DashboardControl { Dock = DockStyle.Fill };
+                dashboard.AddRow("orders", "Queue");
+                dashboard.UpdateRow("orders", 18, 0, 3);
+                dashboard.AddRow("notifications / emails", "Subscription");
+                dashboard.UpdateRow("notifications / emails", 6, 4, 0);
+                var page = new TabPage("Dashboard");
+                page.Controls.Add(dashboard);
+                tabs.TabPages.Add(page);
+                tabs.TabPages.Add("Explorer");
+                var menu = new MenuStrip();
+                var file = new ToolStripMenuItem("File");
+                file.DropDownItems.Add("Connect");
+                menu.Items.Add(file);
+                menu.Items.Add("View");
+                form.Controls.Add(tabs);
+                form.Controls.Add(menu);
+                PaintWindow(form, "dashboard");
             });
         }
 
@@ -680,13 +676,11 @@ namespace ServiceBusExplorer.Tests.Forms
             {
                 ThemeManager.SetThemeMode(dark ? ThemeMode.Dark : ThemeMode.Light);
                 Application.DoEvents();
-                using (var image = new Bitmap(form.Width, form.Height))
-                {
-                    form.DrawToBitmap(image, new Rectangle(Point.Empty, form.Size));
-                    var directory = Environment.GetEnvironmentVariable("SBE_THEME_SCREENSHOTS");
-                    if (!string.IsNullOrEmpty(directory))
-                        image.Save(Path.Combine(directory, name + (dark ? "-dark.png" : "-light.png")), ImageFormat.Png);
-                }
+                using var image = new Bitmap(form.Width, form.Height);
+                form.DrawToBitmap(image, new Rectangle(Point.Empty, form.Size));
+                var directory = Environment.GetEnvironmentVariable("SBE_THEME_SCREENSHOTS");
+                if (!string.IsNullOrEmpty(directory))
+                    image.Save(Path.Combine(directory, name + (dark ? "-dark.png" : "-light.png")), ImageFormat.Png);
             }
             form.Close();
         }

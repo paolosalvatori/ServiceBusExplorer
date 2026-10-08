@@ -331,17 +331,39 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return original;
             if (SystemInformation.HighContrast)
                 return Palette.Text;
+            return ClassifySemanticColor(original) switch
+            {
+                SemanticColor.Warning => Palette.WarningText,
+                SemanticColor.Error => Palette.ErrorText,
+                SemanticColor.Success => Palette.SuccessText,
+                SemanticColor.Accent => Palette.Accent,
+                _ => Palette.Text
+            };
+        }
+
+        private enum SemanticColor
+        {
+            None,
+            Warning,
+            Error,
+            Success,
+            Accent
+        }
+
+        private static SemanticColor ClassifySemanticColor(Color original)
+        {
             var saturation = original.GetSaturation();
             var hue = original.GetHue();
             if (saturation > 0.2f && hue >= 20f && hue <= 65f)
-                return Palette.WarningText;
-            if (original.R > original.G * 1.3 && original.R > original.B * 1.3)
-                return Palette.ErrorText;
+                return SemanticColor.Warning;
+            if (saturation > 0.2f && (hue < 20f || hue >= 340f) ||
+                original.R > original.G * 1.3 && original.R > original.B * 1.3)
+                return SemanticColor.Error;
             if (original.G > original.R * 1.3 && original.G > original.B * 1.1)
-                return Palette.SuccessText;
+                return SemanticColor.Success;
             if (original.B > original.R * 1.3)
-                return Palette.Accent;
-            return Palette.Text;
+                return SemanticColor.Accent;
+            return SemanticColor.None;
         }
     }
 }
