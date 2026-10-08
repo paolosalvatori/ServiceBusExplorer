@@ -14,7 +14,6 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
-    using System.Threading.Tasks;
 
     public partial class HandleEventGridSubscriptionControl : UserControl
     {
