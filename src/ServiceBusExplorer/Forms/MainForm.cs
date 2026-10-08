@@ -276,6 +276,7 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            HandleCreated += (s, e) => EntraCredentialFactory.SetOwnerWindowHandle(Handle);
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
