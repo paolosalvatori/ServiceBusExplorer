@@ -1,0 +1,28 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageVersion Include="Azure.Identity" Version="1.21.0" />
+		<PackageVersion Include="Azure.Messaging.EventGrid" Version="4.22.0-beta.1" />
+		<PackageVersion Include="Azure.Messaging.EventHubs" Version="5.12.1" />
+		<PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
+		<PackageVersion Include="Azure.ResourceManager.EventGrid" Version="1.1.0-beta.2" />
+		<PackageVersion Include="CommandLineParser" Version="2.9.1" />
+		<PackageVersion Include="FluentAssertions" Version="6.12.0" />
+		<PackageVersion Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
+		<PackageVersion Include="Microsoft.Azure.Relay" Version="3.0.1" />
+		<PackageVersion Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+		<PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.1" />
+		<PackageVersion Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
+		<PackageVersion Include="Microsoft.Rest.ClientRuntime.Azure" Version="3.3.19" />
+		<PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+		<PackageVersion Include="System.Resources.Extensions" Version="8.0.0" />
+		<PackageVersion Include="WindowsAzure.ServiceBus" Version="7.0.1" />
+		<PackageVersion Include="xunit" Version="2.9.3" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+	</ItemGroup>
+</Project>
