@@ -88,6 +88,20 @@ namespace ServiceBusExplorer.Helpers
         {
             nextReleaseInfo = GitHubReleaseProvider.GetServiceBusClientLatestVersion(writeToLog).GetAwaiter().GetResult();
 
+            var knownReleaseVersion = GetKnownReleaseVersion(writeToLog);
+            if (knownReleaseVersion != null)
+            {
+                nextReleaseInfo = new ReleaseInfo(
+                    nextReleaseInfo.ReleaseUri,
+                    knownReleaseVersion,
+                    nextReleaseInfo.Body,
+                    nextReleaseInfo.ZipPackageUri);
+            }
+            else
+            {
+                return true;
+            }
+
             var currentVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             var currentVersion = new Version(currentVersionInfo.FileMajorPart, currentVersionInfo.FileMinorPart, currentVersionInfo.FileBuildPart);
 

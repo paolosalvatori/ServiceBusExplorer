@@ -126,7 +126,6 @@ namespace ServiceBusExplorer.Tests.Forms
             {
                 using var image = new Bitmap(20, 20);
                 image.Tag = null;
-                image.Palette = null!;
                 using var form = new ThemedForm();
                 form.BackgroundImage = image;
                 using var picture = new PictureBox();
