@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Identity;
 using FluentAssertions;
 using Microsoft.Identity.Client;
 using Microsoft.ServiceBus;
@@ -336,6 +337,29 @@ namespace ServiceBusExplorer.Tests.Helpers
             second.Token.Should().Be("fallback-token");
             brokerCalls.Should().Be(1);
             fallbackCalls.Should().Be(2);
+            EntraCredentialFactory.ClearCache();
+        }
+
+        [Fact]
+        public async Task AcquireTokenWithFallback_WrappedMsalServiceBrokerError_UsesFallback()
+        {
+            const string tenantId = "broker-service-error-tenant";
+            EntraCredentialFactory.ClearCache();
+            var fallbackCalls = 0;
+
+            var token = await AcquireWithFallback(
+                tenantId,
+                ct => throw new AuthenticationFailedException(
+                    "Broker failed.",
+                    new MsalServiceException(MsalError.UnknownBrokerError, "Unknown broker error.")),
+                ct =>
+                {
+                    fallbackCalls++;
+                    return new ValueTask<AccessToken>(new AccessToken("fallback-token", DateTimeOffset.UtcNow.AddMinutes(5)));
+                });
+
+            token.Token.Should().Be("fallback-token");
+            fallbackCalls.Should().Be(1);
             EntraCredentialFactory.ClearCache();
         }
 

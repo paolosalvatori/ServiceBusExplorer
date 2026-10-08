@@ -304,9 +304,9 @@ namespace ServiceBusExplorer.Helpers
         {
             for (var current = ex; current != null; current = current.InnerException)
             {
-                if (current is MsalClientException msalClientException)
+                if (current is MsalException msalException)
                 {
-                    switch (msalClientException.ErrorCode)
+                    switch (msalException.ErrorCode)
                     {
                         case MsalError.UnknownBrokerError:
                         case MsalError.CannotInvokeBroker:
