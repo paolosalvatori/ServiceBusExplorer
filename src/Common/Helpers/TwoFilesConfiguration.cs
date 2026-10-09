@@ -223,7 +223,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (null != resultStringUser)
                 {
-                    if (Enum.TryParse<T>(resultStringUser, out var result))
+                    if (TryParseDefinedEnum<T>(resultStringUser, out var result))
                     {
                         return result;
                     }
@@ -239,7 +239,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrWhiteSpace(resultStringApp))
                 {
-                    if (Enum.TryParse<T>(resultStringApp, out var result))
+                    if (TryParseDefinedEnum<T>(resultStringApp, out var result))
                     {
                         return result;
                     }
@@ -250,6 +250,13 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return defaultValue;
+        }
+
+        static bool TryParseDefinedEnum<T>(string value, out T result) where T : struct
+        {
+            return Enum.TryParse(value, out result) &&
+                (Enum.IsDefined(typeof(T), result) ||
+                 typeof(T).IsDefined(typeof(FlagsAttribute), false));
         }
 
         public decimal GetDecimalValue(string AppSettingKey, decimal defaultValue = default,

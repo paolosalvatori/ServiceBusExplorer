@@ -224,6 +224,11 @@ namespace ServiceBusExplorer.Tests.Helpers
                 configurationOpenedWithoutUserFile.SetValue(KeyCrustaceanIsAddedAndSetToCrabBeforeSecondTest,
                     Crustacean.Crab);
 
+                // Numeric values that are not defined members of the enum should fall back to the default
+                configurationOpenedWithoutUserFile.SetValue(KeyWithInvalidValue, "99");
+                configurationOpenedWithoutUserFile.GetEnumValue(KeyWithInvalidValue, Crustacean.Shrimp, writeToLog)
+                    .Should().Be(Crustacean.Shrimp);
+
                 // Test reading config values again
                 TestReadingEnumValues(configurationOpenedWithoutUserFile, configHasBeenModified: true);
 
