@@ -26,7 +26,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             Git("update-ref refs/upstream-release-tags/v6.10.0 HEAD");
             Git("update-ref refs/upstream-release-tags/7.0.0-preview HEAD");
             Git("update-ref refs/upstream-release-tags/not-a-version HEAD");
-            Git("-c tag.gpgsign=false tag -a 99.0.0 -m release");
+            Git("-c user.name=Test -c user.email=test@example.invalid tag --no-sign -a 99.0.0 -m release");
 
             ResolveVersion().Should().Be("6.10.0");
         }
@@ -65,7 +65,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public void MissingUpstreamTagsReturnsUnknownInsteadOfTheForkVersion()
         {
-            Git("-c tag.gpgsign=false tag -a 99.0.0 -m release");
+            Git("-c user.name=Test -c user.email=test@example.invalid tag --no-sign -a 99.0.0 -m release");
 
             ResolveVersion().Should().BeEmpty();
         }
