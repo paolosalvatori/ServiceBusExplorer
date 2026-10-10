@@ -15,6 +15,11 @@ namespace ServiceBusExplorer.Tests.Helpers
             typeof(VersionProvider).GetMethod("GetKnownReleaseVersion", BindingFlags.NonPublic | BindingFlags.Static)
             ?? throw new InvalidOperationException("Unable to locate GetKnownReleaseVersion.");
 
+        static readonly MethodInfo IsLatestVersionMethod =
+            typeof(VersionProvider).GetMethod("IsLatestVersion", BindingFlags.NonPublic | BindingFlags.Static,
+                null, new[] { typeof(Version), typeof(ReleaseInfo) }, null)
+            ?? throw new InvalidOperationException("Unable to locate IsLatestVersion.");
+
         [Fact]
         public void GetKnownReleaseVersion_ReadsUpstreamMetadataInsteadOfTheForkVersion()
         {
@@ -77,9 +82,42 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
+        [Theory]
+        [InlineData("6.3.1", "6.3.1", true)]
+        [InlineData("6.3.1", "6.3.0", true)]
+        [InlineData("6.3.1", "6.3.2", false)]
+        [InlineData("6.3.1", "7.0.0", false)]
+        [InlineData("6.3.1", "6.3.1.0", true)]
+        [InlineData("6.3.1", "6.4", false)]
+        public void IsLatestVersion_ComparesUpstreamBaselineWithLatestUpstreamRelease(string baseline, string latest, bool expected)
+        {
+            var releaseInfo = new ReleaseInfo(new Uri("https://example.com/release"), new Version(latest), "notes", null);
+
+            IsLatest(new Version(baseline), releaseInfo).Should().Be(expected);
+            releaseInfo.Version.Should().Be(new Version(latest));
+        }
+
+        [Fact]
+        public void IsLatestVersion_UnknownBaselineSuppressesNotice()
+        {
+            IsLatest(null, new ReleaseInfo(null, new Version(99, 0, 0), string.Empty, null)).Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsLatestVersion_UnavailableLatestReleaseSuppressesNotice()
+        {
+            IsLatest(new Version(6, 3, 1), ReleaseInfo.Null).Should().BeTrue();
+            IsLatest(new Version(6, 3, 1), null).Should().BeTrue();
+        }
+
         static Version ReadVersion(IEnumerable<AssemblyMetadataAttribute> metadata, WriteToLogDelegate writeToLog)
         {
             return (Version)GetKnownReleaseVersionMethod.Invoke(null, new object[] { metadata, writeToLog });
+        }
+
+        static bool IsLatest(Version knownReleaseVersion, ReleaseInfo latestReleaseInfo)
+        {
+            return (bool)IsLatestVersionMethod.Invoke(null, new object[] { knownReleaseVersion, latestReleaseInfo });
         }
     }
 }
