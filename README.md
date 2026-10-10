@@ -143,9 +143,18 @@ Endpoint=sb://<namespace>.servicebus.windows.net/;AuthMode=AAD
 - Local persistence stores metadata only, not passwords or SAS keys
 - Managed identity, Azure CLI auth and service principal auth are not included in this feature
 
-# Installation
+# Contributions
+There are no dedicated developers so development is entirely based on voluntary effort.
 
-It is strongly recommended to set `Configuration File for Settings and Connection Strings` to `User Configuration File` as shown in the figure below to reduce problems when upgrading. 
+Here are some guidelines concerning contributions:
+
+- All contributions should be done on `main`.
+- Every pull request is built by GitHub Actions and should preferably be linked to a GitHub issue.
+- Write unit tests, if applicable.
+- We have started to migrate from the old SDK to the latest SDKs for Service Bus, Event Hubs, Relay and Notification Hubs. Therefore, new classes should not depend on the old SDK unless absolutely necessary.  
+
+
+## Development Environment
 
 Visual Studio 2022 17.8.0 or later is required to build the solution. 
 
@@ -154,6 +163,16 @@ For more information about this, see the
 [Visual Studio documentation](https://docs.microsoft.com/en-us/dotnet/framework/winforms/disable-dpi-awareness-visual-studio). 
 In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
 when it is running as a DPI-unaware process.
+
+## Upstream release baseline
+
+The build embeds the latest upstream release the source is based on, and the application compares that baseline with the latest upstream release when deciding whether to show update notices. The baseline is resolved from tags in the `refs/upstream-release-tags/*` namespace that are reachable from `HEAD`. This requires a full (non-shallow) clone. Fetch the tags with:
+
+```
+git fetch --no-tags https://github.com/paolosalvatori/ServiceBusExplorer.git "+refs/tags/*:refs/upstream-release-tags/*"
+```
+
+Alternatively, pass the baseline explicitly, for example `dotnet build -p:UpstreamReleaseVersion=6.3.1`. If no baseline is available, the build emits a warning and new-upstream-release notices are disabled.
 
 
 # Azure Service Bus
