@@ -41,7 +41,7 @@ using ServiceBusExplorer.Common.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ConnectForm : Form
+    public partial class ConnectForm : ThemedForm
     {
         #region Private Constants
 

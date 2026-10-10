@@ -1,0 +1,371 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Threading;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Enums;
+
+namespace ServiceBusExplorer.UIHelpers.Theming
+{
+    public partial class ThemeManager
+    {
+        private static readonly ConditionalWeakTable<Control, ControlState> controls =
+            new ConditionalWeakTable<Control, ControlState>();
+        private static readonly ConditionalWeakTable<object, ThemeSnapshot> snapshots =
+            new ConditionalWeakTable<object, ThemeSnapshot>();
+        private static readonly List<WeakReference<Control>> roots = new List<WeakReference<Control>>();
+        private static readonly object rootsLock = new object();
+        private static readonly object themeLock = new object();
+        private static bool initialized;
+        private static bool usesDarkTheme = ReadSystemDarkTheme();
+
+        public static ThemeMode Mode { get; private set; } = ThemeMode.FollowOperatingSystem;
+        internal static Func<bool> SystemDarkThemeProvider { get; set; } = ReadSystemDarkTheme;
+        public static bool IsDark => usesDarkTheme && !SystemInformation.HighContrast;
+        public static bool IsThemed => usesDarkTheme || SystemInformation.HighContrast;
+        public static ThemePalette Palette => SystemInformation.HighContrast ? ThemePalette.HighContrast : ThemePalette.Dark;
+
+        public static void Initialize()
+        {
+            if (initialized)
+                return;
+            initialized = true;
+            SystemEvents.UserPreferenceChanged += PreferencesChanged;
+            Application.ApplicationExit += ApplicationExit;
+        }
+
+        public static void SetThemeMode(ThemeMode mode)
+        {
+            if (!Enum.IsDefined(typeof(ThemeMode), mode))
+                throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown theme mode.");
+
+            lock (themeLock)
+            {
+                Mode = mode;
+                UpdateTheme();
+            }
+            RefreshWindows();
+        }
+
+        private static void UpdateTheme()
+        {
+            usesDarkTheme = Mode switch
+            {
+                ThemeMode.FollowOperatingSystem => SystemDarkThemeProvider(),
+                ThemeMode.Light => false,
+                ThemeMode.Dark => true,
+                _ => throw new InvalidOperationException("Unknown theme mode.")
+            };
+        }
+
+        private static bool ReadSystemDarkTheme()
+        {
+            return ReadSystemDarkTheme(() =>
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                return key?.GetValue("AppsUseLightTheme", 1);
+            });
+        }
+
+        private static bool ReadSystemDarkTheme(Func<object> readPreference)
+        {
+            try
+            {
+                // Older Windows versions without this preference use the light theme.
+                return Equals(readPreference(), 0);
+            }
+            catch (Exception exception) when (exception is SecurityException ||
+                exception is UnauthorizedAccessException || exception is IOException)
+            {
+                Trace.WriteLine($"Windows application theme unavailable; using the light theme: {exception.Message}");
+                return false;
+            }
+        }
+
+        public static void Register(Control root)
+        {
+            if (root == null)
+                throw new ArgumentNullException(nameof(root));
+            if (root.IsDisposed || root.Disposing || IsThemeExcludedControl(root))
+                return;
+            Apply(root);
+            lock (rootsLock)
+            {
+                roots.RemoveAll(reference => !IsLiveRoot(reference));
+                if (!roots.Any(reference => reference.TryGetTarget(out var target) && target == root))
+                    roots.Add(new WeakReference<Control>(root));
+            }
+        }
+
+        public static void RegisterComponents(IContainer components)
+        {
+            if (components == null)
+                throw new ArgumentNullException(nameof(components));
+
+            foreach (IComponent component in components.Components)
+                if (component is Control control)
+                    Register(control);
+        }
+
+        public static void Apply(Control root)
+        {
+            if (root == null)
+                throw new ArgumentNullException(nameof(root));
+            if (root.IsDisposed || root.Disposing)
+                return;
+            if (IsThemeExcludedControl(root))
+                return;
+            EnsureUiThread(root);
+
+            lock (themeLock)
+            {
+                root.SuspendLayout();
+                try
+                {
+                    // Capture and apply against the same theme before changing inherited parent colors.
+                    PrepareTree(root);
+                    ApplyTree(root);
+                }
+                finally
+                {
+                    root.ResumeLayout(true);
+                }
+                root.Invalidate(true);
+            }
+        }
+
+        private static void EnsureUiThread(Control control)
+        {
+            if (control.InvokeRequired ||
+                controls.TryGetValue(control, out var state) && state.UiThread != Thread.CurrentThread)
+                throw new InvalidOperationException("Apply themes on the control's UI thread.");
+        }
+
+        private static void PrepareTree(Control control)
+        {
+            if (IsThemeExcludedControl(control))
+                return;
+
+            var state = controls.GetValue(control, CreateState);
+            if (IsThemed)
+            {
+                CaptureControl(control, state.Snapshot);
+                if (control is TreeView tree)
+                    RegisterTreeNodeMenus(tree);
+            }
+            foreach (Control child in control.Controls)
+                PrepareTree(child);
+        }
+
+        private static void ApplyTree(Control control)
+        {
+            if (IsThemeExcludedControl(control))
+                return;
+
+            var state = controls.GetValue(control, CreateState);
+            if (IsThemed)
+            {
+                state.Snapshot.Applied = true;
+                ApplyControl(control);
+            }
+            else
+            {
+                state.Snapshot.Restore();
+                RestoreExtraColors(control);
+            }
+            if (state.IsContentHost)
+                control.BackColor = HostedBackground;
+            ThemeNativeMethods.RefreshInputBorder(control);
+            if (control is Form form)
+                ThemeNativeMethods.ApplyCaption(form, IsDark);
+            foreach (Control child in control.Controls)
+                ApplyTree(child);
+            if (control.ContextMenuStrip != null)
+                Register(control.ContextMenuStrip);
+            if (control is ToolStrip strip)
+                ApplyItems(strip);
+            if (control is IThemeAware aware)
+                aware.ApplyTheme();
+        }
+
+        private static ControlState CreateState(Control control)
+        {
+            control.ControlAdded += ControlAdded;
+            control.ContextMenuStripChanged += ContextMenuChanged;
+            control.HandleCreated += ControlHandleCreated;
+            control.Disposed += ControlDisposed;
+            var state = new ControlState
+            {
+                InputBorder = ThemeNativeMethods.TrackInputBorder(control)
+            };
+            AttachDrawing(control, state);
+            return state;
+        }
+
+        private static void ControlAdded(object sender, ControlEventArgs e)
+        {
+            var host = ((Control)sender).FindForm();
+            if (host != null && host.IsHandleCreated)
+                QueueApply(host, e.Control);
+            else
+                Apply(e.Control);
+        }
+
+        private static void ContextMenuChanged(object sender, EventArgs e)
+        {
+            var menu = ((Control)sender).ContextMenuStrip;
+            if (menu != null)
+                Register(menu);
+        }
+
+        private static void ControlHandleCreated(object sender, EventArgs e)
+        {
+            var control = (Control)sender;
+            if (control is Form form)
+                ThemeNativeMethods.ApplyCaption(form, IsDark);
+        }
+
+        private static void ControlDisposed(object sender, EventArgs e)
+        {
+            var control = (Control)sender;
+            if (controls.TryGetValue(control, out var state))
+                state.Dispose();
+            controls.Remove(control);
+            lock (rootsLock)
+                roots.RemoveAll(reference => !reference.TryGetTarget(out var target) || target == control);
+        }
+
+        private static void RefreshWindows()
+        {
+            Control[] live;
+            lock (rootsLock)
+            {
+                roots.RemoveAll(reference => !IsLiveRoot(reference));
+                live = roots.Select(reference =>
+                {
+                    reference.TryGetTarget(out var target);
+                    return target;
+                }).Where(target => target != null).ToArray();
+            }
+            foreach (var root in live)
+            {
+                if (!controls.TryGetValue(root, out var state))
+                    continue;
+                if (state.UiThread != Thread.CurrentThread)
+                    QueueApply(state, root);
+                else
+                    Apply(root);
+            }
+        }
+
+        private static bool IsLiveRoot(WeakReference<Control> reference) =>
+            reference.TryGetTarget(out var target) && !target.IsDisposed &&
+            controls.TryGetValue(target, out var state) && state.UiThread.IsAlive;
+
+        private static void QueueApply(ControlState state, Control target)
+        {
+            if (target.IsDisposed || target.Disposing)
+                return;
+            try
+            {
+                // A detached menu may never have a handle; dispatch through its captured UI context.
+                state.UiContext.Post(_ =>
+                {
+                    if (!target.IsDisposed && !target.Disposing)
+                        Apply(target);
+                }, null);
+            }
+            catch (InvalidOperationException exception) when (target.IsDisposed || target.Disposing || !state.UiThread.IsAlive)
+            {
+                Trace.WriteLine($"Theme update cancelled for a closing window: {exception.Message}");
+            }
+        }
+
+        private static void QueueApply(Control host, Control target)
+        {
+            if (host.IsDisposed || host.Disposing || !host.IsHandleCreated)
+                return;
+            try
+            {
+                host.BeginInvoke(new Action(() =>
+                {
+                    if (!target.IsDisposed && !target.Disposing)
+                        Apply(target);
+                }));
+            }
+            catch (InvalidOperationException exception) when (host.IsDisposed || host.Disposing || !host.IsHandleCreated)
+            {
+                Trace.WriteLine($"Theme update cancelled for a closing window: {exception.Message}");
+            }
+        }
+
+        private static void PreferencesChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category != UserPreferenceCategory.Color &&
+                e.Category != UserPreferenceCategory.General &&
+                e.Category != UserPreferenceCategory.Accessibility &&
+                e.Category != UserPreferenceCategory.VisualStyle)
+                return;
+
+            lock (themeLock)
+                UpdateTheme();
+            RefreshWindows();
+        }
+
+        private static void ApplicationExit(object sender, EventArgs e)
+        {
+            SystemEvents.UserPreferenceChanged -= PreferencesChanged;
+            Application.ApplicationExit -= ApplicationExit;
+            initialized = false;
+        }
+
+        private sealed class ControlState : IDisposable
+        {
+            public Thread UiThread { get; } = Thread.CurrentThread;
+            public SynchronizationContext UiContext { get; } =
+                SynchronizationContext.Current as WindowsFormsSynchronizationContext ?? new WindowsFormsSynchronizationContext();
+            public ThemeSnapshot Snapshot { get; } = new ThemeSnapshot();
+            public ThemeNativeMethods.TabWindow TabWindow { get; set; }
+            public IDisposable InputBorder { get; set; }
+            public HashSet<FastColoredTextBoxNS.TextStyle> EditorStyles { get; } = new HashSet<FastColoredTextBoxNS.TextStyle>();
+            public bool UpdatingButtonForeground { get; set; }
+            public bool IsContentHost { get; set; }
+            public void Dispose()
+            {
+                InputBorder?.Dispose();
+                TabWindow?.Dispose();
+            }
+        }
+
+        private static bool IsThemeExcludedControl(Control control) => control is ColorEditingControl;
+
+        private static void RegisterTreeNodeMenus(TreeView treeView)
+        {
+            if (treeView == null)
+                return;
+
+            RegisterTreeNodeMenus(treeView.Nodes, new HashSet<ContextMenuStrip>());
+        }
+
+        private static void RegisterTreeNodeMenus(TreeNodeCollection nodes, ISet<ContextMenuStrip> registeredMenus)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.ContextMenuStrip != null && registeredMenus.Add(node.ContextMenuStrip))
+                    Register(node.ContextMenuStrip);
+                if (node.Nodes.Count > 0)
+                    RegisterTreeNodeMenus(node.Nodes, registeredMenus);
+            }
+        }
+
+        private static ThemeSnapshot Snapshot(object owner) => snapshots.GetValue(owner, _ => new ThemeSnapshot());
+    }
+}

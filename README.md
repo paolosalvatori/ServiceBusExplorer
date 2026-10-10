@@ -164,6 +164,16 @@ For more information about this, see the
 In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
 when it is running as a DPI-unaware process.
 
+## Upstream release baseline
+
+The build embeds the latest upstream release the source is based on, and the application compares that baseline with the latest upstream release when deciding whether to show update notices. The baseline is resolved from tags in the `refs/upstream-release-tags/*` namespace that are reachable from `HEAD`. This requires a full (non-shallow) clone. Fetch the tags with:
+
+```
+git fetch --no-tags https://github.com/paolosalvatori/ServiceBusExplorer.git "+refs/tags/*:refs/upstream-release-tags/*"
+```
+
+Alternatively, pass the baseline explicitly, for example `dotnet build -p:UpstreamReleaseVersion=6.3.1`. If no baseline is available, the build emits a warning and new-upstream-release notices are disabled.
+
 
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.

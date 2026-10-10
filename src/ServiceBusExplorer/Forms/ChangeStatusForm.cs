@@ -30,7 +30,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ChangeStatusForm : Form
+    public partial class ChangeStatusForm : ThemedForm
     {
         #region Private Constants
         //***************************
