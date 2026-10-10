@@ -88,24 +88,23 @@ namespace ServiceBusExplorer.Helpers
         {
             nextReleaseInfo = GitHubReleaseProvider.GetServiceBusClientLatestVersion(writeToLog).GetAwaiter().GetResult();
 
-            var knownReleaseVersion = GetKnownReleaseVersion(writeToLog);
-            if (knownReleaseVersion != null)
-            {
-                nextReleaseInfo = new ReleaseInfo(
-                    nextReleaseInfo.ReleaseUri,
-                    knownReleaseVersion,
-                    nextReleaseInfo.Body,
-                    nextReleaseInfo.ZipPackageUri);
-            }
-            else
+            return IsLatestVersion(GetKnownReleaseVersion(writeToLog), nextReleaseInfo);
+        }
+
+        // Compares the embedded upstream baseline with the latest upstream release, not the fork's own version
+        static bool IsLatestVersion(Version knownReleaseVersion, ReleaseInfo latestReleaseInfo)
+        {
+            if (knownReleaseVersion == null || latestReleaseInfo?.Version == null)
             {
                 return true;
             }
 
-            var currentVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            var currentVersion = new Version(currentVersionInfo.FileMajorPart, currentVersionInfo.FileMinorPart, currentVersionInfo.FileBuildPart);
+            return Normalize(knownReleaseVersion).CompareTo(Normalize(latestReleaseInfo.Version)) >= 0;
+        }
 
-            return currentVersion.CompareTo(nextReleaseInfo.Version) >= 0;
+        static Version Normalize(Version version)
+        {
+            return new Version(version.Major, version.Minor, Math.Max(version.Build, 0));
         }
 
         static string GetFormattedFileVersion(Assembly assembly)
