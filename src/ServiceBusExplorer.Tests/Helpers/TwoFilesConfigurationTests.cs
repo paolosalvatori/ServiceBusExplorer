@@ -201,6 +201,54 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
+        public void TryGetBoolValue_DistinguishesMissingAndInvalidValuesFromFalse()
+        {
+            foreach (var configFileUse in configFileUses)
+            {
+                Setup();
+                var configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), configFileUse);
+                configuration.TryGetBoolValue(KeyDoesNotExistAnywhere, out var missing, writeToLog)
+                    .Should().BeFalse();
+                missing.Should().BeFalse();
+                logInMemory.Should().BeEmpty();
+
+                configuration.SetValue(KeyIsAddedAndSetToTrueBeforeSecondTest, false);
+                configuration.TryGetBoolValue(KeyIsAddedAndSetToTrueBeforeSecondTest, out var falseValue, writeToLog)
+                    .Should().BeTrue();
+                falseValue.Should().BeFalse();
+                configuration.SetValue(KeyIsAddedAndSetToTrueBeforeSecondTest, true);
+                configuration.TryGetBoolValue(KeyIsAddedAndSetToTrueBeforeSecondTest, out var trueValue, writeToLog)
+                    .Should().BeTrue();
+                trueValue.Should().BeTrue();
+                logInMemory.Should().BeEmpty();
+
+                configuration.SetValue(KeyWithInvalidValue, "invalid");
+                configuration.TryGetBoolValue(KeyWithInvalidValue, out var invalid, writeToLog)
+                    .Should().BeFalse();
+                invalid.Should().BeFalse();
+                logInMemory.Should().Contain("which cannot be parsed to a(n) System.Boolean");
+                configuration.GetBoolValue(KeyWithInvalidValue, true).Should().BeTrue();
+                configuration.GetBoolValue(KeyWithInvalidValue, false).Should().BeFalse();
+            }
+        }
+
+        [Fact]
+        public void TryGetBoolValue_WhenUserValueIsInvalid_LogsAndFallsBackToApplicationValue()
+        {
+            Setup();
+            var userConfiguration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), ConfigFileUse.UserConfig);
+            userConfiguration.SetValue(KeyIsInitiallyTrueInAppConfig, "invalid");
+            userConfiguration.Save();
+            var configuration = TwoFilesConfiguration.Create(GetUserSettingsFilePath(), ConfigFileUse.BothConfig);
+
+            configuration.TryGetBoolValue(KeyIsInitiallyTrueInAppConfig, out var value, writeToLog)
+                .Should().BeTrue();
+
+            value.Should().BeTrue();
+            logInMemory.Should().Contain("which cannot be parsed to a(n) System.Boolean");
+        }
+
+        [Fact]
         public void TestEnumValuesReadAndWrite()
         {
             foreach (var configFileUse in configFileUses)

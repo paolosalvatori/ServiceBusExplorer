@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -7,6 +8,7 @@ using FluentAssertions;
 using ServiceBusExplorer.Common.Helpers;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Utilities.Helpers;
 
 using Xunit;
 
@@ -14,7 +16,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 {
     public class MainSettingsThemeTests
     {
-        static readonly MethodInfo GetMainSettingsUsingConfigurationMethod =
+        static readonly MethodInfo getMainSettingsUsingConfigurationMethod =
             typeof(ConfigurationHelper).GetMethod("GetMainSettingsUsingConfiguration",
                 BindingFlags.NonPublic | BindingFlags.Static)
             ?? throw new InvalidOperationException("Unable to locate GetMainSettingsUsingConfiguration.");
@@ -124,6 +126,63 @@ namespace ServiceBusExplorer.Tests.Helpers
                 var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig, currentSettings);
                 loaded.ThemeMode.Should().Be(ThemeMode.Light);
                 loaded.GetValue(ConfigurationParameters.ThemeMode).Should().Be(ThemeMode.Light);
+            }
+            finally
+            {
+                DeleteUserConfigFilePath(userConfigFilePath);
+            }
+        }
+
+        [Theory]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void LoadUsingConfiguration_WhenLegacyDarkModeIsInvalid_LogsAndPreservesCurrentTheme(ThemeMode mode)
+        {
+            var userConfigFilePath = CreateUserConfigFilePath();
+
+            try
+            {
+                var configuration = TwoFilesConfiguration.Create(userConfigFilePath, ConfigFileUse.UserConfig);
+                configuration.SetValue(ConfigurationParameters.LegacyDarkMode, "invalid");
+                configuration.Save();
+                var currentSettings = new MainSettings().GetDefault();
+                currentSettings.ThemeMode = mode;
+                var messages = new List<string>();
+
+                var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig,
+                    currentSettings, (message, _) => messages.Add(message));
+
+                loaded.ThemeMode.Should().Be(mode);
+                messages.Should().ContainSingle().Which.Should()
+                    .Contain(ConfigurationParameters.LegacyDarkMode).And.Contain("invalid")
+                    .And.Contain("cannot be parsed");
+            }
+            finally
+            {
+                DeleteUserConfigFilePath(userConfigFilePath);
+            }
+        }
+
+        [Theory]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        public void LoadUsingConfiguration_WhenLegacyDarkModeIsInvalid_StillUsesPersistedTheme(ThemeMode mode)
+        {
+            var userConfigFilePath = CreateUserConfigFilePath();
+
+            try
+            {
+                var configuration = TwoFilesConfiguration.Create(userConfigFilePath, ConfigFileUse.UserConfig);
+                configuration.SetValue(ConfigurationParameters.LegacyDarkMode, "invalid");
+                configuration.SetValue(ConfigurationParameters.ThemeMode, mode);
+                configuration.Save();
+
+                var loaded = LoadMainSettings(userConfigFilePath, ConfigFileUse.UserConfig,
+                    new MainSettings().GetDefault());
+
+                loaded.ThemeMode.Should().Be(mode);
             }
             finally
             {
@@ -252,12 +311,12 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         static MainSettings LoadMainSettings(string userConfigFilePath, ConfigFileUse configFileUse,
-            MainSettings currentSettings)
+            MainSettings currentSettings, WriteToLogDelegate writeToLog = null)
         {
             var configuration = TwoFilesConfiguration.Create(userConfigFilePath, configFileUse);
 
-            return (MainSettings)GetMainSettingsUsingConfigurationMethod.Invoke(null,
-                new object[] { configuration, currentSettings, null });
+            return (MainSettings)getMainSettingsUsingConfigurationMethod.Invoke(null,
+                new object[] { configuration, currentSettings, writeToLog });
         }
 
         static string CreateUserConfigFilePath()

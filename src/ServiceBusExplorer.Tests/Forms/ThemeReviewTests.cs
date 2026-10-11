@@ -267,9 +267,116 @@ namespace ServiceBusExplorer.Tests.Forms
                 style.BackColor.Should().Be(warning
                     ? ThemeManager.Palette.WarningBackground : ThemeManager.Palette.ErrorBackground);
                 style.ForeColor.Should().Be(ThemeManager.ReadableText(color));
-                style.ForeColor.Should().Be(SystemInformation.HighContrast
+                style.ForeColor.Should().Be(ThemeManager.IsHighContrast
                     ? ThemeManager.Palette.Text
                     : warning ? ThemeManager.Palette.WarningText : ThemeManager.Palette.ErrorText);
+            });
+        }
+
+        [Fact]
+        public void Buttons_UseNativeHighContrastRenderingAndRestoreAcrossThemeSwitches()
+        {
+            RunOnSta(() =>
+            {
+                using var button = new Button
+                {
+                    FlatStyle = FlatStyle.Popup,
+                    UseVisualStyleBackColor = false,
+                    BackColor = Color.Beige
+                };
+                button.FlatAppearance.MouseOverBackColor = Color.Cyan;
+                button.FlatAppearance.MouseDownBackColor = Color.Magenta;
+                ThemeManager.Register(button);
+
+                for (var cycle = 0; cycle < 2; cycle++)
+                {
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                    button.FlatStyle.Should().Be(FlatStyle.Flat);
+                    button.FlatAppearance.MouseOverBackColor.Should().Be(ThemePalette.Dark.Hover);
+                    button.FlatAppearance.MouseDownBackColor.Should().Be(ThemePalette.Dark.Selection);
+
+                    ThemeManager.HighContrastProvider = () => true;
+                    NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                    button.FlatStyle.Should().Be(FlatStyle.System);
+                    button.UseVisualStyleBackColor.Should().BeTrue();
+                    ThemeManager.IsDark.Should().BeFalse();
+
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
+                    button.FlatStyle.Should().Be(FlatStyle.System);
+                    ThemeManager.HighContrastProvider = () => false;
+                    NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                    button.FlatStyle.Should().Be(FlatStyle.Popup);
+                    button.UseVisualStyleBackColor.Should().BeFalse();
+                    button.BackColor.Should().Be(Color.Beige);
+                    button.FlatAppearance.MouseOverBackColor.Should().Be(Color.Cyan);
+                    button.FlatAppearance.MouseDownBackColor.Should().Be(Color.Magenta);
+                }
+            });
+        }
+
+        [Fact]
+        public void ActiveLinks_UseTheNormalHighContrastBackgroundColorPairAndRestore()
+        {
+            RunOnSta(() =>
+            {
+                using var link = new LinkLabel { ActiveLinkColor = Color.Yellow };
+                ThemeManager.Register(link);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                link.ActiveLinkColor.Should().Be(ThemePalette.Dark.SelectionText);
+
+                ThemeManager.HighContrastProvider = () => true;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                link.BackColor.Should().Be(SystemColors.Control);
+                link.ActiveLinkColor.Should().Be(SystemColors.ControlText);
+
+                ThemeManager.HighContrastProvider = () => false;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                link.ActiveLinkColor.Should().Be(ThemePalette.Dark.SelectionText);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                link.ActiveLinkColor.Should().Be(Color.Yellow);
+            });
+        }
+
+        [Theory]
+        [InlineData(false, false, false)]
+        [InlineData(false, false, true)]
+        [InlineData(false, true, false)]
+        [InlineData(false, true, true)]
+        [InlineData(true, false, false)]
+        [InlineData(true, false, true)]
+        [InlineData(true, true, false)]
+        [InlineData(true, true, true)]
+        public void ComboDrawing_DisplaysAmpersandsLiterally(bool highContrast, bool selected, bool editArea)
+        {
+            RunOnSta(() =>
+            {
+                ThemeManager.HighContrastProvider = () => highContrast;
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                using var combo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
+                combo.Items.Add("A&B && C");
+                combo.SelectedIndex = 0;
+                ThemeManager.Register(combo);
+                combo.DrawMode.Should().Be(DrawMode.OwnerDrawFixed);
+                using var image = new Bitmap(180, 40);
+                using var expected = new Bitmap(180, 40);
+                using var graphics = Graphics.FromImage(image);
+                using var expectedGraphics = Graphics.FromImage(expected);
+                var bounds = new Rectangle(Point.Empty, image.Size);
+                var args = new DrawItemEventArgs(graphics, combo.Font, bounds, editArea ? -1 : 0,
+                    selected ? DrawItemState.Selected : DrawItemState.None);
+
+                typeof(ComboBox).GetMethod("OnDrawItem", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.Invoke(combo, [args]);
+
+                expectedGraphics.Clear(selected ? ThemeManager.Palette.Selection : ThemeManager.Palette.Surface);
+                TextRenderer.DrawText(expectedGraphics, combo.GetItemText(combo.Items[0]), combo.Font,
+                    Rectangle.Inflate(bounds, -2, 0),
+                    selected ? ThemeManager.Palette.SelectionText : ThemeManager.Palette.Text,
+                    TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                    TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+                for (var y = 0; y < image.Height; y++)
+                    for (var x = 0; x < image.Width; x++)
+                        image.GetPixel(x, y).Should().Be(expected.GetPixel(x, y));
             });
         }
 
@@ -294,14 +401,17 @@ namespace ServiceBusExplorer.Tests.Forms
             RunOnWorker(() =>
             {
                 var originalProvider = ThemeManager.SystemDarkThemeProvider;
+                var originalHighContrastProvider = ThemeManager.HighContrastProvider;
                 try
                 {
+                    ThemeManager.HighContrastProvider = () => false;
                     ThemeManager.SetThemeMode(ThemeMode.Light);
                     action();
                 }
                 finally
                 {
                     ThemeManager.SystemDarkThemeProvider = originalProvider;
+                    ThemeManager.HighContrastProvider = originalHighContrastProvider;
                     ThemeManager.SetThemeMode(ThemeMode.Light);
                 }
             }, true);

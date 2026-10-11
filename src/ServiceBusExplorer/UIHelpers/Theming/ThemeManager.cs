@@ -28,9 +28,11 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         public static ThemeMode Mode { get; private set; } = ThemeMode.FollowOperatingSystem;
         internal static Func<bool> SystemDarkThemeProvider { get; set; } = ReadSystemDarkTheme;
-        public static bool IsDark => usesDarkTheme && !SystemInformation.HighContrast;
-        public static bool IsThemed => usesDarkTheme || SystemInformation.HighContrast;
-        public static ThemePalette Palette => SystemInformation.HighContrast ? ThemePalette.HighContrast : ThemePalette.Dark;
+        internal static Func<bool> HighContrastProvider { get; set; } = () => SystemInformation.HighContrast;
+        internal static bool IsHighContrast => HighContrastProvider();
+        public static bool IsDark => usesDarkTheme && !IsHighContrast;
+        public static bool IsThemed => usesDarkTheme || IsHighContrast;
+        public static ThemePalette Palette => IsHighContrast ? ThemePalette.HighContrast : ThemePalette.Dark;
 
         public static void Initialize()
         {

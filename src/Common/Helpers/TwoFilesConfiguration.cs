@@ -178,15 +178,21 @@ namespace ServiceBusExplorer.Helpers
         public bool GetBoolValue(string AppSettingKey, bool defaultValue,
             WriteToLogDelegate writeToLog = null)
         {
+            return TryGetBoolValue(AppSettingKey, out var result, writeToLog) ? result : defaultValue;
+        }
+
+        public bool TryGetBoolValue(string AppSettingKey, out bool value,
+            WriteToLogDelegate writeToLog = null)
+        {
             if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
                 if (null != resultStringUser)
                 {
-                    if (bool.TryParse(resultStringUser, out var result))
+                    if (bool.TryParse(resultStringUser, out value))
                     {
-                        return result;
+                        return true;
                     }
 
                     WriteParsingFailure(writeToLog, userConfigFilePath,
@@ -200,9 +206,9 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrWhiteSpace(resultStringApp))
                 {
-                    if (bool.TryParse(resultStringApp, out var result))
+                    if (bool.TryParse(resultStringApp, out value))
                     {
-                        return result;
+                        return true;
                     }
 
                     WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
@@ -210,7 +216,8 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            return defaultValue;
+            value = false;
+            return false;
         }
 
         public T GetEnumValue<T>(string AppSettingKey, T defaultValue = default,

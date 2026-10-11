@@ -103,7 +103,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             var text = e.Index >= 0 && e.Index < combo.Items.Count ? combo.GetItemText(combo.Items[e.Index]) : combo.Text;
             TextRenderer.DrawText(e.Graphics, text, e.Font, Rectangle.Inflate(e.Bounds, -2, 0),
                 !combo.Enabled ? Palette.MutedText : selected ? Palette.SelectionText : Palette.Text,
-                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
             e.DrawFocusRectangle();
         }
 
@@ -138,7 +139,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         {
             if (!IsThemed || original.IsEmpty)
                 return original;
-            if (SystemInformation.HighContrast || original.IsSystemColor)
+            if (IsHighContrast || original.IsSystemColor)
                 return ReadableText(original);
             return EnsureContrastPreservingHue(original, background);
         }

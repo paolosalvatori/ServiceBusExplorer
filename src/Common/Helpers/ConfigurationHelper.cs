@@ -183,10 +183,10 @@ namespace ServiceBusExplorer.Common.Helpers
                 currentSettings.ShowMessageCount, writeToLog);
 
             var defaultThemeMode = currentSettings.ThemeMode;
-            if (!string.IsNullOrEmpty(configuration.GetStringValue(ConfigurationParameters.LegacyDarkMode)))
+            if (!string.IsNullOrEmpty(configuration.GetStringValue(ConfigurationParameters.LegacyDarkMode)) &&
+                configuration.TryGetBoolValue(ConfigurationParameters.LegacyDarkMode,
+                    out var legacyUsesDarkTheme, writeToLog))
             {
-                var legacyUsesDarkTheme = configuration.GetBoolValue(ConfigurationParameters.LegacyDarkMode,
-                    currentSettings.ThemeMode == Enums.ThemeMode.Dark, writeToLog);
                 defaultThemeMode = legacyUsesDarkTheme ? Enums.ThemeMode.Dark : Enums.ThemeMode.Light;
             }
             resultProperties.ThemeMode = configuration.GetEnumValue(ConfigurationParameters.ThemeMode,

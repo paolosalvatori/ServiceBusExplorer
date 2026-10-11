@@ -46,7 +46,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         private static void ApplyLink(LinkLabel link)
         {
             link.LinkColor = Palette.Accent;
-            link.ActiveLinkColor = Palette.SelectionText;
+            link.ActiveLinkColor = IsHighContrast ? SystemColors.ControlText : Palette.SelectionText;
             link.VisitedLinkColor = Palette.Accent;
             link.DisabledLinkColor = Palette.MutedText;
         }
@@ -107,7 +107,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 state.Capture("ForeBrush", () => style.ForeBrush, value => style.ForeBrush = value);
                 state.Applied = true;
                 controls.GetValue(editor, CreateState).EditorStyles.Add(style);
-                if (SystemInformation.HighContrast)
+                if (IsHighContrast)
                     style.ForeBrush = SystemBrushes.WindowText;
                 else if (style.ForeBrush is SolidBrush brush)
                 {

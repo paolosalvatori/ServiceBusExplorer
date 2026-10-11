@@ -99,6 +99,12 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                     form.BackgroundImage = null;
                     break;
                 case Button button:
+                    if (IsHighContrast)
+                    {
+                        button.FlatStyle = FlatStyle.System;
+                        button.UseVisualStyleBackColor = true;
+                        break;
+                    }
                     button.FlatStyle = FlatStyle.Flat;
                     button.UseVisualStyleBackColor = false;
                     button.BackColor = palette.Raised;
@@ -329,7 +335,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         {
             if (!IsThemed)
                 return original;
-            if (SystemInformation.HighContrast)
+            if (IsHighContrast)
                 return Palette.Text;
             return ClassifySemanticColor(original) switch
             {
