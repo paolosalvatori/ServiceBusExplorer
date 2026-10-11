@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class EventGridConnectForm : Form
+    public partial class EventGridConnectForm : ThemedForm
     {
         #region Public Fields
         public string ResourceGroup;

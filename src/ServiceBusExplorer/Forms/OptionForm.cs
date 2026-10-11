@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -47,7 +47,7 @@ namespace ServiceBusExplorer.Forms
 
     using Utilities.Helpers;
 
-    public partial class OptionForm : Form
+    public partial class OptionForm : ThemedForm
     {
         #region Private Constants
         // Messages
@@ -88,6 +88,7 @@ namespace ServiceBusExplorer.Forms
             cboConnectivityMode.DataSource = Enum.GetValues(typeof(ConnectivityMode));
             cboEncodingType.DataSource = Enum.GetValues(typeof(EncodingType));
             cboConfigFile.DataSource = ConfigUseForUI;
+            cboTheme.Items.AddRange(new object[] { "Follow operating system theme", "Light", "Dark" });
 
             foreach (var item in ConfigurationHelper.Entities)
             {
@@ -105,7 +106,6 @@ namespace ServiceBusExplorer.Forms
             EntraTenantIdBindingList.ListChanged += EntraTenantIdsListChanged;
             NodesColorInfoBindingList.ListChanged += NodesColorsListChanged;
             nodeColorsBindingSource.DataSource = NodesColorInfoBindingList;
-
             ShowSettings(mainSettings);
         }
 
@@ -128,7 +128,7 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
 
-            // Open the file(s) depending on what's selected. Create an instance of the 
+            // Open the file(s) depending on what's selected. Create an instance of the
             // TwoFilesConfiguration just to get the paths
             var configuration = TwoFilesConfiguration.Create(selected);
 
@@ -239,6 +239,7 @@ namespace ServiceBusExplorer.Forms
             useAmqpWebSocketsCheckBox.Checked = MainSettings.UseAmqpWebSockets;
             cboEncodingType.SelectedItem = EncodingType.ASCII;
 
+            cboTheme.SelectedIndex = (int)MainSettings.ThemeMode;
             saveMessageToFileCheckBox.Checked = MainSettings.SaveMessageToFile;
             showMessageCountCheckBox.Checked = MainSettings.ShowMessageCount;
             savePropertiesToFileCheckBox.Checked = MainSettings.SavePropertiesToFile;
@@ -252,7 +253,7 @@ namespace ServiceBusExplorer.Forms
 
             foreach (var item in ConfigurationHelper.MessageCounts)
             {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
+                cboSelectedMessageCounts.CheckBoxItems[item].Checked = true;
             }
 
             MainSettings.MessageBodyType = MainSettings.MessageBodyType; // .Stream.ToString();
@@ -346,6 +347,11 @@ namespace ServiceBusExplorer.Forms
         private void showMessageCountCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             MainSettings.ShowMessageCount = showMessageCountCheckBox.Checked;
+        }
+
+        private void cboTheme_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MainSettings.ThemeMode = (ThemeMode)cboTheme.SelectedIndex;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -623,6 +629,8 @@ namespace ServiceBusExplorer.Forms
                 MainSettings.TreeViewFontSize);
             SaveSetting(configuration, readSettings, ConfigurationParameters.ShowMessageCountParameter,
                 MainSettings.ShowMessageCount);
+            SaveSetting(configuration, readSettings, ConfigurationParameters.ThemeMode,
+                MainSettings.ThemeMode);
             SaveSetting(configuration, readSettings, ConfigurationParameters.SaveMessageToFileParameter,
                 MainSettings.SaveMessageToFile);
             SaveSetting(configuration, readSettings, ConfigurationParameters.UseAsciiParameter,
@@ -707,10 +715,11 @@ namespace ServiceBusExplorer.Forms
                 configuration.SetValue(ConfigurationParameters.EntraTenantIds, serializedTenantIds);
             }
 
-            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
+            SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors,
                 NodeColorInfo.FormatAll(MainSettings.NodesColors));
 
             configuration.Save();
+            ServiceBusExplorer.UIHelpers.Theming.ThemeManager.SetThemeMode(MainSettings.ThemeMode);
         }
 
         void SaveSetting<T>(TwoFilesConfiguration configuration, MainSettings savedSettings,
@@ -764,6 +773,7 @@ namespace ServiceBusExplorer.Forms
             prefetchCountNumericUpDown.Value = mainSettings.PrefetchCount;
             topNumericUpDown.Value = mainSettings.TopCount;
             showMessageCountCheckBox.Checked = mainSettings.ShowMessageCount;
+            cboTheme.SelectedIndex = (int)mainSettings.ThemeMode;
             savePropertiesToFileCheckBox.Checked = mainSettings.SavePropertiesToFile;
             saveMessageToFileCheckBox.Checked = mainSettings.SaveMessageToFile;
             saveCheckpointsToFileCheckBox.Checked = mainSettings.SaveCheckpointsToFile;

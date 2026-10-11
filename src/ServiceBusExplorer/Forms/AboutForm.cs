@@ -35,7 +35,7 @@ using ServiceBusExplorer.Properties;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class AboutForm : Form
+    public partial class AboutForm : ThemedForm
     {
         #region Private Fields
         private readonly Bitmap whiteLogoBitmap = new Bitmap(Resources.WhiteLogo);

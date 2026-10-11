@@ -42,6 +42,7 @@ using Cursor = System.Windows.Forms.Cursor;
 using FastColoredTextBoxNS;
 using static ServiceBusExplorer.ServiceBusHelper;
 using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 using ServiceBusExplorer.Utilities.Helpers;
 #endregion
 
@@ -1737,6 +1738,7 @@ namespace ServiceBusExplorer.Controls
 
             chart.Titles.Clear();
             chart.Titles.Add(title);
+            ThemeManager.Apply(chart);
             tabPageGraph.Refresh();
         }
 

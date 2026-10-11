@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ClipboardForm : Form
+    public partial class ClipboardForm : ThemedForm
     {
         #region Public Constructor
         public ClipboardForm(string url)

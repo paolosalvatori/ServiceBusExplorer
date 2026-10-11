@@ -40,7 +40,7 @@ namespace ServiceBusExplorer.Forms
 {
     using Abstractions;
 
-    public partial class EventDataForm : Form
+    public partial class EventDataForm : ThemedForm
     {
         #region Private Constants
         //***************************

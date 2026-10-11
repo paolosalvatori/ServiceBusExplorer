@@ -32,7 +32,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class SelectEntityForm : Form
+    public partial class SelectEntityForm : ThemedForm
     {
         #region Private Constants
         //***************************

@@ -15,7 +15,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class CreateEventGridTopicForm : Form
+    public partial class CreateEventGridTopicForm : ThemedForm
     {
         #region Private Constants
         private const string ExceptionFormat = "Exception: {0}";

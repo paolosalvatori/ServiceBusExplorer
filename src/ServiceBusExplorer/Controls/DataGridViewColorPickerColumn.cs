@@ -68,9 +68,36 @@ namespace ServiceBusExplorer.Controls
                 : new DataGridViewCellStyle(cellStyle)
                 {
                     BackColor = actualColor.Value,
-                    SelectionBackColor = actualColor.Value
+                    ForeColor = ChooseTextColorForSwatch(actualColor.Value),
+                    SelectionBackColor = actualColor.Value,
+                    SelectionForeColor = ChooseTextColorForSwatch(actualColor.Value)
                 };
             base.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value, colorText, errorText, actualCellStyle, advancedBorderStyle, paintParts);
+        }
+
+        private static Color ChooseTextColorForSwatch(Color swatch)
+        {
+            var whiteRatio = ContrastRatio(swatch, Color.White);
+            var blackRatio = ContrastRatio(swatch, Color.Black);
+            return whiteRatio >= blackRatio ? Color.White : Color.Black;
+        }
+
+        private static double ContrastRatio(Color first, Color second)
+        {
+            var a = RelativeLuminance(first);
+            var b = RelativeLuminance(second);
+            return (Math.Max(a, b) + 0.05) / (Math.Min(a, b) + 0.05);
+        }
+
+        private static double RelativeLuminance(Color color)
+        {
+            Func<byte, double> linear = channel =>
+            {
+                var value = channel / 255.0;
+                return value <= 0.04045 ? value / 12.92 : Math.Pow((value + 0.055) / 1.055, 2.4);
+            };
+
+            return 0.2126 * linear(color.R) + 0.7152 * linear(color.G) + 0.0722 * linear(color.B);
         }
 
         private static Color? GetActualColor(object value)
