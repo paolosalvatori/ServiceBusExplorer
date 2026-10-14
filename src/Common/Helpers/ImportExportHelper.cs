@@ -185,8 +185,8 @@ namespace ServiceBusExplorer.Helpers
                     xmlWriterSettings.Indent = true;
                     using (var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings))
                     {
-                        var queueList = entityList.Where(e => e is QueueDescription).Cast<QueueDescription>();
-                        var topicList = entityList.Where(e => e is TopicDescription).Cast<TopicDescription>();
+                        var queueList = entityList.Where(e => e is QueueInfo || e is QueueDescription);
+                        var topicList = entityList.Where(e => e is TopicInfo || e is TopicDescription);
                         var relayList = entityList.Where(e => e is RelayDescription).Cast<RelayDescription>();
                         var eventHubList = entityList.Where(e => e is EventHubDescription).Cast<EventHubDescription>();
                         var notificationHubList = entityList.Where(e => e is NotificationHubDescription).Cast<NotificationHubDescription>();
@@ -194,7 +194,7 @@ namespace ServiceBusExplorer.Helpers
                         xmlWriter.WriteAttributeString(NamespaceAttribute, string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ?
                             Unknown :
                             serviceBusHelper.Namespace);
-                        var queueDescriptions = queueList as QueueDescription[] ?? queueList.ToArray();
+                        var queueDescriptions = queueList.ToArray();
                         if (queueDescriptions.Any())
                         {
                             xmlWriter.WriteStartElement(QueueEntityList);
@@ -211,7 +211,7 @@ namespace ServiceBusExplorer.Helpers
                             }
                             xmlWriter.WriteEndElement();
                         }
-                        var topicDescriptions = topicList as TopicDescription[] ?? topicList.ToArray();
+                        var topicDescriptions = topicList.ToArray();
                         if (topicDescriptions.Any())
                         {
                             xmlWriter.WriteStartElement(TopicEntityList);
@@ -520,6 +520,11 @@ namespace ServiceBusExplorer.Helpers
             {
                 return;
             }
+            long? maxMessageSize = null;
+            if (entity is QueueInfo queueInfo) { entity = queueInfo.Description; maxMessageSize = queueInfo.MaxMessageSizeInKilobytes; }
+            if (entity is TopicInfo topicInfo) { entity = topicInfo.Description; maxMessageSize = topicInfo.MaxMessageSizeInKilobytes; }
+            if (entity is SubscriptionInfo subscriptionInfo) entity = subscriptionInfo.Description;
+            if (entity is RuleInfo ruleInfo) entity = ruleInfo.Description;
             var type = entity.GetType();
             var typeName = type.Name;
             if (!propertyCache.ContainsKey(type.FullName))
@@ -528,22 +533,20 @@ namespace ServiceBusExplorer.Helpers
             }
             var propertyDictionary = propertyCache[type.FullName];
             xmlWriter.WriteStartElement(MapClassToEntity(type));
+            if (maxMessageSize.HasValue)
+            {
+                xmlWriter.WriteElementString("MaxMessageSizeInKilobytes", maxMessageSize.Value.ToString(CultureInfo.InvariantCulture));
+            }
             foreach (var keyValuePair in propertyDictionary)
             {
                 var value = keyValuePair.Value.GetValue(entity, null);
-                if (string.Compare(keyValuePair.Key,
-                                   MaxSizeInMegabytes,
-                                   StringComparison.InvariantCultureIgnoreCase) == 0 &&
-                    !(new List<long> { 1024, 2048, 3072, 4096, 5120 }).Contains((long)value))
-                {
-                    value = 1024;
-                }
                 if (string.Compare(keyValuePair.Key,
                                    ForwardTo,
                                    StringComparison.InvariantCultureIgnoreCase) == 0 &&
                     !string.IsNullOrWhiteSpace(value as string))
                 {
-                    value = (new Uri(value as string)).AbsolutePath.Substring(1);
+                    var forwardingAddress = new Uri(value as string, UriKind.RelativeOrAbsolute);
+                    value = forwardingAddress.IsAbsoluteUri ? forwardingAddress.AbsolutePath.TrimStart('/') : value;
                 }
                 if (string.Compare(keyValuePair.Key,
                                    Rights,
@@ -612,8 +615,7 @@ namespace ServiceBusExplorer.Helpers
                     }
                     xmlWriter.WriteEndElement();
                 }
-                var subscriptionList = serviceBusHelper.GetSubscriptions(topic.Path);
-                var subscriptionDescriptions = subscriptionList as SubscriptionDescription[] ?? subscriptionList.ToArray();
+                var subscriptionDescriptions = serviceBusHelper.GetSubscriptions(topic.Path).ToArray();
                 if (subscriptionDescriptions.Any())
                 {
                     xmlWriter.WriteStartElement(SubscriptionEntityList);
@@ -664,8 +666,7 @@ namespace ServiceBusExplorer.Helpers
             if (entity is SubscriptionDescription)
             {
                 var subscription = entity as SubscriptionDescription;
-                var ruleList = serviceBusHelper.GetRules(subscription.TopicPath, subscription.Name);
-                var ruleDescriptions = ruleList as RuleDescription[] ?? ruleList.ToArray();
+                var ruleDescriptions = serviceBusHelper.GetRules(subscription.TopicPath, subscription.Name).ToArray();
                 if (ruleDescriptions.Any())
                 {
                     xmlWriter.WriteStartElement(RuleEntityList);
@@ -739,7 +740,13 @@ namespace ServiceBusExplorer.Helpers
                                 queueDescription.Authorization.Add(authorizationRule);
                             }
                         }
-                        serviceBusHelper.CreateQueue(queueDescription);
+                        var queueInfo = new QueueInfo(queueDescription);
+                        var maxMessageSize = queue.Element(XName.Get("MaxMessageSizeInKilobytes", Namespace));
+                        if (maxMessageSize != null)
+                        {
+                            queueInfo.MaxMessageSizeInKilobytes = long.Parse(maxMessageSize.Value, CultureInfo.InvariantCulture);
+                        }
+                        serviceBusHelper.CreateQueue(queueInfo);
                     }
                     catch (Exception ex)
                     {
@@ -823,7 +830,13 @@ namespace ServiceBusExplorer.Helpers
                                 topicDescription.Authorization.Add(authorizationRule);
                             }
                         }
-                        topicDescription = serviceBusHelper.CreateTopic(topicDescription);
+                        var topicInfo = new TopicInfo(topicDescription);
+                        var maxMessageSize = topic.Element(XName.Get("MaxMessageSizeInKilobytes", Namespace));
+                        if (maxMessageSize != null)
+                        {
+                            topicInfo.MaxMessageSizeInKilobytes = long.Parse(maxMessageSize.Value, CultureInfo.InvariantCulture);
+                        }
+                        topicDescription = serviceBusHelper.CreateTopic(topicInfo);
                         CreateSubscriptions(serviceBusHelper, topicDescription, subscriptions);
                     }
                     catch (Exception ex)

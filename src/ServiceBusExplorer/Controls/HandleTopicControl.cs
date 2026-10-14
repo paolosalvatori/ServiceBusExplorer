@@ -1,4 +1,5 @@
-﻿#region Copyright
+﻿using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -783,7 +784,7 @@ namespace ServiceBusExplorer.Controls
                 finally
                 {
                     topicDescription.Status = EntityStatus.Active;
-                    topicDescription = serviceBusHelper.NamespaceManager.UpdateTopic(topicDescription);
+                    topicDescription = serviceBusHelper.ManagementClient.UpdateTopic(topicDescription);
                     InitializeControls(initialCall: false);
                 }
             }

@@ -1,4 +1,8 @@
-﻿#region Copyright
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -89,7 +93,6 @@ namespace ServiceBusExplorer
         // Messages
         //***************************
         private const string ServiceBusConnectionStringCannotBeNull = "The connection string argument cannot be null.";
-        private const string ServiceBusEmulatorNotYetSupported = "Service Bus emulator connection strings (UseDevelopmentEmulator=true) are recognised, but the legacy management SDK cannot talk to the emulator. Support arrives with the Azure.Messaging.ServiceBus management-plane migration (issue #727).";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} {1} namespace.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
@@ -139,6 +142,7 @@ namespace ServiceBusExplorer
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
+        private ServiceBusManagementClient managementClient;
         private AzureNotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
@@ -193,8 +197,9 @@ namespace ServiceBusExplorer
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
             entraTokenProvider = serviceBusHelper.entraTokenProvider;
             namespaceManager = serviceBusHelper.NamespaceManager;
+            managementClient = serviceBusHelper.managementClient;
             notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
-            MessagingFactory = serviceBusHelper.MessagingFactory;
+            MessagingFactory = serviceBusHelper.messagingFactory;
             Namespace = serviceBusHelper.Namespace;
             NamespaceUri = serviceBusHelper.NamespaceUri;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
@@ -263,6 +268,8 @@ namespace ServiceBusExplorer
         /// Gets the EntityPath from the current namespace connection, if any.
         /// </summary>
         public string EntityPath => serviceBusNamespaceInstance?.EntityPath;
+        public bool IsEmulator => serviceBusNamespaceInstance?.UseDevelopmentEmulator == true;
+        public ServiceBusManagementClient ManagementClient => managementClient;
 
         /// <summary>
         /// Gets or sets the type of the message defer provider
@@ -630,6 +637,10 @@ namespace ServiceBusExplorer
         /// <returns>A messaging factory object.</returns>
         public MessagingFactory CreateMessagingFactory()
         {
+            if (IsEmulator)
+            {
+                throw new NotSupportedException("Service Bus emulator management is available, but legacy send/receive/session operations require the next data-plane migration stage (#727).");
+            }
             MessagingFactory factory;
             if (entraTokenProvider != null)
             {
@@ -745,11 +756,6 @@ namespace ServiceBusExplorer
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
 
-            if (serviceBusNamespace.UseDevelopmentEmulator)
-            {
-                throw new NotSupportedException(ServiceBusEmulatorNotYetSupported);
-            }
-
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
                 var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
@@ -764,8 +770,20 @@ namespace ServiceBusExplorer
 
                 // Reset connection-scoped state so reconnects don't carry over stale values.
                 IsEventHubNamespace = false;
+                var administrationOptions = new ServiceBusAdministrationClientOptions();
+                administrationOptions.Retry.MaxRetries = RetryHelper.RetryCount;
+                var administrationClient = isEntra
+                    ? new ServiceBusAdministrationClient(serviceBusNamespace.FullyQualifiedNamespace,
+                        EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespace.TenantId), administrationOptions)
+                    : CreateAdministrationClient(serviceBusNamespace, administrationOptions);
+                managementClient = new ServiceBusManagementClient(administrationClient, new Uri(serviceBusNamespace.Uri));
 
-                if (isEntra)
+                if (IsEmulator)
+                {
+                    namespaceManager = null;
+                    entraTokenProvider = null;
+                }
+                else if (isEntra)
                 {
                     var endpointUri = new Uri(serviceBusNamespace.Uri);
                     var tenantId = serviceBusNamespace.TenantId;
@@ -781,7 +799,7 @@ namespace ServiceBusExplorer
                         // Lightweight scope probe — check for a non-existent queue.
                         // This issues a single REST call (no entity enumeration) and
                         // will throw UnauthorizedAccessException if the token audience is wrong.
-                        namespaceManager.QueueExists("$__scope_probe__$");
+                        administrationClient.QueueExistsAsync("$__scope_probe__$").ConfigureAwait(false).GetAwaiter().GetResult();
                     }
                     catch (Exception ex) when (IsAudienceMismatchException(ex))
                     {
@@ -801,7 +819,7 @@ namespace ServiceBusExplorer
                 }
 
                 // Set retry count
-                if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                if (namespaceManager?.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
                 {
                     namespaceManager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
                                                                                             defaultServiceBusRetryExponential.MaximumBackoff,
@@ -809,7 +827,7 @@ namespace ServiceBusExplorer
                 }
 
                 // Notification Hubs don't support Entra token-provider auth
-                if (!isEntra)
+                if (!isEntra && !IsEmulator)
                 {
                     try
                     {
@@ -828,23 +846,26 @@ namespace ServiceBusExplorer
                     }
                 }
 
-                serviceBusQueue = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusQueue(sbn, nsmgr));
-                serviceBusTopic = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusTopic(sbn, nsmgr));
-                serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
-                serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
-                serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
-                serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
-                serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
-                serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
-                serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
+                serviceBusQueue = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusQueue(sbn, managementClient));
+                serviceBusTopic = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusTopic(sbn, managementClient));
+                serviceBusSubscription = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusSubscription(sbn, managementClient));
+                serviceBusRule = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusRule(sbn, managementClient));
+                if (!IsEmulator)
+                {
+                    serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
+                    serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
+                    serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
+                    serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
+                    serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
+                }
 
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
-                namespaceUri = namespaceManager.Address;
+                namespaceUri = managementClient.Address;
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
                 // Event Hubs data-plane clients are created through Azure.Messaging.EventHubs.
-                if (IsEventHubNamespace)
+                if (IsEventHubNamespace || IsEmulator)
                 {
                     MessagingFactory = null;
                 }
@@ -856,7 +877,9 @@ namespace ServiceBusExplorer
                 {
                     MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 }
-                WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
+                WriteToLogIf(traceEnabled, IsEmulator
+                    ? "Emulator management connected. Legacy data-plane operations are unavailable until migration stage 3."
+                    : MessageFactorySuccessfullyCreated);
                 return true;
             });
             return RetryHelper.RetryFunc(func, writeToLog);
@@ -4002,10 +4025,8 @@ namespace ServiceBusExplorer
 
         public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
         {
-            var administrationClient = serviceBusNamespaceInstance?.IsEntra == true
-                ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
-                : new ServiceBusAdministrationClient(connectionString);
+            var administrationClient = managementClient?.Client
+                ?? throw new InvalidOperationException("Service Bus management is disconnected.");
             var result = new List<QueueProperties>();
 
             foreach (QueueDescription oldQueueDescription in oldQueueDescriptions)
@@ -4023,20 +4044,14 @@ namespace ServiceBusExplorer
 
         public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
         {
-            var managementClient = serviceBusNamespaceInstance?.IsEntra == true
-                ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
-                : new ServiceBusAdministrationClient(connectionString);
+            var administrationClient = managementClient?.Client
+                ?? throw new InvalidOperationException("Service Bus management is disconnected.");
             var result = new List<SubscriptionProperties>();
 
             foreach (SubscriptionWrapper oldSubscriptionWrapper in oldSubscriptionWrappers)
             {
-                var topicResponse = await managementClient.GetTopicAsync(
-                    oldSubscriptionWrapper.TopicDescription.Path)
-                    .ConfigureAwait(false);
-
-                var subscriptionResponse = await managementClient.GetSubscriptionAsync(
-                    topicResponse.Value.Name,
+                var subscriptionResponse = await administrationClient.GetSubscriptionAsync(
+                    oldSubscriptionWrapper.TopicDescription.Path,
                     oldSubscriptionWrapper.SubscriptionDescription.Name)
                     .ConfigureAwait(false);
 
@@ -4339,6 +4354,53 @@ namespace ServiceBusExplorer
             return entity;
         }
 
+        public static string GetAdministrationConnectionString(ServiceBusNamespace serviceBusNamespace)
+        {
+            if (serviceBusNamespace == null)
+            {
+                throw new ArgumentNullException(nameof(serviceBusNamespace));
+            }
+            var parts = serviceBusNamespace.ConnectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var retained = new List<string>();
+            foreach (var part in parts)
+            {
+                var separator = part.IndexOf('=');
+                if (separator < 1)
+                {
+                    throw new FormatException("Invalid Service Bus connection string setting.");
+                }
+                var key = part.Substring(0, separator).Trim();
+                if (new[] { "TransportType", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                if (serviceBusNamespace.UseDevelopmentEmulator && key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
+                {
+                    var endpoint = new UriBuilder(part.Substring(separator + 1).Trim());
+                    if (endpoint.Port == -1 || endpoint.Port == 5672)
+                    {
+                        endpoint.Port = 5300;
+                    }
+                    retained.Add("Endpoint=" + endpoint.Uri.AbsoluteUri);
+                }
+                else
+                {
+                    retained.Add(part.Trim());
+                }
+            }
+            return string.Join(";", retained);
+        }
+
+        private static ServiceBusAdministrationClient CreateAdministrationClient(ServiceBusNamespace serviceBusNamespace,
+            ServiceBusAdministrationClientOptions options)
+        {
+            if (serviceBusNamespace.ConnectionStringType == ServiceBusNamespaceType.OnPremises)
+            {
+                throw new NotSupportedException("Azure.Messaging.ServiceBus administration does not support on-premises Service Bus Server (Windows/STS authentication). Use the previous release for this environment.");
+            }
+            return new ServiceBusAdministrationClient(GetAdministrationConnectionString(serviceBusNamespace), options);
+        }
+
         private static Encoding GetEncoding()
         {
             switch (encodingType)
@@ -4401,6 +4463,11 @@ namespace ServiceBusExplorer
                 return message.Contains("401") ||
                        message.Contains("40100") ||
                        ex.InnerException is UnauthorizedAccessException;
+            }
+
+            if (ex is Azure.RequestFailedException requestFailed)
+            {
+                return requestFailed.Status == 401;
             }
 
             return false;
