@@ -4003,7 +4003,9 @@ namespace ServiceBusExplorer
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
-            serviceBusHelper2.ConnectionString = ConnectionString;
+            serviceBusHelper2.ConnectionString = IsEmulator
+                ? GetDataPlaneConnectionString(serviceBusNamespaceInstance)
+                : ConnectionString;
             serviceBusHelper2.TransportType = UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
@@ -4016,6 +4018,65 @@ namespace ServiceBusExplorer
             }
 
             return serviceBusHelper2;
+        }
+
+        public static string GetDataPlaneConnectionString(ServiceBusNamespace serviceBusNamespace)
+        {
+            if (serviceBusNamespace == null)
+            {
+                throw new ArgumentNullException(nameof(serviceBusNamespace));
+            }
+            return GetDataPlaneConnectionString(serviceBusNamespace.ConnectionString, serviceBusNamespace.UseDevelopmentEmulator);
+        }
+
+        public static string GetDataPlaneConnectionString(string connectionString, bool useDevelopmentEmulator)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException(ServiceBusConnectionStringCannotBeNull, nameof(connectionString));
+            }
+
+            var retained = new List<string>();
+            var endpointFound = false;
+            foreach (var part in connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var separator = part.IndexOf('=');
+                if (separator < 1)
+                {
+                    throw new FormatException("Invalid Service Bus connection string setting.");
+                }
+
+                var key = part.Substring(0, separator).Trim();
+                if (new[] { "TransportType", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (endpointFound)
+                    {
+                        throw new FormatException("The emulator connection string contains more than one Endpoint setting.");
+                    }
+                    var endpoint = new UriBuilder(part.Substring(separator + 1).Trim());
+                    if (useDevelopmentEmulator)
+                    {
+                        endpoint.Port = 5672;
+                    }
+                    retained.Add("Endpoint=" + endpoint.Uri.AbsoluteUri);
+                    endpointFound = true;
+                }
+                else
+                {
+                    retained.Add(part.Trim());
+                }
+            }
+
+            if (!endpointFound)
+            {
+                throw new FormatException("The emulator connection string must include an Endpoint setting.");
+            }
+
+            return string.Join(";", retained);
         }
 
         public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)

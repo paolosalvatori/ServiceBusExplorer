@@ -151,6 +151,42 @@ namespace ServiceBusExplorer.Tests.Helpers
             new ServiceBusAdministrationClient(administration).Should().NotBeNull();
         }
 
+        [Theory]
+        [InlineData("localhost:5672")]
+        [InlineData("localhost:5300")]
+        [InlineData("127.0.0.1:55300")]
+        public async Task EmulatorDataPlaneConnection_UsesAmqpPortAndStripsEntityScope(string endpoint)
+        {
+            var connection = EmulatorConnection.Replace("localhost:5672", endpoint);
+            var ns = ServiceBusNamespace.GetServiceBusNamespace("test", connection, (_, __) => { });
+
+            var dataPlane = ServiceBusHelper.GetDataPlaneConnectionString(ns);
+
+            dataPlane.Should().Contain("Endpoint=sb://");
+            dataPlane.Should().Contain(":5672/");
+            dataPlane.Should().Contain("UseDevelopmentEmulator=true");
+            dataPlane.Should().NotContain("TransportType");
+            dataPlane.Should().NotContain("EntityPath");
+            var client = new ServiceBusClient(dataPlane);
+            client.CreateSender("orders").Should().NotBeNull();
+            await client.DisposeAsync();
+        }
+
+        [Fact]
+        public async Task AzureDataPlaneConnection_StripsEntityScopeAndLegacyTransport()
+        {
+            const string connection = "Endpoint=sb://example.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;TransportType=NetMessaging;EntityPath=orders";
+
+            var dataPlane = ServiceBusHelper.GetDataPlaneConnectionString(connection, useDevelopmentEmulator: false);
+
+            dataPlane.Should().Contain("Endpoint=sb://example.servicebus.windows.net/");
+            dataPlane.Should().NotContain("TransportType");
+            dataPlane.Should().NotContain("EntityPath");
+            var client = new ServiceBusClient(dataPlane);
+            client.CreateSender("orders").Should().NotBeNull();
+            await client.DisposeAsync();
+        }
+
         [Fact]
         public void EmulatorConnect_DoesNotCreateLegacyMessagingFactory()
         {
@@ -161,6 +197,9 @@ namespace ServiceBusExplorer.Tests.Helpers
             helper.NamespaceManager.Should().BeNull();
             var copy = new ServiceBusHelper((_, __) => { }, helper);
             copy.IsEmulator.Should().BeTrue();
+            copy.GetServiceBusHelper2().ConnectionString.Should().Contain("Endpoint=sb://localhost:5672/");
+            copy.GetServiceBusHelper2().ConnectionString.Should().NotContain("EntityPath");
+            ns.ConnectionString.Should().Be(EmulatorConnection);
             ((Action)(() => copy.CreateMessagingFactory())).Should().Throw<NotSupportedException>().WithMessage("*data-plane*");
         }
 

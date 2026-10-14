@@ -72,12 +72,37 @@ access and verifies `http://localhost:5300`. See the upstream
 and [emulator setup documentation](https://learn.microsoft.com/azure/service-bus-messaging/test-locally-with-service-bus-emulator).
 
 The emulator does not expose Event Hubs, Notification Hubs or Relay nodes.
-Legacy send/receive/session/listener operations throw an explicit stage-3
-`NotSupportedException` rather than preventing administration startup. This
-stage does **not** claim end-to-end emulator support or completion of #727.
+Management profiles may retain an administration endpoint on a custom port;
+the data-plane connection builder independently selects AMQP port **5672** and
+removes entity-scoped/legacy transport settings. The saved connection string is
+not rewritten. This stage does **not** claim end-to-end emulator support or
+completion of #727.
 No live emulator or Azure namespace was available during validation; mocked
 administration workflows and SDK request construction are covered, not live
 service compatibility or emulator feature availability.
+
+## Stage 3: data-plane migration (incremental)
+
+The editable message dialog now sends resubmitted messages through
+`ServiceBusSender`. A boundary adapter copies the body, sendable system
+properties, and application properties from the existing editable
+`BrokeredMessage` buffer into the immutable-SDK `ServiceBusMessage`. This keeps
+message editing, inspectors, generators, and existing import/export formats
+working while those extension and UI contracts are migrated separately.
+`ForcePersistence` has no new-SDK equivalent and is not mapped; Service Bus
+messages are durable by service semantics. `ViaPartitionKey` also has no
+`ServiceBusMessage` equivalent and is not preserved by this send adapter.
+
+This is an incremental stage, not completion of the data-plane migration.
+Queue/topic test senders, ordinary and dead-letter receivers, session
+operations, dead-letter settlement/moves, and listener pumps still use legacy
+clients and remain unavailable for emulator data-plane profiles. In
+particular, dead-letter move combines sending with settlement on the original
+receiver; that path remains legacy rather than risk sending a duplicate or
+losing the original message. The next increment must move those operations to
+the SDK receiver/processor APIs and replace plugin/UI message contracts only
+with an explicit compatibility plan. Event Hubs and Notification Hubs are
+unchanged.
 
 ### Compatibility decisions for review
 
@@ -109,16 +134,23 @@ service compatibility or emulator feature availability.
   Windows/STS authentication. Connection now reports an explicit unsupported
   error; use the previous release for that environment. Restoring support
   requires a separately maintained legacy administration path.
+- **Editable message compatibility:** the message editor and existing
+  `IBrokeredMessageInspector`/`IBrokeredMessageGenerator` extension contracts
+  continue using `BrokeredMessage` as an editable compatibility buffer. The
+  resubmit operation converts to the modern SDK type at send time. Review
+  whether a future public editable-message contract should replace these
+  legacy extension types before stage 4 removes their package.
 
 ### Validation
 
 With `FILE_VERSION=1.0.0.1`, the full Release solution build succeeds and the
-Release unit suite passes (160 tests). The build retains the pre-existing
+Release unit suite passes (167 tests). The build retains the pre-existing
 missing `MinimumRecommendedRules.ruleset` warning. Regression coverage includes
 native properties/SAS/rule mapping, paged runtime queries, queue CRUD, rule
 CRUD, default entity options, immutable-property guards, update responses,
 legacy and current queue XML, filters, emulator management-only startup and
-the outgoing HTTP administration URI.
+the outgoing HTTP administration URI. Stage-3 tests verify the editor message
+adapter and the separate emulator administration/data-plane ports.
 
 ## Decisions to review
 
