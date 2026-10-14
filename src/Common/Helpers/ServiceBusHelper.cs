@@ -829,7 +829,7 @@ namespace ServiceBusExplorer
                         {
                             RetryOptions = new AzureNotificationHubs.NotificationHubRetryOptions
                             {
-                                MaxRetries = RetryHelper.RetryCount
+                                MaxRetries = Math.Max(0, Math.Min(100, RetryHelper.RetryCount))
                             }
                         };
                         notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(serviceBusNamespace.ConnectionStringWithoutTransportType, notificationHubSettings);

@@ -93,6 +93,7 @@ namespace ServiceBusExplorer.Controls
         private const string FcmRegistrationId = "FcmRegistrationId";
         private const string FcmV1RegistrationId = "FcmV1RegistrationId";
         private const string BodyTemplate = "BodyTemplate";
+        private string loadedFcmCredentialText;
         private const string Tags = "Tags";
         private const string MpnsHeaders = "MpnsHeaders";
         private const string WnsHeaders = "WnsHeaders";
@@ -1232,6 +1233,7 @@ namespace ServiceBusExplorer.Controls
                 txtGcmApiKey.Text = string.Empty;
                 txtGcmEndpoint.Text = string.Empty;
             }
+            loadedFcmCredentialText = txtGcmApiKey.Text;
 
             if (notificationHubDescription.MpnsCredential != null)
             {
@@ -2212,7 +2214,11 @@ namespace ServiceBusExplorer.Controls
                                                                ? new WnsCredential(txtPackageSid.Text, txtClientSecret.Text)
                                                                : null;
 
-                    SetFcmCredential(notificationHubDescription, txtGcmApiKey.Text);
+                    // Keep existing credentials (including a legacy key not shown) unless the user edited the field.
+                    if (!string.Equals(txtGcmApiKey.Text, loadedFcmCredentialText, StringComparison.Ordinal))
+                    {
+                        SetFcmCredential(notificationHubDescription, txtGcmApiKey.Text);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) && !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
                     {
@@ -3020,6 +3026,12 @@ namespace ServiceBusExplorer.Controls
                     if (registration is WindowsTemplateRegistrationDescription && e.ChangedItem.Value is string)
                     {
                         ((WindowsTemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
+                        registrationsDataGridView.Tag = true;
+                        return;
+                    }
+                    if (registration is FcmV1TemplateRegistrationDescription && e.ChangedItem.Value is string)
+                    {
+                        ((FcmV1TemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
                         registrationsDataGridView.Tag = true;
                     }
                     break;
