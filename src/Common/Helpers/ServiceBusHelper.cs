@@ -89,6 +89,7 @@ namespace ServiceBusExplorer
         // Messages
         //***************************
         private const string ServiceBusConnectionStringCannotBeNull = "The connection string argument cannot be null.";
+        private const string ServiceBusEmulatorNotYetSupported = "Service Bus emulator connection strings (UseDevelopmentEmulator=true) are recognised, but the legacy management SDK cannot talk to the emulator. Support arrives with the Azure.Messaging.ServiceBus management-plane migration (issue #727).";
         private const string ServiceBusIsConnected = "The application is now connected to the {0} {1} namespace.";
         private const string WarningHeader = "The following validations failed:";
         private const string WarningFormat = "\n\r - {0}";
@@ -742,6 +743,11 @@ namespace ServiceBusExplorer
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
+            }
+
+            if (serviceBusNamespace.UseDevelopmentEmulator)
+            {
+                throw new NotSupportedException(ServiceBusEmulatorNotYetSupported);
             }
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
