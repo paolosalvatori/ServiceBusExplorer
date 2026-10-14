@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using System;
 using FluentAssertions;
 using ServiceBusExplorer.Helpers;
 using Xunit;
@@ -34,6 +35,34 @@ namespace ServiceBusExplorer.Tests.Helpers
 
                 Encoding.UTF8.GetString(azureEventData.EventBody.ToArray()).Should().Be("event body");
                 azureEventData.Properties["message-number"].Should().Be(7);
+            }
+        }
+
+        [Fact]
+        public void Clone_PreservesMetadataAndOwnsAnIndependentBody()
+        {
+            var enqueuedTime = new DateTime(2026, 10, 15, 0, 0, 0, DateTimeKind.Utc);
+            var original = new EventDataEnvelope(new MemoryStream(Encoding.UTF8.GetBytes("event body")))
+            {
+                PartitionKey = "device",
+                SequenceNumber = 12,
+                Offset = "345",
+                EnqueuedTimeUtc = enqueuedTime
+            };
+            original.Properties["application"] = "value";
+            original.SystemProperties["service"] = "metadata";
+
+            using (var clone = original.Clone())
+            {
+                original.Dispose();
+
+                clone.PartitionKey.Should().Be("device");
+                clone.SequenceNumber.Should().Be(12);
+                clone.Offset.Should().Be("345");
+                clone.EnqueuedTimeUtc.Should().Be(enqueuedTime);
+                clone.Properties["application"].Should().Be("value");
+                clone.SystemProperties["service"].Should().Be("metadata");
+                Encoding.UTF8.GetString(clone.ToAzureEventData().EventBody.ToArray()).Should().Be("event body");
             }
         }
     }

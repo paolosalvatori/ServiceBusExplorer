@@ -878,7 +878,7 @@ namespace ServiceBusExplorer.Controls
                 catch (Exception ex)
                 {
                     HandleException(ex);
-                    StopListenerAsync().Wait();
+                    await StopListenerAsync();
                     btnStart.Text = Start;
                 }
             }
@@ -958,11 +958,18 @@ namespace ServiceBusExplorer.Controls
 
                     var eventData = new EventData(new MemoryStream(data.EventBody.ToArray()))
                     {
-                        PartitionKey = data.PartitionKey
+                        PartitionKey = data.PartitionKey,
+                        SequenceNumber = data.SequenceNumber,
+                        Offset = data.OffsetString,
+                        EnqueuedTimeUtc = data.EnqueuedTime.UtcDateTime
                     };
                     foreach (var property in data.Properties)
                     {
                         eventData.Properties[property.Key] = property.Value;
+                    }
+                    foreach (var property in data.SystemProperties)
+                    {
+                        eventData.SystemProperties[property.Key] = property.Value;
                     }
 
                     if (receiverEventDataInspector != null)
