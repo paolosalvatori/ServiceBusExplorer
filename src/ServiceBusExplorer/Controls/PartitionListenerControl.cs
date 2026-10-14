@@ -33,10 +33,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Azure.Messaging.EventHubs.Consumer;
+using ModernEventPosition = Azure.Messaging.EventHubs.Consumer.EventPosition;
+using ModernPartitionProperties = Azure.Messaging.EventHubs.PartitionProperties;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Utilities.Helpers;
 
@@ -122,7 +126,7 @@ namespace ServiceBusExplorer.Controls
         private readonly int partitionCount;
         private bool sorting;
         private readonly SortableBindingList<EventDataMessage> eventDataBindingList = new SortableBindingList<EventDataMessage> { AllowNew = false, AllowEdit = false, AllowRemove = false };
-        private readonly IList<PartitionRuntimeInformation> partitionRuntumeInformationList = new List<PartitionRuntimeInformation>();
+        private readonly IList<ModernPartitionProperties> partitionRuntumeInformationList = new List<ModernPartitionProperties>();
         private BlockingCollection<EventDataMessage> eventDataCollection = new BlockingCollection<EventDataMessage>();
         private System.Timers.Timer timer;
         private long receiverMessageNumber;
@@ -143,12 +147,11 @@ namespace ServiceBusExplorer.Controls
         private bool stopping;
         private bool graph;
         private IEventDataInspector receiverEventDataInspector;
-        // ReSharper disable once NotAccessedField.Local
-        private readonly EventHubDescription eventHubDescription;
         private DateTime dateTime = DateTime.MinValue;
-        private readonly EventHubConsumerGroup consumerGroup;
-        private readonly EventHubClient eventHubClient;
-        private Dictionary<string, bool> registeredDictionary = new Dictionary<string, bool>();
+        private readonly string consumerGroupName;
+        private readonly string eventHubPath;
+        private readonly EventHubConsumerClient eventHubMetadataClient;
+        private readonly List<Task> partitionReadTasks = new List<Task>();
         private bool clearing;
         private bool cleared;
         private readonly string iotHubConnectionString;
@@ -160,7 +163,6 @@ namespace ServiceBusExplorer.Controls
         #region Public Constructors
         public PartitionListenerControl()
         {
-            eventHubDescription = null;
         }
 
         public PartitionListenerControl(WriteToLogDelegate writeToLog,
@@ -174,20 +176,11 @@ namespace ServiceBusExplorer.Controls
             this.stopLog = stopLog;
             this.startLog = startLog;
             this.serviceBusHelper = serviceBusHelper;
-            eventHubDescription = serviceBusHelper.NamespaceManager.GetEventHub(consumerGroupDescription.EventHubPath);
-            eventHubClient = serviceBusHelper.CreateEventHubClient(consumerGroupDescription.EventHubPath);
-            consumerGroup = string.Compare(consumerGroupDescription.Name,
-                                           DefaultConsumerGroupName,
-                                           StringComparison.InvariantCultureIgnoreCase) == 0
-                                           ? eventHubClient.GetDefaultConsumerGroup()
-                                           : eventHubClient.GetConsumerGroup(consumerGroupDescription.Name);
+            eventHubPath = consumerGroupDescription.EventHubPath;
+            consumerGroupName = consumerGroupDescription.Name;
+            eventHubMetadataClient = serviceBusHelper.CreateEventHubConsumerClient(eventHubPath, consumerGroupName);
             IList<string> partitionIdList = partitionDescriptions.Select(pd => pd.PartitionId).ToList();
-            var taskList = partitionIdList.Select(id => eventHubClient.GetPartitionRuntimeInformationAsync(id)).ToList();
-            Task.WaitAll(taskList.ToArray());
-            foreach (var task in taskList)
-            {
-                partitionRuntumeInformationList.Add(task.Result);
-            }
+            LoadPartitionPropertiesAsync(eventHubMetadataClient, partitionIdList).GetAwaiter().GetResult();
             partitionCount = partitionRuntumeInformationList.Count;
             InitializeComponent();
             InitializeControls();
@@ -206,19 +199,12 @@ namespace ServiceBusExplorer.Controls
             this.stopLog = stopLog;
             this.startLog = startLog;
             serviceBusHelper = new ServiceBusHelper(writeToLog);
-            eventHubClient = EventHubClient.CreateFromConnectionString(iotHubConnectionString, hubName);
-            consumerGroup = string.Compare(consumerGroupName,
-                                           DefaultConsumerGroupName,
-                                           StringComparison.InvariantCultureIgnoreCase) == 0
-                                           ? eventHubClient.GetDefaultConsumerGroup()
-                                           : eventHubClient.GetConsumerGroup(consumerGroupName);
-            IList<string> partitionIdList = new List<string>(eventHubClient.GetRuntimeInformation().PartitionIds);
-            var taskList = partitionIdList.Select(id => eventHubClient.GetPartitionRuntimeInformationAsync(id)).ToList();
-            Task.WaitAll(taskList.ToArray());
-            foreach (var task in taskList)
-            {
-                partitionRuntumeInformationList.Add(task.Result);
-            }
+            eventHubPath = hubName;
+            this.consumerGroupName = consumerGroupName;
+            eventHubMetadataClient = serviceBusHelper.CreateEventHubConsumerClient(eventHubPath,
+                                                                                   consumerGroupName,
+                                                                                   iotHubConnectionString);
+            LoadPartitionPropertiesAsync(eventHubMetadataClient, null).GetAwaiter().GetResult();
             partitionCount = partitionRuntumeInformationList.Count;
             InitializeComponent();
             InitializeControls();
@@ -230,6 +216,33 @@ namespace ServiceBusExplorer.Controls
         private async void ListenerControl_Disposed(object sender, EventArgs e)
         {
             await StopListenerAsync();
+            if (eventHubMetadataClient != null)
+            {
+                await eventHubMetadataClient.DisposeAsync();
+            }
+        }
+
+        private async Task LoadPartitionPropertiesAsync(EventHubConsumerClient client, IEnumerable<string> partitionIds)
+        {
+            try
+            {
+                var ids = partitionIds;
+                if (ids == null)
+                {
+                    var properties = await client.GetEventHubPropertiesAsync().ConfigureAwait(false);
+                    ids = properties.PartitionIds;
+                }
+                foreach (var partitionId in ids)
+                {
+                    partitionRuntumeInformationList.Add(
+                        await client.GetPartitionPropertiesAsync(partitionId).ConfigureAwait(false));
+                }
+            }
+            catch
+            {
+                await client.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
         }
 
         private void InitializeControls()
@@ -238,7 +251,7 @@ namespace ServiceBusExplorer.Controls
             if (partitionRuntumeInformationList != null)
             {
                 // ReSharper disable once CoVariantArrayConversion
-                cboPartition.Items.AddRange(partitionRuntumeInformationList.Select(p => p.PartitionId).ToArray());
+                cboPartition.Items.AddRange(partitionRuntumeInformationList.Select(p => p.Id).ToArray());
                 cboPartition.SelectedIndex = 0;
                 if (partitionRuntumeInformationList.Count() == 1)
                 {
@@ -808,62 +821,55 @@ namespace ServiceBusExplorer.Controls
                 };
                 timer.Elapsed += timer_Elapsed;
                 var ns = serviceBusHelper != null && !string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ? serviceBusHelper.Namespace : iotHubConnectionString;
-                var eventHub = eventHubClient.Path;
+                var eventHub = eventHubPath;
                 var maxBatchSize = txtMaxBatchSize.IntegerValue > 0 ? txtMaxBatchSize.IntegerValue : 1;
                 var receiveTimeout = TimeSpan.FromSeconds(txtReceiveTimeout.IntegerValue);
                 try
                 {
-                    registeredDictionary = new Dictionary<string, bool>(partitionRuntumeInformationList.Count);
                     var startDateTimeEnabled = pickerStartingDateTimeUtc.Checked;
                     var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);
-                    var eventProcessorOptions = new EventProcessorOptions
-                    {
-                        InitialOffsetProvider = partitionId =>
-                        {
-                            if (startDateTimeEnabled)
-                            {
-                                return startDateTimeValue;
-                            }
-                            var lease = EventProcessorCheckpointHelper.GetLease(ns,
-                                eventHub,
-                                consumerGroup.GroupName,
-                                partitionId);
-                            return lease != null ? lease.Offset : "-1";
-                        },
-                        MaxBatchSize = maxBatchSize,
-                        ReceiveTimeOut = receiveTimeout
-                    };
-                    eventProcessorOptions.ExceptionReceived += (s, ex) => HandleException(ex.Exception);
-                    var checkpointManager = new EventProcessorCheckpointManager
-                    {
-                        Namespace = ns,
-                        EventHub = eventHub,
-                        ConsumerGroup = consumerGroup.GroupName
-                    };
-                    var eventProcessorFactoryConfiguration = new EventProcessorFactoryConfiguration(checkBoxLogging,
-                                                                                                    checkBoxTrackMessages,
-                                                                                                    checkBoxVerbose,
-                                                                                                    checkBoxOffsetInclusive,
-                                                                                                    checkBoxCheckpoint,
-                                                                                                    cancellationTokenSource.Token)
-                    {
-                        TrackEvent = ev => Invoke(new Action<EventData>(m => eventDataCollection.Add(new EventDataMessage(m))), ev),
-                        GetElapsedTime = GetElapsedTime,
-                        UpdateStatistics = UpdateStatistics,
-                        WriteToLog = writeToLog,
-                        MessageInspector = receiverEventDataInspector,
-                        ServiceBusHelper = serviceBusHelper
-                    };
+                    var cancellationToken = cancellationTokenSource.Token;
+                    var logging = checkBoxLogging.Checked;
+                    var verbose = checkBoxVerbose.Checked;
+                    var tracking = checkBoxTrackMessages.Checked;
+                    var checkpoint = checkBoxCheckpoint.Checked;
+                    var offsetInclusive = checkBoxOffsetInclusive.Checked;
                     foreach (var partitionRuntimeInformation in partitionRuntumeInformationList)
                     {
-#pragma warning disable 4014
-                        consumerGroup.RegisterProcessorFactoryAsync(
-#pragma warning restore 4014
-EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, partitionRuntimeInformation.PartitionId),
-                                checkpointManager,
-                                new EventProcessorFactory<EventProcessor>(eventProcessorFactoryConfiguration),
-                                eventProcessorOptions);
-                        registeredDictionary.Add(partitionRuntimeInformation.PartitionId, true);
+                        ModernEventPosition startingPosition;
+                        if (startDateTimeEnabled)
+                        {
+                            startingPosition = ModernEventPosition.FromEnqueuedTime(new DateTimeOffset(startDateTimeValue));
+                        }
+                        else
+                        {
+                            var lease = EventProcessorCheckpointHelper.GetLease(ns,
+                                                                                eventHub,
+                                                                                consumerGroupName,
+                                                                                partitionRuntimeInformation.Id);
+                            startingPosition = lease == null ||
+                                               string.IsNullOrWhiteSpace(lease.Offset) ||
+                                               string.Equals(lease.Offset, "-1", StringComparison.Ordinal)
+                                ? ModernEventPosition.Earliest
+                                : ModernEventPosition.FromOffset(lease.Offset, offsetInclusive);
+                        }
+
+                        var consumerClient = serviceBusHelper.CreateEventHubConsumerClient(eventHub,
+                                                                                          consumerGroupName,
+                                                                                          iotHubConnectionString);
+                        partitionReadTasks.Add(Task.Run(() => ReadPartitionAsync(consumerClient,
+                                                                                 partitionRuntimeInformation.Id,
+                                                                                 startingPosition,
+                                                                                 ns,
+                                                                                 eventHub,
+                                                                                 consumerGroupName,
+                                                                                 maxBatchSize,
+                                                                                 receiveTimeout,
+                                                                                 logging,
+                                                                                 verbose,
+                                                                                 tracking,
+                                                                                 checkpoint,
+                                                                                 cancellationToken)));
                     }
 #pragma warning disable 4014
                     Task.Run(new Action(RefreshGraph));
@@ -908,6 +914,124 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 var elapsed = now - dateTime;
                 dateTime = now;
                 return elapsed.Milliseconds;
+            }
+        }
+
+        private async Task ReadPartitionAsync(EventHubConsumerClient consumerClient,
+                                              string partitionId,
+                                              ModernEventPosition startingPosition,
+                                              string ns,
+                                              string eventHub,
+                                              string consumerGroupName,
+                                              int maxBatchSize,
+                                              TimeSpan receiveTimeout,
+                                              bool logging,
+                                              bool verbose,
+                                              bool tracking,
+                                              bool checkpoint,
+                                              CancellationToken cancellationToken)
+        {
+            try
+            {
+                var readOptions = new ReadEventOptions
+                {
+                    CacheEventCount = maxBatchSize,
+                    MaximumWaitTime = receiveTimeout,
+                    TrackLastEnqueuedEventProperties = true
+                };
+
+                await foreach (var partitionEvent in consumerClient.ReadEventsFromPartitionAsync(partitionId,
+                                                                                                 startingPosition,
+                                                                                                 readOptions,
+                                                                                                 cancellationToken))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    var data = partitionEvent.Data;
+                    if (data == null)
+                    {
+                        continue;
+                    }
+
+                    var eventData = new EventData(new MemoryStream(data.EventBody.ToArray()))
+                    {
+                        PartitionKey = data.PartitionKey
+                    };
+                    foreach (var property in data.Properties)
+                    {
+                        eventData.Properties[property.Key] = property.Value;
+                    }
+
+                    if (receiverEventDataInspector != null)
+                    {
+                        eventData = receiverEventDataInspector.AfterReceiveMessage(eventData);
+                        if (eventData == null)
+                        {
+                            throw new InvalidOperationException("The Event Data inspector returned null.");
+                        }
+                    }
+
+                    if (logging)
+                    {
+                        var builder = new StringBuilder(string.Format(CultureInfo.CurrentCulture,
+                                                                      "[EventProcessor] Event: PartitionId=[{0}] PartitionKey=[{1}] SequenceNumber=[{2}] Offset=[{3}] EnqueuedTimeUtc=[{4}]",
+                                                                      partitionId,
+                                                                      string.IsNullOrWhiteSpace(data.PartitionKey) ? "null" : data.PartitionKey,
+                                                                      data.SequenceNumber,
+                                                                      data.OffsetString,
+                                                                      data.EnqueuedTime.UtcDateTime));
+                        if (verbose)
+                        {
+                            serviceBusHelper.GetMessageAndProperties(builder, eventData);
+                        }
+                        writeToLog(builder.ToString());
+                    }
+
+                    if (tracking)
+                    {
+                        eventDataCollection.Add(new EventDataMessage(eventData,
+                                                                    data.PartitionKey,
+                                                                    data.SequenceNumber,
+                                                                    data.OffsetString,
+                                                                    data.EventBody.ToArray().Length,
+                                                                    data.EnqueuedTime.UtcDateTime));
+                    }
+                    else
+                    {
+                        eventData.Dispose();
+                    }
+
+                    UpdateStatistics(1, GetElapsedTime(), data.EventBody.ToArray().Length);
+                    if (checkpoint)
+                    {
+                        await EventProcessorCheckpointHelper.CheckpointAsync(
+                            ns,
+                            eventHub,
+                            consumerGroupName,
+                            new Lease
+                            {
+                                PartitionId = partitionId,
+                                SequenceNumber = data.SequenceNumber,
+                                Offset = data.OffsetString,
+                                Owner = "ServiceBusExplorer"
+                            },
+                            data.OffsetString);
+                    }
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                await consumerClient.DisposeAsync().ConfigureAwait(false);
             }
         }
 
@@ -1123,6 +1247,11 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
             {
                 stopping = true;
             }
+            if (partitionReadTasks.Count > 0)
+            {
+                await Task.WhenAll(partitionReadTasks);
+                partitionReadTasks.Clear();
+            }
             if (stopLog != null)
             {
                 await stopLog();
@@ -1132,15 +1261,6 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 timer.Stop();
                 timer.Dispose();
                 timer = null;
-            }
-            foreach (var partitionDescription in partitionRuntumeInformationList)
-            {
-                if (registeredDictionary.ContainsKey(partitionDescription.PartitionId) &&
-                    registeredDictionary[partitionDescription.PartitionId])
-                {
-                    await consumerGroup.UnregisterProcessorAsync(new Lease { PartitionId = partitionDescription.PartitionId },
-                        Microsoft.ServiceBus.Messaging.CloseReason.Shutdown);
-                }
             }
             lock (this)
             {
@@ -1450,22 +1570,19 @@ EventProcessorCheckpointHelper.GetLease(ns, eventHub, consumerGroup.GroupName, p
                 // Initialize property grid
                 var propertyList = new List<string[]>();
                 var index = partitionRuntumeInformationList.Count == 1 ? 0 : cboPartition.InvokeRequired ? (int)Invoke(new Func<int>(() => cboPartition.SelectedIndex)) : cboPartition.SelectedIndex;
-                var partitions = new List<PartitionRuntimeInformation>(new[] { eventHubClient.GetPartitionRuntimeInformation(partitionRuntumeInformationList[index].PartitionId) });
-                if (!partitions.Any())
-                {
-                    return;
-                }
                 var partitionId = cboPartition.InvokeRequired ? Invoke(new Func<string>(() => cboPartition.Text)) : cboPartition.Text;
-                var partition = partitions.FirstOrDefault(p => p.PartitionId == (string)partitionId);
-                if (partition == null)
+                var partition = eventHubMetadataClient.GetPartitionPropertiesAsync(partitionRuntumeInformationList[index].Id)
+                                                      .GetAwaiter()
+                                                      .GetResult();
+                if (!string.Equals(partition.Id, (string)partitionId, StringComparison.Ordinal))
                 {
                     return;
                 }
-                propertyList.AddRange(new[]{new[]{PartitionId, partition.PartitionId},
-                                            new[]{EventHubPath, partition.EventHubPath},
-                                            new[]{LastEnqueuedOffset, partition.LastEnqueuedOffset ?? "Null"},
-                                            new[]{LastEnqueuedTimeUtc, partition.LastEnqueuedTimeUtc.ToString(CultureInfo.InvariantCulture)},
-                                            new[]{BeginSequenceNumber, partition.BeginSequenceNumber.ToString("N0")}});
+                propertyList.AddRange(new[]{new[]{PartitionId, partition.Id},
+                                            new[]{EventHubPath, partition.EventHubName},
+                                            new[]{LastEnqueuedOffset, partition.LastEnqueuedOffsetString ?? "Null"},
+                                            new[]{LastEnqueuedTimeUtc, partition.LastEnqueuedTime.UtcDateTime.ToString(CultureInfo.InvariantCulture)},
+                                            new[]{BeginSequenceNumber, partition.BeginningSequenceNumber.ToString("N0")}});
 
                 if (InvokeRequired)
                 {
