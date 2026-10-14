@@ -127,7 +127,8 @@ namespace ServiceBusExplorer.Controls
         private bool sorting;
         private readonly SortableBindingList<EventDataMessage> eventDataBindingList = new SortableBindingList<EventDataMessage> { AllowNew = false, AllowEdit = false, AllowRemove = false };
         private readonly IList<ModernPartitionProperties> partitionRuntumeInformationList = new List<ModernPartitionProperties>();
-        private BlockingCollection<EventDataMessage> eventDataCollection = new BlockingCollection<EventDataMessage>();
+        private readonly BlockingCollection<EventDataMessage> eventDataCollection = new BlockingCollection<EventDataMessage>();
+        private readonly object eventDataCollectionLock = new object();
         private System.Timers.Timer timer;
         private long receiverMessageNumber;
         private long receiverMessageSizeTotal;
@@ -146,6 +147,10 @@ namespace ServiceBusExplorer.Controls
         private ContainerForm containerForm;
         private bool stopping;
         private bool graph;
+        private volatile bool loggingEnabled;
+        private volatile bool verboseEnabled;
+        private volatile bool trackingEnabled;
+        private volatile bool checkpointEnabled;
         private IEventDataInspector receiverEventDataInspector;
         private DateTime dateTime = DateTime.MinValue;
         private readonly string consumerGroupName;
@@ -247,6 +252,14 @@ namespace ServiceBusExplorer.Controls
 
         private void InitializeControls()
         {
+            loggingEnabled = checkBoxLogging.Checked;
+            verboseEnabled = checkBoxVerbose.Checked;
+            trackingEnabled = checkBoxTrackMessages.Checked;
+            checkpointEnabled = checkBoxCheckpoint.Checked;
+            checkBoxVerbose.CheckedChanged += (sender, args) => verboseEnabled = checkBoxVerbose.Checked;
+            checkBoxTrackMessages.CheckedChanged += (sender, args) => trackingEnabled = checkBoxTrackMessages.Checked;
+            checkBoxCheckpoint.CheckedChanged += (sender, args) => checkpointEnabled = checkBoxCheckpoint.Checked;
+
             // Hide Partition Combobox
             if (partitionRuntumeInformationList != null)
             {
@@ -829,10 +842,6 @@ namespace ServiceBusExplorer.Controls
                     var startDateTimeEnabled = pickerStartingDateTimeUtc.Checked;
                     var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);
                     var cancellationToken = cancellationTokenSource.Token;
-                    var logging = checkBoxLogging.Checked;
-                    var verbose = checkBoxVerbose.Checked;
-                    var tracking = checkBoxTrackMessages.Checked;
-                    var checkpoint = checkBoxCheckpoint.Checked;
                     var offsetInclusive = checkBoxOffsetInclusive.Checked;
                     foreach (var partitionRuntimeInformation in partitionRuntumeInformationList)
                     {
@@ -865,10 +874,6 @@ namespace ServiceBusExplorer.Controls
                                                                                  consumerGroupName,
                                                                                  maxBatchSize,
                                                                                  receiveTimeout,
-                                                                                 logging,
-                                                                                 verbose,
-                                                                                 tracking,
-                                                                                 checkpoint,
                                                                                  cancellationToken)));
                     }
 #pragma warning disable 4014
@@ -925,10 +930,6 @@ namespace ServiceBusExplorer.Controls
                                               string consumerGroupName,
                                               int maxBatchSize,
                                               TimeSpan receiveTimeout,
-                                              bool logging,
-                                              bool verbose,
-                                              bool tracking,
-                                              bool checkpoint,
                                               CancellationToken cancellationToken)
         {
             try
@@ -981,7 +982,7 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
 
-                    if (logging)
+                    if (loggingEnabled)
                     {
                         var builder = new StringBuilder(string.Format(CultureInfo.CurrentCulture,
                                                                       "[EventProcessor] Event: PartitionId=[{0}] PartitionKey=[{1}] SequenceNumber=[{2}] Offset=[{3}] EnqueuedTimeUtc=[{4}]",
@@ -990,21 +991,31 @@ namespace ServiceBusExplorer.Controls
                                                                       data.SequenceNumber,
                                                                       data.OffsetString,
                                                                       data.EnqueuedTime.UtcDateTime));
-                        if (verbose)
+                        if (verboseEnabled)
                         {
                             serviceBusHelper.GetMessageAndProperties(builder, eventData);
                         }
                         writeToLog(builder.ToString());
                     }
 
-                    if (tracking)
+                    if (trackingEnabled)
                     {
-                        eventDataCollection.Add(new EventDataMessage(eventData,
-                                                                    data.PartitionKey,
-                                                                    data.SequenceNumber,
-                                                                    data.OffsetString,
-                                                                    data.EventBody.ToArray().Length,
-                                                                    data.EnqueuedTime.UtcDateTime));
+                        lock (eventDataCollectionLock)
+                        {
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                eventData.Dispose();
+                            }
+                            else
+                            {
+                                eventDataCollection.Add(new EventDataMessage(eventData,
+                                                                            data.PartitionKey,
+                                                                            data.SequenceNumber,
+                                                                            data.OffsetString,
+                                                                            data.EventBody.ToArray().Length,
+                                                                            data.EnqueuedTime.UtcDateTime));
+                            }
+                        }
                     }
                     else
                     {
@@ -1012,7 +1023,7 @@ namespace ServiceBusExplorer.Controls
                     }
 
                     UpdateStatistics(1, GetElapsedTime(), data.EventBody.ToArray().Length);
-                    if (checkpoint)
+                    if (checkpointEnabled)
                     {
                         await EventProcessorCheckpointHelper.CheckpointAsync(
                             ns,
@@ -1099,8 +1110,13 @@ namespace ServiceBusExplorer.Controls
             {
                 clearing = true;
                 cleared = true;
-                eventDataCollection.Dispose();
-                eventDataCollection = new BlockingCollection<EventDataMessage>();
+                lock (eventDataCollectionLock)
+                {
+                    while (eventDataCollection.TryTake(out var queuedEventData))
+                    {
+                        queuedEventData.Dispose();
+                    }
+                }
                 ClearTrackedMessages();
                 ClearStatistics();
                 ClearCharts();
@@ -1403,6 +1419,7 @@ namespace ServiceBusExplorer.Controls
 
         private async void checkBoxLogging_CheckedChanged(object sender, EventArgs e)
         {
+            loggingEnabled = checkBoxLogging.Checked;
             if (checkBoxLogging.Checked)
             {
                 if (startLog != null)
@@ -1489,6 +1506,8 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+                cancellationTokenSource?.Cancel();
+
                 if (disposing && (components != null))
                 {
                     components.Dispose();
@@ -1496,7 +1515,10 @@ namespace ServiceBusExplorer.Controls
 
                 if (eventDataCollection != null)
                 {
-                    eventDataCollection.Dispose();
+                    lock (eventDataCollectionLock)
+                    {
+                        eventDataCollection.Dispose();
+                    }
                 }
 
                 //if (cancellationTokenSource != null)

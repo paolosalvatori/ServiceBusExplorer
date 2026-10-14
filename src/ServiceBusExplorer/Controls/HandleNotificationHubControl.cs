@@ -3511,7 +3511,6 @@ namespace ServiceBusExplorer.Controls
                     GetServiceAccountValue(serviceAccount, "private_key"),
                     GetServiceAccountValue(serviceAccount, "project_id"),
                     GetServiceAccountValue(serviceAccount, "client_email"));
-                description.FcmCredential = null;
                 return;
             }
 

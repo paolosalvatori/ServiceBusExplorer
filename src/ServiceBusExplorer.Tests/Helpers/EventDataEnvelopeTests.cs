@@ -1,8 +1,10 @@
 using System.IO;
+using System.Linq;
 using System.Text;
 using System;
 using FluentAssertions;
 using ServiceBusExplorer.Helpers;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
@@ -63,6 +65,26 @@ namespace ServiceBusExplorer.Tests.Helpers
                 clone.Properties["application"].Should().Be("value");
                 clone.SystemProperties["service"].Should().Be("metadata");
                 Encoding.UTF8.GetString(clone.ToAzureEventData().EventBody.ToArray()).Should().Be("event body");
+            }
+        }
+
+        [Fact]
+        public async Task Clone_CanCopySharedTemplateConcurrently()
+        {
+            const string body = "shared event template body";
+            using (var template = new EventDataEnvelope(new MemoryStream(Encoding.UTF8.GetBytes(body))))
+            {
+                var clones = await Task.WhenAll(Enumerable.Range(0, 64).Select(_ => Task.Run(() =>
+                {
+                    using (var clone = template.Clone())
+                    using (var stream = clone.GetBodyStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                })));
+
+                clones.Should().OnlyContain(clone => clone == body);
             }
         }
     }

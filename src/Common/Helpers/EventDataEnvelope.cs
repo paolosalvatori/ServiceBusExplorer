@@ -8,7 +8,7 @@ namespace ServiceBusExplorer.Helpers
 {
     public sealed class EventDataEnvelope : IDisposable
     {
-        private Stream body;
+        private byte[] body;
 
         public EventDataEnvelope(Stream body)
         {
@@ -19,7 +19,7 @@ namespace ServiceBusExplorer.Helpers
 
         public string PartitionKey { get; set; }
         public long SequenceNumber { get; set; }
-        public long SerializedSizeInBytes => body.CanSeek ? body.Length : 0;
+        public long SerializedSizeInBytes => body.Length;
         public string Offset { get; set; }
         public DateTime EnqueuedTimeUtc { get; set; }
         public IDictionary<string, object> Properties { get; }
@@ -27,11 +27,7 @@ namespace ServiceBusExplorer.Helpers
 
         public Stream GetBodyStream()
         {
-            if (body.CanSeek)
-            {
-                body.Position = 0;
-            }
-            return body;
+            return new MemoryStream(body, false);
         }
 
         public void SetBodyStream(Stream stream)
@@ -41,31 +37,41 @@ namespace ServiceBusExplorer.Helpers
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var copy = new MemoryStream();
             var originalPosition = stream.CanSeek ? stream.Position : 0;
-            if (stream.CanSeek)
+            try
             {
-                stream.Position = 0;
+                if (stream.CanSeek)
+                {
+                    stream.Position = 0;
+                }
+                using (var copy = new MemoryStream())
+                {
+                    stream.CopyTo(copy);
+                    body = copy.ToArray();
+                }
             }
-            stream.CopyTo(copy);
-            if (stream.CanSeek)
+            finally
             {
-                stream.Position = originalPosition;
+                if (stream.CanSeek)
+                {
+                    stream.Position = originalPosition;
+                }
             }
-            copy.Position = 0;
-            body?.Dispose();
-            body = copy;
         }
 
         public EventDataEnvelope Clone()
         {
-            var clone = new EventDataEnvelope(GetBodyStream())
+            EventDataEnvelope clone;
+            using (var bodyStream = GetBodyStream())
             {
-                PartitionKey = PartitionKey,
-                SequenceNumber = SequenceNumber,
-                Offset = Offset,
-                EnqueuedTimeUtc = EnqueuedTimeUtc
-            };
+                clone = new EventDataEnvelope(bodyStream)
+                {
+                    PartitionKey = PartitionKey,
+                    SequenceNumber = SequenceNumber,
+                    Offset = Offset,
+                    EnqueuedTimeUtc = EnqueuedTimeUtc
+                };
+            }
             foreach (var property in Properties)
             {
                 clone.Properties.Add(property);
@@ -79,21 +85,16 @@ namespace ServiceBusExplorer.Helpers
 
         public EventData ToAzureEventData()
         {
-            using (var copy = new MemoryStream())
+            var eventData = new EventData(new BinaryData(body));
+            foreach (var property in Properties)
             {
-                GetBodyStream().CopyTo(copy);
-                var eventData = new EventData(new BinaryData(copy.ToArray()));
-                foreach (var property in Properties)
-                {
-                    eventData.Properties[property.Key] = property.Value;
-                }
-                return eventData;
+                eventData.Properties[property.Key] = property.Value;
             }
+            return eventData;
         }
 
         public void Dispose()
         {
-            body?.Dispose();
         }
     }
 }
