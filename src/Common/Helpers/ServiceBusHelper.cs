@@ -140,7 +140,6 @@ namespace ServiceBusExplorer
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
-        private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
         private string ns;
@@ -204,7 +203,6 @@ namespace ServiceBusExplorer
             EventDataInspectors = serviceBusHelper.EventDataInspectors;
             BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
-            notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
             SharedAccessKey = serviceBusHelper.SharedAccessKey;
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
@@ -827,17 +825,14 @@ namespace ServiceBusExplorer
                 {
                     try
                     {
-                        notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
-
-                        // Set retry count
-                        if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                        var notificationHubSettings = new AzureNotificationHubs.NotificationHubSettings
                         {
-                            notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
-                                                                                                                            defaultNotificationHubsRetryExponential.MaximumBackoff,
-                                                                                                                            defaultNotificationHubsRetryExponential.DeltaBackoff,
-                                                                                                                            defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
-                                                                                                                            RetryHelper.RetryCount);
-                        }
+                            RetryOptions = new AzureNotificationHubs.NotificationHubRetryOptions
+                            {
+                                MaxRetries = RetryHelper.RetryCount
+                            }
+                        };
+                        notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(serviceBusNamespace.ConnectionStringWithoutTransportType, notificationHubSettings);
                     }
                     catch (Exception)
                     {
