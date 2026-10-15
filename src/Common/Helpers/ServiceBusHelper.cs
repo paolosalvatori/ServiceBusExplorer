@@ -4528,6 +4528,225 @@ namespace ServiceBusExplorer
             return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
         }
 
+        public async Task<byte[]> GetSessionStateFromModernDataPlane(
+            string entityPath,
+            string subscriptionName,
+            string sessionId,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                throw new ArgumentException("A session identifier is required.", nameof(sessionId));
+            }
+
+            var client = CreateServiceBusClient();
+            ServiceBusSessionReceiver receiver = null;
+            try
+            {
+                var options = new ServiceBusSessionReceiverOptions
+                {
+                    ReceiveMode = ServiceBusReceiveMode.PeekLock
+                };
+                receiver = string.IsNullOrWhiteSpace(subscriptionName)
+                    ? await client.AcceptSessionAsync(entityPath, sessionId, options, cancellationToken)
+                        .ConfigureAwait(false)
+                    : await client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, cancellationToken)
+                        .ConfigureAwait(false);
+
+                var state = await receiver.GetSessionStateAsync(cancellationToken).ConfigureAwait(false);
+                return state?.ToArray();
+            }
+            finally
+            {
+                try
+                {
+                    if (receiver != null)
+                    {
+                        await receiver.DisposeAsync().ConfigureAwait(false);
+                    }
+                }
+                finally
+                {
+                    await client.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        public ServiceBusSessionReceiver AcceptNextSessionFromModernDataPlane(
+            ServiceBusClient client,
+            string entityPath,
+            string subscriptionName,
+            ServiceBusReceiveMode receiveMode,
+            int prefetchCount,
+            TimeSpan acceptTimeout,
+            CancellationToken cancellationToken)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+
+            using (var timeoutCancellationTokenSource = new CancellationTokenSource(acceptTimeout))
+            using (var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+                timeoutCancellationTokenSource.Token,
+                cancellationToken))
+            {
+                var options = new ServiceBusSessionReceiverOptions
+                {
+                    PrefetchCount = prefetchCount,
+                    ReceiveMode = receiveMode
+                };
+
+                try
+                {
+                    return string.IsNullOrWhiteSpace(subscriptionName)
+                        ? client.AcceptNextSessionAsync(entityPath, options, linkedCancellationTokenSource.Token)
+                            .GetAwaiter().GetResult()
+                        : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, linkedCancellationTokenSource.Token)
+                            .GetAwaiter().GetResult();
+                }
+                catch (OperationCanceledException ex) when (
+                    timeoutCancellationTokenSource.IsCancellationRequested &&
+                    !cancellationToken.IsCancellationRequested)
+                {
+                    throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
+                }
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
+                {
+                    throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
+                }
+            }
+        }
+
+        public List<BrokeredMessage> GetMessagesFromModernSessionDataPlane(
+            string entityPath,
+            string subscriptionName,
+            string sessionId,
+            bool peek,
+            int count,
+            long? fromSequenceNumber,
+            TimeSpan receiveTimeout,
+            IBrokeredMessageInspector messageInspector)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+            if (count == 0)
+            {
+                return new List<BrokeredMessage>();
+            }
+
+            var brokeredMessages = new List<BrokeredMessage>(count);
+            var client = CreateServiceBusClient();
+            ServiceBusSessionReceiver receiver = null;
+            try
+            {
+                var options = new ServiceBusSessionReceiverOptions
+                {
+                    ReceiveMode = peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete
+                };
+                using (var acceptCancellationTokenSource = new CancellationTokenSource(receiveTimeout))
+                {
+                    try
+                    {
+                        var cancellationToken = acceptCancellationTokenSource.Token;
+                        receiver = string.IsNullOrWhiteSpace(sessionId)
+                            ? (string.IsNullOrWhiteSpace(subscriptionName)
+                                ? client.AcceptNextSessionAsync(entityPath, options, cancellationToken)
+                                : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, cancellationToken))
+                                .GetAwaiter().GetResult()
+                            : (string.IsNullOrWhiteSpace(subscriptionName)
+                                ? client.AcceptSessionAsync(entityPath, sessionId, options, cancellationToken)
+                                : client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, cancellationToken))
+                                .GetAwaiter().GetResult();
+                    }
+                    catch (OperationCanceledException ex) when (acceptCancellationTokenSource.IsCancellationRequested)
+                    {
+                        throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
+                    }
+                    catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
+                    {
+                        throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
+                    }
+                }
+
+                long? nextSequenceNumber = fromSequenceNumber;
+                while (brokeredMessages.Count < count)
+                {
+                    var batchSize = count - brokeredMessages.Count;
+                    IReadOnlyList<ServiceBusReceivedMessage> messages = peek
+                        ? receiver.PeekMessagesAsync(batchSize, nextSequenceNumber).GetAwaiter().GetResult()
+                        : receiver.ReceiveMessagesAsync(batchSize, receiveTimeout).GetAwaiter().GetResult();
+                    if (messages == null || messages.Count == 0)
+                    {
+                        break;
+                    }
+
+                    foreach (var message in messages)
+                    {
+                        var compatibilityMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
+                        try
+                        {
+                            brokeredMessages.Add(messageInspector == null
+                                ? compatibilityMessage
+                                : messageInspector.AfterReceiveMessage(compatibilityMessage));
+                        }
+                        catch
+                        {
+                            compatibilityMessage.Dispose();
+                            throw;
+                        }
+                    }
+
+                    if (peek)
+                    {
+                        var lastSequenceNumber = messages[messages.Count - 1].SequenceNumber;
+                        if (lastSequenceNumber == long.MaxValue)
+                        {
+                            break;
+                        }
+                        nextSequenceNumber = lastSequenceNumber + 1;
+                    }
+                }
+                return brokeredMessages;
+            }
+            catch
+            {
+                foreach (var message in brokeredMessages)
+                {
+                    message.Dispose();
+                }
+                throw;
+            }
+            finally
+            {
+                try
+                {
+                    if (receiver != null)
+                    {
+                        receiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                    }
+                }
+                finally
+                {
+                    client.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                }
+            }
+        }
+
         public List<BrokeredMessage> GetMessagesFromModernDataPlane(
             string entityPath,
             string subscriptionName,

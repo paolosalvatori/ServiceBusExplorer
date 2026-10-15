@@ -113,11 +113,27 @@ is abandoned best-effort and failures are surfaced. Live Azure/emulator
 acceptance is still needed to verify cross-entity transaction behavior for
 each supported service profile.
 
-Session-specific browsing/receiving, session operations, listeners/processors,
-and their callback contracts still use legacy clients. The old message editor,
-inspectors, and generators also retain `BrokeredMessage` contracts. Cleanup and
-package removal remain out of scope. Event Hubs and Notification Hubs are
-unchanged.
+Session-specific browsing and receiving now use `ServiceBusSessionReceiver`,
+including test receivers and dead-letter receivers; selecting a session reads
+its state through the modern receiver without changing it. Continuous
+listeners use `ServiceBusProcessor` or the session-aware processor, with
+asynchronous stop/cancellation and SDK settlement. Processor callbacks use
+their cancellation tokens for explicit completion; expected cancellation on
+stop is not logged as a processing failure. Manual session-receive loops stop
+on terminal errors rather than retrying indefinitely. Received messages
+continue through the metadata-preserving adapter for the existing inspector
+and UI contracts.
+
+The session list itself still uses the legacy read-only
+`GetMessageSessions()` enumeration. Azure.Messaging.ServiceBus 7.20.1 has no
+session-ID enumeration API; discovering IDs by repeatedly accepting sessions
+would acquire locks and disturb other consumers, so this stage does not
+approximate that operation. The list retains its existing `MessageSession`
+property-grid model, while selected session state is read from the modern
+receiver. This is a documented compatibility gap for a future decision.
+Legacy callback adapter classes and the old message editor, inspectors, and
+generators also remain as compatibility seams. Cleanup and package removal
+remain out of scope. Event Hubs and Notification Hubs are unchanged.
 
 ### Compatibility decisions for review
 

@@ -43,6 +43,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -883,77 +884,19 @@ namespace ServiceBusExplorer.Controls
                     writeToLog(string.Format(peek ? MessagesPeekedFromTheSubscription : MessagesReceivedFromTheSubscription,
                         brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }
-                else if (peek)
-                {
-                    var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                        subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                                        ReceiveMode.PeekLock);
-                    var totalRetrieved = 0;
-                    while (totalRetrieved < count)
-                    {
-                        IEnumerable<BrokeredMessage> messageEnumerable;
-
-                        if (totalRetrieved == 0 && fromSequenceNumber.HasValue)
-                        {
-                            messageEnumerable = subscriptionClient.PeekBatch(fromSequenceNumber.Value, count);
-                        }
-                        else
-                        {
-                            messageEnumerable = subscriptionClient.PeekBatch(count);
-                        }
-
-                        if (messageEnumerable == null)
-                        {
-                            break;
-                        }
-                        var messageArray = messageEnumerable as BrokeredMessage[] ?? messageEnumerable.ToArray();
-                        var partialList = messageInspector != null ?
-                                       messageArray.Select(b => messageInspector.AfterReceiveMessage(b)).ToList() :
-                                       new List<BrokeredMessage>(messageArray);
-                        brokeredMessages.AddRange(partialList);
-                        totalRetrieved += partialList.Count;
-                        if (partialList.Count == 0)
-                        {
-                            break;
-                        }
-                    }
-                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
                 else
                 {
-                    MessageReceiver messageReceiver;
-                    if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-                    {
-                        var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                            subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                                            ReceiveMode.ReceiveAndDelete);
-                        messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(
-                                                                                                  subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                  subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.ReceiveAndDelete);
-                    }
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var messages = messageReceiver.ReceiveBatch(all
-                            ? MainForm.SingletonMainForm.TopCount
-                            : count - totalRetrieved,
-                            TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-                        retrieved = enumerable.Count();
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
-                    } while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernSessionDataPlane(
+                        subscriptionWrapper.SubscriptionDescription.TopicPath,
+                        subscriptionWrapper.SubscriptionDescription.Name,
+                        null,
+                        peek,
+                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector);
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheSubscription : MessagesReceivedFromTheSubscription,
+                        brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }
                 messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -990,10 +933,6 @@ namespace ServiceBusExplorer.Controls
                 writeToLog(string.Format(NoMessageReceivedFromTheSubscription,
                                          MainForm.SingletonMainForm.ReceiveTimeout,
                                          subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (NotSupportedException) when (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-            {
-                ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -1011,115 +950,7 @@ namespace ServiceBusExplorer.Controls
 
         private void ReadMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
-            try
-            {
-                var brokeredMessages = new List<BrokeredMessage>();
-                if (peek)
-                {
-                    var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                 subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                                 ReceiveMode.PeekLock);
-                    for (var i = 0; i < count; i++)
-                    {
-                        BrokeredMessage message;
-
-                        if (i == 0 && fromSequenceNumber.HasValue)
-                        {
-                            message = subscriptionClient.Peek(fromSequenceNumber.Value);
-                        }
-                        else
-                        {
-                            message = subscriptionClient.Peek();
-                        }
-
-                        if (message != null)
-                        {
-                            if (messageInspector != null)
-                            {
-                                message = messageInspector.AfterReceiveMessage(message);
-                            }
-                            brokeredMessages.Add(message);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    writeToLog(string.Format(MessagesPeekedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    MessageReceiver messageReceiver;
-                    if (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-                    {
-                        var subscriptionClient = serviceBusHelper.MessagingFactory.CreateSubscriptionClient(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                           subscriptionWrapper.SubscriptionDescription.Name,
-                                                                                           ReceiveMode.ReceiveAndDelete);
-                        messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                    }
-                    else
-                    {
-                        messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                                            subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.ReceiveAndDelete);
-                    }
-
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        retrieved = message != null ? 1 : 0;
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.Add(messageInspector != null ? messageInspector.AfterReceiveMessage(message) : message);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheSubscription, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                messageBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = false
-                };
-                messagesBindingSource.DataSource = messageBindingList;
-                messagesDataGridView.DataSource = messagesBindingSource;
-
-                messagesSplitContainer.SplitterDistance = messagesSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          messagesSplitContainer.SplitterWidth;
-                messageMainSplitContainer.SplitterDistance = messageMainSplitContainer.Size.Height / 2 - 8;
-
-                if (!peek)
-                {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
-                }
-                if (mainTabControl.TabPages[MessagesTabPage] == null)
-                {
-                    EnablePage(MessagesTabPage);
-                }
-                if (mainTabControl.TabPages[MessagesTabPage] != null)
-                {
-                    mainTabControl.SelectTab(MessagesTabPage);
-                }
-            }
-            catch (TimeoutException)
-            {
-                writeToLog(string.Format(NoMessageReceivedFromTheSubscription,
-                                         MainForm.SingletonMainForm.ReceiveTimeout,
-                                         subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (Exception e)
-            {
-                HandleException(e);
-            }
+            GetMessages(peek, all, count, messageInspector, fromSequenceNumber);
         }
 
         private void GetDeadletterMessages(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
@@ -2105,26 +1936,50 @@ namespace ServiceBusExplorer.Controls
         {
         }
 
-        private void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private async void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             var bindingList = sessionsBindingSource.DataSource as BindingList<MessageSession>;
-            if (bindingList == null)
+            if (bindingList == null || e.RowIndex < 0 || e.RowIndex >= bindingList.Count)
             {
                 return;
             }
             var messageSession = bindingList[e.RowIndex];
             sessionPropertyGrid.SelectedObject = messageSession;
-            var stream = messageSession.GetState();
-            if (stream == null)
+            try
             {
-                return;
-            }
-            using (stream)
-            {
-                using (var reader = new StreamReader(stream))
+                byte[] sessionState;
+                using (var cancellationTokenSource = new CancellationTokenSource(
+                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout)))
                 {
-                    txtSessionState.Text = reader.ReadToEnd();
+                    sessionState = await serviceBusHelper.GetSessionStateFromModernDataPlane(
+                        subscriptionWrapper.SubscriptionDescription.TopicPath,
+                        subscriptionWrapper.SubscriptionDescription.Name,
+                        messageSession.SessionId,
+                        cancellationTokenSource.Token);
                 }
+                if (ReferenceEquals(sessionsDataGridView.CurrentRow?.DataBoundItem, messageSession))
+                {
+                    using (var stream = sessionState == null
+                        ? null
+                        : new MemoryStream(sessionState))
+                    {
+                        if (stream == null)
+                        {
+                            txtSessionState.Text = string.Empty;
+                        }
+                        else
+                        {
+                            using (var reader = new StreamReader(stream))
+                            {
+                                txtSessionState.Text = reader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
             }
         }
 

@@ -18,6 +18,9 @@ Hubs, Relay, or XML import/export behavior.
 
 - Use `ServiceBusSessionReceiver` for session-specific browsing, receiving,
   and session-state operations.
+- Keep read-only session-ID enumeration on the existing API because version
+  7.20.1 has no modern session enumeration method; do not probe by acquiring
+  session locks.
 - Use modern processor APIs for continuous queue/subscription listeners,
   including session-enabled entities.
 - Preserve existing listener controls, statistics, logging, tracking, message
@@ -40,6 +43,12 @@ the requested receive mode. Replace listener message pumps with
 processor for session-required entities. The listener owns the client and
 processor lifetime; starting and stopping the listener starts/stops processing
 and disposes the associated SDK resources asynchronously.
+
+The new SDK does not expose an operation to enumerate session IDs. Preserve the
+existing read-only `GetMessageSessions()` list and its `MessageSession`
+property-grid model rather than accepting sessions just to discover IDs;
+accepting sessions takes locks and may interfere with other consumers. Once a
+session is selected, read its state through `ServiceBusSessionReceiver`.
 
 Convert each received SDK message to the existing `BrokeredMessage` UI and
 inspector representation with `ServiceBusReceivedMessageAdapter`. Keep the
@@ -85,6 +94,8 @@ required.
 - Do not make session state editable or add a new serialized state format.
 - Preserve queue/subscription receive-mode semantics and cancellation on
   listener stop/close.
+- Keep session enumeration as an explicit legacy compatibility seam; do not
+  imply that modern receiver APIs enumerate sessions.
 - Legacy extension types and unrelated message-editing APIs remain in scope
   only as compatibility seams. Removing `WindowsAzure.ServiceBus` is a later
   cleanup stage.
@@ -93,13 +104,16 @@ required.
 
 ## Validation
 
-Add focused regression coverage for session receiver configuration and
-message/session-state adaptation where the current test architecture permits.
-Run the focused tests, then the full Release suite with
-`FILE_VERSION=1.0.0.1`, the Release solution build, and `git diff --check`.
-Review listener start/stop and error paths to verify cancellation and async
-disposal. The stage is complete only when the full solution still builds and
-the full unit suite passes.
+The existing focused `ServiceBusMessageAdapterTests` passed (6/6). The
+repository's current test seam does not provide a deterministic fake for
+session receiver/processor lifecycle calls, so those service interactions were
+not covered by a new unit test; live Azure/emulator acceptance remains needed.
+
+The complete Release suite passed with `FILE_VERSION=1.0.0.1` (170/170), the
+Release solution build succeeded, and `git diff --check` passed. The build
+reports the existing missing `MinimumRecommendedRules.ruleset` warning.
+Listener callback cancellation, stop/disposal, and session-receive error paths
+were reviewed.
 
 ## Follow-up decisions
 
