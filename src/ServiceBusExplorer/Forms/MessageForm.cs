@@ -515,10 +515,9 @@ namespace ServiceBusExplorer.Forms
 
                     if (chkRemove.Checked)
                     {
-                        var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
                         var messageHandler = CreateDeadLetterMessageHandler();
 
-                        var result = await messageHandler.MoveMessages(messageSender,
+                        var result = await messageHandler.MoveMessages(form.Path,
                             sequenceNumbers,
                             transferDLQ: queueType == QueueType.TransferDeadletter,
                             outboundMessages);
@@ -538,12 +537,12 @@ namespace ServiceBusExplorer.Forms
                         else
                         {
                             writeToLog(string.Format(MessageMovedMessage, result.DeletedSequenceNumbers.Count,
-                                messageSender.Path, stopwatch.ElapsedMilliseconds));
+                                form.Path, stopwatch.ElapsedMilliseconds));
                         }
 
                         if (null != queueDescription)
                         {
-                            if (!messageSender.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
+                            if (!form.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
                             }

@@ -90,18 +90,33 @@ properties, and application properties from the existing editable
 message editing, inspectors, generators, and existing import/export formats
 working while those extension and UI contracts are migrated separately.
 `ForcePersistence` has no new-SDK equivalent and is not mapped; Service Bus
-messages are durable by service semantics. `ViaPartitionKey` also has no
-`ServiceBusMessage` equivalent and is not preserved by this send adapter.
+messages are durable by service semantics. `ViaPartitionKey` maps to the modern
+SDK's `TransactionPartitionKey`.
 
-This is an incremental stage, not completion of the data-plane migration.
-Queue/topic test senders, ordinary and dead-letter receivers, session
-operations, dead-letter settlement/moves, and listener pumps still use legacy
-clients and remain unavailable for emulator data-plane profiles. In
-particular, dead-letter move combines sending with settlement on the original
-receiver; that path remains legacy rather than risk sending a duplicate or
-losing the original message. The next increment must move those operations to
-the SDK receiver/processor APIs and replace plugin/UI message contracts only
-with an explicit compatibility plan. Event Hubs and Notification Hubs are
+This increment moves queue/topic test senders, non-session message-browser
+peek and receive operations, and non-session queue/subscription test receivers
+to `ServiceBusSender` and `ServiceBusReceiver`. Message browsing still exposes
+the established `BrokeredMessage` contract to inspectors and UI code through a
+compatibility adapter. Application properties and sendable system properties
+are copied; read-only receive metadata (sequence numbers, lock token, delivery
+count, enqueue/expiry times, dead-letter details and state) is exposed under
+`ServiceBusExplorer.SystemProperties.*` keys. A conflicting application key
+fails explicitly instead of hiding either value. When legacy
+`BrokeredMessage` cannot represent a modern metadata combination, the native
+value remains in that metadata map.
+
+Dead-letter deletion uses SDK receiver settlement. Moving selected DLQ messages
+uses a single SDK client with cross-entity transactions enabled and an ambient
+transaction that sends the destination message and completes the source lock
+atomically. An operation error does not trigger a second send; the source lock
+is abandoned best-effort and failures are surfaced. Live Azure/emulator
+acceptance is still needed to verify cross-entity transaction behavior for
+each supported service profile.
+
+Session-specific browsing/receiving, session operations, listeners/processors,
+and their callback contracts still use legacy clients. The old message editor,
+inspectors, and generators also retain `BrokeredMessage` contracts. Cleanup and
+package removal remain out of scope. Event Hubs and Notification Hubs are
 unchanged.
 
 ### Compatibility decisions for review
@@ -137,20 +152,37 @@ unchanged.
 - **Editable message compatibility:** the message editor and existing
   `IBrokeredMessageInspector`/`IBrokeredMessageGenerator` extension contracts
   continue using `BrokeredMessage` as an editable compatibility buffer. The
-  resubmit operation converts to the modern SDK type at send time. Review
-  whether a future public editable-message contract should replace these
-  legacy extension types before stage 4 removes their package.
+  resubmit and test sender paths convert to modern SDK messages at send time.
+  Received messages expose SDK-only broker metadata under the documented
+  `ServiceBusExplorer.SystemProperties.*` keys. Review whether a future public
+  editable-message contract should replace these legacy extension types before
+  stage 4 removes their package.
+- **Dead-letter move atomicity:** moving from a dead-letter subqueue now depends
+  on Service Bus cross-entity transaction support. The source is completed
+  only in the same transaction as the destination send; clients enable
+  cross-entity transactions explicitly. A lock-loss or transaction failure can
+  still have an ambiguous service outcome, so the operation is not retried as a
+  new send. Live acceptance against the emulator and supported Azure tiers is
+  a prerequisite for claiming this path is service-verified.
+- **Received metadata keys:** SDK-only receive metadata is kept in application
+  properties under the `ServiceBusExplorer.SystemProperties.*` namespace so
+  existing inspectors can read it. The adapter throws if a received
+  application property already uses that prefix. Review whether this reserved
+  namespace and explicit collision failure are acceptable for existing
+  extensions.
 
 ### Validation
 
 With `FILE_VERSION=1.0.0.1`, the full Release solution build succeeds and the
-Release unit suite passes (167 tests). The build retains the pre-existing
+Release unit suite passes (170 tests). The build retains the pre-existing
 missing `MinimumRecommendedRules.ruleset` warning. Regression coverage includes
 native properties/SAS/rule mapping, paged runtime queries, queue CRUD, rule
 CRUD, default entity options, immutable-property guards, update responses,
 legacy and current queue XML, filters, emulator management-only startup and
-the outgoing HTTP administration URI. Stage-3 tests verify the editor message
-adapter and the separate emulator administration/data-plane ports.
+the outgoing HTTP administration URI. Message adapter tests cover editable
+message conversion, `ViaPartitionKey` mapping, received SDK metadata, and
+reserved-key collisions. No live Service Bus integration acceptance has been
+performed for send, receive, settlement, or transactional moves.
 
 ## Decisions to review
 

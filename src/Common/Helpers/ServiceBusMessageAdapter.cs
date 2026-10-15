@@ -10,6 +10,37 @@ namespace ServiceBusExplorer.Helpers
 {
     public static class ServiceBusMessageAdapter
     {
+        public static ServiceBusMessage ToServiceBusMessageFromReceivedMessage(ServiceBusReceivedMessage message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var serviceBusMessage = new ServiceBusMessage(message.Body)
+            {
+                MessageId = message.MessageId,
+                SessionId = message.SessionId,
+                CorrelationId = message.CorrelationId,
+                ContentType = message.ContentType,
+                Subject = message.Subject,
+                PartitionKey = message.PartitionKey,
+                To = message.To,
+                ReplyTo = message.ReplyTo,
+                ReplyToSessionId = message.ReplyToSessionId,
+                TransactionPartitionKey = message.TransactionPartitionKey,
+                TimeToLive = message.TimeToLive,
+                ScheduledEnqueueTime = message.ScheduledEnqueueTime
+            };
+
+            foreach (var property in message.ApplicationProperties)
+            {
+                serviceBusMessage.ApplicationProperties.Add(property.Key, property.Value);
+            }
+
+            return serviceBusMessage;
+        }
+
         public static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message)
         {
             if (message == null)
@@ -40,6 +71,7 @@ namespace ServiceBusExplorer.Helpers
                 To = message.To,
                 ReplyTo = message.ReplyTo,
                 ReplyToSessionId = message.ReplyToSessionId,
+                TransactionPartitionKey = message.ViaPartitionKey,
                 TimeToLive = message.TimeToLive,
                 ScheduledEnqueueTime = new DateTimeOffset(
                     DateTime.SpecifyKind(message.ScheduledEnqueueTimeUtc, DateTimeKind.Utc))

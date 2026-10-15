@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using Azure.Messaging.ServiceBus;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Enums;
@@ -154,7 +155,7 @@ namespace ServiceBusExplorer.Controls
         private int receiveTimeout = 60;
         private int sessionTimeout = 60;
         private int prefetchCount;
-        private List<MessageSender> messageSenderCollection;
+        private List<ServiceBusSender> messageSenderCollection;
         private CancellationTokenSource senderCancellationTokenSource;
         private CancellationTokenSource receiverCancellationTokenSource;
         private CancellationTokenSource managerCancellationTokenSource;
@@ -190,6 +191,8 @@ namespace ServiceBusExplorer.Controls
         private IBrokeredMessageInspector receiverBrokeredMessageInspector;
         private readonly List<MessagingFactory> senderFactories = new List<MessagingFactory>();
         private readonly List<MessagingFactory> receiverFactories = new List<MessagingFactory>();
+        private readonly List<ServiceBusClient> senderClients = new List<ServiceBusClient>();
+        private readonly List<ServiceBusClient> receiverClients = new List<ServiceBusClient>();
         #endregion
 
         #region Private Static Fields
@@ -701,19 +704,22 @@ namespace ServiceBusExplorer.Controls
                         messageSenderCollection.Count < senderTaskCount ||
                         checkBoxSendNewFactory.Checked)
                     {
-                        messageSenderCollection = new List<MessageSender>(senderTaskCount);
+                        messageSenderCollection = new List<ServiceBusSender>(senderTaskCount);
+                        ServiceBusClient sharedClient = null;
+                        if (!checkBoxSendNewFactory.Checked)
+                        {
+                            sharedClient = controlHelper.ServiceBusHelper.CreateServiceBusClient();
+                            senderClients.Add(sharedClient);
+                        }
                         for (var i = 0; i < senderTaskCount; i++)
                         {
+                            var client = sharedClient;
                             if (checkBoxSendNewFactory.Checked)
                             {
-                                var factory = controlHelper.ServiceBusHelper.CreateMessagingFactory();
-                                senderFactories.Add(factory);
-                                messageSenderCollection.Add(factory.CreateMessageSender(topic.Path));
+                                client = controlHelper.ServiceBusHelper.CreateServiceBusClient();
+                                senderClients.Add(client);
                             }
-                            else
-                            {
-                                messageSenderCollection.Add(controlHelper.ServiceBusHelper.MessagingFactory.CreateMessageSender(topic.Path));
-                            }
+                            messageSenderCollection.Add(client.CreateSender(topic.Path));
                         }
                         isSenderFaulted = false;
                     }
@@ -940,6 +946,7 @@ namespace ServiceBusExplorer.Controls
                                     using (var scope = new TransactionScope())
                                     {
                                         ok = controlHelper.ServiceBusHelper.SendMessages(messageSenderCollection[taskId],
+                                            topic.Path,
                                             messageTemplateEnumerable,
                                             getMessageNumber,
                                             messageCount,
@@ -976,6 +983,7 @@ namespace ServiceBusExplorer.Controls
                                 else
                                 {
                                     ok = controlHelper.ServiceBusHelper.SendMessages(messageSenderCollection[taskId],
+                                        topic.Path,
                                         messageTemplateEnumerable,
                                         getMessageNumber,
                                         messageCount,
@@ -1062,45 +1070,59 @@ namespace ServiceBusExplorer.Controls
                             ? Activator.CreateInstance(controlHelper.ServiceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
                             : null;
 
-                        Action<int, MessagingFactory> receiverAction = (taskId, messagingFactory) =>
+                        Action<int, MessagingFactory, ServiceBusClient> receiverAction = (taskId, messagingFactory, serviceBusClient) =>
                         {
                             var allSessionsAccepted = false;
 
                             while (!allSessionsAccepted)
                             {
+                                ServiceBusReceiver sdkReceiver = null;
+                                MessageReceiver legacyReceiver = null;
                                 try
                                 {
-                                    MessageReceiver messageReceiver;
-                                    if (currentReadFromDeadLetterQueue)
+                                    if (!currentSubscription.RequiresSession)
                                     {
-                                        messageReceiver =
-                                            messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(currentSubscription.TopicPath,
-                                                    currentSubscription.Name),
-                                                currentReceiveMode);
+                                        sdkReceiver = serviceBusClient.CreateReceiver(
+                                            currentSubscription.TopicPath,
+                                            currentSubscription.Name,
+                                            new ServiceBusReceiverOptions
+                                            {
+                                                PrefetchCount = prefetchCount,
+                                                ReceiveMode = currentReceiveMode == ReceiveMode.PeekLock
+                                                    ? ServiceBusReceiveMode.PeekLock
+                                                    : ServiceBusReceiveMode.ReceiveAndDelete,
+                                                SubQueue = currentReadFromDeadLetterQueue ? SubQueue.DeadLetter : SubQueue.None
+                                            });
                                     }
                                     else
                                     {
-                                        if (currentSubscription.RequiresSession)
+                                        if (currentReadFromDeadLetterQueue)
                                         {
-                                            var subscriptionClient = messagingFactory.CreateSubscriptionClient(currentSubscription.TopicPath,
-                                                currentSubscription.Name,
+                                            legacyReceiver = messagingFactory.CreateMessageReceiver(
+                                                SubscriptionClient.FormatDeadLetterPath(currentSubscription.TopicPath, currentSubscription.Name),
                                                 currentReceiveMode);
-                                            messageReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(sessionTimeout));
                                         }
                                         else
                                         {
-                                            messageReceiver = messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatSubscriptionPath(currentSubscription.TopicPath,
-                                                    currentSubscription.Name),
-                                                currentReceiveMode);
+                                            var subscriptionClient = messagingFactory.CreateSubscriptionClient(
+                                                currentSubscription.TopicPath, currentSubscription.Name, currentReceiveMode);
+                                            legacyReceiver = subscriptionClient.AcceptMessageSession(TimeSpan.FromSeconds(sessionTimeout));
                                         }
                                     }
-                                    messageReceiver.PrefetchCount = prefetchCount;
-                                    string traceMessage;
-                                    if (checkBoxReceiverUseTransaction.Checked)
+                                    if (legacyReceiver != null)
                                     {
-                                        using (var scope = new TransactionScope())
+                                        legacyReceiver.PrefetchCount = prefetchCount;
+                                    }
+                                    string traceMessage = null;
+                                    Action receive = () =>
+                                    {
+                                        if (sdkReceiver != null)
                                         {
-                                            controlHelper.ServiceBusHelper.ReceiveMessages(messageReceiver,
+                                            controlHelper.ServiceBusHelper.ReceiveMessages(sdkReceiver,
+                                                currentReceiveMode == ReceiveMode.PeekLock
+                                                    ? ServiceBusReceiveMode.PeekLock
+                                                    : ServiceBusReceiveMode.ReceiveAndDelete,
+                                                currentReadFromDeadLetterQueue,
                                                 taskId,
                                                 receiveTimeout,
                                                 filter,
@@ -1118,6 +1140,34 @@ namespace ServiceBusExplorer.Controls
                                                 UpdateStatistics,
                                                 receiverCancellationTokenSource,
                                                 out traceMessage);
+                                        }
+                                        else
+                                        {
+                                            controlHelper.ServiceBusHelper.ReceiveMessages(legacyReceiver,
+                                                taskId,
+                                                receiveTimeout,
+                                                filter,
+                                                currentMoveToDeadLetterQueue,
+                                                checkBoxCompleteReceive.Checked,
+                                                checkBoxDeferMessage.Checked,
+                                                checkBoxEnableReceiverLogging.Checked,
+                                                checkBoxReceiverVerboseLogging.Checked,
+                                                checkBoxReceiverEnableStatistics.Checked,
+                                                checkBoxReceiveBatch.Checked,
+                                                receiverBatchSize,
+                                                checkBoxReceiverThinkTime.Checked,
+                                                receiverThinkTime,
+                                                receiverBrokeredMessageInspector,
+                                                UpdateStatistics,
+                                                receiverCancellationTokenSource,
+                                                out traceMessage);
+                                        }
+                                    };
+                                    if (checkBoxReceiverUseTransaction.Checked)
+                                    {
+                                        using (var scope = new TransactionScope())
+                                        {
+                                            receive();
                                             var builder = new StringBuilder(traceMessage);
                                             if (checkBoxReceiverCommitTransaction.Checked)
                                             {
@@ -1133,24 +1183,7 @@ namespace ServiceBusExplorer.Controls
                                     }
                                     else
                                     {
-                                        controlHelper.ServiceBusHelper.ReceiveMessages(messageReceiver,
-                                            taskId,
-                                            receiveTimeout,
-                                            filter,
-                                            currentMoveToDeadLetterQueue,
-                                            checkBoxCompleteReceive.Checked,
-                                            checkBoxDeferMessage.Checked,
-                                            checkBoxEnableReceiverLogging.Checked,
-                                            checkBoxReceiverVerboseLogging.Checked,
-                                            checkBoxReceiverEnableStatistics.Checked,
-                                            checkBoxReceiveBatch.Checked,
-                                            receiverBatchSize,
-                                            checkBoxReceiverThinkTime.Checked,
-                                            receiverThinkTime,
-                                            receiverBrokeredMessageInspector,
-                                            UpdateStatistics,
-                                            receiverCancellationTokenSource,
-                                            out traceMessage);
+                                        receive();
                                     }
                                     if (!string.IsNullOrWhiteSpace(traceMessage))
                                     {
@@ -1168,11 +1201,30 @@ namespace ServiceBusExplorer.Controls
                                     else
                                     {
                                         HandleException(ex);
+                                        allSessionsAccepted = true;
                                     }
                                 }
                                 catch (Exception ex)
                                 {
                                     HandleException(ex);
+                                    if (!currentSubscription.RequiresSession)
+                                    {
+                                        allSessionsAccepted = true;
+                                    }
+                                }
+                                finally
+                                {
+                                    if (sdkReceiver != null)
+                                    {
+                                        try
+                                        {
+                                            sdkReceiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            HandleException(ex);
+                                        }
+                                    }
                                 }
                             }
                         };
@@ -1180,7 +1232,7 @@ namespace ServiceBusExplorer.Controls
                         // Define Receiver AsyncCallback
                         AsyncCallback receiverCallback = a =>
                         {
-                            var action = a.AsyncState as Action<int, MessagingFactory>;
+                            var action = a.AsyncState as Action<int, MessagingFactory, ServiceBusClient>;
                             if (action != null)
                             {
                                 action.EndInvoke(a);
@@ -1192,9 +1244,16 @@ namespace ServiceBusExplorer.Controls
                         };
 
                         // Start Receiver Actions
+                        ServiceBusClient sharedReceiverClient = null;
+                        if (!currentSubscription.RequiresSession && !checkBoxReceiveNewFactory.Checked)
+                        {
+                            sharedReceiverClient = controlHelper.ServiceBusHelper.CreateServiceBusClient();
+                            receiverClients.Add(sharedReceiverClient);
+                        }
                         for (var i = 0; i < receiverTaskCount; i++)
                         {
                             MessagingFactory factory;
+                            ServiceBusClient client = null;
                             if (checkBoxReceiveNewFactory.Checked)
                             {
                                 factory = controlHelper.ServiceBusHelper.CreateMessagingFactory();
@@ -1204,8 +1263,17 @@ namespace ServiceBusExplorer.Controls
                             {
                                 factory = controlHelper.ServiceBusHelper.MessagingFactory;
                             }
+                            if (!currentSubscription.RequiresSession)
+                            {
+                                client = sharedReceiverClient;
+                                if (checkBoxReceiveNewFactory.Checked)
+                                {
+                                    client = controlHelper.ServiceBusHelper.CreateServiceBusClient();
+                                    receiverClients.Add(client);
+                                }
+                            }
 
-                            receiverAction.BeginInvoke(i, factory, receiverCallback, receiverAction);
+                            receiverAction.BeginInvoke(i, factory, client, receiverCallback, receiverAction);
                             Interlocked.Increment(ref actionCount);
                         }
                     }
@@ -1370,6 +1438,31 @@ namespace ServiceBusExplorer.Controls
             graphCancellationTokenSource?.Cancel();
             senderCancellationTokenSource?.Cancel();
             receiverCancellationTokenSource?.Cancel();
+
+            foreach (var client in senderClients)
+            {
+                try
+                {
+                    await client.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex);
+                }
+            }
+            senderClients.Clear();
+            foreach (var client in receiverClients)
+            {
+                try
+                {
+                    await client.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex);
+                }
+            }
+            receiverClients.Clear();
 
             // always cleans up the factories
             // clean up factories if the checkbox is checked.

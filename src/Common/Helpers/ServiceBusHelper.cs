@@ -39,6 +39,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Producer;
 using Azure.Messaging.ServiceBus.Administration;
@@ -2457,6 +2458,221 @@ namespace ServiceBusExplorer
         /// <param name="cancellationTokenSource">The cancellation token.</param>
         /// <param name="traceMessage">A trace message.</param>
         /// <returns>True if the method completed without exceptions, false otherwise.</returns>
+        public bool SendMessages(ServiceBusSender messageSender,
+                                 string entityPath,
+                                 IEnumerable<BrokeredMessage> messageTemplateEnumerable,
+                                 Func<long> getMessageNumber,
+                                 long messageCount,
+                                 int taskId,
+                                 bool updateMessageId,
+                                 bool addMessageNumber,
+                                 bool oneSessionPerTask,
+                                 bool logging,
+                                 bool verbose,
+                                 bool statistics,
+                                 bool sendBatch,
+                                 bool isBinary,
+                                 int batchSize,
+                                 bool senderThinkTime,
+                                 int thinkTime,
+                                 BodyType bodyType,
+                                 IBrokeredMessageInspector messageInspector,
+                                 UpdateStatisticsDelegate updateStatistics,
+                                 CancellationTokenSource cancellationTokenSource,
+                                 out string traceMessage)
+        {
+            if (messageSender == null)
+            {
+                throw new ArgumentNullException(nameof(messageSender));
+            }
+            if (messageTemplateEnumerable == null)
+            {
+                throw new ArgumentNullException(nameof(messageTemplateEnumerable));
+            }
+            if (cancellationTokenSource == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationTokenSource));
+            }
+
+            var templates = new CircularList<BrokeredMessage>(messageTemplateEnumerable);
+            long messagesSent = 0;
+            long totalElapsedTime = 0;
+            long minimumSendTime = long.MaxValue;
+            long maximumSendTime = 0;
+            string exceptionMessage = null;
+            var ok = true;
+            var wcfUri = IsCloudNamespace
+                ? new Uri(namespaceUri, entityPath)
+                : new UriBuilder
+                {
+                    Host = namespaceUri.Host,
+                    Path = $"{namespaceUri.AbsolutePath}/{entityPath}",
+                    Scheme = DefaultScheme
+                }.Uri;
+
+            try
+            {
+                var more = true;
+                while (more && !cancellationTokenSource.IsCancellationRequested)
+                {
+                    var outboundMessages = new List<BrokeredMessage>();
+                    var limit = sendBatch && batchSize > 1 ? batchSize : 1;
+                    while (outboundMessages.Count < limit && !cancellationTokenSource.IsCancellationRequested)
+                    {
+                        var messageNumber = getMessageNumber();
+                        if (messageNumber >= messageCount)
+                        {
+                            more = false;
+                            break;
+                        }
+
+                        var outbound = bodyType == BodyType.Wcf
+                            ? CreateMessageForWcfReceiver(templates.Next, taskId, updateMessageId, oneSessionPerTask, wcfUri)
+                            : CreateMessageForApiReceiver(templates.Next, taskId, updateMessageId, oneSessionPerTask, bodyType, messageInspector);
+                        if (addMessageNumber)
+                        {
+                            outbound.Properties[MessageNumber] = messageNumber;
+                        }
+                        outboundMessages.Add(outbound);
+                    }
+
+                    if (outboundMessages.Count > 0)
+                    {
+                        var stopwatch = Stopwatch.StartNew();
+                        try
+                        {
+                            if (outboundMessages.Count == 1)
+                            {
+                                var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0]);
+                                messageSender.SendMessageAsync(sdkMessage, cancellationTokenSource.Token)
+                                    .GetAwaiter().GetResult();
+                            }
+                            else
+                            {
+                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token);
+                            }
+
+                            stopwatch.Stop();
+                            var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                            messagesSent += outboundMessages.Count;
+                            totalElapsedTime += elapsedMilliseconds;
+                            minimumSendTime = Math.Min(minimumSendTime, elapsedMilliseconds);
+                            maximumSendTime = Math.Max(maximumSendTime, elapsedMilliseconds);
+                            if (statistics)
+                            {
+                                updateStatistics(outboundMessages.Count, elapsedMilliseconds, DirectionType.Send);
+                            }
+
+                            if (logging)
+                            {
+                                foreach (var outbound in outboundMessages)
+                                {
+                                    LogServiceBusMessageSent(outbound, taskId, isBinary, bodyType == BodyType.Wcf, verbose);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            stopwatch.Stop();
+                            foreach (var outbound in outboundMessages)
+                            {
+                                outbound.Dispose();
+                            }
+                        }
+                    }
+
+                    if (senderThinkTime && more && !cancellationTokenSource.IsCancellationRequested)
+                    {
+                        WriteToLog(string.Format(SleepingFor, thinkTime));
+                        Thread.Sleep(thinkTime);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
+                ok = false;
+            }
+
+            var averageSendTime = messagesSent > 0 ? totalElapsedTime / messagesSent : maximumSendTime;
+            var messagesPerSecond = totalElapsedTime > 0 ? (double)(messagesSent * 1000) / totalElapsedTime : 0;
+            var builder = new StringBuilder();
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsHeader, taskId));
+            if (!string.IsNullOrWhiteSpace(exceptionMessage))
+            {
+                builder.AppendLine(exceptionMessage);
+            }
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsLine1,
+                messagesSent, messagesPerSecond, totalElapsedTime));
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsLine2,
+                averageSendTime, minimumSendTime == long.MaxValue ? 0 : minimumSendTime, maximumSendTime));
+            traceMessage = builder.ToString();
+            return ok;
+        }
+
+        private static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken)
+        {
+            ServiceBusMessageBatch batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
+            try
+            {
+                foreach (var brokeredMessage in messages)
+                {
+                    var message = ServiceBusMessageAdapter.ToServiceBusMessage(brokeredMessage);
+                    if (batch.TryAddMessage(message))
+                    {
+                        continue;
+                    }
+
+                    if (batch.Count == 0)
+                    {
+                        throw new InvalidOperationException("A message exceeds the maximum Service Bus batch size.");
+                    }
+
+                    sender.SendMessagesAsync(batch, cancellationToken).GetAwaiter().GetResult();
+                    batch.Dispose();
+                    batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
+                    if (!batch.TryAddMessage(message))
+                    {
+                        throw new InvalidOperationException("A message exceeds the maximum Service Bus batch size.");
+                    }
+                }
+                if (batch.Count > 0)
+                {
+                    sender.SendMessagesAsync(batch, cancellationToken).GetAwaiter().GetResult();
+                }
+            }
+            finally
+            {
+                batch.Dispose();
+            }
+        }
+
+        private void LogServiceBusMessageSent(BrokeredMessage message, int taskId, bool isBinary, bool useWcf, bool verbose)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, MessageSuccessfullySent,
+                taskId,
+                string.IsNullOrWhiteSpace(message.MessageId) ? NullValue : message.MessageId,
+                string.IsNullOrWhiteSpace(message.SessionId) ? NullValue : message.SessionId,
+                string.IsNullOrWhiteSpace(message.Label) ? NullValue : message.Label,
+                message.Size));
+            if (verbose)
+            {
+                builder.AppendLine(SentMessagePayloadHeader);
+                using (var bodyStream = message.Clone().GetBodyStream())
+                {
+                    var messageText = GetMessageText(bodyStream, isBinary);
+                    builder.AppendLine(useWcf ? XmlHelper.Indent(messageText) : messageText);
+                }
+                builder.AppendLine(SentMessagePropertiesHeader);
+                foreach (var property in message.Properties)
+                {
+                    builder.AppendLine(string.Format(MessagePropertyFormat, property.Key, property.Value));
+                }
+            }
+            WriteToLog(builder.ToString().TrimEnd());
+        }
+
         public bool SendMessages(MessageSender messageSender,
                                  IEnumerable<BrokeredMessage> messageTemplateEnumerable,
                                  Func<long> getMessageNumber,
@@ -2946,6 +3162,286 @@ namespace ServiceBusExplorer
         /// <param name="cancellationTokenSource">The cancellation token.</param>
         /// <param name="traceMessage">A trace message.</param>
         /// <returns>True if the method completed without exceptions, false otherwise.</returns>
+        public bool ReceiveMessages(ServiceBusReceiver messageReceiver,
+                                    ServiceBusReceiveMode receiveMode,
+                                    bool receivedFromDeadLetterQueue,
+                                    int taskId,
+                                    int timeout,
+                                    Filter filter,
+                                    bool moveToDeadLetterQueue,
+                                    bool completeReceive,
+                                    bool defer,
+                                    bool logging,
+                                    bool verbose,
+                                    bool statistics,
+                                    bool receiveBatch,
+                                    int batchSize,
+                                    bool receiverThinkTime,
+                                    int thinkTime,
+                                    IBrokeredMessageInspector messageInspector,
+                                    UpdateStatisticsDelegate updateStatistics,
+                                    CancellationTokenSource cancellationTokenSource,
+                                    out string traceMessage)
+        {
+            if (messageReceiver == null)
+            {
+                throw new ArgumentNullException(nameof(messageReceiver));
+            }
+            if (cancellationTokenSource == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationTokenSource));
+            }
+
+            var messageDeferProvider = Activator.CreateInstance(messageDeferProviderType) as IMessageDeferProvider;
+            var readingDeferredMessages = false;
+            var messagesReceived = 0L;
+            long totalReceiveElapsedTime = 0;
+            long totalCompleteElapsedTime = 0;
+            long minimumReceiveTime = long.MaxValue;
+            long maximumReceiveTime = 0;
+            long minimumCompleteTime = long.MaxValue;
+            long maximumCompleteTime = 0;
+            string exceptionMessage = null;
+            List<ServiceBusReceivedMessage> unsettledMessages = null;
+            var ok = true;
+            MessageEncodingBindingElement element = scheme == DefaultScheme
+                ? (MessageEncodingBindingElement)new BinaryMessageEncodingBindingElement()
+                : new TextMessageEncodingBindingElement();
+            var encoder = element.CreateMessageEncoderFactory().Encoder;
+
+            try
+            {
+                var completed = false;
+                while (!completed && !cancellationTokenSource.IsCancellationRequested)
+                {
+                    var stopwatch = Stopwatch.StartNew();
+                    IReadOnlyList<ServiceBusReceivedMessage> messages;
+                    if (receiveBatch && batchSize > 0)
+                    {
+                        messages = messageReceiver.ReceiveMessagesAsync(
+                            batchSize,
+                            TimeSpan.FromSeconds(timeout),
+                            cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        completed = messages == null || messages.Count == 0;
+                    }
+                    else
+                    {
+                        ServiceBusReceivedMessage receivedMessage;
+                        if (readingDeferredMessages && messageDeferProvider.Count > 0 &&
+                            messageDeferProvider.Dequeue(out var sequenceNumber))
+                        {
+                            receivedMessage = messageReceiver.ReceiveDeferredMessageAsync(
+                                sequenceNumber,
+                                cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        }
+                        else
+                        {
+                            receivedMessage = messageReceiver.ReceiveMessageAsync(
+                                TimeSpan.FromSeconds(timeout),
+                                cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        }
+
+                        if (receivedMessage == null)
+                        {
+                            if (!readingDeferredMessages && messageDeferProvider.Count > 0)
+                            {
+                                readingDeferredMessages = true;
+                                continue;
+                            }
+                            completed = true;
+                            continue;
+                        }
+                        messages = new[] { receivedMessage };
+                    }
+                    stopwatch.Stop();
+
+                    if (completed)
+                    {
+                        continue;
+                    }
+                    unsettledMessages = messages.ToList();
+
+                    totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
+                    minimumReceiveTime = Math.Min(minimumReceiveTime, stopwatch.ElapsedMilliseconds);
+                    maximumReceiveTime = Math.Max(maximumReceiveTime, stopwatch.ElapsedMilliseconds);
+                    if (statistics)
+                    {
+                        updateStatistics(messages.Count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                    }
+
+                    var logBuilder = new StringBuilder();
+                    foreach (var receivedMessage in messages)
+                    {
+                        var compatibilityMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(receivedMessage);
+                        try
+                        {
+                            if (messageInspector != null)
+                            {
+                                compatibilityMessage = messageInspector.AfterReceiveMessage(compatibilityMessage);
+                            }
+
+                            var matched = filter != null && filter.Match(compatibilityMessage);
+                            var deferredMessage = defer && !readingDeferredMessages && matched;
+                            var movedToDeadLetterQueue = !deferredMessage && moveToDeadLetterQueue && matched;
+                            var settlementStopwatch = Stopwatch.StartNew();
+                            if (deferredMessage)
+                            {
+                                messageReceiver.DeferMessageAsync(receivedMessage, cancellationToken: cancellationTokenSource.Token)
+                                    .GetAwaiter().GetResult();
+                                messageDeferProvider.Enqueue(receivedMessage.SequenceNumber);
+                            }
+                            else if (movedToDeadLetterQueue)
+                            {
+                                messageReceiver.DeadLetterMessageAsync(receivedMessage, cancellationToken: cancellationTokenSource.Token)
+                                    .GetAwaiter().GetResult();
+                                messagesReceived++;
+                            }
+                            else if (receiveMode == ServiceBusReceiveMode.PeekLock)
+                            {
+                                if (completeReceive)
+                                {
+                                    messageReceiver.CompleteMessageAsync(receivedMessage, cancellationTokenSource.Token)
+                                        .GetAwaiter().GetResult();
+                                    messagesReceived++;
+                                }
+                                else if (!receiveBatch)
+                                {
+                                    messageReceiver.AbandonMessageAsync(receivedMessage, cancellationToken: cancellationTokenSource.Token)
+                                        .GetAwaiter().GetResult();
+                                }
+                            }
+                            else
+                            {
+                                messagesReceived++;
+                            }
+                            if (receiveMode != ServiceBusReceiveMode.PeekLock ||
+                                deferredMessage ||
+                                movedToDeadLetterQueue ||
+                                completeReceive ||
+                                !receiveBatch)
+                            {
+                                unsettledMessages.Remove(receivedMessage);
+                            }
+                            settlementStopwatch.Stop();
+                            totalCompleteElapsedTime += settlementStopwatch.ElapsedMilliseconds;
+                            minimumCompleteTime = Math.Min(minimumCompleteTime, settlementStopwatch.ElapsedMilliseconds);
+                            maximumCompleteTime = Math.Max(maximumCompleteTime, settlementStopwatch.ElapsedMilliseconds);
+
+                            if (logging)
+                            {
+                                if (receiveMode == ServiceBusReceiveMode.PeekLock && !completeReceive &&
+                                    !deferredMessage && !movedToDeadLetterQueue)
+                                {
+                                    logBuilder.AppendLine(string.Format(MessagePeekedButNotConsumed,
+                                        taskId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.MessageId) ? NullValue : compatibilityMessage.MessageId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.SessionId) ? NullValue : compatibilityMessage.SessionId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.Label) ? NullValue : compatibilityMessage.Label,
+                                        compatibilityMessage.Size));
+                                }
+                                else
+                                {
+                                    logBuilder.AppendLine(string.Format(MessageSuccessfullyReceived,
+                                        taskId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.MessageId) ? NullValue : compatibilityMessage.MessageId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.SessionId) ? NullValue : compatibilityMessage.SessionId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.Label) ? NullValue : compatibilityMessage.Label,
+                                        compatibilityMessage.Size,
+                                        receivedMessage.DeliveryCount));
+                                }
+                                if (deferredMessage)
+                                {
+                                    logBuilder.AppendLine(MessageDeferred);
+                                }
+                                if (readingDeferredMessages)
+                                {
+                                    logBuilder.AppendLine(ReadMessageDeferred);
+                                }
+                                if (movedToDeadLetterQueue)
+                                {
+                                    logBuilder.AppendLine(MessageMovedToDeadLetterQueue);
+                                }
+                                if (receivedFromDeadLetterQueue)
+                                {
+                                    logBuilder.AppendLine(MessageReadFromDeadLetterQueue);
+                                }
+                                if (verbose)
+                                {
+                                    GetMessageAndProperties(logBuilder, compatibilityMessage, encoder);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            compatibilityMessage?.Dispose();
+                        }
+                    }
+
+                    if (logging && logBuilder.Length > 0)
+                    {
+                        WriteToLog(logBuilder.ToString().TrimEnd());
+                    }
+                    unsettledMessages = null;
+                    if (receiverThinkTime && !completed && !cancellationTokenSource.IsCancellationRequested)
+                    {
+                        WriteToLog(string.Format(SleepingFor, thinkTime));
+                        Thread.Sleep(thinkTime);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
+                if (unsettledMessages != null && receiveMode == ServiceBusReceiveMode.PeekLock)
+                {
+                    foreach (var message in unsettledMessages)
+                    {
+                        try
+                        {
+                            messageReceiver.AbandonMessageAsync(message, cancellationToken: CancellationToken.None)
+                                .GetAwaiter().GetResult();
+                        }
+                        catch (Exception abandonException)
+                        {
+                            exceptionMessage += $" Unable to abandon message {message.SequenceNumber}: {abandonException.Message}";
+                        }
+                    }
+                }
+                ok = false;
+            }
+
+            var builder = new StringBuilder();
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsHeader, taskId));
+            if (!string.IsNullOrWhiteSpace(exceptionMessage))
+            {
+                builder.AppendLine(exceptionMessage);
+            }
+            var averageReceiveTime = messagesReceived > 0 ? totalReceiveElapsedTime / messagesReceived : maximumReceiveTime;
+            var messagesPerSecond = totalReceiveElapsedTime > 0
+                ? (double)(messagesReceived * 1000) / totalReceiveElapsedTime
+                : 0;
+            if (receiveMode == ServiceBusReceiveMode.PeekLock && completeReceive)
+            {
+                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsWithCompleteLine1,
+                    messagesReceived, messagesPerSecond, totalReceiveElapsedTime, totalCompleteElapsedTime));
+            }
+            else
+            {
+                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsLine1,
+                    messagesReceived, messagesPerSecond, totalReceiveElapsedTime));
+            }
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsLine2,
+                averageReceiveTime, minimumReceiveTime == long.MaxValue ? 0 : minimumReceiveTime, maximumReceiveTime));
+            if (receiveMode == ServiceBusReceiveMode.PeekLock && completeReceive)
+            {
+                var averageCompleteTime = messagesReceived > 0 ? totalCompleteElapsedTime / messagesReceived : maximumCompleteTime;
+                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsLine3,
+                    averageCompleteTime, minimumCompleteTime == long.MaxValue ? 0 : minimumCompleteTime, maximumCompleteTime));
+            }
+            traceMessage = builder.ToString();
+            return ok;
+        }
+
         public bool ReceiveMessages(MessageReceiver messageReceiver,
                                     int taskId,
                                     int timeout,
@@ -4018,6 +4514,115 @@ namespace ServiceBusExplorer
             }
 
             return serviceBusHelper2;
+        }
+
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        {
+            var serviceBusHelper2 = GetServiceBusHelper2();
+            if (!serviceBusHelper2.IsEntra)
+            {
+                serviceBusHelper2.ConnectionString = GetDataPlaneConnectionString(
+                    ConnectionString,
+                    IsEmulator);
+            }
+            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
+        }
+
+        public List<BrokeredMessage> GetMessagesFromModernDataPlane(
+            string entityPath,
+            string subscriptionName,
+            SubQueue subQueue,
+            bool peek,
+            int count,
+            long? fromSequenceNumber,
+            TimeSpan receiveTimeout,
+            IBrokeredMessageInspector messageInspector)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+
+            var targetCount = count;
+            var brokeredMessages = new List<BrokeredMessage>(targetCount);
+            var client = CreateServiceBusClient();
+            ServiceBusReceiver receiver = null;
+            try
+            {
+                var options = new ServiceBusReceiverOptions
+                {
+                    ReceiveMode = peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete,
+                    SubQueue = subQueue
+                };
+                receiver = string.IsNullOrWhiteSpace(subscriptionName)
+                    ? client.CreateReceiver(entityPath, options)
+                    : client.CreateReceiver(entityPath, subscriptionName, options);
+
+                var nextSequenceNumber = fromSequenceNumber;
+                while (brokeredMessages.Count < targetCount)
+                {
+                    var batchSize = targetCount - brokeredMessages.Count;
+                    IReadOnlyList<ServiceBusReceivedMessage> messages;
+                    if (peek)
+                    {
+                        messages = receiver.PeekMessagesAsync(batchSize, nextSequenceNumber)
+                            .GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        messages = receiver.ReceiveMessagesAsync(batchSize, receiveTimeout)
+                            .GetAwaiter().GetResult();
+                    }
+
+                    if (messages == null || messages.Count == 0)
+                    {
+                        break;
+                    }
+
+                    foreach (var message in messages)
+                    {
+                        var brokeredMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
+                        try
+                        {
+                            brokeredMessages.Add(messageInspector == null
+                                ? brokeredMessage
+                                : messageInspector.AfterReceiveMessage(brokeredMessage));
+                        }
+                        catch
+                        {
+                            brokeredMessage.Dispose();
+                            throw;
+                        }
+                    }
+
+                    if (peek)
+                    {
+                        var lastSequenceNumber = messages[messages.Count - 1].SequenceNumber;
+                        if (lastSequenceNumber == long.MaxValue)
+                        {
+                            break;
+                        }
+                        nextSequenceNumber = lastSequenceNumber + 1;
+                    }
+                }
+                return brokeredMessages;
+            }
+            catch
+            {
+                foreach (var message in brokeredMessages)
+                {
+                    message?.Dispose();
+                }
+                throw;
+            }
+            finally
+            {
+                if (receiver != null)
+                {
+                    receiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                }
+                client.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            }
         }
 
         public static string GetDataPlaneConnectionString(ServiceBusNamespace serviceBusNamespace)
