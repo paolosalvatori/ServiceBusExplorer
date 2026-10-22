@@ -177,6 +177,7 @@ namespace ServiceBusExplorer.Forms
         private const string ImportToolStripMenuItemToolTipText = "Import entity definition from file.";
         private const string EventClick = "EventClick";
         private const string EventsProperty = "Events";
+        private const string ScrollInternalMethod = "ScrollInternal";
         private const string ChangeStatusTopicMenuItem = "changeStatusTopicMenuItem";
         private const string ChangeStatusSubscriptionMenuItem = "changeStatusSubscriptionMenuItem";
         private const string ChangeStatusEventHubMenuItem = "changeStatusEventHubMenuItem";
@@ -229,6 +230,8 @@ namespace ServiceBusExplorer.Forms
         private TreeNode currentNode;
         private readonly FieldInfo eventClickFieldInfo;
         private readonly PropertyInfo eventsPropertyInfo;
+        private readonly MethodInfo scrollInternalMethodInfo;
+        private readonly MethodInfo scrollInternalByDeltaMethodInfo;
         private string messageFile;
         private bool importing;
         private readonly int mainSplitterDistance;
@@ -308,6 +311,10 @@ namespace ServiceBusExplorer.Forms
             UIHelpers.NativeMethods.SendMessage(filterTreeViewTextBox.Handle, UIHelpers.NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, "Filter queues/topics...");
             eventClickFieldInfo = typeof(ToolStripItem).GetField(EventClick, BindingFlags.NonPublic | BindingFlags.Static);
             eventsPropertyInfo = typeof(Component).GetProperty(EventsProperty, BindingFlags.NonPublic | BindingFlags.Instance);
+            // ToolStripDropDownMenu has no mouse wheel support; ScrollInternal(bool up) is what its scroll buttons call.
+            scrollInternalMethodInfo = typeof(ToolStripDropDownMenu).GetMethod(ScrollInternalMethod, BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(bool) }, null);
+            scrollInternalByDeltaMethodInfo = typeof(ToolStripDropDownMenu).GetMethod(ScrollInternalMethod, BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int) }, null);
+            savedConnectionsToolStripMenuItem.DropDown.MouseWheel += SavedConnectionsDropDown_MouseWheel;
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
             GetServiceBusNamespacesFromConfiguration();
@@ -470,6 +477,50 @@ namespace ServiceBusExplorer.Forms
             if (savedConnectionsToolStripMenuItem.DropDownItems.Count > 0)
             {
                 savedConnectionsToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void SavedConnectionsDropDown_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (scrollInternalMethodInfo == null ||
+                scrollInternalByDeltaMethodInfo == null ||
+                !(sender is ToolStripDropDownMenu dropDownMenu) ||
+                e.Delta == 0)
+            {
+                return;
+            }
+
+            if (dropDownMenu.Items.Count == 0)
+            {
+                return;
+            }
+            var firstItem = dropDownMenu.Items[0];
+            var lastItem = dropDownMenu.Items[dropDownMenu.Items.Count - 1];
+
+            var up = e.Delta > 0;
+            var steps = Math.Max(1, Math.Abs(e.Delta) / SystemInformation.MouseWheelScrollDelta);
+            try
+            {
+                for (var i = 0; i < steps; i++)
+                {
+                    var displayRectangle = dropDownMenu.DisplayRectangle;
+                    if (up ? firstItem.Bounds.Top >= displayRectangle.Top : lastItem.Bounds.Bottom <= displayRectangle.Bottom)
+                    {
+                        return;
+                    }
+                    scrollInternalMethodInfo.Invoke(dropDownMenu, new object[] { up });
+
+                    // ScrollInternal(bool) scrolls a whole item and can pass the end; scroll back by the excess.
+                    var excess = up ? firstItem.Bounds.Top - displayRectangle.Top : displayRectangle.Bottom - lastItem.Bounds.Bottom;
+                    if (excess > 0)
+                    {
+                        scrollInternalByDeltaMethodInfo.Invoke(dropDownMenu, new object[] { up ? excess : -excess });
+                    }
+                }
+            }
+            catch (TargetInvocationException)
+            {
+                // A failed scroll is harmless and must not raise the unhandled exception dialog.
             }
         }
 
