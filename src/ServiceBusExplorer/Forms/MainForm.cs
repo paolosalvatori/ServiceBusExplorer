@@ -232,6 +232,7 @@ namespace ServiceBusExplorer.Forms
         private readonly PropertyInfo eventsPropertyInfo;
         private readonly MethodInfo scrollInternalMethodInfo;
         private readonly MethodInfo scrollInternalByDeltaMethodInfo;
+        private int savedConnectionsWheelDelta;
         private string messageFile;
         private bool importing;
         private readonly int mainSplitterDistance;
@@ -315,6 +316,7 @@ namespace ServiceBusExplorer.Forms
             scrollInternalMethodInfo = typeof(ToolStripDropDownMenu).GetMethod(ScrollInternalMethod, BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(bool) }, null);
             scrollInternalByDeltaMethodInfo = typeof(ToolStripDropDownMenu).GetMethod(ScrollInternalMethod, BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int) }, null);
             savedConnectionsToolStripMenuItem.DropDown.MouseWheel += SavedConnectionsDropDown_MouseWheel;
+            savedConnectionsToolStripMenuItem.DropDown.Closed += SavedConnectionsDropDown_Closed;
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
             GetServiceBusNamespacesFromConfiguration();
@@ -480,6 +482,11 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private void SavedConnectionsDropDown_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            savedConnectionsWheelDelta = 0;
+        }
+
         private void SavedConnectionsDropDown_MouseWheel(object sender, MouseEventArgs e)
         {
             if (scrollInternalMethodInfo == null ||
@@ -497,8 +504,20 @@ namespace ServiceBusExplorer.Forms
             var firstItem = dropDownMenu.Items[0];
             var lastItem = dropDownMenu.Items[dropDownMenu.Items.Count - 1];
 
+            // Touchpads and high-resolution wheels send deltas smaller than one notch, so accumulate them.
+            if (savedConnectionsWheelDelta != 0 && Math.Sign(savedConnectionsWheelDelta) != Math.Sign(e.Delta))
+            {
+                savedConnectionsWheelDelta = 0;
+            }
+            savedConnectionsWheelDelta += e.Delta;
+
             var up = e.Delta > 0;
-            var steps = Math.Max(1, Math.Abs(e.Delta) / SystemInformation.MouseWheelScrollDelta);
+            var steps = Math.Abs(savedConnectionsWheelDelta) / SystemInformation.MouseWheelScrollDelta;
+            if (steps == 0)
+            {
+                return;
+            }
+            savedConnectionsWheelDelta %= SystemInformation.MouseWheelScrollDelta;
             try
             {
                 for (var i = 0; i < steps; i++)
@@ -506,6 +525,7 @@ namespace ServiceBusExplorer.Forms
                     var displayRectangle = dropDownMenu.DisplayRectangle;
                     if (up ? firstItem.Bounds.Top >= displayRectangle.Top : lastItem.Bounds.Bottom <= displayRectangle.Bottom)
                     {
+                        savedConnectionsWheelDelta = 0;
                         return;
                     }
                     scrollInternalMethodInfo.Invoke(dropDownMenu, new object[] { up });
