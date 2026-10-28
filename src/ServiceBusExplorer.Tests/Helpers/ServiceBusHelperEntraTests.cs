@@ -3,7 +3,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Identity;
 using FluentAssertions;
+using Microsoft.Identity.Client;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
@@ -251,6 +253,168 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ex = new MessagingException("Entity not found. Status code: 404");
             InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
                 .Should().BeFalse();
+        }
+
+        [Theory]
+        [InlineData(MsalError.UnknownBrokerError)]
+        [InlineData(MsalError.CannotInvokeBroker)]
+        [InlineData(MsalError.InvalidOwnerWindowType)]
+        [InlineData(MsalError.PlatformNotSupported)]
+        public void IsBrokerUnavailable_MsalBrokerErrorCodes_ReturnsTrue(string errorCode)
+        {
+            var ex = new MsalClientException(errorCode, "The broker could not be used.");
+            InvokePrivateStatic<bool>(typeof(EntraCredentialFactory), "IsBrokerUnavailable", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsBrokerUnavailable_MsalAuthenticationCanceled_ReturnsFalse()
+        {
+            var ex = new MsalClientException(MsalError.AuthenticationCanceledError, "The user cancelled sign-in.");
+            InvokePrivateStatic<bool>(typeof(EntraCredentialFactory), "IsBrokerUnavailable", ex)
+                .Should().BeFalse();
+        }
+
+        [Theory]
+        [InlineData(typeof(DllNotFoundException))]
+        [InlineData(typeof(EntryPointNotFoundException))]
+        [InlineData(typeof(BadImageFormatException))]
+        [InlineData(typeof(PlatformNotSupportedException))]
+        public void IsBrokerUnavailable_NativeLoadFailureTypes_ReturnsTrue(Type exceptionType)
+        {
+            var ex = (Exception)Activator.CreateInstance(exceptionType);
+            InvokePrivateStatic<bool>(typeof(EntraCredentialFactory), "IsBrokerUnavailable", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsBrokerUnavailable_TypeInitializationException_ReturnsTrue()
+        {
+            var ex = new TypeInitializationException("SomeBrokerType", new DllNotFoundException("wamext.dll"));
+            InvokePrivateStatic<bool>(typeof(EntraCredentialFactory), "IsBrokerUnavailable", ex)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsBrokerUnavailable_UnrelatedException_ReturnsFalse()
+        {
+            var ex = new InvalidOperationException("Something unrelated went wrong.");
+            InvokePrivateStatic<bool>(typeof(EntraCredentialFactory), "IsBrokerUnavailable", ex)
+                .Should().BeFalse();
+        }
+
+        [Fact]
+        public void IsBrokerUnavailable_NestedInsideAuthenticationFailedException_ReturnsTrue()
+        {
+            var inner = new MsalClientException(MsalError.CannotInvokeBroker, "The broker could not be invoked.");
+            var wrapped = new InvalidOperationException("Wrapper exception.", inner);
+            InvokePrivateStatic<bool>(typeof(EntraCredentialFactory), "IsBrokerUnavailable", wrapped)
+                .Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task AcquireTokenWithFallback_BrokerUnavailable_UsesFallbackAndSkipsBrokerNextTime()
+        {
+            const string tenantId = "broker-fallback-tenant";
+            EntraCredentialFactory.ClearCache();
+            var brokerCalls = 0;
+            var fallbackCalls = 0;
+            Func<CancellationToken, ValueTask<AccessToken>> broker = ct =>
+            {
+                brokerCalls++;
+                throw new MsalClientException(MsalError.CannotInvokeBroker, "No broker.");
+            };
+            Func<CancellationToken, ValueTask<AccessToken>> fallback = ct =>
+            {
+                fallbackCalls++;
+                return new ValueTask<AccessToken>(new AccessToken("fallback-token", DateTimeOffset.UtcNow.AddMinutes(5)));
+            };
+
+            var first = await AcquireWithFallback(tenantId, broker, fallback);
+            var second = await AcquireWithFallback(tenantId, broker, fallback);
+
+            first.Token.Should().Be("fallback-token");
+            second.Token.Should().Be("fallback-token");
+            brokerCalls.Should().Be(1);
+            fallbackCalls.Should().Be(2);
+            EntraCredentialFactory.ClearCache();
+        }
+
+        [Fact]
+        public async Task AcquireTokenWithFallback_WrappedMsalServiceBrokerError_UsesFallback()
+        {
+            const string tenantId = "broker-service-error-tenant";
+            EntraCredentialFactory.ClearCache();
+            var fallbackCalls = 0;
+
+            var token = await AcquireWithFallback(
+                tenantId,
+                ct => throw new AuthenticationFailedException(
+                    "Broker failed.",
+                    new MsalServiceException(MsalError.UnknownBrokerError, "Unknown broker error.")),
+                ct =>
+                {
+                    fallbackCalls++;
+                    return new ValueTask<AccessToken>(new AccessToken("fallback-token", DateTimeOffset.UtcNow.AddMinutes(5)));
+                });
+
+            token.Token.Should().Be("fallback-token");
+            fallbackCalls.Should().Be(1);
+            EntraCredentialFactory.ClearCache();
+        }
+
+        [Fact]
+        public async Task AcquireTokenWithFallback_BrokerSucceeds_DoesNotUseFallback()
+        {
+            const string tenantId = "broker-success-tenant";
+            EntraCredentialFactory.ClearCache();
+            var fallbackCalls = 0;
+
+            var token = await AcquireWithFallback(
+                tenantId,
+                ct => new ValueTask<AccessToken>(new AccessToken("broker-token", DateTimeOffset.UtcNow.AddMinutes(5))),
+                ct =>
+                {
+                    fallbackCalls++;
+                    return new ValueTask<AccessToken>(new AccessToken("fallback-token", DateTimeOffset.UtcNow.AddMinutes(5)));
+                });
+
+            token.Token.Should().Be("broker-token");
+            fallbackCalls.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task AcquireTokenWithFallback_UserCancelled_PropagatesWithoutFallback()
+        {
+            const string tenantId = "broker-cancel-tenant";
+            EntraCredentialFactory.ClearCache();
+            var fallbackCalls = 0;
+
+            Func<Task> act = () => AcquireWithFallback(
+                tenantId,
+                ct => throw new MsalClientException(MsalError.AuthenticationCanceledError, "Cancelled."),
+                ct =>
+                {
+                    fallbackCalls++;
+                    return new ValueTask<AccessToken>(new AccessToken("fallback-token", DateTimeOffset.UtcNow.AddMinutes(5)));
+                });
+
+            await act.Should().ThrowAsync<MsalClientException>();
+            fallbackCalls.Should().Be(0);
+        }
+
+        static Task<AccessToken> AcquireWithFallback(
+            string tenantId,
+            Func<CancellationToken, ValueTask<AccessToken>> broker,
+            Func<CancellationToken, ValueTask<AccessToken>> fallback)
+        {
+            return InvokePrivateStatic<Task<AccessToken>>(
+                typeof(EntraCredentialFactory),
+                "AcquireTokenWithFallbackAsync",
+                tenantId,
+                broker,
+                fallback,
+                CancellationToken.None);
         }
 
         static T GetPrivateField<T>(object instance, string fieldName)

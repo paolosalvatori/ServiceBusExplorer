@@ -85,15 +85,19 @@ Service Bus Explorer supports interactive browser sign-in for Azure Service Bus 
 3. Change `Authentication` to `Entra`.
 4. Enter the namespace endpoint as either `sb://<namespace>.servicebus.windows.net/` or `<namespace>.servicebus.windows.net`.
 5. Optionally enter `Tenant ID` and `Entity Path`. If `Tenant ID` is left blank, Service Bus Explorer uses the `organizations` endpoint. In that case the sign-in flow accepts work or school accounts only. To sign in with a personal Microsoft account, enter the target tenant ID; note that the account must already have been invited into that tenant as a guest and been granted a Service Bus data role, otherwise sign-in succeeds but every operation is refused.
-6. Click `OK` and complete the browser sign-in flow.
+6. Click `OK` and complete the sign-in flow.
 
 > **Note**
 >
 > The `File -> Connect to Event Grid` menu entry is for Event Grid, not Azure Service Bus. For Service Bus, use the normal connection dialog and switch the `Authentication` selector to `Entra`.
 >
 
+### Sign-in experience
+
+On Windows, sign-in uses the Windows broker (Web Account Manager), which supports Windows Hello, single sign-on with the signed-in Windows account, and Conditional Access/MFA policies that require it. This also avoids the limitations of a plain system-browser popup that could prevent sign-in from completing on tenants with stricter Conditional Access policies. If the broker cannot be used on a given machine, Service Bus Explorer automatically falls back to the system-browser sign-in flow — no configuration is required.
+
 ### Cached credentials
-The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Log out from Entra" for that. This clears the credentials cached by Service Bus Explorer only; it does not sign you out of Entra in your browser, so a new sign-in may still pick the same account automatically unless you also sign out there.
+The logged-in user's credentials are cached. In some scenarios it may be necessary to log out from Entra to switch users. Use the menu item "Log out from Entra" for that. This clears the credentials cached by Service Bus Explorer only; it does not sign you out of Entra in your browser or of the Windows account used by the Windows broker, so a new sign-in may still pick the same account automatically. To switch accounts, choose a different account in the sign-in dialog or sign out there.
 
 ### Screenshots
 
