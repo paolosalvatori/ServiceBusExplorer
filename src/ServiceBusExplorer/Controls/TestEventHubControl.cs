@@ -32,10 +32,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using Azure.Messaging.EventHubs.Producer;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 using Cursor = System.Windows.Forms.Cursor;
 
 #endregion
@@ -106,7 +108,7 @@ namespace ServiceBusExplorer.Controls
         private readonly EventHubDescription eventHubDescription;
         private readonly PartitionDescription partitionDescription;
         private readonly BindingSource bindingSource = new BindingSource();
-        private List<EventHubClient> eventHubClientCollection = new List<EventHubClient>();
+        private List<EventHubProducerClient> eventHubClientCollection = new List<EventHubProducerClient>();
         private CancellationTokenSource senderCancellationTokenSource;
         private CancellationTokenSource managerCancellationTokenSource;
         private CancellationTokenSource graphCancellationTokenSource;
@@ -493,10 +495,10 @@ namespace ServiceBusExplorer.Controls
                             eventHubClientCollection.Count == 0 ||
                             eventHubClientCollection.Count < senderTaskCount)
                         {
-                            eventHubClientCollection = new List<EventHubClient>(senderTaskCount);
+                            eventHubClientCollection = new List<EventHubProducerClient>(senderTaskCount);
                             for (var i = 0; i < senderTaskCount; i++)
                             {
-                                eventHubClientCollection.Add(controlHelper.ServiceBusHelper.CreateEventHubClient(eventHubDescription.Path));
+                                eventHubClientCollection.Add(controlHelper.ServiceBusHelper.CreateEventHubProducerClient(eventHubDescription.Path));
                             }
                             isSenderFaulted = false;
                         }
@@ -1294,6 +1296,11 @@ namespace ServiceBusExplorer.Controls
                 if (blockingCollection != null)
                 {
                     blockingCollection.Dispose();
+                }
+
+                foreach (var eventHubClient in eventHubClientCollection)
+                {
+                    eventHubClient.DisposeAsync().AsTask().GetAwaiter().GetResult();
                 }
 
                 if (senderEventDataGenerator != null)

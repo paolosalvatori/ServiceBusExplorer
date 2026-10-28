@@ -543,7 +543,7 @@
             this.grouperGoogleCloudMessaggingSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.Color.White;
             this.grouperGoogleCloudMessaggingSettings.GroupImage = null;
-            this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Google Cloud Messagging Settings";
+            this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Firebase Cloud Messaging Settings";
             this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(336, 112);
             this.grouperGoogleCloudMessaggingSettings.Name = "grouperGoogleCloudMessaggingSettings";
             this.grouperGoogleCloudMessaggingSettings.Padding = new System.Windows.Forms.Padding(20);
@@ -577,7 +577,7 @@
             this.txtGcmEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGcmEndpoint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 92);
+            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 108);
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
             this.txtGcmEndpoint.Size = new System.Drawing.Size(272, 20);
@@ -587,11 +587,11 @@
             // 
             this.lblGcmEndpoint.AutoSize = true;
             this.lblGcmEndpoint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 76);
+            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 92);
             this.lblGcmEndpoint.Name = "lblGcmEndpoint";
             this.lblGcmEndpoint.Size = new System.Drawing.Size(79, 13);
             this.lblGcmEndpoint.TabIndex = 2;
-            this.lblGcmEndpoint.Text = "GCM Endpoint:";
+            this.lblGcmEndpoint.Text = "FCM Endpoint:";
             // 
             // lblGcmApiKey
             // 
@@ -601,7 +601,7 @@
             this.lblGcmApiKey.Name = "lblGcmApiKey";
             this.lblGcmApiKey.Size = new System.Drawing.Size(75, 13);
             this.lblGcmApiKey.TabIndex = 0;
-            this.lblGcmApiKey.Text = "GCM API Key:";
+            this.lblGcmApiKey.Text = "FCM v1 JSON / legacy key:";
             // 
             // txtGcmApiKey
             // 
@@ -610,8 +610,10 @@
             this.txtGcmApiKey.BackColor = System.Drawing.SystemColors.Window;
             this.txtGcmApiKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
+            this.txtGcmApiKey.Multiline = true;
             this.txtGcmApiKey.Name = "txtGcmApiKey";
-            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 20);
+            this.txtGcmApiKey.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 36);
             this.txtGcmApiKey.TabIndex = 1;
             // 
             // grouperWindowsPhoneNotificationSettings

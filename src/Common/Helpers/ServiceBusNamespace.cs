@@ -97,6 +97,7 @@ namespace ServiceBusExplorer.Helpers
         const string ConnectionStringEntityPath = "entitypath";
         const string ConnectionStringAuthMode = "authmode";
         const string ConnectionStringTenantId = "tenantid";
+        const string ConnectionStringUseDevelopmentEmulator = "usedevelopmentemulator";
         // Wire value, not display text. Saved namespaces persist "AuthMode=AAD", so this string and
         // the AuthMode=AAD in the EntraConnectionString*Format constants must not be renamed to
         // "entra" or every existing saved Entra connection stops being recognised.
@@ -518,6 +519,13 @@ namespace ServiceBusExplorer.Helpers
         /// and has no SAS connection string.
         /// </summary>
         public bool IsEntra => AuthMode == ServiceBusAuthMode.Entra;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the connection string targets the
+        /// Service Bus emulator (UseDevelopmentEmulator=true). Emulator endpoints are
+        /// plain host names or IP addresses, not fully qualified Azure namespaces.
+        /// </summary>
+        public bool UseDevelopmentEmulator { get; set; }
         #endregion
 
         #region Private Methods
@@ -665,9 +673,15 @@ namespace ServiceBusExplorer.Helpers
                 entityPath = parameters[ConnectionStringEntityPath];
             }
 
+            var useDevelopmentEmulator = parameters.ContainsKey(ConnectionStringUseDevelopmentEmulator) &&
+                bool.TryParse(parameters[ConnectionStringUseDevelopmentEmulator], out var emulator) && emulator;
+
             return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null,
                 sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
-                entityPath, isUserCreated);
+                entityPath, isUserCreated)
+            {
+                UseDevelopmentEmulator = useDevelopmentEmulator
+            };
         }
 
         static string GetNamespaceNameFromEndpoint(string endpoint, WriteToLogDelegate staticWriteToLog, 
