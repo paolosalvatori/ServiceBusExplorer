@@ -1,4 +1,9 @@
-﻿#region Copyright
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using MessageCountDetails = ServiceBusExplorer.Helpers.EntityMessageCounts;
+using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -2818,7 +2823,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 queueDescription.Status = (EntityStatus)e.ClickedItem.Tag;
-                                serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                                serviceBusHelper.ManagementClient.UpdateQueue(queueDescription);
                                 await RefreshSelectedEntity();
                             }
                         }
@@ -2855,7 +2860,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeQueueStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 queueDescription.Status = changeQueueStatusForm.EntityStatus;
-                                await serviceBusHelper.NamespaceManager.UpdateQueueAsync(queueDescription);
+                                await serviceBusHelper.ManagementClient.UpdateQueueAsync(queueDescription);
                                 await RefreshSelectedEntity();
                             }
                         }
@@ -2872,7 +2877,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 topicDescription.Status = desiredStatus;
-                                await serviceBusHelper.NamespaceManager.UpdateTopicAsync(topicDescription);
+                                await serviceBusHelper.ManagementClient.UpdateTopicAsync(topicDescription);
                                 await RefreshSelectedEntity();
                                 changeStatusTopicMenuItem.Text = topicDescription.Status == EntityStatus.Active
                                                                      ? DisableTopic
@@ -2901,7 +2906,7 @@ namespace ServiceBusExplorer.Forms
                                 if (changeStatusForm.ShowDialog() == DialogResult.OK)
                                 {
                                     subscriptionWrapper.SubscriptionDescription.Status = desiredStatus;
-                                    await serviceBusHelper.NamespaceManager.UpdateSubscriptionAsync(subscriptionWrapper.SubscriptionDescription);
+                                    await serviceBusHelper.ManagementClient.UpdateSubscriptionAsync(subscriptionWrapper.SubscriptionDescription);
                                     await RefreshSelectedEntity();
                                     changeStatusSubscriptionMenuItem.Text = subscriptionWrapper.SubscriptionDescription.Status == EntityStatus.Active
                                                                          ? DisableSubscription
@@ -4680,9 +4685,9 @@ namespace ServiceBusExplorer.Forms
                     var isEntra = serviceBusHelper.IsEntra;
                     var loadQueues = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.QueueEntities);
                     var loadTopics = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.TopicEntities);
-                    var loadEventHubs = SelectedEntities.Contains(Constants.EventHubEntities) && (!isEntra || serviceBusHelper.IsEventHubNamespace);
-                    var loadNotificationHubs = !isEntra && SelectedEntities.Contains(Constants.NotificationHubEntities);
-                    var loadRelays = !isEntra && SelectedEntities.Contains(Constants.RelayEntities);
+                    var loadEventHubs = !serviceBusHelper.IsEmulator && SelectedEntities.Contains(Constants.EventHubEntities) && (!isEntra || serviceBusHelper.IsEventHubNamespace);
+                    var loadNotificationHubs = !serviceBusHelper.IsEmulator && !isEntra && SelectedEntities.Contains(Constants.NotificationHubEntities);
+                    var loadRelays = !serviceBusHelper.IsEmulator && !isEntra && SelectedEntities.Contains(Constants.RelayEntities);
                     if (entityType == EntityType.All)
                     {
                         serviceBusTreeView.Nodes.Clear();
@@ -6658,13 +6663,14 @@ namespace ServiceBusExplorer.Forms
             return tag switch
             {
                 null => (false, null), // Root node has no tag
-                EntityDescription entityDescription => entityDescription switch
+                ServiceBusEntityInfo entityDescription => entityDescription switch
                 {
                     QueueDescription queueDescription => (true, queueDescription.MessageCountDetails),
                     TopicDescription topicDescription => (true, topicDescription.MessageCountDetails),
                     SubscriptionDescription subscriptionDescription => (true, subscriptionDescription.MessageCountDetails),
                     _ => (true, null),
                 },
+                EntityDescription _ => (true, null),
                 NotificationHubDescription _ => (true, null),
                 SubscriptionWrapper subscriptionWrapper => (true, subscriptionWrapper.SubscriptionDescription?.MessageCountDetails ?? subscriptionWrapper.TopicDescription?.MessageCountDetails),
                 RuleWrapper ruleWrapper => (true, ruleWrapper.SubscriptionDescription.MessageCountDetails),

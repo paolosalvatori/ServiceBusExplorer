@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using Microsoft.Azure.Amqp;
-    using Microsoft.ServiceBus.Messaging;
+    using ServiceBusExplorer.Helpers;
+    using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 
     public class EventDataMessage : IDisposable
     {
@@ -22,6 +22,29 @@
             SerializedSizeInBytes = eventData.SerializedSizeInBytes;
             EnqueuedTimeUtc = eventData.EnqueuedTimeUtc;
             SystemProperties = eventData.SystemProperties;
+        }
+
+        public EventDataMessage(EventData eventData,
+                                string partitionKey,
+                                long sequenceNumber,
+                                string offset,
+                                long serializedSizeInBytes,
+                                DateTime enqueuedTimeUtc)
+            : this(eventData)
+        {
+            PartitionKey = partitionKey;
+            SequenceNumber = sequenceNumber;
+            Offset = offset;
+            SerializedSizeInBytes = serializedSizeInBytes;
+            EnqueuedTimeUtc = enqueuedTimeUtc;
+            var systemProperties = new Dictionary<string, object>(eventData.SystemProperties)
+            {
+                ["PartitionKey"] = partitionKey,
+                ["SequenceNumber"] = sequenceNumber,
+                ["Offset"] = offset,
+                ["EnqueuedTimeUtc"] = enqueuedTimeUtc
+            };
+            SystemProperties = systemProperties;
         }
 
         public string PartitionKey { get; private set; }

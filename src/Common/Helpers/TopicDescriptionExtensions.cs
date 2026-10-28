@@ -1,7 +1,6 @@
-﻿namespace ServiceBusExplorer.Helpers
+﻿using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+namespace ServiceBusExplorer.Helpers
 {
-    using Microsoft.ServiceBus.Messaging;
-
     public static class TopicDescriptionExtensions
     {
         public static int MaxSizeInGigabytes(this TopicDescription topicDescription)

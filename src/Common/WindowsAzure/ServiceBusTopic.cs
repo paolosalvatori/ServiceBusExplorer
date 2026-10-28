@@ -1,4 +1,5 @@
-﻿using System;
+﻿using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -19,10 +20,13 @@ namespace ServiceBusExplorer.WindowsAzure
 
         private readonly string servicePath = string.Empty;
 
-        public ServiceBusTopic(ServiceBusNamespace serviceBusNamespace, Microsoft.ServiceBus.NamespaceManager namespaceManager)
-            : base(serviceBusNamespace, namespaceManager)
+        public ServiceBusTopic(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager)
+            : base(serviceBusNamespace, namespaceManager.Address)
         {
+            ManagementClient = namespaceManager;
         }
+
+        private ServiceBusManagementClient ManagementClient { get; }
 
         protected override EntityType EntityType => EntityType.Topic;
 
@@ -38,9 +42,9 @@ namespace ServiceBusExplorer.WindowsAzure
                 throw new ArgumentException(PathCannotBeNull);
             }
 
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetTopic(path), WriteToLog);
+                return RetryHelper.RetryFunc(() => ManagementClient.GetTopic(path), WriteToLog);
             }
 
             throw new ApplicationException(ServiceBusIsDisconnected);
@@ -54,42 +58,11 @@ namespace ServiceBusExplorer.WindowsAzure
         ///          Returns an empty collection if no topic exists in this service namespace.</returns>
         public IEnumerable<TopicDescription> GetTopics(string filter, int timeoutInSeconds)
         {
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                //Documentation states AND is the only logical clause allowed in the filter
-                //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.gettopicsasync?view=azure-dotnet
-                //Split on ' OR ' and combine queues returned
-                var taskList = new List<Task>();
                 if (string.IsNullOrEmpty(ServiceBusNamespace.EntityPath))
                 {
-                    IEnumerable<TopicDescription> topics = new List<TopicDescription>();
-                    var filters = new List<string>();
-                    if (string.IsNullOrWhiteSpace(filter))
-                    {
-                        filters.Add(filter);
-                    }
-                    else
-                    {
-                        filters = filter.ToLowerInvariant().Split(new[] { " or " }, StringSplitOptions.None).ToList();
-                    }
-
-                    foreach (var splitFilter in filters)
-                    {
-                        var task = string.IsNullOrWhiteSpace(filter) ? NamespaceManager.GetTopicsAsync() : NamespaceManager.GetTopicsAsync(splitFilter);
-                        taskList.Add(task);
-                        taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                        Task.WaitAny(taskList.ToArray());
-                        if (task.IsCompleted)
-                        {
-                            topics = topics.Union(task.Result);
-                            taskList.Clear();
-                        }
-                        else
-                        {
-                            throw new TimeoutException();
-                        }
-                    }
-                    return topics;
+                    return ManagementClient.GetTopics(filter, timeoutInSeconds);
                 }
 
                 try
@@ -98,11 +71,16 @@ namespace ServiceBusExplorer.WindowsAzure
                         GetTopicUsingEntityPath(timeoutInSeconds)
                     };
                 }
-                catch (MessagingException ex) when (!ex.IsTransient)
+                catch (Azure.RequestFailedException ex) when (ex.Status == 404)
                 {
                     // EntityPath refers to a non-topic entity (e.g. event hub) — return empty list.
                     // Logging is handled by the caller (MainForm.ShowEntities) to avoid duplicate
                     // messages, since this method is also invoked from DashboardControl.LoadDataAsync.
+                    return new List<TopicDescription>();
+                }
+                catch (Azure.Messaging.ServiceBus.ServiceBusException ex) when (
+                    ex.Reason == Azure.Messaging.ServiceBus.ServiceBusFailureReason.MessagingEntityNotFound)
+                {
                     return new List<TopicDescription>();
                 }
             }
@@ -124,8 +102,8 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 var uriBuilder = new UriBuilder
                 {
-                    Host = NamespaceManager.Address.Host,
-                    Path = $"{NamespaceManager.Address.AbsolutePath}/{topicPath}",
+                    Host = ManagementClient.Address.Host,
+                    Path = $"{ManagementClient.Address.AbsolutePath}/{topicPath}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -143,9 +121,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(TopicDescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                var topic = RetryHelper.RetryFunc(() => NamespaceManager.CreateTopic(topicDescription), WriteToLog);
+                var topic = RetryHelper.RetryFunc(() => ManagementClient.CreateTopic(topicDescription), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, TopicCreated, topicDescription.Path));
                 OnCreated(topic);
                 return topic;
@@ -164,9 +142,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(TopicDescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                var topic = RetryHelper.RetryFunc(() => NamespaceManager.UpdateTopic(topicDescription), WriteToLog);
+                var topic = RetryHelper.RetryFunc(() => ManagementClient.UpdateTopic(topicDescription), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, TopicUpdated, topicDescription.Path));
                 OnCreated(topic);
                 return topic;
@@ -198,9 +176,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(TopicDescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteTopicAsync(topic.Path), WriteToLog);
+                await RetryHelper.RetryActionAsync(() => ManagementClient.DeleteTopicAsync(topic.Path), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, TopicDeleted, topic.Path));
                 OnDeleted(topic);
             }
@@ -226,9 +204,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(NewPathCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                var topicDescription = RetryHelper.RetryFunc(() => NamespaceManager.RenameTopic(path, newPath), WriteToLog);
+                var topicDescription = RetryHelper.RetryFunc(() => ManagementClient.RenameTopic(path, newPath), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, TopicRenamed, path, newPath));
                 OnDeleted(new TopicDescription(path));
                 OnCreated(topicDescription);
@@ -239,23 +217,7 @@ namespace ServiceBusExplorer.WindowsAzure
 
         private TopicDescription GetTopicUsingEntityPath(int timeoutInSeconds)
         {
-            var taskList = new List<Task>();
-            var getTopicTask = NamespaceManager.GetTopicAsync(ServiceBusNamespace.EntityPath);
-            taskList.Add(getTopicTask);
-            taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-            Task.WaitAny(taskList.ToArray());
-            if (getTopicTask.IsCompleted)
-            {
-                try
-                {
-                    return getTopicTask.Result;
-                }
-                catch (AggregateException ex)
-                {
-                    throw ex.InnerExceptions.First();
-                }
-            }
-            throw new TimeoutException();
+            return ManagementClient.GetTopic(ServiceBusNamespace.EntityPath, timeoutInSeconds);
         }
 
         private async Task DeleteTopic(string path)
@@ -264,9 +226,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(PathCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteTopicAsync(path), WriteToLog);
+                await RetryHelper.RetryActionAsync(() => ManagementClient.DeleteTopicAsync(path), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, TopicDeleted, path));
                 OnDeleted(new TopicDescription(path));
             }
