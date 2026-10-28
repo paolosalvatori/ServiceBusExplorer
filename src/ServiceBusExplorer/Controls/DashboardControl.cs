@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class DashboardControl : UserControl
+    public class DashboardControl : UserControl
     {
         private DataGridView dataGridView;
         private Button refreshButton;
@@ -26,7 +26,7 @@ namespace ServiceBusExplorer.Controls
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
         private int isLoading;
-        private List<DashboardRow> _allRows = new List<DashboardRow>();
+        private List<DashboardRow> allRows = new List<DashboardRow>();
         private CheckBox syncWithTreeViewCheckBox;
 
         public Action<string, string> OnRowSelected { get; set; }
@@ -380,7 +380,7 @@ namespace ServiceBusExplorer.Controls
                     writeToLog?.Invoke(error);
                 }
 
-                _allRows = rows;
+                allRows = rows;
                 PopulateGrid(rows);
                 statusLabel.Text = $"Last refresh: {DateTime.Now:HH:mm:ss} — {rows.Count} items";
             }
@@ -400,10 +400,10 @@ namespace ServiceBusExplorer.Controls
         {
             if (!syncWithTreeViewCheckBox.Checked || string.IsNullOrWhiteSpace(filterText))
             {
-                PopulateGrid(_allRows);
+                PopulateGrid(allRows);
                 return;
             }
-            var filtered = _allRows
+            var filtered = allRows
                 .Where(r => r.Name.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
             PopulateGrid(filtered);

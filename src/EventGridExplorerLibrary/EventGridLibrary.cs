@@ -47,8 +47,8 @@ namespace EventGridExplorerLibrary
         public async Task<AsyncPageable<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName, string hostname)
         {
             NamespaceTopicCollection namespaceTopicCollection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
-            AsyncPageable<NamespaceTopicResource> pages = namespaceTopicCollection.GetAllAsync();
-            IAsyncEnumerator<NamespaceTopicResource> enumerator = pages.GetAsyncEnumerator();
+            var pages = namespaceTopicCollection.GetAllAsync();
+            var enumerator = pages.GetAsyncEnumerator();
 
             try
             {
@@ -71,7 +71,7 @@ namespace EventGridExplorerLibrary
         {
             NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
             NamespaceTopicEventSubscriptionCollection namespaceTopicEventSubscriptionCollection = namespaceTopicResource.GetNamespaceTopicEventSubscriptions();
-            AsyncPageable<NamespaceTopicEventSubscriptionResource> pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
+            var pages = namespaceTopicEventSubscriptionCollection.GetAllAsync();
 
             return pages;
         }
@@ -105,11 +105,11 @@ namespace EventGridExplorerLibrary
 
         public async Task PublishEventsAsync(string topicName, string eventSource, string eventType, List<string> publishEvents)
         {
-            CloudEvent[] cloudEvents = new CloudEvent[publishEvents.Count];
+            var cloudEvents = new CloudEvent[publishEvents.Count];
 
-            for (int i = 0; i < cloudEvents.Length; i++)
+            for (var i = 0; i < cloudEvents.Length; i++)
             {
-                string eventModel = publishEvents[i];
+                var eventModel = publishEvents[i];
                 cloudEvents[i] = new CloudEvent(eventSource, eventType, eventModel);
             }
 
