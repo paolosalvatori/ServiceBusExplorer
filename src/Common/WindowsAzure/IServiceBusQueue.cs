@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;

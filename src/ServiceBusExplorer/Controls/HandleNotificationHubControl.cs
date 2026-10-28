@@ -90,7 +90,8 @@ namespace ServiceBusExplorer.Controls
         private const string UserMetadata = "User Metadata";
         private const string DeviceToken = "DeviceToken";
         private const string ChannelUri = "ChannelUri";
-        private const string GcmRegistrationId = "GcmRegistrationId";
+        private const string FcmRegistrationId = "FcmRegistrationId";
+        private const string FcmV1RegistrationId = "FcmV1RegistrationId";
         private const string BodyTemplate = "BodyTemplate";
         private const string Tags = "Tags";
         private const string MpnsHeaders = "MpnsHeaders";
@@ -143,7 +144,7 @@ namespace ServiceBusExplorer.Controls
         private const string ClientSecretTooltip = "Client Secret is a unique value that authenticates your Windows Store app with Windows Live. You can get the Client Secret by registering your application with the Windows Store.";
         private const string MpnsCertificateThumbprintTooltip = "The certificate authenticates your application with the Microsoft Push Notification Services used by Windows Phone devices.";
         private const string ApnsCertificateThumbprintTooltip = "This certificate authenticates your app to Apple Push Notification Services.";
-        private const string GcmApiKeyTooltip = "The API key is a unique value that authenticates your Android app with Google Cloud Messaging. You can obtain an API key by registering your app in the Google APIs console.";
+        private const string GcmApiKeyTooltip = "Enter the FCM HTTP v1 service-account JSON file. A legacy FCM API key is also accepted for existing hubs.";
         private const string UserMetadataTooltip = "Gets or sets the user metadata.";
         private const string DeleteTooltip = "Delete the row.";
 
@@ -162,7 +163,7 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Fields
-        private readonly List<CollectionQueryResult<RegistrationDescription>> registrationPageList = new List<CollectionQueryResult<RegistrationDescription>>();
+        private readonly List<ICollectionQueryResult<RegistrationDescription>> registrationPageList = new List<ICollectionQueryResult<RegistrationDescription>>();
         private int currentRegistrationPage = -1;
         private NotificationHubDescription notificationHubDescription;
         private readonly ServiceBusHelper serviceBusHelper;
@@ -253,7 +254,7 @@ namespace ServiceBusExplorer.Controls
                         currentPnsHandle = registrationsForm.PnsHandle;
                     }
                 }
-                CollectionQueryResult<RegistrationDescription> collectionQueryResult = null;
+                ICollectionQueryResult<RegistrationDescription> collectionQueryResult = null;
                 if (string.IsNullOrWhiteSpace(continuationToken))
                 {
                     registrationPageList.Clear();
@@ -404,6 +405,7 @@ namespace ServiceBusExplorer.Controls
                 toolTip.SetToolTip(txtMpnsCredentialCertificateThumbprint, MpnsCertificateThumbprintTooltip);
                 toolTip.SetToolTip(txtApnsCredentialCertificateThumbprint, ApnsCertificateThumbprintTooltip);
                 toolTip.SetToolTip(txtGcmApiKey, GcmApiKeyTooltip);
+                toolTip.SetToolTip(txtGcmJsonPayload, "FCM HTTP v1 payloads must include a root 'message' object.");
                 toolTip.SetToolTip(txtUserMetadata, UserMetadataTooltip);
 
                 // Hide Caret
@@ -1204,20 +1206,31 @@ namespace ServiceBusExplorer.Controls
                 txtClientSecret.Text = string.Empty;
             }
 
-            if (notificationHubDescription.GcmCredential != null)
+            if (notificationHubDescription.FcmV1Credential != null)
             {
-                if (!string.IsNullOrWhiteSpace(notificationHubDescription.GcmCredential.GoogleApiKey))
+                txtGcmApiKey.Text = new JavaScriptSerializer().Serialize(new Dictionary<string, string>
                 {
-                    txtGcmApiKey.Text = notificationHubDescription.GcmCredential.GoogleApiKey;
+                    ["private_key"] = notificationHubDescription.FcmV1Credential.PrivateKey,
+                    ["client_email"] = notificationHubDescription.FcmV1Credential.ClientEmail,
+                    ["project_id"] = notificationHubDescription.FcmV1Credential.ProjectId
+                });
+                txtGcmEndpoint.Text = notificationHubDescription.FcmV1Credential.FcmV1Endpoint;
+            }
+            else if (notificationHubDescription.FcmCredential != null)
+            {
+                if (!string.IsNullOrWhiteSpace(notificationHubDescription.FcmCredential.GoogleApiKey))
+                {
+                    txtGcmApiKey.Text = notificationHubDescription.FcmCredential.GoogleApiKey;
                 }
-                if (!string.IsNullOrWhiteSpace(notificationHubDescription.GcmCredential.GcmEndpoint))
+                if (!string.IsNullOrWhiteSpace(notificationHubDescription.FcmCredential.FcmEndpoint))
                 {
-                    txtGcmEndpoint.Text = notificationHubDescription.GcmCredential.GcmEndpoint;
+                    txtGcmEndpoint.Text = notificationHubDescription.FcmCredential.FcmEndpoint;
                 }
             }
             else
             {
                 txtGcmApiKey.Text = string.Empty;
+                txtGcmEndpoint.Text = string.Empty;
             }
 
             if (notificationHubDescription.MpnsCredential != null)
@@ -1269,8 +1282,8 @@ namespace ServiceBusExplorer.Controls
                 string.IsNullOrWhiteSpace(notificationHubDescription.WnsCredential.WindowsLiveEndpoint)) &&
                 (notificationHubDescription.ApnsCredential == null ||
                 string.IsNullOrWhiteSpace(notificationHubDescription.ApnsCredential.Endpoint)) &&
-                (notificationHubDescription.GcmCredential == null ||
-                string.IsNullOrWhiteSpace(notificationHubDescription.GcmCredential.GcmEndpoint)))
+                (notificationHubDescription.FcmCredential == null &&
+                 notificationHubDescription.FcmV1Credential == null))
             {
                 DisablePage(TemplateNotificationPage);
             }
@@ -1304,8 +1317,8 @@ namespace ServiceBusExplorer.Controls
             {
                 EnablePage(AppleNativeNotificationPage);
             }
-            if (notificationHubDescription.GcmCredential == null ||
-                string.IsNullOrWhiteSpace(notificationHubDescription.GcmCredential.GcmEndpoint))
+            if (notificationHubDescription.FcmCredential == null &&
+                notificationHubDescription.FcmV1Credential == null)
             {
                 DisablePage(GoogleNativeNotificationPage);
             }
@@ -1571,6 +1584,15 @@ namespace ServiceBusExplorer.Controls
                             try
                             {
                                 serializer.Deserialize<dynamic>(gcmPayload);
+                                if (notificationHubDescription.FcmV1Credential != null)
+                                {
+                                    var payload = serializer.Deserialize<Dictionary<string, object>>(gcmPayload);
+                                    if (payload == null || !payload.ContainsKey("message"))
+                                    {
+                                        writeToLog("FCM HTTP v1 payloads must include a root 'message' object.", false);
+                                        return;
+                                    }
+                                }
                             }
                             catch (Exception)
                             {
@@ -1580,7 +1602,9 @@ namespace ServiceBusExplorer.Controls
                             var headers = NotificationInfo.GcmHeaders.ToDictionary(p => p.Name, p => p.Value);
                             tags = NotificationInfo.GcmTags.Select(t => t.Tag).ToArray();
                             tagExpression = txtGcmTagExpression.Text;
-                            notification = new GcmNotification(gcmPayload) { Headers = headers };
+                            notification = notificationHubDescription.FcmV1Credential != null
+                                               ? (Notification)new FcmV1Notification(gcmPayload) { Headers = headers }
+                                               : new FcmNotification(gcmPayload) { Headers = headers };
                         }
                         else
                         {
@@ -2046,10 +2070,7 @@ namespace ServiceBusExplorer.Controls
                         description.WnsCredential = new WnsCredential(txtPackageSid.Text, txtClientSecret.Text);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(txtGcmApiKey.Text))
-                    {
-                        description.GcmCredential = new GcmCredential(txtGcmApiKey.Text);
-                    }
+                    SetFcmCredential(description, txtGcmApiKey.Text);
 
                     if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) &&
                         !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
@@ -2132,10 +2153,7 @@ namespace ServiceBusExplorer.Controls
                             }
                             else
                             {
-                                description.Authorization.Add(new AllowRule(rule.IssuerName,
-                                                                                                            rule.ClaimType,
-                                                                                                            rule.ClaimValue,
-                                                                                                            rightList));
+                                throw new NotSupportedException("Claim-based Notification Hubs authorization rules are no longer supported. Use a shared access authorization rule instead.");
                             }
                         }
                     }
@@ -2194,9 +2212,7 @@ namespace ServiceBusExplorer.Controls
                                                                ? new WnsCredential(txtPackageSid.Text, txtClientSecret.Text)
                                                                : null;
 
-                    notificationHubDescription.GcmCredential = string.IsNullOrWhiteSpace(txtGcmApiKey.Text)
-                                                                   ? null
-                                                                   : new GcmCredential(txtGcmApiKey.Text);
+                    SetFcmCredential(notificationHubDescription, txtGcmApiKey.Text);
 
                     if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) && !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
                     {
@@ -2270,10 +2286,7 @@ namespace ServiceBusExplorer.Controls
                             }
                             else
                             {
-                                notificationHubDescription.Authorization.Add(new AllowRule(rule.IssuerName,
-                                                                                 rule.ClaimType,
-                                                                                 rule.ClaimValue,
-                                                                                 rightList));
+                                throw new NotSupportedException("Claim-based Notification Hubs authorization rules are no longer supported. Use a shared access authorization rule instead.");
                             }
                         }
                     }
@@ -2377,7 +2390,8 @@ namespace ServiceBusExplorer.Controls
                     Editor = p.Name == BodyTemplate ||
                                                                                     p.Name == ChannelUri ||
                                                                                     p.Name == DeviceToken ||
-                                                                                    p.Name == GcmRegistrationId ?
+                                                                                    p.Name == FcmRegistrationId ||
+                                                                                    p.Name == FcmV1RegistrationId ?
                                                                                     new CustomTextEditor() as UITypeEditor :
                                                                                     p.Name == Expressions ||
                                                                                     p.Name == ExpressionLengths ||
@@ -2673,10 +2687,18 @@ namespace ServiceBusExplorer.Controls
                                         }
                                         else
                                         {
-                                            var gcmRegistrationDescription = registrationInfo.Registration as GcmRegistrationDescription;
-                                            if (gcmRegistrationDescription != null)
+                                            var fcmRegistrationDescription = registrationInfo.Registration as FcmRegistrationDescription;
+                                            if (fcmRegistrationDescription != null)
                                             {
-                                                registrationInfo.Registration = await notificationHubClient.UpdateRegistrationAsync(gcmRegistrationDescription);
+                                                registrationInfo.Registration = await notificationHubClient.UpdateRegistrationAsync(fcmRegistrationDescription);
+                                            }
+                                            else
+                                            {
+                                                var fcmV1RegistrationDescription = registrationInfo.Registration as FcmV1RegistrationDescription;
+                                                if (fcmV1RegistrationDescription != null)
+                                                {
+                                                    registrationInfo.Registration = await notificationHubClient.UpdateRegistrationAsync(fcmV1RegistrationDescription);
+                                                }
                                             }
                                         }
                                     }
@@ -2969,12 +2991,22 @@ namespace ServiceBusExplorer.Controls
                         registrationsDataGridView.Tag = true;
                     }
                     break;
-                case GcmRegistrationId:
+                case FcmRegistrationId:
                     var gcmRegistrationId = e.ChangedItem.Value as string;
-                    if (registration is GcmRegistrationDescription && !string.IsNullOrWhiteSpace(gcmRegistrationId))
+                    if (registration is FcmRegistrationDescription && !string.IsNullOrWhiteSpace(gcmRegistrationId))
                     {
-                        ((GcmRegistrationDescription)registration).GcmRegistrationId = gcmRegistrationId;
+                        ((FcmRegistrationDescription)registration).FcmRegistrationId = gcmRegistrationId;
                         registrationInfo.ChannelUri = gcmRegistrationId;
+                        registrationsDataGridView.Tag = true;
+                    }
+                    break;
+                case FcmV1RegistrationId:
+                    var fcmV1RegistrationId = e.ChangedItem.Value as string;
+                    if (registration is FcmV1RegistrationDescription fcmV1Registration &&
+                        !string.IsNullOrWhiteSpace(fcmV1RegistrationId))
+                    {
+                        fcmV1Registration.FcmV1RegistrationId = fcmV1RegistrationId;
+                        registrationInfo.ChannelUri = fcmV1RegistrationId;
                         registrationsDataGridView.Tag = true;
                     }
                     break;
@@ -3201,15 +3233,15 @@ namespace ServiceBusExplorer.Controls
                                null
                     };
                 }
-                else if (form.RegistrationType == typeof(GcmRegistrationDescription))
+                else if (form.RegistrationType == typeof(FcmRegistrationDescription))
                 {
                     var registration = tags == null || tags.Count == 0 ?
-                                       new GcmRegistrationDescription(form.RegistrationObject[GcmRegistrationId] as string) :
-                                       new GcmRegistrationDescription(form.RegistrationObject[GcmRegistrationId] as string, tags);
+                                       new FcmRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string) :
+                                       new FcmRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string, tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
-                        ChannelUri = registration.GcmRegistrationId,
+                        ChannelUri = registration.FcmRegistrationId,
                         ETag = registration.ETag,
                         ExpirationTime = registration.ExpirationTime,
                         RegistrationId = registration.RegistrationId,
@@ -3219,20 +3251,61 @@ namespace ServiceBusExplorer.Controls
                                null
                     };
                 }
-                else if (form.RegistrationType == typeof(GcmTemplateRegistrationDescription))
+                else if (form.RegistrationType == typeof(FcmTemplateRegistrationDescription))
                 {
                     var bodyTemplate = form.RegistrationObject.Properties.Any(p => string.Compare(p.Name, BodyTemplate, StringComparison.InvariantCultureIgnoreCase) == 0)
                                            ? form.RegistrationObject[BodyTemplate] as string
                                            : null;
                     var registration = tags != null && tags.Count > 0 ?
-                                       new GcmTemplateRegistrationDescription(form.RegistrationObject[GcmRegistrationId] as string, bodyTemplate, tags) :
+                                       new FcmTemplateRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string, bodyTemplate, tags) :
                                        string.IsNullOrWhiteSpace(bodyTemplate) ?
-                                       new GcmTemplateRegistrationDescription(form.RegistrationObject[GcmRegistrationId] as string) :
-                                       new GcmTemplateRegistrationDescription(form.RegistrationObject[GcmRegistrationId] as string, bodyTemplate);
+                                       new FcmTemplateRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string) :
+                                       new FcmTemplateRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string, bodyTemplate);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
-                        ChannelUri = registration.GcmRegistrationId,
+                        ChannelUri = registration.FcmRegistrationId,
+                        ETag = registration.ETag,
+                        ExpirationTime = registration.ExpirationTime,
+                        RegistrationId = registration.RegistrationId,
+                        Registration = registration,
+                        Tags = registration.Tags != null && registration.Tags.Any() ?
+                               registration.Tags.Aggregate((a, t) => a + "," + t) :
+                               null
+                    };
+                }
+                else if (form.RegistrationType == typeof(FcmV1RegistrationDescription))
+                {
+                    var registration = tags == null || tags.Count == 0 ?
+                                       new FcmV1RegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string) :
+                                       new FcmV1RegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, tags);
+                    registration = await notificationHubClient.CreateRegistrationAsync(registration);
+                    registrationInfo = new RegistrationInfo
+                    {
+                        ChannelUri = registration.FcmV1RegistrationId,
+                        ETag = registration.ETag,
+                        ExpirationTime = registration.ExpirationTime,
+                        RegistrationId = registration.RegistrationId,
+                        Registration = registration,
+                        Tags = registration.Tags != null && registration.Tags.Any() ?
+                               registration.Tags.Aggregate((a, t) => a + "," + t) :
+                               null
+                    };
+                }
+                else if (form.RegistrationType == typeof(FcmV1TemplateRegistrationDescription))
+                {
+                    var bodyTemplate = form.RegistrationObject.Properties.Any(p => string.Compare(p.Name, BodyTemplate, StringComparison.InvariantCultureIgnoreCase) == 0)
+                                           ? form.RegistrationObject[BodyTemplate] as string
+                                           : null;
+                    var registration = tags != null && tags.Count > 0 ?
+                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, bodyTemplate, tags) :
+                                       string.IsNullOrWhiteSpace(bodyTemplate) ?
+                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string) :
+                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, bodyTemplate);
+                    registration = await notificationHubClient.CreateRegistrationAsync(registration);
+                    registrationInfo = new RegistrationInfo
+                    {
+                        ChannelUri = registration.FcmV1RegistrationId,
                         ETag = registration.ETag,
                         ExpirationTime = registration.ExpirationTime,
                         RegistrationId = registration.RegistrationId,
@@ -3419,6 +3492,43 @@ namespace ServiceBusExplorer.Controls
         private void btnClearGcmNotification_Click(object sender, EventArgs e)
         {
             txtGcmApiKey.Text = null;
+        }
+
+        private static void SetFcmCredential(NotificationHubDescription description, string credentialText)
+        {
+            if (string.IsNullOrWhiteSpace(credentialText))
+            {
+                description.FcmCredential = null;
+                description.FcmV1Credential = null;
+                return;
+            }
+
+            var trimmedCredential = credentialText.Trim();
+            if (trimmedCredential.StartsWith("{", StringComparison.Ordinal))
+            {
+                var serviceAccount = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(trimmedCredential);
+                description.FcmV1Credential = new FcmV1Credential(
+                    GetServiceAccountValue(serviceAccount, "private_key"),
+                    GetServiceAccountValue(serviceAccount, "project_id"),
+                    GetServiceAccountValue(serviceAccount, "client_email"));
+                return;
+            }
+
+            description.FcmCredential = new FcmCredential(trimmedCredential);
+            description.FcmV1Credential = null;
+        }
+
+        private static string GetServiceAccountValue(IDictionary<string, object> serviceAccount, string name)
+        {
+            if (serviceAccount != null &&
+                serviceAccount.TryGetValue(name, out var value) &&
+                value is string stringValue &&
+                !string.IsNullOrWhiteSpace(stringValue))
+            {
+                return stringValue;
+            }
+
+            throw new ArgumentException($"The FCM service-account JSON must include a non-empty '{name}' value.");
         }
 
         private void btnClearWnsNotification_Click(object sender, EventArgs e)

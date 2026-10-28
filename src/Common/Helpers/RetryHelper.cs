@@ -113,6 +113,18 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount));
                     Thread.Sleep(retryTimeout);
                 }
+                catch (Azure.RequestFailedException)
+                {
+                    throw;
+                }
+                catch (Azure.Messaging.ServiceBus.ServiceBusException)
+                {
+                    throw;
+                }
+                catch (NotSupportedException)
+                {
+                    throw;
+                }
                 catch (Exception ex)
                 {
                     if (numRetries == 0)
@@ -188,6 +200,18 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount));
                     
                     await Task.Delay(retryTimeout);
+                }
+                catch (Azure.RequestFailedException)
+                {
+                    throw;
+                }
+                catch (Azure.Messaging.ServiceBus.ServiceBusException)
+                {
+                    throw;
+                }
+                catch (NotSupportedException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -292,6 +316,18 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount));
                     Thread.Sleep(retryTimeout);
                 }
+                catch (Azure.RequestFailedException)
+                {
+                    throw;
+                }
+                catch (Azure.Messaging.ServiceBus.ServiceBusException)
+                {
+                    throw;
+                }
+                catch (NotSupportedException)
+                {
+                    throw;
+                }
                 catch (Exception ex)
                 {
                     if (numRetries == 0)
@@ -395,6 +431,18 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount));
                     
                     await Task.Delay(retryTimeout);
+                }
+                catch (Azure.RequestFailedException)
+                {
+                    throw;
+                }
+                catch (Azure.Messaging.ServiceBus.ServiceBusException)
+                {
+                    throw;
+                }
+                catch (NotSupportedException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
