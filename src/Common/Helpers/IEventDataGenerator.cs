@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 
 #endregion
 
