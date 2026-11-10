@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using System.Windows.Markup;
 
 namespace ServiceBusExplorer.Forms
@@ -68,6 +69,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
         }
 
         private void btnOk_Click(object sender, EventArgs e)

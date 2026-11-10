@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 #endregion
 
@@ -42,6 +43,7 @@ namespace ServiceBusExplorer.Forms
         public ParameterForm(string title, IList<string> parameterNameList, IList<string> parameterValueList, IList<bool> canBeNullList = null)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             if (!string.IsNullOrWhiteSpace(title))
             {
                 Text = title;

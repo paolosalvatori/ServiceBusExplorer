@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 
@@ -58,6 +59,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
         }
         #endregion
 

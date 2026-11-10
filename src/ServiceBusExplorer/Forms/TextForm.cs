@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 
@@ -45,6 +46,7 @@ namespace ServiceBusExplorer.Forms
         public TextForm(string label, string content)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             grouperCaption.GroupTitle = string.IsNullOrWhiteSpace(label) ? DefaultLabel : label;
             Content = XmlHelper.Indent(content);
             txtContent.Text = string.IsNullOrWhiteSpace(Content) ? string.Empty : Content;
@@ -53,6 +55,7 @@ namespace ServiceBusExplorer.Forms
         public TextForm(string text, string label, string content)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             if (!string.IsNullOrWhiteSpace(text))
             {
                 Text = text;
@@ -65,6 +68,7 @@ namespace ServiceBusExplorer.Forms
         public TextForm(string text, string label, string content, bool hideOpen = false)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             if (!string.IsNullOrWhiteSpace(text))
             {
                 Text = text;

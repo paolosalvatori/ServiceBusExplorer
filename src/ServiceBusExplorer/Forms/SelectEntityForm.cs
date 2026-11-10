@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using Microsoft.Azure.NotificationHubs;
 using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
@@ -84,6 +85,7 @@ namespace ServiceBusExplorer.Forms
             includeNotificationHubs = notificationHubs;
             includeRelays = relays;
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             if (MainForm.SingletonMainForm != null &&
                 MainForm.SingletonMainForm.ServiceBusTreeView != null)
             {

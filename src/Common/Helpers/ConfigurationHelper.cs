@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -240,6 +240,8 @@ namespace ServiceBusExplorer.Common.Helpers
                     .ToList();
 
             resultProperties.NodesColors = NodeColorInfo.ParseAll(configuration.GetStringValue(ConfigurationParameters.NodesColors, string.Empty));
+
+            resultProperties.Theme = configuration.GetStringValue(ConfigurationParameters.Theme, "Light");
 
             return resultProperties;
         }

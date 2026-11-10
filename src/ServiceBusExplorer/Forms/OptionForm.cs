@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -107,6 +107,7 @@ namespace ServiceBusExplorer.Forms
             nodeColorsBindingSource.DataSource = NodesColorInfoBindingList;
 
             ShowSettings(mainSettings);
+            ThemeManager.ApplyTheme(this);
         }
 
         #endregion
@@ -270,6 +271,8 @@ namespace ServiceBusExplorer.Forms
             SetEntraTenantIdsIntoBindingList(MainSettings.EntraTenantIds);
 
             SetNodesColorsIntoBindingList(MainSettings.NodesColors);
+
+            cboTheme.SelectedItem = MainSettings.Theme ?? "Light";
         }
 
         private void SetEntraTenantIdsIntoBindingList(IEnumerable<EntraTenantIdItem> items)
@@ -710,6 +713,9 @@ namespace ServiceBusExplorer.Forms
             SaveSetting(configuration, readSettings, ConfigurationParameters.NodesColors, 
                 NodeColorInfo.FormatAll(MainSettings.NodesColors));
 
+            MainSettings.Theme = cboTheme.SelectedItem?.ToString() ?? "Light";
+            SaveSetting(configuration, readSettings, ConfigurationParameters.Theme, MainSettings.Theme);
+
             configuration.Save();
         }
 
@@ -802,6 +808,8 @@ namespace ServiceBusExplorer.Forms
             SetEntraTenantIdsIntoBindingList(mainSettings.EntraTenantIds);
 
             SetNodesColorsIntoBindingList(mainSettings.NodesColors);
+
+            cboTheme.SelectedItem = string.IsNullOrEmpty(mainSettings.Theme) ? "Light" : mainSettings.Theme;
         }
 
         List<string> GetSelectedEntities()
@@ -856,10 +864,24 @@ namespace ServiceBusExplorer.Forms
         private void tabPageColors_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
+                cboTheme.Location.X - 1,
+                cboTheme.Location.Y - 1,
+                cboTheme.Size.Width + 1,
+                cboTheme.Size.Height + 1);
+
+            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                 dgNodeColors.Location.X - 1,
                 dgNodeColors.Location.Y - 1,
                 dgNodeColors.Size.Width + 1,
                 dgNodeColors.Size.Height + 1);
+        }
+
+        private void cboTheme_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboTheme.SelectedItem != null)
+            {
+                MainSettings.Theme = cboTheme.SelectedItem.ToString();
+            }
         }
 
         #endregion

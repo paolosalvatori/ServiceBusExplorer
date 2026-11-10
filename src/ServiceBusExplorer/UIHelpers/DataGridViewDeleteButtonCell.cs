@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -36,14 +36,24 @@ namespace ServiceBusExplorer.UIHelpers
             var fillRectangle = new Rectangle(cellBounds.X, cellBounds.Y, cellBounds.Width - 1, cellBounds.Height - 1);
             var stringRectangle = new Rectangle(cellBounds.X + 5, cellBounds.Y + 3, cellBounds.Width - 8, cellBounds.Height - 8);
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.FillRectangle(new SolidBrush(Color.FromArgb(215, 228, 242)),
-                                   fillRectangle);
-            graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1),
-                              new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y),
-                              new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y + cellBounds.Height - 1));
-            graphics.DrawLine(new Pen(Color.FromArgb(153, 180, 209), 1),
-                              new Point(cellBounds.X, cellBounds.Y + cellBounds.Height - 1),
-                              new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y + cellBounds.Height - 1));
+            var isDark = ThemeManager.IsDarkTheme;
+            var buttonBackColor = isDark ? ThemeManager.DarkControlBackground : Color.FromArgb(215, 228, 242);
+            var borderColor = isDark ? ThemeManager.DarkBorderColor : Color.FromArgb(153, 180, 209);
+            var textColor = isDark ? ThemeManager.DarkTextColor : Color.FromArgb(0, 0, 0);
+
+            using (var brush = new SolidBrush(buttonBackColor))
+            {
+                graphics.FillRectangle(brush, fillRectangle);
+            }
+            using (var pen = new Pen(borderColor, 1))
+            {
+                graphics.DrawLine(pen,
+                                  new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y),
+                                  new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y + cellBounds.Height - 1));
+                graphics.DrawLine(pen,
+                                  new Point(cellBounds.X, cellBounds.Y + cellBounds.Height - 1),
+                                  new Point(cellBounds.X + cellBounds.Width - 1, cellBounds.Y + cellBounds.Height - 1));
+            }
             //var pen = new Pen(new LinearGradientBrush(new Rectangle(1, 1, 1, 1), 
             //                  Color.FromArgb(0, 0, 0), 
             //                  Color.FromArgb(200, 200, 200), 
@@ -59,10 +69,13 @@ namespace ServiceBusExplorer.UIHelpers
             //graphics.DrawLine(pen,
             //                 new Point(cellBounds.X + cellBounds.Width - 7, cellBounds.Y + 7),
             //                 new Point(cellBounds.X + 7, cellBounds.Y + cellBounds.Height - 7));
-            graphics.DrawString("X",
-                                new Font("Comic Sans MS", 9.0f, FontStyle.Regular),
-                                new SolidBrush(Color.FromArgb(0, 0, 0)),
-                                stringRectangle);
+            using (var textBrush = new SolidBrush(textColor))
+            {
+                graphics.DrawString("X",
+                                    new Font("Comic Sans MS", 9.0f, FontStyle.Regular),
+                                    textBrush,
+                                    stringRectangle);
+            }
         }
     }
 }

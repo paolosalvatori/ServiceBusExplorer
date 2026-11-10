@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 #endregion
 
@@ -35,6 +36,7 @@ namespace ServiceBusExplorer.Forms
         public ClipboardForm(string url)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             lblUrl.Text = string.Format(url);
             Width = lblUrl.Width + 80;
         }

@@ -12,6 +12,7 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Forms
 {
@@ -30,6 +31,7 @@ namespace ServiceBusExplorer.Forms
         {
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
         }
 
         private void btnOk_Click(object sender, EventArgs e)

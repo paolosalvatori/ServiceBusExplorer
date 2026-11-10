@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Forms
 {
@@ -21,6 +22,7 @@ namespace ServiceBusExplorer.Forms
         public PublishEventForm(WriteToLogDelegate writeToLog)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             this.writeToLog = writeToLog;
         }
 

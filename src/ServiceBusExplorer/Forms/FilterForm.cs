@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
@@ -92,6 +93,7 @@ namespace ServiceBusExplorer.Forms
             this.entity = entity;
             FilterExpression = filterExpression;
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             InitializeControls();
         }
         #endregion
@@ -480,16 +482,8 @@ namespace ServiceBusExplorer.Forms
 
         private void grouperFilter_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                   cboMessageCountOperator.Location.X - 1,
-                                   cboMessageCountOperator.Location.Y - 1,
-                                   cboMessageCountOperator.Size.Width + 1,
-                                   cboMessageCountOperator.Size.Height + 1);
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                   timeFilterDataGridView.Location.X - 1,
-                                   timeFilterDataGridView.Location.Y - 1,
-                                   timeFilterDataGridView.Size.Width + 1,
-                                   timeFilterDataGridView.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, cboMessageCountOperator);
+            ThemeManager.DrawControlBorder(e.Graphics, timeFilterDataGridView);
         }
 
         #endregion

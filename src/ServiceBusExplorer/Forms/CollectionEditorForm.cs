@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 #endregion
 
@@ -43,6 +44,7 @@ namespace ServiceBusExplorer.Forms
         public CollectionEditorForm(string text, string groupTitle, object value)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             Text = text;
             Value = value;
             grouperCaption.GroupTitle = string.IsNullOrWhiteSpace(groupTitle) ? DefaultLabel : groupTitle;
@@ -133,11 +135,7 @@ namespace ServiceBusExplorer.Forms
 
         private void grouperCaption_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                     dataGridView.Location.X - 1,
-                                     dataGridView.Location.Y - 1,
-                                     dataGridView.Size.Width + 1,
-                                     dataGridView.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, dataGridView);
         }
 
         private void dataGridView_Resize(object sender, EventArgs e)

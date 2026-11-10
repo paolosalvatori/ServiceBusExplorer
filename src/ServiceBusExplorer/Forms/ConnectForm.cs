@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team  
@@ -33,6 +33,7 @@ using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Common.Entities;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Common.Helpers;
 
 #endregion
@@ -122,6 +123,7 @@ namespace ServiceBusExplorer.Forms
             List<EntraTenantIdItem> entraTenantIds)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
 
             this.configFileUse = configFileUse;
             SetConfigFileUseLabelText(lblConfigFileUse);
@@ -888,40 +890,19 @@ namespace ServiceBusExplorer.Forms
 
         private void grouperServiceBusNamespaces_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                cboServiceBusNamespace.Location.X - 1,
-                cboServiceBusNamespace.Location.Y - 1,
-                cboServiceBusNamespace.Size.Width + 1,
-                cboServiceBusNamespace.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, cboServiceBusNamespace);
         }
 
         private void grouperFilters_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                cboSelectedEntities.Location.X - 1,
-                cboSelectedEntities.Location.Y - 1,
-                cboSelectedEntities.Size.Width + 1,
-                cboSelectedEntities.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, cboSelectedEntities);
         }
 
         private void grouperServiceBusNamespaceSettings_CustomPaint(PaintEventArgs e)
         {
-            var pen = new Pen(SystemColors.ActiveBorder, 1);
-            e.Graphics.DrawRectangle(pen,
-                cboAuthMode.Location.X - 1,
-                cboAuthMode.Location.Y - 1,
-                cboAuthMode.Size.Width + 1,
-                cboAuthMode.Size.Height + 1);
-            e.Graphics.DrawRectangle(pen,
-                cboConnectivityMode.Location.X - 1,
-                cboConnectivityMode.Location.Y - 1,
-                cboConnectivityMode.Size.Width + 1,
-                cboConnectivityMode.Size.Height + 1);
-            e.Graphics.DrawRectangle(pen,
-                cboTransportType.Location.X - 1,
-                cboTransportType.Location.Y - 1,
-                cboTransportType.Size.Width + 1,
-                cboTransportType.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, cboAuthMode);
+            ThemeManager.DrawControlBorder(e.Graphics, cboConnectivityMode);
+            ThemeManager.DrawControlBorder(e.Graphics, cboTransportType);
         }
 
         private void btnSave_Click(object sender, EventArgs e)

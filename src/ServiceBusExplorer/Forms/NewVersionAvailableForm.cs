@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Properties;
 
@@ -41,6 +42,7 @@ namespace ServiceBusExplorer.Forms
         public NewVersionAvailableForm()
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
 
             //This form is double buffered
             SetStyle(

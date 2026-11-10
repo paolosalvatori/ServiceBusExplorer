@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -330,6 +330,14 @@ namespace ServiceBusExplorer.Forms
             UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
             InitializeDashboard();
+
+            panelMain.ControlAdded += (s, e) =>
+            {
+                if (ThemeManager.IsDarkTheme)
+                {
+                    ThemeManager.ApplyTheme(e.Control);
+                }
+            };
 
             WriteToLog(logMessage);
         }
@@ -722,7 +730,9 @@ namespace ServiceBusExplorer.Forms
 
                 EntraTenantIds = EntraTenantIds,
 
-                NodesColors = NodesColors
+                NodesColors = NodesColors,
+
+                Theme = ThemeManager.CurrentTheme
             };
 
             var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
@@ -802,6 +812,11 @@ namespace ServiceBusExplorer.Forms
                 EntraTenantIds = optionForm.MainSettings.EntraTenantIds;
 
                 NodesColors = optionForm.MainSettings.NodesColors;
+
+                if (optionForm.MainSettings.Theme != ThemeManager.CurrentTheme)
+                {
+                    SwitchTheme(optionForm.MainSettings.Theme);
+                }
             }
 
             ReapplyColors(rootNode);
@@ -4260,7 +4275,8 @@ namespace ServiceBusExplorer.Forms
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
                 EntraTenantIds = EntraTenantIds,
-                NodesColors = NodesColors
+                NodesColors = NodesColors,
+                Theme = ThemeManager.CurrentTheme
             };
 
             var readSettings = ConfigurationHelper.GetMainProperties(configFileUse, currentSettings, WriteToLog);
@@ -4378,6 +4394,10 @@ namespace ServiceBusExplorer.Forms
 
             EntraTenantIds = readSettings.EntraTenantIds;
             NodesColors = readSettings.NodesColors;
+
+            ThemeManager.SetTheme(readSettings.Theme ?? ThemeManager.LightTheme);
+            ThemeManager.ApplyTheme(this);
+            UpdateThemeMenuCheckedState();
         }
 
         private void SetProxy(MainSettings settings)
@@ -4406,6 +4426,52 @@ namespace ServiceBusExplorer.Forms
             else
             {
                 WebRequest.DefaultWebProxy = initialDefaultWebProxy;
+            }
+        }
+
+        private void UpdateThemeMenuCheckedState()
+        {
+            if (lightThemeToolStripMenuItem != null)
+            {
+                lightThemeToolStripMenuItem.Checked = !ThemeManager.IsDarkTheme;
+            }
+            if (darkThemeToolStripMenuItem != null)
+            {
+                darkThemeToolStripMenuItem.Checked = ThemeManager.IsDarkTheme;
+            }
+        }
+
+        private void lightThemeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SwitchTheme(ThemeManager.LightTheme);
+        }
+
+        private void darkThemeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SwitchTheme(ThemeManager.DarkTheme);
+        }
+
+        private void SwitchTheme(string theme)
+        {
+            if (string.Equals(ThemeManager.CurrentTheme, theme, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            ThemeManager.SetTheme(theme);
+            ThemeManager.ApplyTheme(this);
+            UpdateThemeMenuCheckedState();
+            ReapplyColors(rootNode);
+
+            try
+            {
+                var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
+                configuration.SetValue(ConfigurationParameters.Theme, theme);
+                configuration.Save();
+            }
+            catch (Exception ex)
+            {
+                WriteToLog($"Error saving theme setting: {ex.Message}");
             }
         }
 

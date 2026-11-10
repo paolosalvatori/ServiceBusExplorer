@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Helpers;
 
 #endregion
@@ -49,6 +50,7 @@ namespace ServiceBusExplorer.Forms
         public DeleteForm(string message)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             lblMessage.Text = string.Format(message);
             Width = lblMessage.Width + 88;
         }
@@ -56,6 +58,7 @@ namespace ServiceBusExplorer.Forms
         public DeleteForm(string entityName, string entityType)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             lblMessage.Text = string.Format(MessageFormat,
                                             entityType ?? Unknown,
                                             entityName ?? Unknown);

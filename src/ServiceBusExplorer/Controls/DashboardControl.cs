@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Controls
 {
@@ -44,6 +45,87 @@ namespace ServiceBusExplorer.Controls
         public DashboardControl()
         {
             InitializeControls();
+            ThemeManager.ThemeChanged += () =>
+            {
+                if (!IsDisposed)
+                {
+                    ApplyTheme();
+                }
+            };
+            ApplyTheme();
+        }
+
+        public void ApplyTheme()
+        {
+            if (IsDisposed) return;
+
+            if (ThemeManager.IsDarkTheme)
+            {
+                BackColor = ThemeManager.DarkFormBackground;
+                if (toolbarPanel != null) toolbarPanel.BackColor = ThemeManager.DarkSurfaceBackground;
+                if (warningPanel != null)
+                {
+                    warningPanel.BackColor = Color.FromArgb(60, 50, 20);
+                    if (warningPanel.Controls.Count > 0)
+                    {
+                        warningPanel.Controls[0].ForeColor = Color.FromArgb(255, 220, 100);
+                    }
+                }
+                if (dataGridView != null)
+                {
+                    dataGridView.BackgroundColor = ThemeManager.DarkFormBackground;
+                    dataGridView.GridColor = ThemeManager.DarkGridLine;
+                    dataGridView.ColumnHeadersDefaultCellStyle.BackColor = ThemeManager.DarkControlBackground;
+                    dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = ThemeManager.DarkTextColor;
+                    dataGridView.ColumnHeadersDefaultCellStyle.SelectionBackColor = ThemeManager.DarkControlBackground;
+                    dataGridView.ColumnHeadersDefaultCellStyle.SelectionForeColor = ThemeManager.DarkTextColor;
+                    dataGridView.DefaultCellStyle.BackColor = ThemeManager.DarkSurfaceBackground;
+                    dataGridView.DefaultCellStyle.ForeColor = ThemeManager.DarkTextColor;
+                    dataGridView.DefaultCellStyle.SelectionBackColor = ThemeManager.DarkAccentColor;
+                    dataGridView.DefaultCellStyle.SelectionForeColor = Color.White;
+                    dataGridView.AlternatingRowsDefaultCellStyle.BackColor = ThemeManager.DarkAlternateRow;
+                    dataGridView.AlternatingRowsDefaultCellStyle.ForeColor = ThemeManager.DarkTextColor;
+                }
+            }
+            else
+            {
+                BackColor = SystemColors.Control;
+                if (toolbarPanel != null) toolbarPanel.BackColor = SystemColors.Control;
+                if (warningPanel != null)
+                {
+                    warningPanel.BackColor = Color.FromArgb(255, 243, 205);
+                    if (warningPanel.Controls.Count > 0)
+                    {
+                        warningPanel.Controls[0].ForeColor = Color.FromArgb(102, 77, 3);
+                    }
+                }
+                if (dataGridView != null)
+                {
+                    dataGridView.BackgroundColor = SystemColors.Window;
+                    dataGridView.GridColor = SystemColors.ControlDark;
+                    dataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(153, 180, 209);
+                    dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                    dataGridView.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(153, 180, 209);
+                    dataGridView.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+                    dataGridView.DefaultCellStyle.BackColor = SystemColors.Window;
+                    dataGridView.DefaultCellStyle.ForeColor = SystemColors.ControlText;
+                    dataGridView.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+                    dataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+                    dataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+                    dataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                }
+            }
+
+            if (dataGridView != null)
+            {
+                foreach (DataGridViewRow r in dataGridView.Rows)
+                {
+                    if (int.TryParse(r.Cells["DeadLetter"].Value?.ToString(), out var dl) && dl > 0)
+                    {
+                        r.DefaultCellStyle.BackColor = ThemeManager.IsDarkTheme ? Color.FromArgb(70, 30, 30) : Color.FromArgb(255, 235, 230);
+                    }
+                }
+            }
         }
 
         public void Initialize(
@@ -421,7 +503,9 @@ namespace ServiceBusExplorer.Controls
 
                 if (row.DeadLetter > 0)
                 {
-                    dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 230);
+                    dataGridView.Rows[idx].DefaultCellStyle.BackColor = ThemeManager.IsDarkTheme
+                        ? Color.FromArgb(70, 30, 30)
+                        : Color.FromArgb(255, 235, 230);
                 }
             }
 
@@ -496,7 +580,7 @@ namespace ServiceBusExplorer.Controls
 
                     // Update color coding
                     row.DefaultCellStyle.BackColor = deadLetter > 0
-                        ? Color.FromArgb(255, 235, 230)
+                        ? (ThemeManager.IsDarkTheme ? Color.FromArgb(70, 30, 30) : Color.FromArgb(255, 235, 230))
                         : Color.Empty;
                     return;
                 }

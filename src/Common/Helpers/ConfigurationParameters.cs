@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -74,6 +74,7 @@ namespace ServiceBusExplorer.Helpers
         // the other config file in "Both" mode.
         public const string EntraTenantIdsClearedMarker = "(cleared)";
         public const string NodesColors = "Colors.Nodes";
+        public const string Theme = "theme";
 
         #endregion
 

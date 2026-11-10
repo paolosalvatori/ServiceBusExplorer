@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -87,9 +87,17 @@ namespace ServiceBusExplorer.UIHelpers
 
             // Set up the page and the various pieces.
             var page = tabControl.TabPages[e.Index];
-            using (var backBrush = new SolidBrush(page.BackColor))
+            var isDark = ThemeManager.IsDarkTheme;
+            var tabBackColor = isDark
+                ? (e.Index == tabControl.SelectedIndex ? ThemeManager.DarkSurfaceBackground : ThemeManager.DarkControlBackground)
+                : page.BackColor;
+            var tabForeColor = isDark
+                ? (e.Index == tabControl.SelectedIndex ? Color.White : ThemeManager.DarkMutedText)
+                : page.ForeColor;
+
+            using (var backBrush = new SolidBrush(tabBackColor))
             {
-                using (var foreBrush = new SolidBrush(page.ForeColor))
+                using (var foreBrush = new SolidBrush(tabForeColor))
                 {
                     var tabName = page.Text;
 
@@ -101,6 +109,13 @@ namespace ServiceBusExplorer.UIHelpers
                     {
                         tabBackgroundRect = e.Bounds;
                         e.Graphics.FillRectangle(backBrush, tabBackgroundRect);
+                        if (isDark)
+                        {
+                            using (var accentBrush = new SolidBrush(ThemeManager.DarkAccentColor))
+                            {
+                                e.Graphics.FillRectangle(accentBrush, tabBackgroundRect.X, tabBackgroundRect.Y, tabBackgroundRect.Width, 2);
+                            }
+                        }
                     }
                     else
                     {

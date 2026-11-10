@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Forms
 {
@@ -22,6 +23,7 @@ namespace ServiceBusExplorer.Forms
         public EventGridConnectForm()
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
         }
 
         private void customCloud_CheckedChanged(object sender, EventArgs e)

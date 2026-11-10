@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -74,6 +74,7 @@ namespace ServiceBusExplorer.Forms
         public RegistrationForm()
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             cboRegistrationType.Items.AddRange(new object[]{SelectRegistration, 
                                                             MpnsRegistrationDescription, 
                                                             MpnsTemplateRegistrationDescription,
@@ -122,11 +123,7 @@ namespace ServiceBusExplorer.Forms
 
         private void grouperCaption_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                   cboRegistrationType.Location.X - 1,
-                                   cboRegistrationType.Location.Y - 1,
-                                   cboRegistrationType.Size.Width + 1,
-                                   cboRegistrationType.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, cboRegistrationType);
         }
 
         private void cboRegistrationType_SelectedIndexChanged(object sender, EventArgs e)

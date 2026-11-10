@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -85,6 +85,8 @@ namespace ServiceBusExplorer.Helpers
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
 
+        public string Theme { get; set; } = "Light";
+
         #endregion
 
         #region Public Static Methods
@@ -147,6 +149,8 @@ namespace ServiceBusExplorer.Helpers
             EntraTenantIds = new List<EntraTenantIdItem>();
 
             NodesColors = new List<NodeColorInfo>();
+
+            Theme = "Light";
         }
 
         public override bool Equals(object other)
@@ -196,6 +200,7 @@ namespace ServiceBusExplorer.Helpers
             if (!EntraTenantIds.SequenceEqual(otherProperties.EntraTenantIds)) return false;
             // NodeColorInfo has no value equality, so compare the same serialized form used for persistence.
             if (NodeColorInfo.FormatAll(NodesColors) != NodeColorInfo.FormatAll(otherProperties.NodesColors)) return false;
+            if (Theme != otherProperties.Theme) return false;
 
             return true;
         }
@@ -214,7 +219,8 @@ namespace ServiceBusExplorer.Helpers
                 SenderThinkTime +
                 ReceiverThinkTime +
                 MonitorRefreshInterval +
-                Label.Length;
+                Label.Length +
+                (Theme?.Length ?? 0);
         }
 
         public object GetValue(string setting)
@@ -328,6 +334,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.NodesColors:
                     return NodesColors;
+
+                case ConfigurationParameters.Theme:
+                    return Theme;
             }
 
             throw new InvalidOperationException(String.Format("Unexpected value for setting: {0}", setting));

@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 #endregion
 
@@ -46,6 +47,7 @@ namespace ServiceBusExplorer.Forms
         public ReceiveModeForm(string message, int count, IEnumerable<string> brokeredMessageInspectors, bool fromSessionSelectionActive = false)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             Text = message;
             txtMessageCount.Text = count.ToString(CultureInfo.InvariantCulture);
             cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
@@ -165,11 +167,7 @@ namespace ServiceBusExplorer.Forms
         
         private void grouperInspector_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                    cboReceiverInspector.Location.X - 1,
-                                    cboReceiverInspector.Location.Y - 1,
-                                    cboReceiverInspector.Size.Width + 1,
-                                    cboReceiverInspector.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, cboReceiverInspector);
         }
         #endregion
     }

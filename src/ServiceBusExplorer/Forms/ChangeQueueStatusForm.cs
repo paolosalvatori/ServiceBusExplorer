@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Forms
 {
@@ -12,6 +13,7 @@ namespace ServiceBusExplorer.Forms
         public ChangeQueueStatusForm(EntityStatus entityCurrentStatus)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             SetSelected(entityCurrentStatus);
         }
 

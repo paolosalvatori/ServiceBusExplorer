@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -29,6 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using FastColoredTextBoxNS;
@@ -83,6 +84,7 @@ namespace ServiceBusExplorer.Forms
             this.serviceBusHelper = serviceBusHelper;
             this.writeToLog = writeToLog;
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
 
             messagePropertyGrid.SelectedObject = eventData;
             var messageText = serviceBusHelper.GetMessageText(eventData, out _);
@@ -200,11 +202,7 @@ namespace ServiceBusExplorer.Forms
 
         private void grouperMessageCustomProperties_CustomPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
-                                     propertiesDataGridView.Location.X - 1,
-                                     propertiesDataGridView.Location.Y - 1,
-                                     propertiesDataGridView.Size.Width + 1,
-                                     propertiesDataGridView.Size.Height + 1);
+            ThemeManager.DrawControlBorder(e.Graphics, propertiesDataGridView);
         }
 
         private void propertiesDataGridView_Resize(object sender, EventArgs e)

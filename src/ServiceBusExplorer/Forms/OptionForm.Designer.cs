@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -155,6 +155,8 @@ namespace ServiceBusExplorer.Forms
             this.txtNewTenantId = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tabPageColors = new System.Windows.Forms.TabPage();
+            this.lblTheme = new System.Windows.Forms.Label();
+            this.cboTheme = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.dgNodeColors = new System.Windows.Forms.DataGridView();
             this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -1425,6 +1427,8 @@ namespace ServiceBusExplorer.Forms
             // tabPageColors
             // 
             this.tabPageColors.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageColors.Controls.Add(this.lblTheme);
+            this.tabPageColors.Controls.Add(this.cboTheme);
             this.tabPageColors.Controls.Add(this.label5);
             this.tabPageColors.Controls.Add(this.dgNodeColors);
             this.tabPageColors.Location = new System.Drawing.Point(4, 22);
@@ -1433,14 +1437,39 @@ namespace ServiceBusExplorer.Forms
             this.tabPageColors.Padding = new System.Windows.Forms.Padding(16, 25, 16, 25);
             this.tabPageColors.Size = new System.Drawing.Size(576, 360);
             this.tabPageColors.TabIndex = 5;
-            this.tabPageColors.Text = "Colors";
+            this.tabPageColors.Text = "Colors & Theme";
             this.tabPageColors.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPageColors_Paint);
+            // 
+            // lblTheme
+            // 
+            this.lblTheme.AutoSize = true;
+            this.lblTheme.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblTheme.Location = new System.Drawing.Point(16, 16);
+            this.lblTheme.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTheme.Name = "lblTheme";
+            this.lblTheme.Size = new System.Drawing.Size(43, 13);
+            this.lblTheme.TabIndex = 2;
+            this.lblTheme.Text = "Theme:";
+            // 
+            // cboTheme
+            // 
+            this.cboTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTheme.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboTheme.FormattingEnabled = true;
+            this.cboTheme.Items.AddRange(new object[] {
+            "Light",
+            "Dark"});
+            this.cboTheme.Location = new System.Drawing.Point(80, 12);
+            this.cboTheme.Name = "cboTheme";
+            this.cboTheme.Size = new System.Drawing.Size(150, 21);
+            this.cboTheme.TabIndex = 0;
+            this.cboTheme.SelectedIndexChanged += new System.EventHandler(this.cboTheme_SelectedIndexChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label5.Location = new System.Drawing.Point(16, 25);
+            this.label5.Location = new System.Drawing.Point(16, 44);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(64, 13);
@@ -1473,7 +1502,7 @@ namespace ServiceBusExplorer.Forms
             this.transferDeadLetterMessageCountThresholdDataGridViewTextBoxColumn});
             this.dgNodeColors.DataSource = this.nodeColorsBindingSource;
             this.dgNodeColors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.dgNodeColors.Location = new System.Drawing.Point(16, 41);
+            this.dgNodeColors.Location = new System.Drawing.Point(16, 62);
             this.dgNodeColors.MultiSelect = false;
             this.dgNodeColors.Name = "dgNodeColors";
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -1486,8 +1515,8 @@ namespace ServiceBusExplorer.Forms
             this.dgNodeColors.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dgNodeColors.RowHeadersWidth = 15;
             this.dgNodeColors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dgNodeColors.Size = new System.Drawing.Size(544, 263);
-            this.dgNodeColors.TabIndex = 0;
+            this.dgNodeColors.Size = new System.Drawing.Size(544, 242);
+            this.dgNodeColors.TabIndex = 3;
             // 
             // textDataGridViewTextBoxColumn
             // 
@@ -1783,5 +1812,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ListBox lbxTenantIds;
         private System.Windows.Forms.Button btnDeleteTenantId;
         private System.Windows.Forms.Button btnAddTenantId;
+        private System.Windows.Forms.Label lblTheme;
+        private System.Windows.Forms.ComboBox cboTheme;
     }
 }

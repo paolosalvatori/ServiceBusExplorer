@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 using Microsoft.ServiceBus.Messaging;
 
 #endregion
@@ -46,6 +47,7 @@ namespace ServiceBusExplorer.Forms
         public ChangeStatusForm(string entityName, string entityType, EntityStatus desiredStatus)
         {
             InitializeComponent();
+            ThemeManager.ApplyTheme(this);
             
             if (desiredStatus == EntityStatus.Active)
             {
