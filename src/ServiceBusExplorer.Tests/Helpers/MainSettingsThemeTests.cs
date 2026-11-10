@@ -1,4 +1,6 @@
+using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using FluentAssertions;
 using ServiceBusExplorer.Controls;
@@ -118,6 +120,203 @@ namespace ServiceBusExplorer.Tests.Helpers
                 form.BackColor.Should().Be(ThemeManager.LightFormBackground);
                 grouper.BackgroundColor.Should().Be(Color.FromArgb(215, 228, 242));
                 btn.BackColor.Should().Be(SystemColors.Control);
+            }
+        }
+
+        [Fact]
+        public void ThemeManager_ApplyTheme_PreservesDashboardWarningPalette_Dark()
+        {
+            ThemeManager.SetTheme(ThemeManager.DarkTheme);
+
+            using (var form = new Form())
+            using (var dashboard = new DashboardControl())
+            {
+                form.Controls.Add(dashboard);
+
+                ThemeManager.ApplyTheme(form);
+
+                var warningPanel = dashboard.Controls.Cast<Control>().OfType<Panel>()
+                    .FirstOrDefault(p => p.Controls.Count > 0 && p.Controls[0] is Label l && l.Text.Contains("Auto refreshing"));
+
+                warningPanel.Should().NotBeNull();
+                warningPanel.BackColor.Should().Be(Color.FromArgb(60, 50, 20));
+                warningPanel.Controls[0].ForeColor.Should().Be(Color.FromArgb(255, 220, 100));
+            }
+        }
+
+        [Fact]
+        public void ThemeManager_ApplyTheme_PreservesDashboardWarningPalette_Light()
+        {
+            ThemeManager.SetTheme(ThemeManager.LightTheme);
+
+            using (var form = new Form())
+            using (var dashboard = new DashboardControl())
+            {
+                form.Controls.Add(dashboard);
+
+                ThemeManager.ApplyTheme(form);
+
+                var warningPanel = dashboard.Controls.Cast<Control>().OfType<Panel>()
+                    .FirstOrDefault(p => p.Controls.Count > 0 && p.Controls[0] is Label l && l.Text.Contains("Auto refreshing"));
+
+                warningPanel.Should().NotBeNull();
+                warningPanel.BackColor.Should().Be(Color.FromArgb(255, 243, 205));
+                warningPanel.Controls[0].ForeColor.Should().Be(Color.FromArgb(102, 77, 3));
+            }
+        }
+
+        [Fact]
+        public void ThemeManager_ApplyTheme_SetsAndRestoresDataGridViewRowsDefaultCellStyle()
+        {
+            using (var form = new Form())
+            using (var dgv = new DataGridView())
+            {
+                dgv.Columns.Add("Col1", "Column 1");
+                dgv.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                dgv.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+                var rowIndex = dgv.Rows.Add("TestValue");
+                var row = dgv.Rows[rowIndex];
+                row.DefaultCellStyle.BackColor = SystemColors.Window;
+                row.DefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+                form.Controls.Add(dgv);
+
+                // Switch to Dark
+                ThemeManager.SetTheme(ThemeManager.DarkTheme);
+                ThemeManager.ApplyTheme(form);
+
+                dgv.RowsDefaultCellStyle.BackColor.Should().Be(ThemeManager.DarkSurfaceBackground);
+                dgv.RowsDefaultCellStyle.ForeColor.Should().Be(ThemeManager.DarkTextColor);
+                row.DefaultCellStyle.BackColor.Should().Be(ThemeManager.DarkSurfaceBackground);
+                row.DefaultCellStyle.ForeColor.Should().Be(ThemeManager.DarkTextColor);
+
+                // Switch back to Light
+                ThemeManager.SetTheme(ThemeManager.LightTheme);
+                ThemeManager.ApplyTheme(form);
+
+                dgv.RowsDefaultCellStyle.BackColor.Should().Be(SystemColors.Window);
+                dgv.RowsDefaultCellStyle.ForeColor.Should().Be(SystemColors.ControlText);
+                row.DefaultCellStyle.BackColor.Should().Be(SystemColors.Window);
+                row.DefaultCellStyle.ForeColor.Should().Be(SystemColors.ControlText);
+            }
+        }
+
+        [Fact]
+        public void ThemeManager_ApplyTheme_ExcludesColorEditingControl()
+        {
+            using (var form = new Form())
+            using (var normalBtn = new Button())
+            using (var colorPicker = new ColorEditingControl())
+            {
+                form.Controls.Add(normalBtn);
+                form.Controls.Add(colorPicker);
+
+                colorPicker.Value = Color.Goldenrod;
+
+                // Test Dark theme
+                ThemeManager.SetTheme(ThemeManager.DarkTheme);
+                ThemeManager.ApplyTheme(form);
+
+                normalBtn.BackColor.Should().Be(ThemeManager.DarkControlBackground);
+                colorPicker.Value.Should().Be(Color.Goldenrod);
+                colorPicker.BackColor.Should().Be(Color.Goldenrod);
+
+                // Test Light theme
+                ThemeManager.SetTheme(ThemeManager.LightTheme);
+                ThemeManager.ApplyTheme(form);
+
+                normalBtn.BackColor.Should().Be(SystemColors.Control);
+                colorPicker.Value.Should().Be(Color.Goldenrod);
+                colorPicker.BackColor.Should().Be(Color.Goldenrod);
+            }
+        }
+
+        [Fact]
+        public void TextForm_ButtonMouseLeave_RetainsDarkTextColorInDarkMode()
+        {
+            using (var form = new ServiceBusExplorer.Forms.TextForm("Title", "Label", "Content"))
+            {
+                var btnOk = form.Controls.Find("btnOk", true).FirstOrDefault() as Button;
+                btnOk.Should().NotBeNull();
+
+                // Dark mode
+                ThemeManager.SetTheme(ThemeManager.DarkTheme);
+                ThemeManager.ApplyTheme(form);
+
+                // Simulate MouseLeave
+                var mouseLeaveMethod = typeof(ServiceBusExplorer.Forms.TextForm)
+                    .GetMethod("button_MouseLeave", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                mouseLeaveMethod.Should().NotBeNull();
+                mouseLeaveMethod.Invoke(form, new object[] { btnOk, EventArgs.Empty });
+
+                btnOk.ForeColor.Should().Be(ThemeManager.DarkTextColor);
+
+                // Light mode
+                ThemeManager.SetTheme(ThemeManager.LightTheme);
+                ThemeManager.ApplyTheme(form);
+
+                mouseLeaveMethod.Invoke(form, new object[] { btnOk, EventArgs.Empty });
+                btnOk.ForeColor.Should().Be(SystemColors.ControlText);
+            }
+        }
+
+        [Fact]
+        public void ThemeManager_ApplyTheme_ExcludesColorEditingControl()
+        {
+            using (var form = new Form())
+            using (var normalBtn = new Button())
+            using (var colorPicker = new ColorEditingControl())
+            {
+                form.Controls.Add(normalBtn);
+                form.Controls.Add(colorPicker);
+
+                colorPicker.Value = Color.Goldenrod;
+
+                // Test Dark theme
+                ThemeManager.SetTheme(ThemeManager.DarkTheme);
+                ThemeManager.ApplyTheme(form);
+
+                normalBtn.BackColor.Should().Be(ThemeManager.DarkControlBackground);
+                colorPicker.Value.Should().Be(Color.Goldenrod);
+                colorPicker.BackColor.Should().Be(Color.Goldenrod);
+
+                // Test Light theme
+                ThemeManager.SetTheme(ThemeManager.LightTheme);
+                ThemeManager.ApplyTheme(form);
+
+                normalBtn.BackColor.Should().Be(SystemColors.Control);
+                colorPicker.Value.Should().Be(Color.Goldenrod);
+                colorPicker.BackColor.Should().Be(Color.Goldenrod);
+            }
+        }
+
+        [Fact]
+        public void TextForm_ButtonMouseLeave_RetainsDarkTextColorInDarkMode()
+        {
+            using (var form = new ServiceBusExplorer.Forms.TextForm("Title", "Label", "Content"))
+            {
+                var btnOk = form.Controls.Find("btnOk", true).FirstOrDefault() as Button;
+                btnOk.Should().NotBeNull();
+
+                // Dark mode
+                ThemeManager.SetTheme(ThemeManager.DarkTheme);
+                ThemeManager.ApplyTheme(form);
+
+                // Simulate MouseLeave
+                var mouseLeaveMethod = typeof(ServiceBusExplorer.Forms.TextForm)
+                    .GetMethod("button_MouseLeave", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                mouseLeaveMethod.Should().NotBeNull();
+                mouseLeaveMethod.Invoke(form, new object[] { btnOk, EventArgs.Empty });
+
+                btnOk.ForeColor.Should().Be(ThemeManager.DarkTextColor);
+
+                // Light mode
+                ThemeManager.SetTheme(ThemeManager.LightTheme);
+                ThemeManager.ApplyTheme(form);
+
+                mouseLeaveMethod.Invoke(form, new object[] { btnOk, EventArgs.Empty });
+                btnOk.ForeColor.Should().Be(SystemColors.ControlText);
             }
         }
     }

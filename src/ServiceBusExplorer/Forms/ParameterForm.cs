@@ -150,7 +150,7 @@ namespace ServiceBusExplorer.Forms
             var control = sender as Control;
             if (control != null)
             {
-                control.ForeColor = SystemColors.ControlText;
+                control.ForeColor = ThemeManager.IsDarkTheme ? ThemeManager.DarkTextColor : SystemColors.ControlText;
             }
         }
 

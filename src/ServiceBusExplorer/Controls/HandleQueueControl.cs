@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
@@ -2479,7 +2479,7 @@ namespace ServiceBusExplorer.Controls
             var control = sender as Control;
             if (control != null)
             {
-                control.ForeColor = SystemColors.ControlText;
+                control.ForeColor = ThemeManager.IsDarkTheme ? ThemeManager.DarkTextColor : SystemColors.ControlText;
             }
         }
 

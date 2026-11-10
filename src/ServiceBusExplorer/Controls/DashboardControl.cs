@@ -63,12 +63,13 @@ namespace ServiceBusExplorer.Controls
             {
                 BackColor = ThemeManager.DarkFormBackground;
                 if (toolbarPanel != null) toolbarPanel.BackColor = ThemeManager.DarkSurfaceBackground;
+                if (hintLabel != null) hintLabel.ForeColor = ThemeManager.DarkMutedText;
                 if (warningPanel != null)
                 {
                     warningPanel.BackColor = Color.FromArgb(60, 50, 20);
-                    if (warningPanel.Controls.Count > 0)
+                    foreach (Control child in warningPanel.Controls)
                     {
-                        warningPanel.Controls[0].ForeColor = Color.FromArgb(255, 220, 100);
+                        child.ForeColor = Color.FromArgb(255, 220, 100);
                     }
                 }
                 if (dataGridView != null)
@@ -83,6 +84,10 @@ namespace ServiceBusExplorer.Controls
                     dataGridView.DefaultCellStyle.ForeColor = ThemeManager.DarkTextColor;
                     dataGridView.DefaultCellStyle.SelectionBackColor = ThemeManager.DarkAccentColor;
                     dataGridView.DefaultCellStyle.SelectionForeColor = Color.White;
+                    dataGridView.RowsDefaultCellStyle.BackColor = ThemeManager.DarkSurfaceBackground;
+                    dataGridView.RowsDefaultCellStyle.ForeColor = ThemeManager.DarkTextColor;
+                    dataGridView.RowsDefaultCellStyle.SelectionBackColor = ThemeManager.DarkAccentColor;
+                    dataGridView.RowsDefaultCellStyle.SelectionForeColor = Color.White;
                     dataGridView.AlternatingRowsDefaultCellStyle.BackColor = ThemeManager.DarkAlternateRow;
                     dataGridView.AlternatingRowsDefaultCellStyle.ForeColor = ThemeManager.DarkTextColor;
                 }
@@ -91,12 +96,13 @@ namespace ServiceBusExplorer.Controls
             {
                 BackColor = SystemColors.Control;
                 if (toolbarPanel != null) toolbarPanel.BackColor = SystemColors.Control;
+                if (hintLabel != null) hintLabel.ForeColor = SystemColors.GrayText;
                 if (warningPanel != null)
                 {
                     warningPanel.BackColor = Color.FromArgb(255, 243, 205);
-                    if (warningPanel.Controls.Count > 0)
+                    foreach (Control child in warningPanel.Controls)
                     {
-                        warningPanel.Controls[0].ForeColor = Color.FromArgb(102, 77, 3);
+                        child.ForeColor = Color.FromArgb(102, 77, 3);
                     }
                 }
                 if (dataGridView != null)
@@ -111,6 +117,10 @@ namespace ServiceBusExplorer.Controls
                     dataGridView.DefaultCellStyle.ForeColor = SystemColors.ControlText;
                     dataGridView.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
                     dataGridView.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+                    dataGridView.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                    dataGridView.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                    dataGridView.RowsDefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+                    dataGridView.RowsDefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
                     dataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
                     dataGridView.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
                 }

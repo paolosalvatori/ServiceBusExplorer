@@ -426,7 +426,7 @@ namespace ServiceBusExplorer.Controls
         {
             if (sender is Control control)
             {
-                control.ForeColor = SystemColors.ControlText;
+                control.ForeColor = ThemeManager.IsDarkTheme ? ThemeManager.DarkTextColor : SystemColors.ControlText;
             }
         }
 

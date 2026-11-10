@@ -215,6 +215,11 @@ namespace ServiceBusExplorer.UIHelpers
             {
                 ApplyTheme(child);
             }
+
+            if (root is DashboardControl dashboard)
+            {
+                dashboard.ApplyTheme();
+            }
         }
 
         private static void ApplyControlTheme(Control c)
@@ -297,6 +302,10 @@ namespace ServiceBusExplorer.UIHelpers
                     dgv.DefaultCellStyle.ForeColor = DarkTextColor;
                     dgv.DefaultCellStyle.SelectionBackColor = DarkAccentColor;
                     dgv.DefaultCellStyle.SelectionForeColor = Color.White;
+                    dgv.RowsDefaultCellStyle.BackColor = DarkSurfaceBackground;
+                    dgv.RowsDefaultCellStyle.ForeColor = DarkTextColor;
+                    dgv.RowsDefaultCellStyle.SelectionBackColor = DarkAccentColor;
+                    dgv.RowsDefaultCellStyle.SelectionForeColor = Color.White;
                     dgv.ColumnHeadersDefaultCellStyle.BackColor = DarkControlBackground;
                     dgv.ColumnHeadersDefaultCellStyle.ForeColor = DarkTextColor;
                     dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = DarkControlBackground;
@@ -307,6 +316,24 @@ namespace ServiceBusExplorer.UIHelpers
                     dgv.RowHeadersDefaultCellStyle.SelectionForeColor = DarkTextColor;
                     dgv.AlternatingRowsDefaultCellStyle.BackColor = DarkAlternateRow;
                     dgv.AlternatingRowsDefaultCellStyle.ForeColor = DarkTextColor;
+
+                    foreach (DataGridViewRow row in dgv.Rows)
+                    {
+                        if (row.HasDefaultCellStyle)
+                        {
+                            if (row.DefaultCellStyle.BackColor == SystemColors.Window ||
+                                row.DefaultCellStyle.BackColor == Color.White)
+                            {
+                                row.DefaultCellStyle.BackColor = DarkSurfaceBackground;
+                            }
+                            if (row.DefaultCellStyle.ForeColor == SystemColors.ControlText ||
+                                row.DefaultCellStyle.ForeColor == SystemColors.WindowText ||
+                                row.DefaultCellStyle.ForeColor == Color.Black)
+                            {
+                                row.DefaultCellStyle.ForeColor = DarkTextColor;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -317,6 +344,10 @@ namespace ServiceBusExplorer.UIHelpers
                     dgv.DefaultCellStyle.ForeColor = SystemColors.ControlText;
                     dgv.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
                     dgv.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+                    dgv.RowsDefaultCellStyle.BackColor = SystemColors.Window;
+                    dgv.RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+                    dgv.RowsDefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+                    dgv.RowsDefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
                     dgv.ColumnHeadersDefaultCellStyle.BackColor = LightFormBackground;
                     dgv.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.WindowText;
                     dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = LightFormBackground;
@@ -327,6 +358,21 @@ namespace ServiceBusExplorer.UIHelpers
                     dgv.RowHeadersDefaultCellStyle.SelectionForeColor = SystemColors.WindowText;
                     dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
                     dgv.AlternatingRowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
+
+                    foreach (DataGridViewRow row in dgv.Rows)
+                    {
+                        if (row.HasDefaultCellStyle)
+                        {
+                            if (row.DefaultCellStyle.BackColor == DarkSurfaceBackground)
+                            {
+                                row.DefaultCellStyle.BackColor = SystemColors.Window;
+                            }
+                            if (row.DefaultCellStyle.ForeColor == DarkTextColor)
+                            {
+                                row.DefaultCellStyle.ForeColor = SystemColors.ControlText;
+                            }
+                        }
+                    }
                 }
                 return;
             }
@@ -384,6 +430,11 @@ namespace ServiceBusExplorer.UIHelpers
                 cb.BackColor = IsDarkTheme ? DarkInputBackground : SystemColors.Window;
                 cb.ForeColor = IsDarkTheme ? DarkTextColor : SystemColors.WindowText;
                 cb.FlatStyle = IsDarkTheme ? FlatStyle.Flat : FlatStyle.Standard;
+                return;
+            }
+
+            if (c is ColorEditingControl)
+            {
                 return;
             }
 
