@@ -1,4 +1,5 @@
 ﻿using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace ServiceBusExplorer.Forms
         public EventGridConnectForm()
         {
             InitializeComponent();
+            ThemeManager.SetHeaderBrandLogo(pbAzure);
         }
 
         private void customCloud_CheckedChanged(object sender, EventArgs e)

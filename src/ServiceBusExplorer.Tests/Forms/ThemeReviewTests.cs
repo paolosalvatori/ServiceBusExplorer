@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
@@ -14,6 +15,8 @@ using FluentAssertions;
 using Microsoft.Win32;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers;
 using ServiceBusExplorer.UIHelpers.Theming;
 using Xunit;
 
@@ -59,8 +62,16 @@ namespace ServiceBusExplorer.Tests.Forms
         {
             RunOnSta(() =>
             {
+                var lightHeaderBackground = Color.FromArgb(215, 228, 242);
+                using var host = new Panel { BackColor = lightHeaderBackground };
                 var form = (MainForm)FormatterServices.GetUninitializedObject(typeof(MainForm));
-                using var link = new LinkLabel();
+                using var link = new LinkLabel { AutoSize = false, Size = new Size(160, 24) };
+                using var logo = new PictureBox { Size = new Size(96, 12) };
+                host.Controls.Add(link);
+                host.Controls.Add(logo);
+                ThemeManager.SetHeaderBrandLogo(logo);
+                var linkClicked = false;
+                link.LinkClicked += (_, _) => linkClicked = true;
                 typeof(MainForm).GetField("linkLabelNewVersionAvailable",
                     BindingFlags.Instance | BindingFlags.NonPublic)
                     ?.SetValue(form, link);
@@ -68,13 +79,132 @@ namespace ServiceBusExplorer.Tests.Forms
                 typeof(MainForm).GetMethod("DisplayNewVersionInformation",
                     BindingFlags.Instance | BindingFlags.NonPublic)
                     ?.Invoke(form, null);
+                ThemeManager.Register(host);
 
                 link.Visible.Should().BeTrue();
                 link.Text.Should().Be("Debug Version");
-                link.Enabled.Should().BeFalse();
+                link.Enabled.Should().BeTrue();
+                link.TabStop.Should().BeFalse();
+                link.LinkArea.Length.Should().Be(0);
+                link.Links.Count.Should().Be(0);
+
+                RaiseControlEvent(link, "OnClick", EventArgs.Empty);
+                RaiseControlEvent(link, "OnMouseClick",
+                    new MouseEventArgs(MouseButtons.Left, 1, 8, 8, 0));
+                linkClicked.Should().BeFalse();
+
+                AssertBrandAppearance(link, logo, ThemeManager.LightHeaderBrandColor, lightHeaderBackground);
+                AssertRenderedTextContrast(link, lightHeaderBackground);
+
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                AssertBrandAppearance(link, logo, Color.White, ThemePalette.Dark.Background);
+                AssertRenderedTextContrast(link, ThemePalette.Dark.Background);
+
+                ThemeManager.HighContrastProvider = () => true;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                AssertBrandAppearance(link, logo, SystemColors.WindowText, SystemColors.Control);
+
+                ThemeManager.HighContrastProvider = () => false;
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                AssertBrandAppearance(link, logo, ThemeManager.LightHeaderBrandColor, lightHeaderBackground);
             });
         }
 #endif
+
+        [Fact]
+        public void HeaderBrandLogoAndText_MatchAcrossLightDarkAndHighContrastThemes()
+        {
+            RunOnSta(() =>
+            {
+                var lightHeaderBackground = Color.FromArgb(215, 228, 242);
+                ColorContrast.Ratio(ThemeManager.LightHeaderBrandColor, lightHeaderBackground)
+                    .Should().BeGreaterThanOrEqualTo(4.5);
+                ColorContrast.Ratio(Color.White, ThemePalette.Dark.Background)
+                    .Should().BeGreaterThanOrEqualTo(4.5);
+
+                using var form = new ThemedForm { BackColor = lightHeaderBackground };
+                using var label = new LinkLabel { Text = "Header Status" };
+                using var logo = new PictureBox();
+                form.Controls.Add(label);
+                form.Controls.Add(logo);
+                ThemeManager.SetHeaderBrandLogo(logo);
+                ThemeManager.SetHeaderBrandText(label);
+                ThemeManager.Register(form);
+
+                for (var cycle = 0; cycle < 2; cycle++)
+                {
+                    AssertBrandAppearance(label, logo, ThemeManager.LightHeaderBrandColor, lightHeaderBackground);
+
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                    AssertBrandAppearance(label, logo, Color.White, ThemePalette.Dark.Background);
+
+                    ThemeManager.HighContrastProvider = () => true;
+                    NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                    AssertBrandAppearance(label, logo, SystemColors.WindowText, SystemColors.Control);
+
+                    ThemeManager.HighContrastProvider = () => false;
+                    NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                    AssertBrandAppearance(label, logo, Color.White, ThemePalette.Dark.Background);
+
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
+                }
+            });
+        }
+
+        [Fact]
+        public void HeaderBrandForms_UseAzureBlueLogoInLightModeAndWhiteInDarkMode()
+        {
+            RunOnSta(() =>
+            {
+                var helper = new ServiceBusHelper((_, _) => { });
+                using var connectForm = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, []);
+                using var eventGridForm = new EventGridConnectForm();
+                var connectLogo = connectForm.Controls.Find("logoPictureBox", true).Single()
+                    .Should().BeOfType<PictureBox>().Which;
+                var eventGridLogo = eventGridForm.Controls.Find("pbAzure", true).Single()
+                    .Should().BeOfType<PictureBox>().Which;
+
+                ThemeManager.Register(connectForm);
+                ThemeManager.Register(eventGridForm);
+                AssertLogoTint(connectLogo, ThemeManager.LightHeaderBrandColor);
+                AssertLogoTint(eventGridLogo, ThemeManager.LightHeaderBrandColor);
+
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                AssertLogoTint(connectLogo, Color.White);
+                AssertLogoTint(eventGridLogo, Color.White);
+
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                AssertLogoTint(connectLogo, ThemeManager.LightHeaderBrandColor);
+                AssertLogoTint(eventGridLogo, ThemeManager.LightHeaderBrandColor);
+            });
+        }
+
+        [Fact]
+        public void SetHeaderBrandHelpers_RejectNullAndForeignThreads()
+        {
+            RunOnSta(() =>
+            {
+                Action nullLogo = () => ThemeManager.SetHeaderBrandLogo(null);
+                Action nullText = () => ThemeManager.SetHeaderBrandText(null);
+                nullLogo.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("pictureBox");
+                nullText.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("control");
+
+                using var logo = new PictureBox();
+                using var label = new Label();
+                ThemeManager.Register(logo);
+                ThemeManager.Register(label);
+
+                RunOnWorker(() =>
+                {
+                    Action crossThreadLogo = () => ThemeManager.SetHeaderBrandLogo(logo);
+                    Action crossThreadText = () => ThemeManager.SetHeaderBrandText(label);
+                    crossThreadLogo.Should().Throw<InvalidOperationException>()
+                        .WithMessage("Apply themes on the control's UI thread.");
+                    crossThreadText.Should().Throw<InvalidOperationException>()
+                        .WithMessage("Apply themes on the control's UI thread.");
+                }, true);
+            });
+        }
 
         [Theory]
         [InlineData(typeof(SecurityException))]
@@ -692,6 +822,57 @@ namespace ServiceBusExplorer.Tests.Forms
                     for (var x = 0; x < image.Width; x++)
                         image.GetPixel(x, y).Should().Be(expected.GetPixel(x, y));
             });
+        }
+
+        static void AssertBrandAppearance(Control text, PictureBox logo, Color expectedForeground, Color expectedBackground)
+        {
+            text.ForeColor.ToArgb().Should().Be(expectedForeground.ToArgb());
+            text.BackColor.ToArgb().Should().Be(expectedBackground.ToArgb());
+            logo.BackColor.ToArgb().Should().Be(expectedBackground.ToArgb());
+            AssertLogoTint(logo, expectedForeground);
+        }
+
+        static void AssertLogoTint(PictureBox logo, Color expectedColor)
+        {
+            var bitmap = logo.BackgroundImage.Should().BeOfType<Bitmap>().Subject;
+            var opaquePixels = new List<Color>();
+            var hasTransparentPixels = false;
+            for (var y = 0; y < bitmap.Height; y++)
+            {
+                for (var x = 0; x < bitmap.Width; x++)
+                {
+                    var pixel = bitmap.GetPixel(x, y);
+                    if (pixel.A == 0)
+                        hasTransparentPixels = true;
+                    else
+                        opaquePixels.Add(pixel);
+                }
+            }
+
+            hasTransparentPixels.Should().BeTrue();
+            opaquePixels.Should().NotBeEmpty();
+            opaquePixels.Should().OnlyContain(pixel =>
+                pixel.R == expectedColor.R &&
+                pixel.G == expectedColor.G &&
+                pixel.B == expectedColor.B);
+        }
+
+        static void AssertRenderedTextContrast(Control control, Color background)
+        {
+            using var bitmap = new Bitmap(control.Width, control.Height);
+            control.DrawToBitmap(bitmap, new Rectangle(Point.Empty, control.Size));
+            var maxContrast = 1.0;
+            for (var y = 0; y < bitmap.Height; y++)
+            {
+                for (var x = 0; x < bitmap.Width; x++)
+                {
+                    var contrast = ColorContrast.Ratio(bitmap.GetPixel(x, y), background);
+                    if (contrast > maxContrast)
+                        maxContrast = contrast;
+                }
+            }
+
+            maxContrast.Should().BeGreaterThanOrEqualTo(4.5);
         }
 
         static bool ReadSystemTheme(Func<object> readPreference)

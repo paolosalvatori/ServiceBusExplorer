@@ -197,6 +197,10 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             }
             if (state.IsContentHost)
                 control.BackColor = HostedBackground;
+            if (state.IsBrandLogo && control is PictureBox logo)
+                ApplyHeaderBrandLogo(logo);
+            if (state.IsBrandText)
+                control.ForeColor = HeaderBrandColor;
             ThemeNativeMethods.RefreshInputBorder(control);
             if (control is Form form)
                 ThemeNativeMethods.ApplyCaption(form, IsDark);
@@ -366,6 +370,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             public bool ButtonHovered { get; set; }
             public Color? ButtonSemanticForeColor { get; set; }
             public bool IsContentHost { get; set; }
+            public bool IsBrandLogo { get; set; }
+            public bool IsBrandText { get; set; }
             public void Dispose()
             {
                 InputBorder?.Dispose();

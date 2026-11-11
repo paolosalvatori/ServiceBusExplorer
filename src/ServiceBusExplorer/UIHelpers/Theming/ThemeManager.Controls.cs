@@ -254,6 +254,9 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             if (!control.Enabled)
                 return Palette.MutedText;
 
+            if (controls.TryGetValue(control, out var state) && state.IsBrandText)
+                return HeaderBrandColor;
+
             if (control is ButtonBase button && !IsThemeExcludedControl(button))
                 return ExpectedButtonForeground(button);
 

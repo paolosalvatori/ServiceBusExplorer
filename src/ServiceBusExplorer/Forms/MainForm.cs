@@ -281,6 +281,7 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            ThemeManager.SetHeaderBrandLogo(logoPictureBox);
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
                 if (t.IsFaulted && t.Exception != null)
@@ -438,8 +439,10 @@ namespace ServiceBusExplorer.Forms
         {
 #if DEBUG
             linkLabelNewVersionAvailable.Visible = true;
-            linkLabelNewVersionAvailable.Enabled = false;
-            linkLabelNewVersionAvailable.Text = $"Debug Version";
+            linkLabelNewVersionAvailable.Text = "Debug Version";
+            linkLabelNewVersionAvailable.LinkArea = new LinkArea(0, 0);
+            linkLabelNewVersionAvailable.TabStop = false;
+            ThemeManager.SetHeaderBrandText(linkLabelNewVersionAvailable);
 #else
             var isLatest = VersionProvider.IsLatestVersion(out var releaseInfo, WriteToLog);
             if (!isLatest)

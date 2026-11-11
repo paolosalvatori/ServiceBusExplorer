@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using FastColoredTextBoxNS;
@@ -9,6 +11,64 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 {
     public static partial class ThemeManager
     {
+        private static readonly Dictionary<int, Bitmap> brandLogos = new Dictionary<int, Bitmap>();
+
+        public static Color LightHeaderBrandColor { get; } = Color.FromArgb(0, 95, 184);
+
+        public static Color HeaderBrandColor => IsHighContrast
+            ? Palette.Text
+            : IsDark ? Color.White : LightHeaderBrandColor;
+
+        public static void SetHeaderBrandLogo(PictureBox pictureBox)
+        {
+            if (pictureBox == null)
+                throw new ArgumentNullException(nameof(pictureBox));
+            EnsureUiThread(pictureBox);
+            controls.GetValue(pictureBox, CreateState).IsBrandLogo = true;
+            ApplyHeaderBrandLogo(pictureBox);
+        }
+
+        public static void SetHeaderBrandText(Control control)
+        {
+            if (control == null)
+                throw new ArgumentNullException(nameof(control));
+            EnsureUiThread(control);
+            controls.GetValue(control, CreateState).IsBrandText = true;
+            control.ForeColor = HeaderBrandColor;
+        }
+
+        private static void ApplyHeaderBrandLogo(PictureBox pictureBox)
+        {
+            var logo = GetHeaderBrandLogo(HeaderBrandColor);
+            if (!ReferenceEquals(pictureBox.BackgroundImage, logo))
+                pictureBox.BackgroundImage = logo;
+        }
+
+        private static Bitmap GetHeaderBrandLogo(Color color)
+        {
+            var key = color.ToArgb();
+            lock (brandLogos)
+            {
+                if (brandLogos.TryGetValue(key, out var cached))
+                    return cached;
+
+                var template = Properties.Resources.MicrosoftAzureWhiteLogo;
+                var bitmap = new Bitmap(template.Width, template.Height, PixelFormat.Format32bppArgb);
+                bitmap.SetResolution(template.HorizontalResolution, template.VerticalResolution);
+                for (var y = 0; y < template.Height; y++)
+                {
+                    for (var x = 0; x < template.Width; x++)
+                    {
+                        var alpha = template.GetPixel(x, y).A;
+                        bitmap.SetPixel(x, y, Color.FromArgb(alpha, color.R, color.G, color.B));
+                    }
+                }
+
+                brandLogos[key] = bitmap;
+                return bitmap;
+            }
+        }
+
         private static void CaptureSpecialControl(Control control, ThemeSnapshot state)
         {
             if (control is ServiceBusExplorer.Controls.CustomTrackBar track)

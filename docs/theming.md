@@ -35,6 +35,9 @@ public partial class MyForm : ThemedForm
   `ThemeManager.RegisterComponents(components)`.
 - Panels whose content is swapped at runtime should use `ThemeManager.SetHostedBackground(host)` and
   `ThemeManager.ReplaceHostedContent(...)` so new content is themed and old content is disposed.
+- Header Azure wordmark logos and matching header status text can opt into theme-adapted branding with
+  `ThemeManager.SetHeaderBrandLogo(pictureBox)` and `ThemeManager.SetHeaderBrandText(control)` (Azure blue in
+  light mode, white in dark mode, and `WindowText` in high contrast).
 - A control that needs custom behavior when the theme changes can implement `IThemeAware.ApplyTheme()`; it is
   called after the control and its children have been themed or restored.
 

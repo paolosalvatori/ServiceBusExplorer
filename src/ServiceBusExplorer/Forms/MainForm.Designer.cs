@@ -3141,8 +3141,8 @@ namespace ServiceBusExplorer.Forms
             this.linkLabelNewVersionAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelNewVersionAvailable.AutoSize = true;
             this.linkLabelNewVersionAvailable.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.Navy;
-            this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.Navy;
+            this.linkLabelNewVersionAvailable.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(95)))), ((int)(((byte)(184)))));
+            this.linkLabelNewVersionAvailable.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(95)))), ((int)(((byte)(184)))));
             this.linkLabelNewVersionAvailable.Location = new System.Drawing.Point(1050, 15);
             this.linkLabelNewVersionAvailable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabelNewVersionAvailable.Name = "linkLabelNewVersionAvailable";

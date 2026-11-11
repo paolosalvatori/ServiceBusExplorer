@@ -117,6 +117,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
@@ -204,6 +205,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
@@ -267,6 +269,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
@@ -333,6 +336,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
@@ -390,6 +394,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
@@ -440,6 +445,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
@@ -488,6 +494,7 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 InitializeComponent();
+                ThemeManager.SetHeaderBrandLogo(logoPictureBox);
                 ThemeManager.Register(panelMain);
                 Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
                 {
