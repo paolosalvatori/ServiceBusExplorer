@@ -51,12 +51,14 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             if (!Enum.IsDefined(typeof(ThemeMode), mode))
                 throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown theme mode.");
 
+            bool themeChanged;
             lock (themeLock)
             {
                 Mode = mode;
-                UpdateTheme();
+                themeChanged = UpdateTheme();
             }
-            RefreshWindows();
+            if (themeChanged)
+                RefreshWindows();
         }
 
         private static bool UpdateTheme()

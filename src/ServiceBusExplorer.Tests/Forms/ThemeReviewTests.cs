@@ -322,7 +322,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 form.Dispose();
                 host.Applications = 0;
                 ThemeManager.SetThemeMode(ThemeMode.Light);
-                host.Applications.Should().Be(1);
+                host.Applications.Should().Be(0, "an unchanged theme should not refresh a detached root");
                 host.IsDisposed.Should().BeFalse();
                 ThemeManager.ReplaceHostedContent(host, () => new Label(), null).Parent.Should().BeSameAs(host);
             });
@@ -595,6 +595,33 @@ namespace ServiceBusExplorer.Tests.Forms
                 NotifyPreferencesChanged(UserPreferenceCategory.Color);
                 panel.Applications.Should().Be(mode == ThemeMode.Dark ? 0 : 1,
                     "light controls can use system colors, but the explicit dark palette is fixed");
+            });
+        }
+
+        [Fact]
+        public void SetThemeMode_RefreshesOnlyWhenEffectiveThemeChanges()
+        {
+            RunOnSta(() =>
+            {
+                var systemDark = true;
+                ThemeManager.SystemDarkThemeProvider = () => systemDark;
+                ThemeManager.SystemColorsProvider = () => Array.Empty<int>();
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                using var panel = new ThemeCountingPanel { BackColor = Color.Beige };
+                ThemeManager.Register(panel);
+                panel.Applications = 0;
+
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                panel.Applications.Should().Be(0, "selecting the already-active theme should not reapply it");
+
+                ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
+                ThemeManager.Mode.Should().Be(ThemeMode.FollowOperatingSystem);
+                panel.Applications.Should().Be(0, "changing the setting without changing the appearance needs no refresh");
+
+                systemDark = false;
+                ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
+                panel.Applications.Should().Be(1, "a changed system theme must still be applied");
+                panel.BackColor.Should().Be(Color.Beige);
             });
         }
 
