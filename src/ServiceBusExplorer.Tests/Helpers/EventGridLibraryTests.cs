@@ -65,7 +65,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public async Task ReceiveEventsAsync_LazilyCreatesAndCachesReceiverClientPerSubscription()
+        public void ReceiveEventsAsync_LazilyCreatesAndCachesReceiverClientPerSubscription()
         {
             var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 20, string.Empty, (_, __) => { });
             GetTopicCredentials(library)["orders"] = (new Uri("https://example.westus-1.eventgrid.azure.net"), new AzureKeyCredential("test-key"));
