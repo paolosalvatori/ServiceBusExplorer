@@ -164,6 +164,10 @@ For more information about this, see the
 In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
 when it is running as a DPI-unaware process.
 
+## Developing themed UI
+
+New forms and controls should follow the selected theme (light, dark or high contrast). See [docs/theming.md](./docs/theming.md).
+
 ## Upstream release baseline
 
 The build embeds the latest upstream release the source is based on, and the application compares that baseline with the latest upstream release when deciding whether to show update notices. The baseline is resolved from tags in the `refs/upstream-release-tags/*` namespace that are reachable from `HEAD`. This requires a full (non-shallow) clone. Fetch the tags with:
