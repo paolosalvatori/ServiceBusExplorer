@@ -1,4 +1,4 @@
-﻿#region Copyright
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -1234,6 +1234,13 @@ namespace ServiceBusExplorer.Controls
                 txtGcmEndpoint.Text = string.Empty;
             }
             loadedFcmCredentialText = txtGcmApiKey.Text;
+            var hasBothFcmCredentials = notificationHubDescription.FcmCredential != null &&
+                                        notificationHubDescription.FcmV1Credential != null;
+            cboGcmSendFormat.Visible = hasBothFcmCredentials;
+            if (hasBothFcmCredentials && cboGcmSendFormat.SelectedIndex < 0)
+            {
+                cboGcmSendFormat.SelectedIndex = 0;
+            }
 
             if (notificationHubDescription.MpnsCredential != null)
             {
@@ -1493,7 +1500,18 @@ namespace ServiceBusExplorer.Controls
                 return null;
             }
 
-            return NotificationHubClient.CreateClientFromConnectionString(connectionString, notificationHubDescription.Path, true);
+            return NotificationHubClient.CreateClientFromConnectionString(
+                ServiceBusHelper.NormalizeNotificationHubConnectionString(connectionString), notificationHubDescription.Path, true);
+        }
+
+        private bool UseFcmV1ForSend()
+        {
+            if (notificationHubDescription.FcmV1Credential == null)
+            {
+                return false;
+            }
+
+            return notificationHubDescription.FcmCredential == null || cboGcmSendFormat.SelectedIndex != 1;
         }
 
         private async void btnSend_Click(object sender, EventArgs e)
@@ -1582,11 +1600,12 @@ namespace ServiceBusExplorer.Controls
                     case GoogleNativeNotificationPage:
                         if (!string.IsNullOrWhiteSpace(gcmPayload))
                         {
+                            var useFcmV1 = UseFcmV1ForSend();
                             var serializer = new JavaScriptSerializer();
                             try
                             {
                                 serializer.Deserialize<dynamic>(gcmPayload);
-                                if (notificationHubDescription.FcmV1Credential != null)
+                                if (useFcmV1)
                                 {
                                     var payload = serializer.Deserialize<Dictionary<string, object>>(gcmPayload);
                                     if (payload == null || !payload.ContainsKey("message"))
@@ -1604,7 +1623,7 @@ namespace ServiceBusExplorer.Controls
                             var headers = NotificationInfo.GcmHeaders.ToDictionary(p => p.Name, p => p.Value);
                             tags = NotificationInfo.GcmTags.Select(t => t.Tag).ToArray();
                             tagExpression = txtGcmTagExpression.Text;
-                            notification = notificationHubDescription.FcmV1Credential != null
+                            notification = useFcmV1
                                                ? (Notification)new FcmV1Notification(gcmPayload) { Headers = headers }
                                                : new FcmNotification(gcmPayload) { Headers = headers };
                         }
@@ -3523,12 +3542,10 @@ namespace ServiceBusExplorer.Controls
                     GetServiceAccountValue(serviceAccount, "private_key"),
                     GetServiceAccountValue(serviceAccount, "project_id"),
                     GetServiceAccountValue(serviceAccount, "client_email"));
-                description.FcmCredential = null;
                 return;
             }
 
             description.FcmCredential = new FcmCredential(trimmedCredential);
-            description.FcmV1Credential = null;
         }
 
         private static string GetServiceAccountValue(IDictionary<string, object> serviceAccount, string name)
