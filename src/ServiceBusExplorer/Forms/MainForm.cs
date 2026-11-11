@@ -5024,7 +5024,7 @@ namespace ServiceBusExplorer.Forms
                         serviceBusTreeView.Nodes.Clear();
 
                         EventGridNamespaceResource eventGridNamespace = (await eventGridLibrary.GetNamespacesAsync(ResourceGroupName, NamespaceName)).Value;
-                        NamespaceHostname = "https://" + eventGridNamespace.Data.TopicsHostname;
+                        NamespaceHostname = "https://" + eventGridNamespace.Data.TopicsConfiguration?.Hostname;
 
                         rootNode = serviceBusTreeView.Nodes.Add(
                             NamespaceHostname,
@@ -7186,8 +7186,8 @@ namespace ServiceBusExplorer.Forms
 
                         WriteToLog(string.Format(
                             CultureInfo.CurrentCulture,
-                            receivedEvents != null && receivedEvents.Value.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural, 
-                            receivedEvents != null ? receivedEvents.Value.Count : 0, 
+                            receivedEvents != null && receivedEvents.Details.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural, 
+                            receivedEvents != null ? receivedEvents.Details.Count : 0, 
                             subscription.SubscriptionDescription.Data.Name));
                         
                         var control = panelMain.Controls[0] as HandleEventGridSubscriptionControl;

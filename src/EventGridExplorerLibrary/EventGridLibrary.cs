@@ -24,7 +24,9 @@ namespace EventGridExplorerLibrary
 
         #region Private Fields
         private EventGridControlPlaneClient eventGridControlPlaneClient;
-        private Dictionary<string, EventGridClient> dataPlaneClients = new Dictionary<string, EventGridClient>();
+        private Dictionary<string, (Uri Endpoint, AzureKeyCredential Credential)> topicCredentials = new Dictionary<string, (Uri Endpoint, AzureKeyCredential Credential)>();
+        private Dictionary<string, EventGridSenderClient> senderClients = new Dictionary<string, EventGridSenderClient>();
+        private Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient> receiverClients = new Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient>();
         private int maxWaitTime;
         private readonly WriteToLogDelegate writeToLog = default;
         #endregion
@@ -52,11 +54,19 @@ namespace EventGridExplorerLibrary
 
             try
             {
+                var endpoint = new Uri(hostname);
+                topicCredentials.Clear();
+                senderClients.Clear();
+                receiverClients.Clear();
+
                 while (await enumerator.MoveNextAsync())
                 {
-                    NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(enumerator.Current.Data.Name)).Value;
+                    var topicName = enumerator.Current.Data.Name;
+                    NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
                     var key = (await namespaceTopicResource.GetSharedAccessKeysAsync()).Value;
-                    dataPlaneClients[enumerator.Current.Data.Name] = new EventGridClient(new Uri(hostname), new AzureKeyCredential(key.Key1));
+                    var credential = new AzureKeyCredential(key.Key1);
+                    topicCredentials[topicName] = (endpoint, credential);
+                    senderClients[topicName] = new EventGridSenderClient(endpoint, topicName, credential);
                 }
             }
             finally
@@ -100,7 +110,7 @@ namespace EventGridExplorerLibrary
         {
             var eventData = JsonSerializer.Deserialize<object>(eventDataJson);
             var cloudEvent = new CloudEvent(eventSource, eventType, eventData);
-            await dataPlaneClients[topicName].PublishCloudEventAsync(topicName, cloudEvent);
+            await senderClients[topicName].SendAsync(cloudEvent);
         }
 
         public async Task PublishEventsAsync(string topicName, string eventSource, string eventType, List<string> publishEvents)
@@ -113,24 +123,25 @@ namespace EventGridExplorerLibrary
                 cloudEvents[i] = new CloudEvent(eventSource, eventType, eventModel);
             }
 
-            await dataPlaneClients[topicName].PublishCloudEventsAsync(topicName, cloudEvents);
+            await senderClients[topicName].SendAsync(cloudEvents);
         }
 
         public async Task<ReceiveResult> ReceiveEventsAsync(string topicName, string subscriptionName, int maxEventNum)
         {
             try
             {
+                var receiverClient = GetReceiverClient(topicName, subscriptionName);
                 if (this.maxWaitTime < MinWaitTimeInSeconds)
                 {
-                     return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds));
+                    return (await receiverClient.ReceiveAsync(maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MinWaitTimeInSeconds))).Value;
                 }
                 else if (this.maxWaitTime > MaxWaitTimeInSeconds)
                 {
-                    return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MaxWaitTimeInSeconds));
+                    return (await receiverClient.ReceiveAsync(maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(MaxWaitTimeInSeconds))).Value;
                 }
                 else
                 {
-                    return await dataPlaneClients[topicName].ReceiveCloudEventsAsync(topicName, subscriptionName, maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(this.maxWaitTime));
+                    return (await receiverClient.ReceiveAsync(maxEvents: maxEventNum, maxWaitTime: TimeSpan.FromSeconds(this.maxWaitTime))).Value;
                 }
             }
             catch (Exception ex)
@@ -144,23 +155,24 @@ namespace EventGridExplorerLibrary
         {
             if (lockTokens.Count > 0)
             {
+                var receiverClient = GetReceiverClient(topicName, subscriptionName);
                 IReadOnlyList<string> succeededLockTokens = null;
                 IReadOnlyList<FailedLockToken> failedLockTokens = null;
 
                 switch (action)
                 {
                     case "Acknowledge":
-                        AcknowledgeResult acknowledgeResult = await dataPlaneClients[topicName].AcknowledgeCloudEventsAsync(topicName, subscriptionName, new AcknowledgeOptions(lockTokens));
+                        AcknowledgeResult acknowledgeResult = await receiverClient.AcknowledgeAsync(lockTokens);
                         succeededLockTokens = acknowledgeResult.SucceededLockTokens;
                         failedLockTokens = acknowledgeResult.FailedLockTokens;
                         break;
                     case "Release":
-                        ReleaseResult releaseResult = await dataPlaneClients[topicName].ReleaseCloudEventsAsync(topicName, subscriptionName, new ReleaseOptions(lockTokens));
+                        ReleaseResult releaseResult = await receiverClient.ReleaseAsync(lockTokens);
                         succeededLockTokens = releaseResult.SucceededLockTokens;
                         failedLockTokens = releaseResult.FailedLockTokens;
                         break;
                     case "Reject":
-                        RejectResult rejectResult = await dataPlaneClients[topicName].RejectCloudEventsAsync(topicName, subscriptionName, new RejectOptions(lockTokens));
+                        RejectResult rejectResult = await receiverClient.RejectAsync(lockTokens);
                         succeededLockTokens = rejectResult.SucceededLockTokens;
                         failedLockTokens = rejectResult.FailedLockTokens;
                         break;
@@ -192,6 +204,19 @@ namespace EventGridExplorerLibrary
             }
 
             return false;
+        }
+
+        private EventGridReceiverClient GetReceiverClient(string topicName, string subscriptionName)
+        {
+            var clientKey = (topicName, subscriptionName);
+            if (!receiverClients.TryGetValue(clientKey, out var receiverClient))
+            {
+                var topicCredential = topicCredentials[topicName];
+                receiverClient = new EventGridReceiverClient(topicCredential.Endpoint, topicName, subscriptionName, topicCredential.Credential);
+                receiverClients[clientKey] = receiverClient;
+            }
+
+            return receiverClient;
         }
 
         private void HandleException(Exception ex)
