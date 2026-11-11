@@ -21,15 +21,23 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool RedrawWindow(IntPtr window, IntPtr updateRectangle, IntPtr updateRegion, uint flags);
 
-        public static void ApplyCaption(Form form, bool dark)
+        public static void ApplyCaption(Form form, bool dark) => ApplyCaption(form, dark, SetCaptionAttribute);
+
+        private static int SetCaptionAttribute(IntPtr window, int attribute, int enabled) =>
+            DwmSetWindowAttribute(window, attribute, ref enabled, sizeof(int));
+
+        internal static void ApplyCaption(Form form, bool dark, Func<IntPtr, int, int, int> setAttribute)
         {
-            if (!form.IsHandleCreated || Environment.OSVersion.Version.Major < 6)
+            if (!form.IsHandleCreated)
                 return;
 
             var enabled = dark ? 1 : 0;
-            var result = DwmSetWindowAttribute(form.Handle, 20, ref enabled, sizeof(int));
-            // Older Windows releases do not support dark window captions.
-            if (result != 0 && result != unchecked((int)0x80070057))
+            var result = setAttribute(form.Handle, 20, enabled);
+            // Early Windows 10 dark captions used attribute 19. Probe support rather than
+            // relying on OSVersion, which depends on the application's compatibility manifest.
+            if (result == unchecked((int)0x80070057))
+                result = setAttribute(form.Handle, 19, enabled);
+            if (result != 0)
                 Trace.WriteLine($"Dark window caption unavailable (HRESULT 0x{result:X8}).");
         }
 

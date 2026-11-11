@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -25,10 +26,12 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         private static readonly object themeLock = new object();
         private static bool initialized;
         private static bool usesDarkTheme = ReadSystemDarkTheme();
+        private static int[] effectiveTheme;
 
         public static ThemeMode Mode { get; private set; } = ThemeMode.FollowOperatingSystem;
         internal static Func<bool> SystemDarkThemeProvider { get; set; } = ReadSystemDarkTheme;
         internal static Func<bool> HighContrastProvider { get; set; } = () => SystemInformation.HighContrast;
+        internal static Func<int[]> SystemColorsProvider { get; set; } = ReadSystemColors;
         internal static bool IsHighContrast => HighContrastProvider();
         public static bool IsDark => usesDarkTheme && !IsHighContrast;
         public static bool IsThemed => usesDarkTheme || IsHighContrast;
@@ -56,7 +59,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             RefreshWindows();
         }
 
-        private static void UpdateTheme()
+        private static bool UpdateTheme()
         {
             usesDarkTheme = Mode switch
             {
@@ -65,7 +68,16 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 ThemeMode.Dark => true,
                 _ => throw new InvalidOperationException("Unknown theme mode.")
             };
+            var highContrast = IsHighContrast;
+            var theme = new[] { highContrast ? 2 : usesDarkTheme ? 1 : 0 }
+                .Concat(highContrast || !usesDarkTheme ? SystemColorsProvider() : Array.Empty<int>()).ToArray();
+            var changed = effectiveTheme == null || !effectiveTheme.SequenceEqual(theme);
+            effectiveTheme = theme;
+            return changed;
         }
+
+        private static int[] ReadSystemColors() => Enum.GetValues(typeof(KnownColor)).Cast<KnownColor>()
+            .Select(Color.FromKnownColor).Where(color => color.IsSystemColor).Select(color => color.ToArgb()).ToArray();
 
         private static bool ReadSystemDarkTheme()
         {
@@ -264,8 +276,19 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 if (state.UiThread != Thread.CurrentThread)
                     QueueApply(state, root);
                 else
-                    Apply(root);
+                    ApplyRegisteredRoot(root);
             }
+        }
+
+        private static void ApplyRegisteredRoot(Control root)
+        {
+            // Keep registrations for detached hosts, but inspect ancestry only on their UI thread.
+            lock (rootsLock)
+                for (var parent = root.Parent; parent != null; parent = parent.Parent)
+                    if (roots.Any(reference => IsLiveRoot(reference) &&
+                        reference.TryGetTarget(out var target) && target == parent))
+                        return;
+            Apply(root);
         }
 
         private static bool IsLiveRoot(WeakReference<Control> reference) =>
@@ -282,7 +305,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 state.UiContext.Post(_ =>
                 {
                     if (!target.IsDisposed && !target.Disposing)
-                        Apply(target);
+                        ApplyRegisteredRoot(target);
                 }, null);
             }
             catch (InvalidOperationException exception) when (target.IsDisposed || target.Disposing || !state.UiThread.IsAlive)
@@ -318,7 +341,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return;
 
             lock (themeLock)
-                UpdateTheme();
+                if (!UpdateTheme())
+                    return;
             RefreshWindows();
         }
 
@@ -339,6 +363,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             public IDisposable InputBorder { get; set; }
             public HashSet<FastColoredTextBoxNS.TextStyle> EditorStyles { get; } = new HashSet<FastColoredTextBoxNS.TextStyle>();
             public bool UpdatingButtonForeground { get; set; }
+            public bool ButtonHovered { get; set; }
+            public Color? ButtonSemanticForeColor { get; set; }
             public bool IsContentHost { get; set; }
             public void Dispose()
             {

@@ -284,7 +284,7 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
-        public void ReplaceHostedContent_DisposesAllPreviousUserControlsButOnlyDetachesOtherControls()
+        public void ReplaceHostedContent_DisposesAllPreviousControlsAndTheirChildren()
         {
             RunOnSta(() =>
             {
@@ -292,15 +292,24 @@ namespace ServiceBusExplorer.Tests.Forms
                 using var first = new UserControl();
                 using var second = new UserControl();
                 using var other = new Panel();
-                host.Controls.AddRange([first, second, other]);
+                using var label = new Label();
+                using var button = new Button();
+                using var nested = new Button();
+                other.Controls.Add(nested);
+                var previous = new Control[] { first, second, other, label, button, nested };
+                host.Controls.AddRange([first, second, other, label, button]);
                 ThemeManager.Register(host);
+                foreach (var child in previous)
+                    _ = child.Handle;
 
                 var content = ThemeManager.ReplaceHostedContent(host, () => new UserControl(), null);
 
-                first.IsDisposed.Should().BeTrue();
-                second.IsDisposed.Should().BeTrue();
-                other.IsDisposed.Should().BeFalse();
-                other.Parent.Should().BeNull();
+                foreach (var child in previous)
+                {
+                    child.IsDisposed.Should().BeTrue("{0} belonged to the replaced host", child.GetType().Name);
+                    child.IsHandleCreated.Should().BeFalse();
+                    child.Parent.Should().BeNull();
+                }
                 host.Controls.Cast<Control>().Should().ContainSingle().Which.Should().BeSameAs(content);
             });
         }
@@ -338,6 +347,9 @@ namespace ServiceBusExplorer.Tests.Forms
                 form.Controls.Add(host);
                 form.Show();
                 var expected = new InvalidOperationException("Hosted view initialization failed.");
+                using var previous = new Button();
+                host.Controls.Add(previous);
+                _ = previous.Handle;
                 Panel content = null;
 
                 Action replace = () => ThemeManager.ReplaceHostedContent(
@@ -352,6 +364,8 @@ namespace ServiceBusExplorer.Tests.Forms
                     _ => throw expected);
 
                 replace.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expected);
+                previous.IsDisposed.Should().BeTrue();
+                previous.IsHandleCreated.Should().BeFalse();
                 host.Visible.Should().BeTrue();
                 if (configureThrows)
                 {

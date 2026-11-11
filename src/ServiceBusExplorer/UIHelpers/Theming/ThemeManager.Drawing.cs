@@ -14,6 +14,11 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 control.EnabledChanged += EnabledChanged;
                 if (control is ButtonBase button)
                     button.ForeColorChanged += ButtonForeColorChanged;
+                if (control is Button)
+                {
+                    control.MouseEnter += ButtonMouseEnter;
+                    control.MouseLeave += ButtonMouseLeave;
+                }
             }
             switch (control)
             {
@@ -146,13 +151,13 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         private static Color EnsureContrastPreservingHue(Color original, Color background)
         {
-            if (ContrastRatio(original, background) >= 4.5)
+            if (ColorContrast.Ratio(original, background) >= 4.5)
                 return original;
 
             for (var step = 1; step <= 8; step++)
             {
                 var candidate = BlendTowards(original, Color.White, step / 8d);
-                if (ContrastRatio(candidate, background) >= 4.5)
+                if (ColorContrast.Ratio(candidate, background) >= 4.5)
                     return candidate;
             }
 
@@ -166,24 +171,6 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 (int)Math.Round(from.R + ((to.R - from.R) * amount)),
                 (int)Math.Round(from.G + ((to.G - from.G) * amount)),
                 (int)Math.Round(from.B + ((to.B - from.B) * amount)));
-        }
-
-        private static double ContrastRatio(Color first, Color second)
-        {
-            var a = RelativeLuminance(first);
-            var b = RelativeLuminance(second);
-            return (Math.Max(a, b) + 0.05) / (Math.Min(a, b) + 0.05);
-        }
-
-        private static double RelativeLuminance(Color color)
-        {
-            Func<byte, double> linear = channel =>
-            {
-                var value = channel / 255.0;
-                return value <= 0.04045 ? value / 12.92 : Math.Pow((value + 0.055) / 1.055, 2.4);
-            };
-
-            return 0.2126 * linear(color.R) + 0.7152 * linear(color.G) + 0.0722 * linear(color.B);
         }
 
         private static void DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
@@ -300,7 +287,26 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return;
 
             var button = (ButtonBase)sender;
+            var state = controls.GetValue(button, CreateState);
+            if (state.UpdatingButtonForeground)
+                return;
+            if (IsSemanticButtonColor(button.ForeColor))
+                state.ButtonSemanticForeColor = button.ForeColor;
+            // Legacy hover handlers write White on entry and ControlText before our leave handler.
+            // Outside that feedback, a neutral assignment resets the runtime semantic override.
+            else if (!state.ButtonHovered && button.ForeColor.ToArgb() != Color.White.ToArgb())
+                state.ButtonSemanticForeColor = null;
             UpdateButtonForeground(button, ExpectedThemedForeColor(button));
+        }
+
+        private static void ButtonMouseEnter(object sender, EventArgs e) => SetButtonHovered((Button)sender, true);
+        private static void ButtonMouseLeave(object sender, EventArgs e) => SetButtonHovered((Button)sender, false);
+
+        private static void SetButtonHovered(Button button, bool hovered)
+        {
+            controls.GetValue(button, CreateState).ButtonHovered = hovered;
+            if (IsThemed)
+                ApplyThemedForeColor(button);
         }
 
         private static void TreeNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)

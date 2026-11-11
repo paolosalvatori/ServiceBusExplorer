@@ -224,6 +224,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         private static void RestoreExtraColors(Control control)
         {
+            if (control is ButtonBase)
+                controls.GetValue(control, CreateState).ButtonSemanticForeColor = null;
             if (control is DataGridView grid)
             {
                 foreach (var style in new[] { grid.DefaultCellStyle, grid.RowsDefaultCellStyle,
@@ -260,8 +262,11 @@ namespace ServiceBusExplorer.UIHelpers.Theming
 
         private static Color ExpectedButtonForeground(ButtonBase button)
         {
-            var original = controls.GetValue(button, CreateState).Snapshot.OriginalForeColor;
-            var source = IsSemanticButtonColor(button.ForeColor) ? button.ForeColor : original;
+            var state = controls.GetValue(button, CreateState);
+            var source = state.ButtonSemanticForeColor ?? state.Snapshot.OriginalForeColor;
+            // High contrast keeps native hot/pressed rendering and its system text/background pair.
+            if (!IsHighContrast && state.ButtonHovered && !IsSemanticButtonColor(source))
+                return Palette.SelectionText;
             return ReadableText(source);
         }
 
@@ -299,7 +304,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 return false;
             }
 
-            return ReadableText(color).ToArgb() != Palette.Text.ToArgb();
+            return ClassifySemanticColor(color) != SemanticColor.None;
         }
 
         private static void ApplyItems(ToolStrip strip)

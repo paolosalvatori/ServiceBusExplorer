@@ -9,9 +9,13 @@ namespace ServiceBusExplorer.Forms
     {
         protected override void OnLoad(EventArgs e)
         {
-            base.OnLoad(e);
-            if (!DesignMode && LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            var runtime = !DesignMode && LicenseManager.UsageMode != LicenseUsageMode.Designtime;
+            if (runtime)
                 ThemeManager.Register(this);
+            base.OnLoad(e);
+            // Load handlers can populate controls or reset designer colors before the first paint.
+            if (runtime)
+                ThemeManager.Apply(this);
         }
     }
 }

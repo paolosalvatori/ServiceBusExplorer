@@ -74,6 +74,31 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Theory]
+        [InlineData(-1)]
+        [InlineData(3)]
+        public void ThemeDropdown_UndefinedSelection_PreservesTheLastValidSetting(int index)
+        {
+            RunOnSta(() =>
+            {
+                var settings = new MainSettings();
+                settings.SetDefault();
+                using var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig);
+                var comboBox = FindControl<ComboBox>(form, "cboTheme");
+                comboBox.SelectedIndex = (int)ThemeMode.Dark;
+                if (index == 3)
+                    comboBox.Items.Add("Not a theme");
+
+                comboBox.SelectedIndex = index;
+
+                settings.ThemeMode.Should().Be(ThemeMode.Dark);
+                Action applySavedTheme = () => ThemeManager.SetThemeMode(settings.ThemeMode);
+                applySavedTheme.Should().NotThrow();
+                comboBox.Items.Clear();
+                settings.ThemeMode.Should().Be(ThemeMode.Dark);
+            });
+        }
+
+        [Theory]
         [InlineData(ThemeMode.FollowOperatingSystem)]
         [InlineData(ThemeMode.Light)]
         public void Cancel_AfterUnsavedThemeChange_PreservesGlobalTheme(ThemeMode mode)

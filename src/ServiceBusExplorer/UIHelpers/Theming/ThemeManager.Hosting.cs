@@ -39,7 +39,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             T content = null;
             try
             {
-                foreach (var child in host.Controls.OfType<UserControl>().ToArray())
+                foreach (var child in host.Controls.Cast<Control>().ToArray())
                     child.Dispose();
                 host.Controls.Clear();
                 SetHostedBackground(host);

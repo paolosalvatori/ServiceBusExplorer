@@ -351,7 +351,9 @@ namespace ServiceBusExplorer.Forms
 
         private void cboTheme_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MainSettings.ThemeMode = (ThemeMode)cboTheme.SelectedIndex;
+            var mode = (ThemeMode)cboTheme.SelectedIndex;
+            if (Enum.IsDefined(typeof(ThemeMode), mode))
+                MainSettings.ThemeMode = mode;
         }
 
         private void saveMessageToFileCheckBox_CheckedChanged(object sender, EventArgs e)

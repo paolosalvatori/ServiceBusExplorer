@@ -1,4 +1,7 @@
 using System;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -137,20 +140,331 @@ namespace ServiceBusExplorer.Tests.Forms
         [InlineData(UserPreferenceCategory.General)]
         [InlineData(UserPreferenceCategory.Accessibility)]
         [InlineData(UserPreferenceCategory.VisualStyle)]
-        public void ThemePreferenceChanges_StillRepaintWindows(UserPreferenceCategory category)
+        public void ThemePreferenceChanges_WithUnchangedPalette_DoNotReapplyWindows(UserPreferenceCategory category)
+        {
+            RunOnSta(() =>
+            {
+                foreach (var mode in new[] { ThemeMode.Dark, ThemeMode.Light, ThemeMode.FollowOperatingSystem })
+                {
+                    ThemeManager.SystemDarkThemeProvider = () => true;
+                    ThemeManager.SetThemeMode(mode);
+                    using var panel = new ThemeCountingPanel();
+                    ThemeManager.Register(panel);
+                    panel.Applications = 0;
+
+                    NotifyPreferencesChanged(category);
+
+                    panel.Applications.Should().Be(0, "the effective palette did not change in {0}", mode);
+                }
+            });
+        }
+
+        [Fact]
+        public void RegisteredHost_IsRefreshedOnceWhenCoveredAndStillWorksWhenDetached()
+        {
+            RunOnSta(() =>
+            {
+                using var form = new ThemedForm();
+                using var host = new ThemeCountingPanel();
+                form.Controls.Add(host);
+                ThemeManager.Register(host);
+                host.IsHandleCreated.Should().BeFalse();
+                ThemeManager.ReplaceHostedContent(host, () => new Button(), null);
+                form.Show();
+
+                host.Applications = 0;
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                host.Applications.Should().Be(1);
+
+                host.Applications = 0;
+                RunOnWorker(() => ThemeManager.SetThemeMode(ThemeMode.Light), false);
+                host.Applications.Should().Be(0);
+                Application.DoEvents();
+                host.Applications.Should().Be(1, "queued refreshes must also skip covered roots");
+
+                RunOnWorker(() =>
+                {
+                    Action replace = () => ThemeManager.ReplaceHostedContent(host, () => new Button(), null);
+                    replace.Should().Throw<InvalidOperationException>();
+                }, true);
+
+                form.Controls.Remove(host);
+                form.Dispose();
+                host.Applications = 0;
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                host.Applications.Should().Be(1);
+                host.IsDisposed.Should().BeFalse();
+                ThemeManager.ReplaceHostedContent(host, () => new Label(), null).Parent.Should().BeSameAs(host);
+            });
+        }
+
+        [Fact]
+        public void ThemedForm_LoadSeesThemedControlsAndLoadCreatedControlsRestoreInheritedColors()
         {
             RunOnSta(() =>
             {
                 ThemeManager.SetThemeMode(ThemeMode.Dark);
-                using (var panel = new Panel())
+                using var form = new ThemedForm { BackColor = Color.Beige, ForeColor = Color.Maroon };
+                using var inherited = new Label();
+                form.Controls.Add(inherited);
+                using var late = new Panel();
+                using var lateLabel = new Label { BackColor = Color.LightBlue };
+                late.Controls.Add(lateLabel);
+                Color loadBackground = Color.Empty;
+                Color loadForeground = Color.Empty;
+                form.Load += (_, _) =>
                 {
-                    ThemeManager.Register(panel);
-                    panel.BackColor = Color.Orange;
+                    loadBackground = inherited.BackColor;
+                    loadForeground = inherited.ForeColor;
+                    form.Controls.Add(late);
+                };
 
-                    NotifyPreferencesChanged(category);
+                form.Show();
 
-                    panel.BackColor.Should().Be(ThemeManager.Palette.Background);
+                loadBackground.Should().Be(ThemePalette.Dark.Background);
+                loadForeground.Should().Be(ThemeManager.ReadableText(Color.Maroon));
+                lateLabel.BackColor.Should().Be(ThemePalette.Dark.Background);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                form.BackColor.Should().Be(Color.Beige);
+                inherited.BackColor.Should().Be(Color.Beige);
+                inherited.ForeColor.Should().Be(Color.Maroon);
+                late.BackColor.Should().Be(Color.Beige);
+                lateLabel.BackColor.Should().Be(Color.LightBlue);
+                TypeDescriptor.GetProperties(inherited)["BackColor"].ShouldSerializeValue(inherited).Should().BeFalse();
+                TypeDescriptor.GetProperties(late)["BackColor"].ShouldSerializeValue(late).Should().BeFalse();
+                Application.DoEvents();
+                lateLabel.BackColor.Should().Be(Color.LightBlue);
+            });
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void DialogButtons_PreserveHoverPressedFeedbackAndRestoreLightAppearance(bool highContrast)
+        {
+            RunOnSta(() =>
+            {
+                using var form = new TextForm("Message", "payload");
+                form.Show();
+                var button = (Button)form.Controls.Find("btnOk", true)[0];
+                var originalStyle = button.FlatStyle;
+                var originalForeground = button.ForeColor;
+                ThemeManager.HighContrastProvider = () => highContrast;
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+
+                RaiseControlEvent(button, "OnMouseEnter", EventArgs.Empty);
+                if (highContrast)
+                {
+                    // Native high-contrast buttons own their hot/pressed colors, not hardcoded white text.
+                    button.FlatStyle.Should().Be(FlatStyle.System);
+                    button.UseVisualStyleBackColor.Should().BeTrue();
+                    button.ForeColor.ToArgb().Should().Be(SystemColors.WindowText.ToArgb());
                 }
+                else
+                {
+                    button.ForeColor.Should().Be(ThemePalette.Dark.SelectionText);
+                    button.FlatAppearance.MouseOverBackColor.Should().Be(ThemePalette.Dark.Hover);
+                    button.FlatAppearance.MouseDownBackColor.Should().Be(ThemePalette.Dark.Selection);
+                }
+                RaiseControlEvent(button, "OnMouseDown", new MouseEventArgs(MouseButtons.Left, 1, 2, 2, 0));
+                ThemeManager.Apply(button);
+                button.ForeColor.ToArgb().Should().Be((highContrast ? SystemColors.WindowText : ThemePalette.Dark.SelectionText).ToArgb());
+                RaiseControlEvent(button, "OnMouseUp", new MouseEventArgs(MouseButtons.Left, 1, 2, 2, 0));
+                RaiseControlEvent(button, "OnMouseLeave", EventArgs.Empty);
+                button.ForeColor.ToArgb().Should().Be(ThemeManager.Palette.Text.ToArgb());
+                button.Enabled = false;
+                button.ForeColor.Should().Be(ThemeManager.Palette.MutedText);
+                button.Enabled = true;
+
+                ThemeManager.HighContrastProvider = () => false;
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                button.FlatStyle.Should().Be(originalStyle);
+                button.ForeColor.Should().Be(originalForeground);
+                RaiseControlEvent(button, "OnMouseEnter", EventArgs.Empty);
+                button.ForeColor.Should().Be(Color.White);
+                RaiseControlEvent(button, "OnMouseLeave", EventArgs.Empty);
+                button.ForeColor.Should().Be(SystemColors.ControlText);
+            });
+        }
+
+        [Fact]
+        public void ButtonRuntimeSemanticColor_ExplicitNeutralResetRestoresTheDefaultForeground()
+        {
+            RunOnSta(() =>
+            {
+                using var button = new Button();
+                ThemeManager.Register(button);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+
+                foreach (var disabled in new[] { false, true })
+                {
+                    button.ForeColor = Color.Red;
+                    button.ForeColor.Should().Be(ThemePalette.Dark.ErrorText);
+                    button.Enabled = !disabled;
+
+                    button.ForeColor = SystemColors.ControlText;
+                    button.Enabled = true;
+
+                    button.ForeColor.Should().Be(ThemePalette.Dark.Text);
+                    ThemeManager.Apply(button);
+                    button.ForeColor.Should().Be(ThemePalette.Dark.Text);
+                }
+
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                button.ForeColor.Should().Be(SystemColors.ControlText);
+            });
+        }
+
+        [Fact]
+        public void ButtonRuntimeSemanticColor_SurvivesHoverDisablingAndHighContrast()
+        {
+            RunOnSta(() =>
+            {
+                using var button = new Button { ForeColor = Color.DarkOrange };
+                button.MouseEnter += (_, _) => button.ForeColor = Color.White;
+                button.MouseLeave += (_, _) => button.ForeColor = SystemColors.ControlText;
+                ThemeManager.Register(button);
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+                button.ForeColor = Color.Red;
+                RaiseControlEvent(button, "OnMouseEnter", EventArgs.Empty);
+                RaiseControlEvent(button, "OnMouseLeave", EventArgs.Empty);
+                button.ForeColor.Should().Be(ThemePalette.Dark.ErrorText);
+                button.Enabled = false;
+                button.Enabled = true;
+                button.ForeColor.Should().Be(ThemePalette.Dark.ErrorText);
+
+                ThemeManager.HighContrastProvider = () => true;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                button.ForeColor.Should().Be(SystemColors.WindowText);
+                button.ForeColor = Color.Green;
+                button.ForeColor.Should().Be(SystemColors.WindowText);
+                ThemeManager.HighContrastProvider = () => false;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                button.ForeColor.Should().Be(ThemePalette.Dark.SuccessText);
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                button.ForeColor.Should().Be(Color.DarkOrange);
+            });
+        }
+
+        sealed class ThemeCountingPanel : Panel, IThemeAware
+        {
+            public int Applications { get; set; }
+            public void ApplyTheme() => Applications++;
+        }
+
+        static void RaiseControlEvent(Control control, string method, EventArgs args) =>
+            typeof(Control).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(control, [args]);
+
+        [Theory]
+        [InlineData(true, 0, 0, 1, null)]
+        [InlineData(false, 0, 0, 1, null)]
+        [InlineData(true, unchecked((int)0x80070057), 0, 2, null)]
+        [InlineData(false, unchecked((int)0x80070057), 0, 2, null)]
+        [InlineData(true, unchecked((int)0x80070057), unchecked((int)0x80070057), 2, "80070057")]
+        [InlineData(true, unchecked((int)0x80070057), unchecked((int)0x80004005), 2, "80004005")]
+        [InlineData(true, unchecked((int)0x80004005), 0, 1, "80004005")]
+        public void Caption_UsesLegacyAttributeOnlyWhenModernAttributeIsUnsupported(
+            bool dark, int modernResult, int legacyResult, int expectedCalls, string diagnostic)
+        {
+            RunOnSta(() =>
+            {
+                using var form = new Form();
+                var handle = form.Handle;
+                var calls = new List<int>();
+                using var output = new StringWriter();
+                using var listener = new TextWriterTraceListener(output);
+                Trace.Listeners.Add(listener);
+                try
+                {
+                    ThemeNativeMethods.ApplyCaption(form, dark, (window, attribute, enabled) =>
+                    {
+                        window.Should().Be(handle);
+                        enabled.Should().Be(dark ? 1 : 0);
+                        calls.Add(attribute);
+                        return attribute == 20 ? modernResult : legacyResult;
+                    });
+                    calls.Should().Equal(expectedCalls == 1 ? new[] { 20 } : new[] { 20, 19 });
+                    if (diagnostic == null)
+                        output.ToString().Should().BeEmpty();
+                    else
+                        output.ToString().Should().Contain("HRESULT 0x" + diagnostic);
+                }
+                finally
+                {
+                    Trace.Listeners.Remove(listener);
+                }
+            });
+        }
+
+        [Fact]
+        public void Caption_DoesNotCreateAHandleOrHideUnexpectedFailures()
+        {
+            RunOnSta(() =>
+            {
+                using var form = new Form();
+                var expected = new InvalidOperationException("Unexpected DWM failure");
+                Action apply = () => ThemeNativeMethods.ApplyCaption(form, true, (_, _, _) => throw expected);
+                apply.Should().NotThrow();
+                form.IsHandleCreated.Should().BeFalse();
+                _ = form.Handle;
+                apply.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expected);
+            });
+        }
+
+        [Theory]
+        [InlineData(ThemeMode.Light)]
+        [InlineData(ThemeMode.Dark)]
+        [InlineData(ThemeMode.FollowOperatingSystem)]
+        public void Preferences_RefreshOnlyForEffectiveTransitionsIncludingHighContrastColors(ThemeMode mode)
+        {
+            RunOnSta(() =>
+            {
+                var systemDark = false;
+                var highContrast = false;
+                var systemColors = new[] { Color.White.ToArgb(), Color.Black.ToArgb() };
+                ThemeManager.SystemDarkThemeProvider = () => systemDark;
+                ThemeManager.HighContrastProvider = () => highContrast;
+                ThemeManager.SystemColorsProvider = () => systemColors;
+                ThemeManager.SetThemeMode(mode);
+                using var panel = new ThemeCountingPanel { BackColor = Color.Beige };
+                ThemeManager.Register(panel);
+                panel.Applications = 0;
+
+                systemDark = true;
+                NotifyPreferencesChanged(UserPreferenceCategory.General);
+                panel.Applications.Should().Be(mode == ThemeMode.FollowOperatingSystem ? 1 : 0);
+                panel.BackColor.Should().Be(mode == ThemeMode.Light ? Color.Beige : ThemePalette.Dark.Background);
+
+                highContrast = true;
+                panel.Applications = 0;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                panel.Applications.Should().Be(1);
+                panel.BackColor.Should().Be(SystemColors.Control);
+                panel.Applications = 0;
+                NotifyPreferencesChanged(UserPreferenceCategory.General);
+                panel.Applications.Should().Be(0);
+
+                systemColors[0] = Color.Yellow.ToArgb();
+                NotifyPreferencesChanged(UserPreferenceCategory.Color);
+                panel.Applications.Should().Be(1, "an HC palette edit must refresh even while HC stays enabled");
+                NotifyPreferencesChanged(UserPreferenceCategory.Color);
+                panel.Applications.Should().Be(1, "identical palette values must not refresh twice");
+
+                systemDark = false;
+                NotifyPreferencesChanged(UserPreferenceCategory.General);
+                panel.Applications.Should().Be(1, "HC still overrides the underlying dark/light preference");
+                highContrast = false;
+                panel.Applications = 0;
+                NotifyPreferencesChanged(UserPreferenceCategory.Accessibility);
+                panel.Applications.Should().Be(1);
+                panel.BackColor.Should().Be(mode == ThemeMode.Dark ? ThemePalette.Dark.Background : Color.Beige);
+
+                panel.Applications = 0;
+                systemColors[0] = Color.White.ToArgb();
+                NotifyPreferencesChanged(UserPreferenceCategory.Color);
+                panel.Applications.Should().Be(mode == ThemeMode.Dark ? 0 : 1,
+                    "light controls can use system colors, but the explicit dark palette is fixed");
             });
         }
 
@@ -402,6 +716,7 @@ namespace ServiceBusExplorer.Tests.Forms
             {
                 var originalProvider = ThemeManager.SystemDarkThemeProvider;
                 var originalHighContrastProvider = ThemeManager.HighContrastProvider;
+                var originalColorsProvider = ThemeManager.SystemColorsProvider;
                 try
                 {
                     ThemeManager.HighContrastProvider = () => false;
@@ -412,6 +727,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 {
                     ThemeManager.SystemDarkThemeProvider = originalProvider;
                     ThemeManager.HighContrastProvider = originalHighContrastProvider;
+                    ThemeManager.SystemColorsProvider = originalColorsProvider;
                     ThemeManager.SetThemeMode(ThemeMode.Light);
                 }
             }, true);

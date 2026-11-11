@@ -43,22 +43,33 @@ namespace ServiceBusExplorer.Tests.Forms
                         form.ContextMenuStrip = menu;
                         ThemeManager.Register(form);
                     }
-                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                    var systemDark = false;
+                    var originalProvider = ThemeManager.SystemDarkThemeProvider;
+                    ThemeManager.SystemDarkThemeProvider = () => systemDark;
+                    ThemeManager.SetThemeMode(ThemeMode.FollowOperatingSystem);
                     menu.IsHandleCreated.Should().BeFalse();
                     menu.BackColor = Color.Orange;
                     var updates = new List<int>();
                     menu.BackColorChanged += (sender, args) => updates.Add(Thread.CurrentThread.ManagedThreadId);
 
-                    RunOnWorker(() => typeof(ThemeManager).GetMethod("PreferencesChanged",
-                        BindingFlags.Static | BindingFlags.NonPublic).Invoke(null,
-                        new object[] { null, new UserPreferenceChangedEventArgs(UserPreferenceCategory.Color) }));
+                    try
+                    {
+                        systemDark = true;
+                        RunOnWorker(() => typeof(ThemeManager).GetMethod("PreferencesChanged",
+                            BindingFlags.Static | BindingFlags.NonPublic).Invoke(null,
+                            new object[] { null, new UserPreferenceChangedEventArgs(UserPreferenceCategory.Color) }));
 
-                    updates.Should().BeEmpty("the UI thread has not processed the queued update yet");
-                    menu.BackColor.Should().Be(Color.Orange);
-                    Application.DoEvents();
-                    menu.BackColor.Should().Be(ThemeManager.Palette.Background);
-                    updates.Should().ContainSingle().Which.Should().Be(Thread.CurrentThread.ManagedThreadId);
-                    menu.IsHandleCreated.Should().BeFalse();
+                        updates.Should().BeEmpty("the UI thread has not processed the queued update yet");
+                        menu.BackColor.Should().Be(Color.Orange);
+                        Application.DoEvents();
+                        menu.BackColor.Should().Be(ThemeManager.Palette.Background);
+                        updates.Should().ContainSingle().Which.Should().Be(Thread.CurrentThread.ManagedThreadId);
+                        menu.IsHandleCreated.Should().BeFalse();
+                    }
+                    finally
+                    {
+                        ThemeManager.SystemDarkThemeProvider = originalProvider;
+                    }
                 }
             });
         }
@@ -360,6 +371,21 @@ namespace ServiceBusExplorer.Tests.Forms
                 Contrast(adjusted, ThemeManager.Palette.Surface).Should().BeGreaterThanOrEqualTo(4.5);
                 node.ForeColor.Should().Be(original);
             });
+        }
+
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(117, true)]
+        [InlineData(118, false)]
+        [InlineData(255, false)]
+        public void ColorSwatchText_ChoosesTheHigherContrastColorIncludingTheCrossover(int channel, bool white)
+        {
+            var swatch = Color.FromArgb(channel, channel, channel);
+            var method = typeof(ColorCell).GetMethod("ChooseTextColorForSwatch", BindingFlags.Static | BindingFlags.NonPublic);
+            method.Should().NotBeNull();
+            var text = (Color)method.Invoke(null, [swatch]);
+            text.Should().Be(white ? Color.White : Color.Black);
+            Contrast(text, swatch).Should().BeGreaterThanOrEqualTo(4.5);
         }
 
         private static void VerifyGraphLayoutThemesRecreatedTitles(Type controlType, Action<object> configure = null)
