@@ -76,7 +76,9 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                     break;
                 case ToolStrip strip:
                     state.Capture("Renderer", () => strip.Renderer, value => strip.Renderer = value);
-                    state.Capture("RenderMode", () => strip.RenderMode, value => strip.RenderMode = value);
+                    // Restoring an explicit renderer restores Custom mode; setting RenderMode to Custom throws.
+                    if (strip.RenderMode != ToolStripRenderMode.Custom)
+                        state.Capture("RenderMode", () => strip.RenderMode, value => strip.RenderMode = value);
                     CaptureItems(strip);
                     break;
             }

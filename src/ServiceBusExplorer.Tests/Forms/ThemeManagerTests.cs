@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -504,6 +505,35 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
+        public void ExplicitToolStripRenderers_RestoreWithoutSettingCustomRenderMode()
+        {
+            RunOnSta(() =>
+            {
+                using var form = new ThemedForm();
+                using var grid = new PropertyGrid();
+                using var strip = new ToolStrip { Renderer = new ToolStripSystemRenderer() };
+                form.Controls.Add(grid);
+                form.Controls.Add(strip);
+                var toolbar = grid.Controls.OfType<ToolStrip>().Single();
+                var toolbarRenderer = toolbar.Renderer;
+                var stripRenderer = strip.Renderer;
+                toolbar.RenderMode.Should().Be(ToolStripRenderMode.Custom);
+                strip.RenderMode.Should().Be(ToolStripRenderMode.Custom);
+                ThemeManager.Register(form);
+                for (var i = 0; i < 2; i++)
+                {
+                    ThemeManager.SetThemeMode(ThemeMode.Dark);
+                    toolbar.Renderer.GetType().Name.Should().Be("DarkToolStripRenderer");
+                    strip.Renderer.GetType().Name.Should().Be("DarkToolStripRenderer");
+                    ThemeManager.SetThemeMode(ThemeMode.Light);
+                    toolbar.Renderer.Should().BeSameAs(toolbarRenderer);
+                    strip.Renderer.Should().BeSameAs(stripRenderer);
+                    strip.RenderMode.Should().Be(ToolStripRenderMode.Custom);
+                }
+            });
+        }
+
+        [Fact]
         public void CustomControls_RestoreTheirPaletteProperties()
         {
             RunOnSta(() =>
@@ -642,6 +672,35 @@ namespace ServiceBusExplorer.Tests.Forms
                 image.GetPixel(tabs.Width - 10, 10).ToArgb().Should().Be(ThemeManager.Palette.Background.ToArgb());
                 ThemeManager.SetThemeMode(ThemeMode.Light);
                 tabs.Padding.Should().Be(new Point(3, 3));
+                form.Close();
+            });
+        }
+
+        [Fact]
+        public void ReaddedTabPages_AreThemedBeforeTheyCanPaint()
+        {
+            RunOnSta(() =>
+            {
+                using var form = new ThemedForm();
+                var tabs = new TabControl { Dock = DockStyle.Fill };
+                tabs.TabPages.Add("Description");
+                var hidden = new TabPage("Deadletter");
+                var header = new Panel { BackColor = Color.FromArgb(215, 228, 242) };
+                hidden.Controls.Add(header);
+                tabs.TabPages.Add(hidden);
+                form.Controls.Add(tabs);
+                tabs.TabPages.Remove(hidden);
+                form.Show();
+                ThemeManager.SetThemeMode(ThemeMode.Dark);
+
+                tabs.TabPages.Add(hidden);
+
+                hidden.BackColor.Should().Be(ThemeManager.Palette.Background);
+                header.BackColor.Should().Be(ThemeManager.Palette.Background);
+                Application.DoEvents();
+                ThemeManager.SetThemeMode(ThemeMode.Light);
+                header.BackColor.Should().Be(Color.FromArgb(215, 228, 242));
+                TypeDescriptor.GetProperties(hidden)["BackColor"].ShouldSerializeValue(hidden).Should().BeFalse();
                 form.Close();
             });
         }

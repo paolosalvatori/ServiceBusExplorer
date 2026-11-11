@@ -231,7 +231,8 @@ namespace ServiceBusExplorer.UIHelpers.Theming
         private static void ControlAdded(object sender, ControlEventArgs e)
         {
             var host = ((Control)sender).FindForm();
-            if (host != null && host.IsHandleCreated)
+            // Re-shown tab pages are already configured and can be painted before a queued update runs.
+            if (host is { IsHandleCreated: true } && !(e.Control is TabPage))
                 QueueApply(host, e.Control);
             else
                 Apply(e.Control);
