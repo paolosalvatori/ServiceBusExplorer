@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ServiceBusExplorer.Controls;
@@ -28,6 +28,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 case TabControl tabs:
                     state.Capture("DrawMode", () => tabs.DrawMode, value => tabs.DrawMode = value);
                     state.Capture("Padding", () => tabs.Padding, value => tabs.Padding = value);
+                    state.Capture("ItemSize", () => tabs.ItemSize, value => tabs.ItemSize = value);
                     break;
                 case TabPage page:
                     state.Capture("VisualStyle", () => page.UseVisualStyleBackColor, value => page.UseVisualStyleBackColor = value);
@@ -118,6 +119,7 @@ namespace ServiceBusExplorer.UIHelpers.Theming
                 case TabControl tabs:
                     tabs.DrawMode = TabDrawMode.OwnerDrawFixed;
                     tabs.Padding = new Point(Math.Max(tabs.Padding.X, 8), Math.Max(tabs.Padding.Y, 3));
+                    FitTabItemSize(tabs);
                     break;
                 case TabPage page:
                     page.UseVisualStyleBackColor = false;
@@ -370,6 +372,21 @@ namespace ServiceBusExplorer.UIHelpers.Theming
             if (original.B > original.R * 1.3)
                 return SemanticColor.Accent;
             return SemanticColor.None;
+        }
+
+        // Owner-drawn tabs use a fixed ItemSize, which clips the themed text when it is wider than the designer value.
+        private static void FitTabItemSize(TabControl tabs)
+        {
+            var size = tabs.ItemSize;
+            var flags = TextFormatFlags.NoPadding | TextFormatFlags.SingleLine;
+            foreach (TabPage page in tabs.TabPages)
+            {
+                var text = TextRenderer.MeasureText(page.Text, tabs.Font, Size.Empty, flags);
+                var imageWidth = tabs.ImageList != null ? tabs.ImageList.ImageSize.Width + 4 : 0;
+                size.Width = Math.Max(size.Width, text.Width + imageWidth + tabs.Padding.X * 2);
+                size.Height = Math.Max(size.Height, text.Height + tabs.Padding.Y * 2);
+            }
+            tabs.ItemSize = size;
         }
     }
 }
