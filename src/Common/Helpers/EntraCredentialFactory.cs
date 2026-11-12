@@ -23,10 +23,13 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
+using Azure.Identity.Broker;
+using Microsoft.Identity.Client;
 using Microsoft.ServiceBus;
 
 #endregion
@@ -51,6 +54,10 @@ namespace ServiceBusExplorer.Helpers
         public const string EventHubsAudience = "https://eventhubs.azure.net";
         static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> interactiveBrowserCredentials =
             new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
+        static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> fallbackInteractiveBrowserCredentials =
+            new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
+        static readonly ConcurrentDictionary<string, byte> brokerUnavailableTenants =
+            new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
         static readonly ConcurrentDictionary<string, AzureActiveDirectoryTokenProvider.AuthenticationCallback> authenticationCallbacks =
             new ConcurrentDictionary<string, AzureActiveDirectoryTokenProvider.AuthenticationCallback>(StringComparer.OrdinalIgnoreCase);
         static readonly ConcurrentDictionary<string, TokenCredential> tokenCredentials =
@@ -61,10 +68,19 @@ namespace ServiceBusExplorer.Helpers
         // combination on first use. MSAL handles token freshness after the initial acquisition.
         static readonly ConcurrentDictionary<string, SemaphoreSlim> interactiveLoginGates =
             new ConcurrentDictionary<string, SemaphoreSlim>(StringComparer.OrdinalIgnoreCase);
+        static IntPtr ownerWindowHandle = IntPtr.Zero;
 
         static string NormalizeTenantId(string tenantId)
         {
             return string.IsNullOrWhiteSpace(tenantId) ? DefaultTenantId : tenantId.Trim();
+        }
+
+        /// <summary>
+        /// Sets the main window handle used to parent the Windows broker (WAM) sign-in UI.
+        /// </summary>
+        public static void SetOwnerWindowHandle(IntPtr handle)
+        {
+            ownerWindowHandle = handle;
         }
 
         /// <summary>
@@ -79,6 +95,7 @@ namespace ServiceBusExplorer.Helpers
 
         /// <summary>
         /// Creates an InteractiveBrowserCredential configured for the given tenant.
+        /// Uses the Windows broker (WAM), falling back to the system browser if the broker is unavailable.
         /// The credential internally caches tokens via MSAL, so repeated calls with
         /// the same tenant reuse the browser sign-in session.
         /// </summary>
@@ -91,6 +108,22 @@ namespace ServiceBusExplorer.Helpers
                 // persisting an AuthenticationRecord, which this tool does not do, so a persisted cache
                 // would store refresh tokens on disk for no benefit and would leave ClearCache unable to
                 // log the user out.
+                var options = new InteractiveBrowserCredentialBrokerOptions(ownerWindowHandle)
+                {
+                    TenantId = normalizedTenantId
+                };
+
+                return new InteractiveBrowserCredential(options);
+            });
+        }
+
+        /// <summary>
+        /// Creates a non-broker InteractiveBrowserCredential used when the Windows broker is unavailable.
+        /// </summary>
+        static InteractiveBrowserCredential CreateFallbackInteractiveBrowserCredential(string normalizedTenantId)
+        {
+            return fallbackInteractiveBrowserCredentials.GetOrAdd(normalizedTenantId, _ =>
+            {
                 var options = new InteractiveBrowserCredentialOptions
                 {
                     TenantId = normalizedTenantId
@@ -197,6 +230,8 @@ namespace ServiceBusExplorer.Helpers
         public static void ClearCache()
         {
             interactiveBrowserCredentials.Clear();
+            fallbackInteractiveBrowserCredentials.Clear();
+            brokerUnavailableTenants.Clear();
             authenticationCallbacks.Clear();
             tokenCredentials.Clear();
             tokenProviders.Clear();
@@ -220,14 +255,77 @@ namespace ServiceBusExplorer.Helpers
             await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                var credential = CreateInteractiveBrowserCredential(tenantId);
-                return await credential.GetTokenAsync(new TokenRequestContext(scopes), cancellationToken)
+                var requestContext = new TokenRequestContext(scopes);
+
+                return await AcquireTokenWithFallbackAsync(
+                        tenantId,
+                        ct => CreateInteractiveBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
+                        ct => CreateFallbackInteractiveBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
+                        cancellationToken)
                     .ConfigureAwait(false);
             }
             finally
             {
                 gate.Release();
             }
+        }
+
+        static async Task<AccessToken> AcquireTokenWithFallbackAsync(
+            string tenantId,
+            Func<CancellationToken, ValueTask<AccessToken>> brokerAcquire,
+            Func<CancellationToken, ValueTask<AccessToken>> fallbackAcquire,
+            CancellationToken cancellationToken)
+        {
+            if (!brokerUnavailableTenants.ContainsKey(tenantId))
+            {
+                try
+                {
+                    return await brokerAcquire(cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (IsBrokerUnavailable(ex))
+                {
+                    // Remember per tenant so later calls skip the broker.
+                    brokerUnavailableTenants.TryAdd(tenantId, 0);
+                    Trace.TraceWarning(
+                        "Windows broker sign-in unavailable for tenant '{0}', falling back to the system browser: {1}",
+                        tenantId,
+                        ex.Message);
+                }
+            }
+
+            return await fallbackAcquire(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Returns true when the exception shows the Windows broker itself is unusable, as opposed to
+        /// a normal sign-in failure (e.g. user cancelled), which must propagate.
+        /// </summary>
+        static bool IsBrokerUnavailable(Exception ex)
+        {
+            for (var current = ex; current != null; current = current.InnerException)
+            {
+                if (current is MsalException msalException)
+                {
+                    switch (msalException.ErrorCode)
+                    {
+                        case MsalError.UnknownBrokerError:
+                        case MsalError.CannotInvokeBroker:
+                        case MsalError.InvalidOwnerWindowType:
+                        case MsalError.PlatformNotSupported:
+                            return true;
+                    }
+                }
+                else if (current is DllNotFoundException
+                    || current is EntryPointNotFoundException
+                    || current is BadImageFormatException
+                    || current is PlatformNotSupportedException
+                    || current is TypeInitializationException)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         sealed class CachedEntraTokenCredential : TokenCredential

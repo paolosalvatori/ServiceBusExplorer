@@ -23,6 +23,8 @@
 
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
 
+    <PackageReference Include="Azure.Identity.Broker" Version="1.7.0" />
+
     <PackageReference Include="WindowsAzure.ServiceBus" Version="7.0.1" />
   </ItemGroup>
   <ItemGroup>
