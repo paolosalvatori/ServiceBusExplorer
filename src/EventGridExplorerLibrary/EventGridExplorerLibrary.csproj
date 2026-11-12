@@ -18,12 +18,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.EventGrid" Version="4.22.0-beta.1" />
-		<PackageReference Include="Azure.Identity" Version="1.13.2" />
-		<PackageReference Include="Azure.ResourceManager.EventGrid" Version="1.1.0-beta.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
-		<PackageReference Include="Microsoft.Rest.ClientRuntime.Azure" Version="3.3.19" />
+		<PackageReference Include="Azure.Messaging.EventGrid" />
+		<PackageReference Include="Azure.Identity" />
+		<PackageReference Include="Azure.ResourceManager.EventGrid" />
+		<PackageReference Include="Newtonsoft.Json" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime.Azure" />
 	</ItemGroup>
 
 	<ItemGroup>

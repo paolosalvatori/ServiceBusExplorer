@@ -14,7 +14,7 @@
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.EventHubs" Version="5.12.1" />
+		<PackageReference Include="Azure.Messaging.EventHubs" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />

@@ -13,8 +13,8 @@
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Azure.Identity" Version="1.13.2" />
-		<PackageReference Include="Microsoft.Azure.Relay" Version="3.0.1" />
+		<PackageReference Include="Azure.Identity" />
+		<PackageReference Include="Microsoft.Azure.Relay" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />

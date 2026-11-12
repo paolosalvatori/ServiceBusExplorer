@@ -550,13 +550,13 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
-		<PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
-		<PackageReference Include="WindowsAzure.ServiceBus" Version="7.0.1" />
+		<PackageReference Include="CommandLineParser" />
+		<PackageReference Include="Microsoft.Azure.NotificationHubs" />
+		<PackageReference Include="Microsoft.Azure.Services.AppAuthentication" />
+		<PackageReference Include="Microsoft.CSharp" />
+		<PackageReference Include="Newtonsoft.Json" />
+		<PackageReference Include="System.Resources.Extensions" />
+		<PackageReference Include="WindowsAzure.ServiceBus" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="Icons\Add.ico" />
