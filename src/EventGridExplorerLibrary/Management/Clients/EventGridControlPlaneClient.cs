@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager;
 using Azure.ResourceManager.EventGrid;
 using Azure.ResourceManager.EventGrid.Models;
@@ -28,7 +27,7 @@ namespace EventGridExplorerLibrary
         public ArmClient armclient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventGridClient"/> class.
+        /// Initializes a new instance of the <see cref="EventGridControlPlaneClient"/> class.
         /// </summary>
         public EventGridControlPlaneClient(string subscriptionId, string tenantId)
         {

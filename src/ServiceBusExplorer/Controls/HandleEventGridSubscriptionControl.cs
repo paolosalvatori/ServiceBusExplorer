@@ -186,7 +186,7 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
 
-            receivedEvents = allEvents.Value;
+            receivedEvents = allEvents.Details;
             var cloudEvents = new List<CloudEvent>();  
             
             foreach (var receiveDetails in receivedEvents)
