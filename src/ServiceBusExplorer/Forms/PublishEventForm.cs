@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class PublishEventForm : Form
+    public partial class PublishEventForm : ThemedForm
     {
         #region Private Constants
         private const string ExceptionFormat = "Exception: {0}";

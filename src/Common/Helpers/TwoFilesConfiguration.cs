@@ -178,15 +178,21 @@ namespace ServiceBusExplorer.Helpers
         public bool GetBoolValue(string AppSettingKey, bool defaultValue,
             WriteToLogDelegate writeToLog = null)
         {
+            return TryGetBoolValue(AppSettingKey, out var result, writeToLog) ? result : defaultValue;
+        }
+
+        public bool TryGetBoolValue(string AppSettingKey, out bool value,
+            WriteToLogDelegate writeToLog = null)
+        {
             if (userConfiguration != null && UseUserConfig())
             {
                 string resultStringUser = userConfiguration.AppSettings.Settings[AppSettingKey]?.Value;
 
                 if (null != resultStringUser)
                 {
-                    if (bool.TryParse(resultStringUser, out var result))
+                    if (bool.TryParse(resultStringUser, out value))
                     {
-                        return result;
+                        return true;
                     }
 
                     WriteParsingFailure(writeToLog, userConfigFilePath,
@@ -200,9 +206,9 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrWhiteSpace(resultStringApp))
                 {
-                    if (bool.TryParse(resultStringApp, out var result))
+                    if (bool.TryParse(resultStringApp, out value))
                     {
-                        return result;
+                        return true;
                     }
 
                     WriteParsingFailure(writeToLog, applicationConfiguration.FilePath, AppSettingKey,
@@ -210,7 +216,8 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            return defaultValue;
+            value = false;
+            return false;
         }
 
         public T GetEnumValue<T>(string AppSettingKey, T defaultValue = default,
@@ -223,7 +230,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (null != resultStringUser)
                 {
-                    if (Enum.TryParse<T>(resultStringUser, out var result))
+                    if (TryParseDefinedEnum<T>(resultStringUser, out var result))
                     {
                         return result;
                     }
@@ -239,7 +246,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrWhiteSpace(resultStringApp))
                 {
-                    if (Enum.TryParse<T>(resultStringApp, out var result))
+                    if (TryParseDefinedEnum<T>(resultStringApp, out var result))
                     {
                         return result;
                     }
@@ -250,6 +257,13 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return defaultValue;
+        }
+
+        static bool TryParseDefinedEnum<T>(string value, out T result) where T : struct
+        {
+            return Enum.TryParse(value, out result) &&
+                (Enum.IsDefined(typeof(T), result) ||
+                 typeof(T).IsDefined(typeof(FlagsAttribute), false));
         }
 
         public decimal GetDecimalValue(string AppSettingKey, decimal defaultValue = default,

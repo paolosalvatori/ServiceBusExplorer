@@ -35,7 +35,7 @@ using ServiceBusExplorer.Properties;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class NewVersionAvailableForm : Form
+    public partial class NewVersionAvailableForm : ThemedForm
     {
         #region Public Constructor
         public NewVersionAvailableForm()

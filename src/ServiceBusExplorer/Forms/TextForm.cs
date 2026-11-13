@@ -32,7 +32,7 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class TextForm : Form
+    public partial class TextForm : ThemedForm
     {
         #region Private Constants
         //***************************

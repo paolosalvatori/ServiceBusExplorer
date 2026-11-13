@@ -30,7 +30,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class CollectionEditorForm : Form
+    public partial class CollectionEditorForm : ThemedForm
     {
         #region Private Constants
         //***************************

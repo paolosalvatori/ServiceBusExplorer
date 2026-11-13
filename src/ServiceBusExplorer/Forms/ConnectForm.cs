@@ -30,6 +30,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Common.Entities;
@@ -41,7 +42,7 @@ using ServiceBusExplorer.Common.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ConnectForm : Form
+    public partial class ConnectForm : ThemedForm
     {
         #region Private Constants
 
@@ -122,6 +123,7 @@ namespace ServiceBusExplorer.Forms
             List<EntraTenantIdItem> entraTenantIds)
         {
             InitializeComponent();
+            ThemeManager.SetHeaderBrandLogo(logoPictureBox);
 
             this.configFileUse = configFileUse;
             SetConfigFileUseLabelText(lblConfigFileUse);

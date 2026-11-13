@@ -37,7 +37,7 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class FilterForm : Form
+    public partial class FilterForm : ThemedForm
     {
         #region Private Constants
         //***************************

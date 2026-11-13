@@ -66,6 +66,7 @@ namespace ServiceBusExplorer.UIHelpers
                 return value;
             }
             standardValueEditorUI.SetData(context, editorService, value);
+            Theming.ThemeManager.Register(standardValueEditorUI);
             editorService.DropDownControl(standardValueEditorUI);
             value = standardValueEditorUI.GetValue();
             return value;

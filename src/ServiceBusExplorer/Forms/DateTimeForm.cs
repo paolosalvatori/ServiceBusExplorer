@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class DateTimeForm : Form
+    public partial class DateTimeForm : ThemedForm
     {
         #region Public Constructor
         public DateTimeForm()
