@@ -1,4 +1,6 @@
-﻿using Azure.Messaging;
+﻿using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
