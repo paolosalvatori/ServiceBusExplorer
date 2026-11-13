@@ -1,4 +1,4 @@
-﻿namespace ServiceBusExplorer.Controls
+namespace ServiceBusExplorer.Controls
 {
     partial class HandleNotificationHubControl
     {
@@ -166,6 +166,7 @@
             this.tabGcmTagExpression = new System.Windows.Forms.TabPage();
             this.grouperGcmTagExpression = new ServiceBusExplorer.Controls.Grouper();
             this.txtGcmTagExpression = new System.Windows.Forms.TextBox();
+            this.cboGcmSendFormat = new System.Windows.Forms.ComboBox();
             this.tabGcmNotificationTags = new System.Windows.Forms.TabPage();
             this.grouperGcmTags = new ServiceBusExplorer.Controls.Grouper();
             this.gcmTagsDataGridView = new System.Windows.Forms.DataGridView();
@@ -543,7 +544,7 @@
             this.grouperGoogleCloudMessaggingSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.Color.White;
             this.grouperGoogleCloudMessaggingSettings.GroupImage = null;
-            this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Google Cloud Messagging Settings";
+            this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Firebase Cloud Messaging Settings";
             this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(336, 112);
             this.grouperGoogleCloudMessaggingSettings.Name = "grouperGoogleCloudMessaggingSettings";
             this.grouperGoogleCloudMessaggingSettings.Padding = new System.Windows.Forms.Padding(20);
@@ -577,7 +578,7 @@
             this.txtGcmEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGcmEndpoint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 92);
+            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 108);
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
             this.txtGcmEndpoint.Size = new System.Drawing.Size(272, 20);
@@ -587,11 +588,11 @@
             // 
             this.lblGcmEndpoint.AutoSize = true;
             this.lblGcmEndpoint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 76);
+            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 92);
             this.lblGcmEndpoint.Name = "lblGcmEndpoint";
             this.lblGcmEndpoint.Size = new System.Drawing.Size(79, 13);
             this.lblGcmEndpoint.TabIndex = 2;
-            this.lblGcmEndpoint.Text = "GCM Endpoint:";
+            this.lblGcmEndpoint.Text = "FCM Endpoint:";
             // 
             // lblGcmApiKey
             // 
@@ -601,7 +602,7 @@
             this.lblGcmApiKey.Name = "lblGcmApiKey";
             this.lblGcmApiKey.Size = new System.Drawing.Size(75, 13);
             this.lblGcmApiKey.TabIndex = 0;
-            this.lblGcmApiKey.Text = "GCM API Key:";
+            this.lblGcmApiKey.Text = "FCM v1 JSON / legacy key:";
             // 
             // txtGcmApiKey
             // 
@@ -610,8 +611,10 @@
             this.txtGcmApiKey.BackColor = System.Drawing.SystemColors.Window;
             this.txtGcmApiKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
+            this.txtGcmApiKey.Multiline = true;
             this.txtGcmApiKey.Name = "txtGcmApiKey";
-            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 20);
+            this.txtGcmApiKey.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 36);
             this.txtGcmApiKey.TabIndex = 1;
             // 
             // grouperWindowsPhoneNotificationSettings
@@ -2910,6 +2913,7 @@
             this.grouperGcmTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperGcmTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmTagExpression.BorderThickness = 1F;
+            this.grouperGcmTagExpression.Controls.Add(this.cboGcmSendFormat);
             this.grouperGcmTagExpression.Controls.Add(this.txtGcmTagExpression);
             this.grouperGcmTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
@@ -2939,8 +2943,23 @@
             this.txtGcmTagExpression.Multiline = true;
             this.txtGcmTagExpression.Name = "txtGcmTagExpression";
             this.txtGcmTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtGcmTagExpression.Size = new System.Drawing.Size(387, 85);
+            this.txtGcmTagExpression.Size = new System.Drawing.Size(387, 55);
             this.txtGcmTagExpression.TabIndex = 0;
+            // 
+            // cboGcmSendFormat
+            // 
+            this.cboGcmSendFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboGcmSendFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboGcmSendFormat.FormattingEnabled = true;
+            this.cboGcmSendFormat.Items.AddRange(new object[] {
+            "FCM HTTP v1",
+            "Legacy FCM"});
+            this.cboGcmSendFormat.Location = new System.Drawing.Point(16, 94);
+            this.cboGcmSendFormat.Name = "cboGcmSendFormat";
+            this.cboGcmSendFormat.Size = new System.Drawing.Size(387, 21);
+            this.cboGcmSendFormat.TabIndex = 1;
+            this.cboGcmSendFormat.Visible = false;
             // 
             // tabGcmNotificationTags
             // 
@@ -3491,6 +3510,7 @@
         private System.Windows.Forms.TabPage tabGcmTagExpression;
         private Grouper grouperGcmTagExpression;
         private System.Windows.Forms.TextBox txtGcmTagExpression;
+        private System.Windows.Forms.ComboBox cboGcmSendFormat;
         private System.Windows.Forms.TabPage tabGcmNotificationTags;
         private Grouper grouperGcmTags;
         private System.Windows.Forms.DataGridView gcmTagsDataGridView;
