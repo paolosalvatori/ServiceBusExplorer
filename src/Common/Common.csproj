@@ -19,7 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
 
-    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.9" />
+    <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
 
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
 
