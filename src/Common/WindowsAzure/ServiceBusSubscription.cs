@@ -1,4 +1,7 @@
-﻿using System;
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -21,9 +24,12 @@ namespace ServiceBusExplorer.WindowsAzure
 
         private readonly string servicePath = string.Empty;
 
-        public ServiceBusSubscription(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager) : base(serviceBusNamespace, namespaceManager)
+        public ServiceBusSubscription(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager) : base(serviceBusNamespace, namespaceManager.Address)
         {
+            ManagementClient = namespaceManager;
         }
+
+        private ServiceBusManagementClient ManagementClient { get; }
 
         protected override EntityType EntityType => EntityType.Subscription;
 
@@ -35,7 +41,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <returns>Returns the subscription with the specified name.</returns>
         public SubscriptionDescription GetSubscription(string topicPath, string name)
         {
-            if (NamespaceManager == null)
+            if (ManagementClient == null)
             {
                 throw new ArgumentException(NamespaceManagerCannotBeNull);
             }
@@ -47,9 +53,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(NameCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetSubscription(topicPath, name), WriteToLog);
+                return RetryHelper.RetryFunc(() => ManagementClient.GetSubscription(topicPath, name), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -65,9 +71,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(PathCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetSubscriptions(topicPath), WriteToLog);
+                return RetryHelper.RetryFunc(() => ManagementClient.GetSubscriptions(topicPath), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -84,11 +90,11 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(TopicDescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
                 return RetryHelper.RetryFunc(() => string.IsNullOrWhiteSpace(filter) ?
-                                                   NamespaceManager.GetSubscriptions(topic.Path) :
-                                                   NamespaceManager.GetSubscriptions(topic.Path, filter), WriteToLog);
+                                                   ManagementClient.GetSubscriptions(topic.Path) :
+                                                   ManagementClient.GetSubscriptions(topic.Path, filter), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -109,8 +115,8 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 var uriBuilder = new UriBuilder
                 {
-                    Host = NamespaceManager.Address.Host,
-                    Path = $"{NamespaceManager.Address.AbsolutePath}/{SubscriptionClient.FormatSubscriptionPath(topicPath, name)}",
+                    Host = ManagementClient.Address.Host,
+                    Path = $"{ManagementClient.Address.AbsolutePath}/{SubscriptionClient.FormatSubscriptionPath(topicPath, name)}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -133,8 +139,8 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 var uriBuilder = new UriBuilder
                 {
-                    Host = NamespaceManager.Address.Host,
-                    Path = $"{NamespaceManager.Address.AbsolutePath}/{SubscriptionClient.FormatDeadLetterPath(topicPath, name)}",
+                    Host = ManagementClient.Address.Host,
+                    Path = $"{ManagementClient.Address.AbsolutePath}/{SubscriptionClient.FormatDeadLetterPath(topicPath, name)}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -157,7 +163,7 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            var subscription = RetryHelper.RetryFunc(() => NamespaceManager.CreateSubscription(subscriptionDescription), WriteToLog);
+            var subscription = RetryHelper.RetryFunc(() => ManagementClient.CreateSubscription(subscriptionDescription), WriteToLog);
             Log(string.Format(CultureInfo.CurrentCulture, SubscriptionCreated, subscription.Name, topicDescription.Path));
             OnCreated(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
             return subscription;
@@ -186,7 +192,7 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(RuleDescriptionCannotBeNull);
             }
-            var subscription = RetryHelper.RetryFunc(() => NamespaceManager.CreateSubscription(subscriptionDescription, ruleDescription), WriteToLog);
+            var subscription = RetryHelper.RetryFunc(() => ManagementClient.CreateSubscription(subscriptionDescription, ruleDescription), WriteToLog);
             Log(string.Format(CultureInfo.CurrentCulture, SubscriptionCreated, subscription.Name, topicDescription.Path));
             OnCreated(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType));
             return subscription;
@@ -208,7 +214,7 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            var subscription = RetryHelper.RetryFunc(() => NamespaceManager.UpdateSubscription(subscriptionDescription), WriteToLog);
+            var subscription = RetryHelper.RetryFunc(() => ManagementClient.UpdateSubscription(subscriptionDescription), WriteToLog);
             Log(string.Format(CultureInfo.CurrentCulture, SubscriptionUpdated, subscription.Name, topicDescription.Path));
             //OnCreate(new ServiceBusHelperEventArgs(new SubscriptionWrapper(subscription, topicDescription), EntityType.Subscription));
             return subscription;
@@ -238,7 +244,7 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
             }
-            await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name), WriteToLog);
+            await RetryHelper.RetryActionAsync(() => ManagementClient.DeleteSubscriptionAsync(subscriptionDescription.TopicPath, subscriptionDescription.Name), WriteToLog);
             Log(string.Format(CultureInfo.CurrentCulture, SubscriptionDeleted, subscriptionDescription.Name, subscriptionDescription.TopicPath));
             OnDeleted(subscriptionDescription);
         }

@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
@@ -25,6 +27,7 @@
 
 #nullable enable
 using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.ServiceBus.Helpers;
@@ -1330,7 +1333,21 @@ namespace ServiceBusExplorer.Controls
 
                 Cursor.Current = Cursors.WaitCursor;
                 var brokeredMessages = new List<BrokeredMessage>();
-                if (peek)
+                if (!queueDescription.RequiresSession)
+                {
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                        queueDescription.Path,
+                        null,
+                        SubQueue.None,
+                        peek,
+                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector);
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheQueue : MessagesReceivedFromTheQueue,
+                        brokeredMessages.Count, queueDescription.Path));
+                }
+                else if (peek)
                 {
                     var totalRetrieved = 0;
 
@@ -1425,7 +1442,7 @@ namespace ServiceBusExplorer.Controls
                     MainForm.SingletonMainForm.ReceiveTimeout,
                     queueDescription.Path));
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException) when (queueDescription.RequiresSession)
             {
                 ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
@@ -1553,7 +1570,21 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
 
                 var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
-                if (peek)
+                if (!queueDescription.RequiresSession)
+                {
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                        queueDescription.Path,
+                        null,
+                        SubQueue.DeadLetter,
+                        peek,
+                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector);
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheDeadletterQueue : MessagesReceivedFromTheDeadletterQueue,
+                        brokeredMessages.Count, queueDescription.Path));
+                }
+                else if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
@@ -1659,7 +1690,7 @@ namespace ServiceBusExplorer.Controls
             {
                 writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException) when (queueDescription.RequiresSession)
             {
                 ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
@@ -1690,7 +1721,21 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
 
                 var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Path);
-                if (peek)
+                if (!queueDescription.RequiresSession)
+                {
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                        queueDescription.Path,
+                        null,
+                        SubQueue.TransferDeadLetter,
+                        peek,
+                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector);
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheTransferDeadletterQueue : MessagesReceivedFromTheTransferDeadletterQueue,
+                        brokeredMessages.Count, queueDescription.Path));
+                }
+                else if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
@@ -1796,7 +1841,7 @@ namespace ServiceBusExplorer.Controls
             {
                 writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException) when (queueDescription.RequiresSession)
             {
                 ReadTransferDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
@@ -2440,7 +2485,7 @@ namespace ServiceBusExplorer.Controls
                 finally
                 {
                     queueDescription.Status = EntityStatus.Active;
-                    queueDescription = serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                    queueDescription = serviceBusHelper.ManagementClient.UpdateQueue(queueDescription);
                     InitializeData();
                 }
             }
