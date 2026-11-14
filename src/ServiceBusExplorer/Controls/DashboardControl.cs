@@ -1,3 +1,6 @@
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
 using Microsoft.ServiceBus.Messaging;
 using System;
 using System.Collections.Generic;

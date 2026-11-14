@@ -1,4 +1,8 @@
-﻿#region Copyright
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -1635,7 +1639,7 @@ namespace ServiceBusExplorer.Controls
                 finally
                 {
                     subscriptionWrapper.SubscriptionDescription.Status = EntityStatus.Active;
-                    subscriptionWrapper.SubscriptionDescription = serviceBusHelper.NamespaceManager.UpdateSubscription(subscriptionWrapper.SubscriptionDescription);
+                    subscriptionWrapper.SubscriptionDescription = serviceBusHelper.ManagementClient.UpdateSubscription(subscriptionWrapper.SubscriptionDescription);
                     InitializeData();
                 }
             }

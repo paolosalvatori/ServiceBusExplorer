@@ -1,4 +1,5 @@
-﻿using System;
+﻿using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
