@@ -21,7 +21,7 @@
 
 #region Using Directives
 
-using Microsoft.ServiceBus.Messaging;
+using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 
 #endregion
 

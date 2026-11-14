@@ -28,7 +28,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ServiceBusExplorer.Utilities.Helpers;
-using Microsoft.ServiceBus.Messaging;
+using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 using Newtonsoft.Json;
 
 #endregion

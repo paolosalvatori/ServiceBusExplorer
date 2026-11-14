@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -137,7 +139,7 @@ namespace ServiceBusExplorer.Controls
             {
                 btnCreateDelete.Text = RemoveText;
                 btnCancel.Enabled = false;
-                txtCreatedAt.Text = ruleWrapper.RuleDescription.CreatedAt.ToString(CultureInfo.CurrentCulture);
+                txtCreatedAt.Text = "Not available from the administration SDK";
                 txtCreatedAt.BackColor = SystemColors.Window;
                 checkBoxDefault.Checked = ruleWrapper.RuleDescription.Name == RuleDescription.DefaultRuleName;
                 checkBoxDefault.Enabled = false;

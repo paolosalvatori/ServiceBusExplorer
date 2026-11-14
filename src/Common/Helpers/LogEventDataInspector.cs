@@ -30,7 +30,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Microsoft.ServiceBus.Messaging;
+using EventData = ServiceBusExplorer.Helpers.EventDataEnvelope;
 
 #endregion
 
