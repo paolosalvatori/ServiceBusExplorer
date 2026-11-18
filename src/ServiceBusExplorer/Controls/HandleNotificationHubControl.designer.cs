@@ -1,4 +1,4 @@
-namespace ServiceBusExplorer.Controls
+﻿namespace ServiceBusExplorer.Controls
 {
     partial class HandleNotificationHubControl
     {
@@ -565,11 +565,11 @@ namespace ServiceBusExplorer.Controls
             this.btnClearGcmNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClearGcmNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearGcmNotification.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnClearGcmNotification.Location = new System.Drawing.Point(216, 124);
+            this.btnClearGcmNotification.Location = new System.Drawing.Point(182, 46);
             this.btnClearGcmNotification.Name = "btnClearGcmNotification";
-            this.btnClearGcmNotification.Size = new System.Drawing.Size(72, 24);
+            this.btnClearGcmNotification.Size = new System.Drawing.Size(106, 24);
             this.btnClearGcmNotification.TabIndex = 4;
-            this.btnClearGcmNotification.Text = "Clear";
+            this.btnClearGcmNotification.Text = "Remove legacy";
             this.btnClearGcmNotification.UseVisualStyleBackColor = false;
             this.btnClearGcmNotification.Click += new System.EventHandler(this.btnClearGcmNotification_Click);
             // 
@@ -578,7 +578,7 @@ namespace ServiceBusExplorer.Controls
             this.txtGcmEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGcmEndpoint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 108);
+            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 100);
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
             this.txtGcmEndpoint.Size = new System.Drawing.Size(272, 20);
@@ -586,11 +586,12 @@ namespace ServiceBusExplorer.Controls
             // 
             // lblGcmEndpoint
             // 
-            this.lblGcmEndpoint.AutoSize = true;
+            this.lblGcmEndpoint.AutoSize = false;
+            this.lblGcmEndpoint.AutoEllipsis = true;
             this.lblGcmEndpoint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 92);
+            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 80);
             this.lblGcmEndpoint.Name = "lblGcmEndpoint";
-            this.lblGcmEndpoint.Size = new System.Drawing.Size(79, 13);
+            this.lblGcmEndpoint.Size = new System.Drawing.Size(272, 16);
             this.lblGcmEndpoint.TabIndex = 2;
             this.lblGcmEndpoint.Text = "FCM Endpoint:";
             // 
@@ -602,7 +603,7 @@ namespace ServiceBusExplorer.Controls
             this.lblGcmApiKey.Name = "lblGcmApiKey";
             this.lblGcmApiKey.Size = new System.Drawing.Size(75, 13);
             this.lblGcmApiKey.TabIndex = 0;
-            this.lblGcmApiKey.Text = "FCM v1 JSON / legacy key:";
+            this.lblGcmApiKey.Text = "Legacy key (blank keeps existing):";
             // 
             // txtGcmApiKey
             // 
@@ -611,10 +612,10 @@ namespace ServiceBusExplorer.Controls
             this.txtGcmApiKey.BackColor = System.Drawing.SystemColors.Window;
             this.txtGcmApiKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
-            this.txtGcmApiKey.Multiline = true;
+            this.txtGcmApiKey.UseSystemPasswordChar = true;
             this.txtGcmApiKey.Name = "txtGcmApiKey";
             this.txtGcmApiKey.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 36);
+            this.txtGcmApiKey.Size = new System.Drawing.Size(160, 20);
             this.txtGcmApiKey.TabIndex = 1;
             // 
             // grouperWindowsPhoneNotificationSettings
@@ -2851,12 +2852,12 @@ namespace ServiceBusExplorer.Controls
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGcmJsonPayload.BackColor = System.Drawing.SystemColors.Window;
             this.txtGcmJsonPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtGcmJsonPayload.Location = new System.Drawing.Point(16, 32);
+            this.txtGcmJsonPayload.Location = new System.Drawing.Point(16, 60);
             this.txtGcmJsonPayload.MaxLength = 0;
             this.txtGcmJsonPayload.Multiline = true;
             this.txtGcmJsonPayload.Name = "txtGcmJsonPayload";
             this.txtGcmJsonPayload.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtGcmJsonPayload.Size = new System.Drawing.Size(904, 186);
+            this.txtGcmJsonPayload.Size = new System.Drawing.Size(904, 158);
             this.txtGcmJsonPayload.TabIndex = 0;
             this.txtGcmJsonPayload.TextChanged += new System.EventHandler(this.txtGcmJsonPayload_TextChanged);
             // 
@@ -2913,7 +2914,7 @@ namespace ServiceBusExplorer.Controls
             this.grouperGcmTagExpression.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperGcmTagExpression.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmTagExpression.BorderThickness = 1F;
-            this.grouperGcmTagExpression.Controls.Add(this.cboGcmSendFormat);
+            this.grouper1.Controls.Add(this.cboGcmSendFormat);
             this.grouperGcmTagExpression.Controls.Add(this.txtGcmTagExpression);
             this.grouperGcmTagExpression.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGcmTagExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
@@ -2948,14 +2949,13 @@ namespace ServiceBusExplorer.Controls
             // 
             // cboGcmSendFormat
             // 
-            this.cboGcmSendFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboGcmSendFormat.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
             this.cboGcmSendFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboGcmSendFormat.FormattingEnabled = true;
             this.cboGcmSendFormat.Items.AddRange(new object[] {
             "FCM HTTP v1",
             "Legacy FCM"});
-            this.cboGcmSendFormat.Location = new System.Drawing.Point(16, 94);
+            this.cboGcmSendFormat.Location = new System.Drawing.Point(16, 30);
             this.cboGcmSendFormat.Name = "cboGcmSendFormat";
             this.cboGcmSendFormat.Size = new System.Drawing.Size(387, 21);
             this.cboGcmSendFormat.TabIndex = 1;

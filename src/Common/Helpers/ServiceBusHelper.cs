@@ -1,4 +1,4 @@
-#region Copyright
+﻿#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -829,7 +829,9 @@ namespace ServiceBusExplorer
                         {
                             RetryOptions = new AzureNotificationHubs.NotificationHubRetryOptions
                             {
-                                MaxRetries = Math.Max(0, Math.Min(100, RetryHelper.RetryCount))
+                                // SDK 4.2 uses exponential backoff (1s base, 60s cap).
+                                // Intentionally use its defaults: the old min/max/delta algorithm has no exact mapping.
+                                MaxRetries = Math.Max(0, Math.Min(MaxNotificationHubRetries, RetryHelper.RetryCount))
                             }
                         };
                         notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(NormalizeNotificationHubConnectionString(serviceBusNamespace.ConnectionString), notificationHubSettings);
@@ -4595,6 +4597,8 @@ namespace ServiceBusExplorer
         /// Keeps only the connection string fields supported by the Notification Hubs SDK, dropping
         /// Service Bus specific settings such as TransportType that the SDK would fold into the key.
         /// </summary>
+        private const int MaxNotificationHubRetries = 100; // SDK-supported inclusive upper bound.
+
         public static string NormalizeNotificationHubConnectionString(string connectionString)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

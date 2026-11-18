@@ -17,7 +17,7 @@ namespace ServiceBusExplorer.Tests
         {
             var registration = new FcmV1TemplateRegistrationDescription("token", "{}") { TemplateName = "old" };
 
-            HandleNotificationHubControl.UpdateFcmTemplateProperty(registration, "TemplateName", name).Should().BeTrue();
+            HandleNotificationHubControl.UpdateTemplateProperty(registration, "TemplateName", name).Should().BeTrue();
 
             registration.TemplateName.Should().Be(name);
             registration.FcmV1RegistrationId.Should().Be("token");
@@ -34,7 +34,7 @@ namespace ServiceBusExplorer.Tests
                 : new FcmTemplateRegistrationDescription("token", "{}");
             const string body = "{\"data\":{\"message\":\"$(message)\"}}";
 
-            HandleNotificationHubControl.UpdateFcmTemplateProperty(registration, "BodyTemplate", body).Should().BeTrue();
+            HandleNotificationHubControl.UpdateTemplateProperty(registration, "BodyTemplate", body).Should().BeTrue();
 
             var actual = useV1 ? ((FcmV1TemplateRegistrationDescription)registration).BodyTemplate.Value
                 : ((FcmTemplateRegistrationDescription)registration).BodyTemplate.Value;
@@ -45,10 +45,10 @@ namespace ServiceBusExplorer.Tests
         public void UnsupportedEdits_DoNotMarkRegistrationChanged()
         {
             var template = new FcmV1TemplateRegistrationDescription("token", "{}");
-            HandleNotificationHubControl.UpdateFcmTemplateProperty(template, "BodyTemplate", 42).Should().BeFalse();
-            HandleNotificationHubControl.UpdateFcmTemplateProperty(template, "TemplateName", 42).Should().BeFalse();
-            HandleNotificationHubControl.UpdateFcmTemplateProperty(template, "Unknown", "value").Should().BeFalse();
-            HandleNotificationHubControl.UpdateFcmTemplateProperty(new FcmV1RegistrationDescription("token"), "TemplateName", "name")
+            HandleNotificationHubControl.UpdateTemplateProperty(template, "BodyTemplate", 42).Should().BeFalse();
+            HandleNotificationHubControl.UpdateTemplateProperty(template, "TemplateName", 42).Should().BeFalse();
+            HandleNotificationHubControl.UpdateTemplateProperty(template, "Unknown", "value").Should().BeFalse();
+            HandleNotificationHubControl.UpdateTemplateProperty(new FcmV1RegistrationDescription("token"), "TemplateName", "name")
                 .Should().BeFalse();
             template.BodyTemplate.Value.Should().Be("{}");
         }
