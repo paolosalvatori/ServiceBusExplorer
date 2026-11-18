@@ -1,4 +1,7 @@
-﻿#region Copyright
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -22,6 +25,7 @@
 #region Using Directives
 
 using FastColoredTextBoxNS;
+using Azure.Messaging.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
@@ -385,7 +389,6 @@ namespace ServiceBusExplorer.Forms
                     {
                         bodyType = BodyType.Stream;
                     }
-                    var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
                     var messages = brokeredMessages != null ?
                                     new List<BrokeredMessage>(brokeredMessages) :
                                     new List<BrokeredMessage>(new[] { brokeredMessage });
@@ -397,11 +400,11 @@ namespace ServiceBusExplorer.Forms
                         if (bodyType == BodyType.Wcf)
                         {
                             var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                             new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
+                                             new Uri(serviceBusHelper.NamespaceUri, form.Path) :
                                              new UriBuilder
                                              {
                                                  Host = serviceBusHelper.NamespaceUri.Host,
-                                                 Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
+                                                 Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{form.Path}",
                                                  Scheme = "sb"
                                              }.Uri;
                             outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text, messagesSplitContainer.Visible),
@@ -506,7 +509,6 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
-                    var sent = outboundMessages.Count;
                     var stopwatch = new Stopwatch();
 
                     stopwatch.Start();
@@ -515,7 +517,7 @@ namespace ServiceBusExplorer.Forms
                     {
                         var messageHandler = CreateDeadLetterMessageHandler();
 
-                        var result = await messageHandler.MoveMessages(messageSender,
+                        var result = await messageHandler.MoveMessages(form.Path,
                             sequenceNumbers,
                             transferDLQ: queueType == QueueType.TransferDeadletter,
                             outboundMessages);
@@ -535,12 +537,12 @@ namespace ServiceBusExplorer.Forms
                         else
                         {
                             writeToLog(string.Format(MessageMovedMessage, result.DeletedSequenceNumbers.Count,
-                                messageSender.Path, stopwatch.ElapsedMilliseconds));
+                                form.Path, stopwatch.ElapsedMilliseconds));
                         }
 
                         if (null != queueDescription)
                         {
-                            if (!messageSender.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
+                            if (!form.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
                             }
@@ -553,11 +555,23 @@ namespace ServiceBusExplorer.Forms
                     else
                     {
                         var messageIndex = 0;
+                        var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+                        if (!serviceBusHelper2.IsEntra)
+                        {
+                            serviceBusHelper2.ConnectionString = ServiceBusHelper.GetDataPlaneConnectionString(
+                                serviceBusHelper.ConnectionString,
+                                serviceBusHelper.IsEmulator);
+                        }
+                        var serviceBusClient = serviceBusHelper2.CreateServiceBusClient();
+                        ServiceBusSender messageSender = null;
                         try
                         {
+                            messageSender = serviceBusClient.CreateSender(form.Path);
                             while (messageIndex < outboundMessages.Count)
                             {
-                                await messageSender.SendAsync(outboundMessages[messageIndex++]);
+                                var serviceBusMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[messageIndex]);
+                                await messageSender.SendMessageAsync(serviceBusMessage);
+                                messageIndex++;
                             }
                         }
                         catch (Exception exception)
@@ -568,12 +582,26 @@ namespace ServiceBusExplorer.Forms
                             MessageBox.Show(messageText, "Not all selected messages were sent",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
+                        finally
+                        {
+                            try
+                            {
+                                if (messageSender != null)
+                                {
+                                    await messageSender.DisposeAsync();
+                                }
+                            }
+                            finally
+                            {
+                                await serviceBusClient.DisposeAsync();
+                            }
+                        }
 
                         stopwatch.Stop();
-                        writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
+                        writeToLog(string.Format(MessageSentMessage, messageIndex, form.Path, stopwatch.ElapsedMilliseconds));
                     }
 
-                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(messageSender.Path);
+                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(form.Path);
 
                     if (brokeredMessages != null)
                     {
