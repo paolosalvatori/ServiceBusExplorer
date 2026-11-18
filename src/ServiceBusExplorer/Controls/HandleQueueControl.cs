@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
@@ -2440,7 +2442,7 @@ namespace ServiceBusExplorer.Controls
                 finally
                 {
                     queueDescription.Status = EntityStatus.Active;
-                    queueDescription = serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                    queueDescription = serviceBusHelper.ManagementClient.UpdateQueue(queueDescription);
                     InitializeData();
                 }
             }
