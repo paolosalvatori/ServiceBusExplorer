@@ -158,6 +158,8 @@ namespace ServiceBusExplorer.Controls
         private readonly EventHubConsumerClient eventHubMetadataClient;
         private readonly List<Task> partitionReadTasks = new List<Task>();
         private Task stopListenerTask = Task.CompletedTask;
+        private bool shuttingDown;
+        private readonly ConcurrentBag<EventHubCheckpointBatch> checkpointBatches = new ConcurrentBag<EventHubCheckpointBatch>();
         private bool clearing;
         private bool cleared;
         private readonly string iotHubConnectionString;
@@ -191,6 +193,7 @@ namespace ServiceBusExplorer.Controls
             InitializeComponent();
             InitializeControls();
             Disposed += ListenerControl_Disposed;
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
         }
 
         public PartitionListenerControl(WriteToLogDelegate writeToLog,
@@ -215,6 +218,7 @@ namespace ServiceBusExplorer.Controls
             InitializeComponent();
             InitializeControls();
             Disposed += ListenerControl_Disposed;
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
         }
         #endregion
 
@@ -225,7 +229,11 @@ namespace ServiceBusExplorer.Controls
             {
                 // The metadata client is shared by every partition reader and remains open across Stop/Start.
                 var readers = partitionReadTasks.ToArray();
-                try { await StopListenerAsync(); }
+                try
+                {
+                    await ShutdownAsync();
+                    ListenerShutdownCoordinator.Shared.Unregister(ShutdownAsync);
+                }
                 finally
                 {
                     if (eventHubMetadataClient != null)
@@ -822,6 +830,12 @@ namespace ServiceBusExplorer.Controls
         // ReSharper disable once FunctionComplexityOverflow
         private async void btnStart_Click(object sender, EventArgs e)
         {
+            if (shuttingDown || !stopListenerTask.IsCompleted) return;
+            if (stopListenerTask.IsFaulted)
+            {
+                try { await StopListenerAsync(); }
+                catch (Exception ex) { HandleException(ex); return; }
+            }
             if (string.Compare(btnStart.Text, Start, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 if (startLog != null && checkBoxLogging.Checked)
@@ -950,6 +964,7 @@ namespace ServiceBusExplorer.Controls
             var checkpointInterval = TimeSpan.FromSeconds(5);
             var checkpoints = new EventHubCheckpointBatch(maxBatchSize, checkpointInterval,
                 lease => EventProcessorCheckpointHelper.CheckpointAsync(ns, eventHub, consumerGroupName, lease, lease.Offset));
+            checkpointBatches.Add(checkpoints);
             try
             {
                 var readOptions = new ReadEventOptions
@@ -1124,7 +1139,7 @@ namespace ServiceBusExplorer.Controls
                         if (!IsDisposed)
                         {
                             btnStart.Text = Start;
-                            btnStart.Enabled = true;
+                            btnStart.Enabled = !shuttingDown;
                         }
                     }
                 }));
@@ -1345,6 +1360,13 @@ namespace ServiceBusExplorer.Controls
             GetPartitionRuntimeInformation();
         }
 
+        internal Task ShutdownAsync()
+        {
+            shuttingDown = true;
+            if (!IsDisposed) Enabled = false;
+            return StopListenerAsync();
+        }
+
         private Task StopListenerAsync()
         {
             // All callers run on the UI thread; overlapping close/failure/stop share cleanup.
@@ -1363,8 +1385,12 @@ namespace ServiceBusExplorer.Controls
             if (partitionReadTasks.Count > 0)
             {
                 await Task.WhenAll(partitionReadTasks);
-                partitionReadTasks.Clear();
             }
+            // Readers have finished: retry any final flush that failed, before persistence or disposal.
+            // Keep pending batches registered if this fails so a subsequent close can retry safely.
+            await Task.WhenAll(checkpointBatches.Select(batch => batch.FlushAsync(checkpointEnabled)));
+            partitionReadTasks.Clear();
+            while (checkpointBatches.TryTake(out _)) { }
             if (stopLog != null)
             {
                 await stopLog();

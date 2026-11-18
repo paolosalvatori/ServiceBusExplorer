@@ -240,6 +240,7 @@ namespace ServiceBusExplorer.Forms
         private bool saveMessageToFile = true;
         private bool savePropertiesToFile = true;
         private bool saveCheckpointsToFile = true;
+        private bool closeInProgress;
         private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
         private readonly string argumentName;
         private readonly string argumentValue;
@@ -7134,9 +7135,31 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cancellationTokenSource.Cancel(false);
+            if (ListenerShutdownCoordinator.Shared.CanClose) return;
+            // Cancel this close synchronously; an async-void handler alone cannot delay FormClosing.
+            e.Cancel = true;
+            if (closeInProgress) return;
+            closeInProgress = true;
+            Enabled = false;
+            try
+            {
+                cancellationTokenSource.Cancel(false);
+                await ListenerShutdownCoordinator.Shared.StopAndPersistAsync(PersistOnClose);
+                // Post the second close even when all awaits completed synchronously, avoiding reentrancy.
+                if (!IsDisposed) BeginInvoke(new Action(Close));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                if (!IsDisposed) Enabled = true;
+            }
+            finally { closeInProgress = false; }
+        }
+
+        private void PersistOnClose()
+        {
             if (saveMessageToFile)
             {
                 MessageAndPropertiesHelper.WriteMessage(MessageText);

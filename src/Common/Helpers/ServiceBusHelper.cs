@@ -1799,6 +1799,7 @@ namespace ServiceBusExplorer
                 throw new ArgumentNullException(CancellationTokenSourceCannotBeNull);
             }
 
+            var cancellationToken = cancellationTokenSource.Token;
             var eventDataCircularList = new CircularList<EventData>(eventDataTemplateEnumerable);
 
             long messagesSent = 0;
@@ -1814,11 +1815,11 @@ namespace ServiceBusExplorer
                 if (sendBatch && batchSize > 1)
                 {
                     var more = true;
-                    while (!cancellationTokenSource.Token.IsCancellationRequested && more)
+                    while (!cancellationToken.IsCancellationRequested && more)
                     {
                         var eventDataList = new List<EventData>();
                         var messageNumberList = new List<long>();
-                        while (!cancellationTokenSource.Token.IsCancellationRequested &&
+                        while (!cancellationToken.IsCancellationRequested &&
                                messageNumberList.Count < batchSize && more)
                         {
                             messageNumber = getMessageNumber();
@@ -1876,7 +1877,7 @@ namespace ServiceBusExplorer
                                                                                        {
                                                                                            updateStatistics(count, elapsed, DirectionType.Send);
                                                                                        }
-                                                                                   });
+                                                                                   }, cancellationToken);
                                 }
                             }
                             catch
@@ -1893,14 +1894,14 @@ namespace ServiceBusExplorer
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
 
-                            await Task.Delay(thinkTime);
+                            await Task.Delay(thinkTime, cancellationToken).ConfigureAwait(false);
                         }
                     }
                 }
                 else
                 {
                     while ((messageNumber = getMessageNumber()) < messageCount &&
-                       !cancellationTokenSource.Token.IsCancellationRequested)
+                       !cancellationToken.IsCancellationRequested)
                     {
                         long elapsedMilliseconds = 0;
                         var number = messageNumber;
@@ -1929,9 +1930,9 @@ namespace ServiceBusExplorer
                                                                       taskId,
                                                                       logging,
                                                                       verbose,
-                                                                      partitionId);
+                                                                      partitionId, cancellationToken);
                         },
-                        writeToLog);
+                        writeToLog, cancellationToken);
                         messagesSent++;
                         if (elapsedMilliseconds > maximumSendTime)
                         {
@@ -1950,10 +1951,13 @@ namespace ServiceBusExplorer
                         {
                             WriteToLog(string.Format(SleepingFor, thinkTime));
 
-                            await Task.Delay(thinkTime);
+                            await Task.Delay(thinkTime, cancellationToken).ConfigureAwait(false);
                         }
                     }
                 }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
             }
             catch (ServerBusyException ex)
             {
@@ -2016,7 +2020,8 @@ namespace ServiceBusExplorer
                                                    bool logging,
                                                    bool verbose,
                                                    string partitionId,
-                                                   Action<int, long> acknowledged)
+                                                   Action<int, long> acknowledged,
+                                                   CancellationToken cancellationToken)
         {
             if (eventHubClient == null)
             {
@@ -2038,6 +2043,7 @@ namespace ServiceBusExplorer
                 var index = 0;
                 while (index < eventDataList.Count)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     var partitionKey = string.IsNullOrWhiteSpace(partitionId)
                         ? eventDataList[index].PartitionKey
                         : null;
@@ -2065,9 +2071,9 @@ namespace ServiceBusExplorer
                     {
                         // Time only the successful SDK send, not conversion, failed attempts or retry delays.
                         stopwatch.Restart();
-                        try { await eventHubClient.SendAsync(group, options).ConfigureAwait(false); }
+                        try { await eventHubClient.SendAsync(group, options, cancellationToken).ConfigureAwait(false); }
                         finally { stopwatch.Stop(); }
-                    }, writeToLog).ConfigureAwait(false);
+                    }, writeToLog, cancellationToken).ConfigureAwait(false);
                     acknowledged(end - index, stopwatch.ElapsedMilliseconds);
 
                     if (logging)
@@ -2133,7 +2139,8 @@ namespace ServiceBusExplorer
                                               int taskId,
                                               bool logging,
                                               bool verbose,
-                                              string partitionId)
+                                              string partitionId,
+                                              CancellationToken cancellationToken)
         {
             if (eventHubClient == null)
             {
@@ -2160,8 +2167,9 @@ namespace ServiceBusExplorer
                     options.PartitionKey = eventData.PartitionKey;
                 }
 
+                cancellationToken.ThrowIfCancellationRequested();
                 stopwatch.Start();
-                await eventHubClient.SendAsync(new[] { sdkEventData }, options);
+                await eventHubClient.SendAsync(new[] { sdkEventData }, options, cancellationToken).ConfigureAwait(false);
                 stopwatch.Stop();
 
                 if (logging)

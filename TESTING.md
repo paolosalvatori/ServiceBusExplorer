@@ -91,3 +91,11 @@ Additional Windows/live Azure checks: grow the sender count after a run, repeat 
 Retained #908's complete `FcmTemplateRegistrationTests`, `NotificationHubConnectionStringTests`, and `NotificationHubReviewRegressionTests` (23 cases). They cover both legacy FCM/v1 body writebacks and modification reporting; template names and creation; preserving unedited credentials; removing only the selected credential; replacement values and legacy custom endpoints; and connection normalization.
 
 Manual Windows/live Azure validation remains required for replacement-only credential inputs, loading v1 JSON, legacy/v1 send selection, saving and reloading both template types, and explicit per-credential removal. These tests were not performed in the Linux environment.
+
+### Copilot follow-up: retry, cancellation, and application close
+
+- `EventHubSendCancellationTests` exercises single and grouped sends against SDK 5.12.2 exceptions: permanent failures stop after one attempt; transient failures can recover. It also covers cancellation during an SDK send, before later groups, retry backoff, long think time, and before starting (13 cases).
+- `ListenerShutdownCoordinatorTests` verifies final checkpoint completion before persistence, joining repeated close requests, waiting for every listener even when one fails, retrying a failed close, and disposal unregistering while a flush is pending, and propagation of checkpoint-file write failures (5 cases).
+- The existing two-argument retry API and its synchronization-context behavior remain intact. Event Hubs sends use the cancellation-aware overload.
+
+Manual Windows/live Azure checks still required: close the app with partial checkpoint batches, repeat Close while readers stop, restart to verify saved offsets, and exercise checkpoint/close errors. Stop/Cancel a sender during a slow network send, retry delay, and long think time; verify no later partition-key group is sent. No manual UI/live Azure results are claimed by the automated tests.

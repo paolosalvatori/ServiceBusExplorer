@@ -310,27 +310,13 @@ namespace ServiceBusExplorer.Helpers
         #region Private Static Methods
         private static void WriteFile(string path, string content)
         {
-            try
+            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(content))
             {
-                if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(content))
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-                using (var writer = new StreamWriter(path))
-                {
-                    writer.Write(content);
-                    writer.Flush();
-                }
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
-            {
-            }
+            // Let close report a persistence failure and remain open for a retry.
+            File.WriteAllText(path, content);
         }
         #endregion
 
