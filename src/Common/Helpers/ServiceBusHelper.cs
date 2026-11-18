@@ -1834,60 +1834,50 @@ namespace ServiceBusExplorer
                         if (messageNumberList.Count > 0)
                         {
                             long elapsedMilliseconds = 0;
-                            // ReSharper disable once ImplicitlyCapturedClosure
-                            await RetryHelper.RetryActionAsync(async () =>
+                            try
+                            {
+                                for (var i = 0; i < messageNumberList.Count; i++)
+                                {
+                                    eventDataList.Add(eventDataInspector != null ?
+                                                      eventDataInspector.BeforeSendMessage(eventDataCircularList.Next.Clone()) :
+                                                      eventDataCircularList.Next.Clone());
+                                    if ((i % batchSize) == 0)
+                                    {
+                                        partitionKey = Guid.NewGuid().ToString();
+                                    }
+                                    if (addMessageNumber)
+                                    {
+                                        eventDataList[i].Properties[MessageNumber] = messageNumberList[i];
+                                    }
+                                    if (updatePartitionKey)
+                                    {
+                                        eventDataList[i].PartitionKey = partitionKey;
+                                    }
+                                    if (noPartitionKey || !partitionIdIsNull)
+                                    {
+                                        eventDataList[i].PartitionKey = null;
+                                    }
+                                }
+                                if (messageNumberList.Count > 0)
+                                {
+                                    elapsedMilliseconds = await SendEventDataBatch(eventHubClient,
+                                                                                   eventDataList,
+                                                                                   messageNumberList,
+                                                                                   taskId,
+                                                                                   logging,
+                                                                                   verbose,
+                                                                                   partitionId);
+                                }
+                            }
+                            catch
                             {
                                 foreach (var eventData in eventDataList)
                                 {
                                     eventData.Dispose();
                                 }
                                 eventDataList.Clear();
-                                try
-                                {
-                                    for (var i = 0; i < messageNumberList.Count; i++)
-                                    {
-                                        eventDataList.Add(eventDataInspector != null ?
-                                                          eventDataInspector.BeforeSendMessage(eventDataCircularList.Next.Clone()) :
-                                                          eventDataCircularList.Next.Clone());
-                                        if ((i % batchSize) == 0)
-                                        {
-                                            partitionKey = Guid.NewGuid().ToString();
-                                        }
-                                        if (addMessageNumber)
-                                        {
-                                            eventDataList[i].Properties[MessageNumber] = messageNumberList[i];
-                                        }
-                                        if (updatePartitionKey)
-                                        {
-                                            eventDataList[i].PartitionKey = partitionKey;
-                                        }
-                                        if (noPartitionKey || !partitionIdIsNull)
-                                        {
-                                            eventDataList[i].PartitionKey = null;
-                                        }
-                                    }
-                                    if (messageNumberList.Count > 0)
-                                    {
-                                        elapsedMilliseconds = await SendEventDataBatch(eventHubClient,
-                                                                                       eventDataList,
-                                                                                       messageNumberList,
-                                                                                       taskId,
-                                                                                       logging,
-                                                                                       verbose,
-                                                                                       partitionId);
-                                    }
-                                }
-                                catch
-                                {
-                                    foreach (var eventData in eventDataList)
-                                    {
-                                        eventData.Dispose();
-                                    }
-                                    eventDataList.Clear();
-                                    throw;
-                                }
-                            },
-                            writeToLog);
+                                throw;
+                            }
                             messagesSent += eventDataList.Count;
                             if (elapsedMilliseconds > maximumSendTime)
                             {
@@ -2080,7 +2070,11 @@ namespace ServiceBusExplorer
                         options.PartitionKey = partitionKey;
                     }
 
-                    await eventHubClient.SendAsync(sdkEventDataList.Skip(index).Take(end - index), options);
+                    // Retry only the current group. Earlier acknowledged groups must
+                    // never be replayed when a later partition-key group fails.
+                    var group = sdkEventDataList.Skip(index).Take(end - index).ToArray();
+                    await RetryHelper.RetryActionAsync(
+                        () => eventHubClient.SendAsync(group, options), writeToLog);
                     index = end;
                 }
                 stopwatch.Stop();

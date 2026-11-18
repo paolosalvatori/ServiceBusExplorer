@@ -7461,9 +7461,9 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group",
-                                                             new List<string> { "IoT Hub Connection String", "Endpoint", "Consumer Group" },
-                                                             new List<string> { null, "messages/events", "$Default" },
+                using (var parameterForm = new ParameterForm("IoT Hub: use the Event Hubs-compatible endpoint from Built-in endpoints",
+                                                             new List<string> { "Event Hubs-compatible connection string", "Event Hub-compatible name", "Consumer Group" },
+                                                             new List<string> { null, null, "$Default" },
                                                              new List<bool> { false, false, false }))
                 {
                     if (parameterForm.ShowDialog() != DialogResult.OK)
@@ -7472,12 +7472,12 @@ namespace ServiceBusExplorer.Forms
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[0]))
                     {
-                        WriteToLog("The IoT Hub Connection string parameter cannot be null.");
+                        WriteToLog("Copy the Event Hubs-compatible connection string from IoT Hub > Built-in endpoints.");
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[1]))
                     {
-                        WriteToLog("The Endpoint parameter cannot be null.");
+                        WriteToLog("Enter the Event Hub-compatible name from IoT Hub > Built-in endpoints (not messages/events).");
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[2]))
@@ -7485,6 +7485,8 @@ namespace ServiceBusExplorer.Forms
                         WriteToLog("The Consumer Group parameter cannot be null.");
                         return;
                     }
+                    EventHubConnectionValidation.ValidateIoTHubEndpoint(
+                        parameterForm.ParameterValues[0], parameterForm.ParameterValues[1]);
                     var form = new ContainerForm(this,
                                                  parameterForm.ParameterValues[0],
                                                  parameterForm.ParameterValues[1],

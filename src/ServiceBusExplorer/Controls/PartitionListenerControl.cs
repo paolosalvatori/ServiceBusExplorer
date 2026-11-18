@@ -229,6 +229,15 @@ namespace ServiceBusExplorer.Controls
 
         private async Task LoadPartitionPropertiesAsync(EventHubConsumerClient client, IEnumerable<string> partitionIds)
         {
+            foreach (var properties in await FetchPartitionPropertiesAsync(client, partitionIds).ConfigureAwait(false))
+            {
+                partitionRuntumeInformationList.Add(properties);
+            }
+        }
+
+        internal static async Task<ModernPartitionProperties[]> FetchPartitionPropertiesAsync(
+            EventHubConsumerClient client, IEnumerable<string> partitionIds)
+        {
             try
             {
                 var ids = partitionIds;
@@ -237,11 +246,10 @@ namespace ServiceBusExplorer.Controls
                     var properties = await client.GetEventHubPropertiesAsync().ConfigureAwait(false);
                     ids = properties.PartitionIds;
                 }
-                foreach (var partitionId in ids)
-                {
-                    partitionRuntumeInformationList.Add(
-                        await client.GetPartitionPropertiesAsync(partitionId).ConfigureAwait(false));
-                }
+                // Fetch concurrently, then publish on one continuation. Never mutate the
+                // shared list from the individual requests or publish a partial result.
+                return await Task.WhenAll(ids.Select(
+                    partitionId => client.GetPartitionPropertiesAsync(partitionId))).ConfigureAwait(false);
             }
             catch
             {
@@ -975,11 +983,7 @@ namespace ServiceBusExplorer.Controls
 
                     if (receiverEventDataInspector != null)
                     {
-                        eventData = receiverEventDataInspector.AfterReceiveMessage(eventData);
-                        if (eventData == null)
-                        {
-                            throw new InvalidOperationException("The Event Data inspector returned null.");
-                        }
+                        eventData = InspectReceivedEvent(receiverEventDataInspector, eventData, partitionId);
                     }
 
                     if (loggingEnabled)
@@ -1046,10 +1050,80 @@ namespace ServiceBusExplorer.Controls
             catch (Exception ex)
             {
                 HandleException(ex);
+                StopFailedListener(cancellationToken);
             }
             finally
             {
-                await consumerClient.DisposeAsync().ConfigureAwait(false);
+                try
+                {
+                    await consumerClient.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex);
+                    StopFailedListener(cancellationToken);
+                }
+            }
+        }
+
+        internal static EventData InspectReceivedEvent(IEventDataInspector inspector, EventData eventData, string partitionId)
+        {
+            // Preserve service metadata even if the inspector mutates the envelope before failing.
+            var sequenceNumber = eventData.SequenceNumber;
+            var offset = eventData.Offset;
+            try
+            {
+                return inspector.AfterReceiveMessage(eventData) ??
+                    throw new InvalidOperationException("The Event Data inspector returned null.");
+            }
+            catch (Exception ex)
+            {
+                eventData.Dispose();
+                throw new InvalidOperationException(
+                    $"Inspector failed for partition {partitionId}, sequence {sequenceNumber}, offset {offset}. " +
+                    "The listener is stopping. This event was not checkpointed; restart to replay from the last saved checkpoint.", ex);
+            }
+        }
+
+        private void StopFailedListener(CancellationToken readerToken)
+        {
+            // Queue cleanup on the UI thread without awaiting it from the reader:
+            // StopListenerAsync waits for every reader, including this one.
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+            try
+            {
+                BeginInvoke(new Action(async () =>
+                {
+                    if (IsDisposed || cancellationTokenSource == null ||
+                        cancellationTokenSource.Token != readerToken || readerToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    btnStart.Enabled = false;
+                    try
+                    {
+                        await StopListenerAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex);
+                    }
+                    finally
+                    {
+                        if (!IsDisposed)
+                        {
+                            btnStart.Text = Start;
+                            btnStart.Enabled = true;
+                        }
+                    }
+                }));
+            }
+            catch (InvalidOperationException) when (IsDisposed || !IsHandleCreated)
+            {
+                // Disposal already owns listener cleanup.
             }
         }
 

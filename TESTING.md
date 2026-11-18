@@ -60,3 +60,20 @@ Items 3-17 require manual testing with a live Azure Service Bus connection.
 ---
 
 **Legend:** ✅ pass | ❌ fail | ⬜ not tested | 🔄 flaky
+
+## Event Hubs migration regressions (PR #909)
+
+Automated coverage in `ServiceBusExplorer.Tests/Helpers`:
+
+- `EventHubBatchRetryTests`: later partition-key group failures (transient and exhausted retries) never resend an acknowledged earlier group.
+- `PartitionMetadataTests`: requests start concurrently, results retain partition order, and failures wait for outstanding requests before disposal.
+- `EventHubConnectionValidationTests`: compatible IoT endpoint/name acceptance and rejection of HostName strings, messages/events, and mismatched EntityPath without exposing credentials.
+- `RegistrationBodyTemplateTests`: FCM v1 body edits update the registration and report modification; existing template types still work.
+- `PartitionInspectorTests`: thrown/null inspector results preserve original failure position and report the stop/replay policy.
+
+Windows/live Azure checks still required:
+
+1. Edit an FCM v1 template body in the registration property grid, click Update, and reload; verify the edited body persists.
+2. Open a multi-partition listener; verify metadata loads and all partition choices appear.
+3. In IoT Hub > Built-in endpoints, copy the Event Hubs-compatible connection string and name into the IoT listener dialog; verify receiving with the chosen consumer group. Verify an old HostName string or messages/events is rejected with guidance.
+4. Enable checkpointing and use an inspector that throws on a known event (also test returning null). Verify the log identifies the original partition/sequence/offset, the listener stops, the button returns to Start, and the failed event is not checkpointed. Disable the faulty inspector and restart from the saved checkpoint to verify replay. Repeat while stopping/closing the listener to check cleanup races and absence of hangs.
