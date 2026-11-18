@@ -1,4 +1,7 @@
-﻿using System;
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;

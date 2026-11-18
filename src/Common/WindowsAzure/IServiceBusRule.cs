@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+using System.Collections.Generic;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
 
