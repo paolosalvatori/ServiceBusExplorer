@@ -2,57 +2,98 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.Messaging;
 using Azure.Messaging.EventGrid.Namespaces;
+using Azure.ResourceManager.EventGrid;
 using Azure.ResourceManager.EventGrid.Models;
 using EventGridExplorerLibrary;
 using FluentAssertions;
+using ServiceBusExplorer.Utilities.Helpers;
 using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
     public class EventGridLibraryTests
     {
+        private static readonly NamespaceTopicEndpoint Endpoint = new NamespaceTopicEndpoint("store.example.test");
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void GetNamespaceHostname_MissingHostname_ExplainsHowToRecover(string hostname)
+        public void NamespaceTopicEndpoint_MissingHostname_ExplainsHowToRecover(string hostname)
         {
-            Action getHostname = () => EventGridLibrary.GetNamespaceHostname(hostname);
+            Action getHostname = () => new NamespaceTopicEndpoint(hostname);
 
             getHostname.Should().Throw<InvalidOperationException>()
                 .WithMessage("*no topics hostname*refresh the namespace*");
         }
 
         [Fact]
-        public void GetNamespaceHostname_ConfiguredHostname_ReturnsHttpsEndpoint()
+        public void NamespaceTopicEndpoint_ConfiguredHostname_ProducesHttpsAddressAndTreeLabel()
         {
-            EventGridLibrary.GetNamespaceHostname("example.westus-1.eventgrid.azure.net")
-                .Should().Be("https://example.westus-1.eventgrid.azure.net");
+            Endpoint.Address.Should().Be(new Uri("https://store.example.test"));
+            Endpoint.ToString().Should().Be("https://store.example.test");
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
         [InlineData("https://")]
-        [InlineData("relative-host")]
         [InlineData("http://example.westus-1.eventgrid.azure.net")]
-        public async Task GetTopicsAsync_InvalidEndpoint_FailsBeforeAccessingAzure(string hostname)
+        [InlineData("bad host")]
+        [InlineData("store.example.test/topics/orders")]
+        public void NamespaceTopicEndpoint_RejectsMalformedArmHostname(string hostname)
         {
-            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 30, string.Empty, (_, __) => { });
-            typeof(EventGridLibrary).GetField("eventGridControlPlaneClient", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(library, null);
-            Func<Task> getTopics = () => library.GetTopicsAsync("group", "namespace", hostname);
+            Action getEndpoint = () => new NamespaceTopicEndpoint(hostname);
 
-            (await getTopics.Should().ThrowAsync<ArgumentException>())
-                .WithMessage("*valid HTTPS Event Grid namespace endpoint*Refresh*")
+            getEndpoint.Should().Throw<ArgumentException>()
+                .WithMessage("*invalid topics hostname*Refresh*")
                 .Which.ParamName.Should().Be("hostname");
+        }
+
+        [Fact]
+        public async Task GetTopicsAsync_MissingEndpoint_FailsBeforeAnyArmRequest()
+        {
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            Func<Task> refresh = () => library.GetTopicsAsync("group", "store", null);
+
+            await refresh.Should().ThrowAsync<ArgumentNullException>().WithMessage("*namespace endpoint is not loaded*Refresh*");
+            arm.Requests.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetTopicsAsync_LoadsAllPagesOnceAndFetchesKeysDirectlyOnEachListedTopic()
+        {
+            var arm = new EventGridArmTransport();
+            var nextLink = "https://management.azure.com" + EventGridArmTransport.TopicsPath + "?page=2";
+            arm.AddTopicPage(new[] { "orders" }, nextLink);
+            arm.AddKeys("orders-key");
+            arm.AddTopicPage(new[] { "shipments" });
+            arm.AddKeys("shipments-key");
+            var library = new TestLibrary(arm);
+
+            var topics = await library.GetTopicsAsync("group", "store", Endpoint);
+
+            topics.Select(t => t.Data.Name).Should().Equal("orders", "shipments");
+            topics.Select(t => t.Id.Name).Should().Equal("orders", "shipments");
+            arm.AddResponse(new { value = Array.Empty<object>() });
+            await foreach (var page in library.GetEventSubscriptionsAsync(topics[0]).AsPages())
+            {
+                page.Values.Should().BeEmpty();
+            }
+            var path = EventGridArmTransport.TopicsPath;
+            arm.Requests.Select(r => (r.Method, r.Uri.AbsolutePath)).Should().Equal(
+                (HttpMethod.Get, path), (HttpMethod.Post, path + "/orders/listKeys"),
+                (HttpMethod.Get, path), (HttpMethod.Post, path + "/shipments/listKeys"),
+                (HttpMethod.Get, path + "/orders/eventSubscriptions"));
+            arm.Requests[2].Uri.Should().Be(new Uri(nextLink));
         }
 
         [Theory]
@@ -62,35 +103,36 @@ namespace ServiceBusExplorer.Tests.Helpers
         [InlineData(true, true)]
         public async Task Publish_UncachedTopic_ExplainsHowToRecover(bool batch, bool removed)
         {
-            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 30, string.Empty, (_, __) => { });
-            var fakeSender = new FakeEventGridSenderClient();
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
             if (removed)
             {
-                GetSenderClients(library)["orders"] = fakeSender;
-                GetSenderClients(library).Clear();
+                arm.AddRefresh("orders");
+                await library.GetTopicsAsync("group", "store", Endpoint);
             }
-            GetSenderClients(library)["another-topic"] = fakeSender;
+            arm.AddRefresh("another-topic");
+            await library.GetTopicsAsync("group", "store", Endpoint);
             Func<Task> publish = () => batch
                 ? library.PublishEventsAsync("orders", "/shop", "Order.Created", new List<string> { "one" })
                 : library.PublishEventAsync("orders", "/shop", "Order.Created", "{}");
 
             await publish.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("*topic 'orders' is not loaded*Refresh the namespace topics*");
-            fakeSender.SingleEvents.Should().BeEmpty();
-            fakeSender.BatchEvents.Should().BeEmpty();
+            library.Senders.Should().OnlyContain(s => s.SingleEvents.Count == 0 && s.BatchEvents.Count == 0);
         }
 
         [Fact]
         public async Task PublishEventAsync_And_PublishEventsAsync_DelegateToSenderClient()
         {
-            var logs = new List<string>();
-            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 30, string.Empty, (msg, _) => logs.Add(msg));
-            var fakeSender = new FakeEventGridSenderClient();
-            GetSenderClients(library)["orders"] = fakeSender;
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
 
             await library.PublishEventAsync("orders", "/shop/orders", "Order.Created", "{\"id\":42}");
             await library.PublishEventsAsync("orders", "/shop/orders", "Order.Updated", new List<string> { "one", "two" });
 
+            var fakeSender = library.Senders.Single();
             fakeSender.SingleEvents.Should().ContainSingle();
             fakeSender.SingleEvents[0].Source.Should().Be("/shop/orders");
             fakeSender.SingleEvents[0].Type.Should().Be("Order.Created");
@@ -105,16 +147,16 @@ namespace ServiceBusExplorer.Tests.Helpers
         [InlineData(500, 120)]
         public async Task ReceiveEventsAsync_ClampsWaitTime_AndReturnsDetails(int configuredWaitSeconds, int expectedWaitSeconds)
         {
-            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, configuredWaitSeconds, string.Empty, (_, __) => { });
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm, configuredWaitSeconds);
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
             var cloudEvent = new CloudEvent("/source", "Sample.Event", "payload");
             var details = EventGridNamespacesModelFactory.ReceiveDetails(
                 EventGridNamespacesModelFactory.BrokerProperties("lock-1", 1),
                 cloudEvent);
-            var fakeReceiver = new FakeEventGridReceiverClient
-            {
-                NextReceiveResult = EventGridNamespacesModelFactory.ReceiveResult(new[] { details })
-            };
-            GetReceiverClients(library)[("orders", "sub-a")] = fakeReceiver;
+            var fakeReceiver = library.Receiver;
+            fakeReceiver.NextReceiveResult = EventGridNamespacesModelFactory.ReceiveResult(new[] { details });
 
             var result = await library.ReceiveEventsAsync("orders", "sub-a", 5);
 
@@ -127,43 +169,104 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void ReceiveEventsAsync_LazilyCreatesAndCachesReceiverClientPerSubscription()
+        public async Task ReceiveEventsAsync_ReusesReceiverPerSubscriptionUntilSuccessfulRefresh()
         {
-            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 20, string.Empty, (_, __) => { });
-            typeof(EventGridLibrary).GetField("namespaceEndpoint", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(library, new Uri("https://example.westus-1.eventgrid.azure.net"));
-            GetTopicCredentials(library)["orders"] = new AzureKeyCredential("test-key");
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            library.ReceiverCreations.Should().BeEmpty();
 
-            var getReceiverMethod = typeof(EventGridLibrary).GetMethod("GetReceiverClient", BindingFlags.Instance | BindingFlags.NonPublic);
-            getReceiverMethod.Should().NotBeNull();
+            await library.ReceiveEventsAsync("orders", "sub-a", 1);
+            await library.ReceiveEventsAsync("orders", "sub-a", 1);
+            await library.ReceiveEventsAsync("orders", "sub-b", 1);
 
-            var subAClient1 = (EventGridReceiverClient)getReceiverMethod.Invoke(library, new object[] { "orders", "sub-a" });
-            var subAClient2 = (EventGridReceiverClient)getReceiverMethod.Invoke(library, new object[] { "orders", "sub-a" });
-            var subBClient = (EventGridReceiverClient)getReceiverMethod.Invoke(library, new object[] { "orders", "sub-b" });
+            var newEndpoint = new NamespaceTopicEndpoint("changed.example.test");
+            arm.AddTopicPage(new[] { "orders" });
+            arm.AddKeys("rotated");
+            await library.GetTopicsAsync("group", "store", newEndpoint);
+            await library.ReceiveEventsAsync("orders", "sub-a", 1);
 
-            subAClient1.Should().NotBeNull();
-            subAClient2.Should().BeSameAs(subAClient1);
-            subBClient.Should().NotBeSameAs(subAClient1);
+            library.ReceiverCreations.Should().Equal(
+                (Endpoint.Address, "orders", "sub-a", "orders-key"),
+                (Endpoint.Address, "orders", "sub-b", "orders-key"),
+                (newEndpoint.Address, "orders", "sub-a", "rotated"));
+        }
+
+        [Fact]
+        public async Task FailedRefresh_PreservesSendersReceiversEndpointAndKeys()
+        {
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            arm.AddRefresh("orders", "shipments");
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            await library.ReceiveEventsAsync("orders", "existing", 1);
+            var originalSender = library.Senders[0];
+
+            arm.AddTopicPage(new[] { "new-topic", "unreadable" });
+            arm.AddKeys("new-key");
+            Func<Task> publishPartial = () => library.PublishEventAsync("new-topic", "/shop", "Order.Created", "{}");
+            arm.AddResponse(new { error = new { code = "Forbidden", message = "Access to topic keys denied" } },
+                HttpStatusCode.Forbidden, async () =>
+                {
+                    await library.PublishEventAsync("orders", "/shop", "DuringRefresh", "{}");
+                    await publishPartial.Should().ThrowAsync<InvalidOperationException>().WithMessage("*topic 'new-topic' is not loaded*");
+                });
+            Func<Task> refresh = () => library.GetTopicsAsync("group", "store", new NamespaceTopicEndpoint("changed.example.test"));
+            (await refresh.Should().ThrowAsync<RequestFailedException>()).Which.Status.Should().Be(403);
+
+            await library.PublishEventAsync("orders", "/shop", "Order.Created", "{}");
+            await library.ReceiveEventsAsync("orders", "existing", 1);
+            await library.ReceiveEventsAsync("shipments", "new-sub", 1);
+            originalSender.SingleEvents.Select(e => e.Type).Should().Equal("DuringRefresh", "Order.Created");
+            library.ReceiverCreations.Should().Equal(
+                (Endpoint.Address, "orders", "existing", "orders-key"),
+                (Endpoint.Address, "shipments", "new-sub", "shipments-key"));
+            await publishPartial.Should().ThrowAsync<InvalidOperationException>().WithMessage("*topic 'new-topic' is not loaded*");
+        }
+
+        [Theory]
+        [InlineData("Acknowledge")]
+        [InlineData("Release")]
+        [InlineData("Reject")]
+        public async Task ReceiverPaths_ReportMissingEndpointAndRemovalOfPreviouslyCachedTopic(string action)
+        {
+            var logs = new List<string>();
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm, log: (msg, _) => logs.Add(msg));
+            Func<Task> settle = () => library.EventActionsAsync(action, new List<string> { "token" }, "orders", "sub", (_, __) => { });
+
+            (await library.ReceiveEventsAsync("orders", "sub", 1)).Should().BeNull();
+            logs.Should().ContainSingle().Which.Should().Contain("namespace endpoint is not loaded").And.Contain("Refresh");
+            await settle.Should().ThrowAsync<InvalidOperationException>().WithMessage("*namespace endpoint is not loaded*Refresh*");
+
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            (await library.ReceiveEventsAsync("orders", "sub", 1)).Should().NotBeNull();
+            arm.AddRefresh();
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            logs.Clear();
+
+            (await library.ReceiveEventsAsync("orders", "sub", 1)).Should().BeNull();
+            logs.Should().ContainSingle().Which.Should().Contain("topic 'orders' is not loaded").And.Contain("Refresh");
+            await settle.Should().ThrowAsync<InvalidOperationException>().WithMessage("*topic 'orders' is not loaded*Refresh*");
         }
 
         [Fact]
         public async Task EventActionsAsync_HandlesAcknowledgeReleaseAndReject()
         {
             var logs = new List<string>();
-            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 30, string.Empty, (msg, _) => logs.Add(msg));
-            var fakeReceiver = new FakeEventGridReceiverClient
-            {
-                NextAcknowledgeResult = EventGridNamespacesModelFactory.AcknowledgeResult(
-                    Array.Empty<FailedLockToken>(),
-                    new[] { "tok-1" }),
-                NextReleaseResult = EventGridNamespacesModelFactory.ReleaseResult(
-                    Array.Empty<FailedLockToken>(),
-                    new[] { "tok-2" }),
-                NextRejectResult = EventGridNamespacesModelFactory.RejectResult(
-                    new[] { EventGridNamespacesModelFactory.FailedLockToken("tok-3", new ResponseError("ExpiredLock", "Token expired")) },
-                    Array.Empty<string>())
-            };
-            GetReceiverClients(library)[("orders", "sub-a")] = fakeReceiver;
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            library.Receiver.NextAcknowledgeResult = EventGridNamespacesModelFactory.AcknowledgeResult(
+                Array.Empty<FailedLockToken>(), new[] { "tok-1" });
+            library.Receiver.NextReleaseResult = EventGridNamespacesModelFactory.ReleaseResult(
+                Array.Empty<FailedLockToken>(), new[] { "tok-2" });
+            library.Receiver.NextRejectResult = EventGridNamespacesModelFactory.RejectResult(
+                new[] { EventGridNamespacesModelFactory.FailedLockToken("tok-3", new ResponseError("ExpiredLock", "Token expired")) },
+                Array.Empty<string>());
 
             var ackSucceeded = await library.EventActionsAsync("Acknowledge", new List<string> { "tok-1" }, "orders", "sub-a", (msg, _) => logs.Add(msg));
             var releaseSucceeded = await library.EventActionsAsync("Release", new List<string> { "tok-2" }, "orders", "sub-a", (msg, _) => logs.Add(msg));
@@ -174,6 +277,78 @@ namespace ServiceBusExplorer.Tests.Helpers
             rejectSucceeded.Should().BeFalse();
             logs.Should().Contain(l => l.Contains("ExpiredLock"));
             logs.Should().Contain(l => l.Contains("Token expired"));
+        }
+
+        [Fact]
+        public async Task EventActionsAsync_UnsupportedActionWithTokens_ReportsArgumentError()
+        {
+            var library = new TestLibrary(new EventGridArmTransport());
+            Func<Task> settle = () => library.EventActionsAsync("Unknown", new List<string> { "token" }, "orders", "sub", (_, __) => { });
+
+            (await settle.Should().ThrowAsync<ArgumentOutOfRangeException>()).Which.ParamName.Should().Be("action");
+            library.ReceiverCreations.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task CreateSubscriptionAsync_CreatesQueueSubscriptionUnderTheNamespaceTopic()
+        {
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            var subscriptionPath = EventGridArmTransport.TopicsPath + "/orders/eventSubscriptions/queue-sub";
+            arm.AddResponse(EventGridArmTransport.Topic("orders"));
+            arm.AddResponse(new { error = new { code = "ResourceNotFound", message = "No subscription" } }, HttpStatusCode.NotFound);
+            arm.AddResponse(new { id = subscriptionPath, name = "queue-sub", type = NamespaceTopicEventSubscriptionResource.ResourceType.ToString(), properties = new { provisioningState = "Succeeded" } });
+
+            await library.CreateSubscriptionAsync("group", "store", "orders", "queue-sub", "Queue",
+                new List<Dictionary<string, string>>(), new List<string>());
+
+            var request = arm.Requests.Single(r => r.Method == HttpMethod.Put);
+            request.Uri.AbsolutePath.Should().Be(subscriptionPath);
+            request.Uri.Query.Should().Be("?api-version=2025-02-15");
+            using (var json = JsonDocument.Parse(request.Body))
+            {
+                json.RootElement.GetProperty("properties").GetProperty("deliveryConfiguration")
+                    .GetProperty("deliveryMode").GetString().Should().Be("Queue");
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task NamespaceWebhookSubscription_UsesGaCreateOrUpdateRequest(bool recreateArmClient)
+        {
+            var arm = new EventGridArmTransport();
+            var controlPlane = arm.CreateClient();
+            if (recreateArmClient)
+            {
+                controlPlane.armclient = null;
+            }
+
+            arm.AddResponse(EventGridArmTransport.Topic("orders"));
+            var topic = (await controlPlane.GetNamespaceResource("group", "store").GetNamespaceTopicAsync("orders")).Value;
+            var subscriptionPath = EventGridArmTransport.TopicsPath + "/orders/eventSubscriptions/webhook";
+            arm.AddResponse(new { id = subscriptionPath, name = "webhook", type = NamespaceTopicEventSubscriptionResource.ResourceType.ToString(), properties = new { } });
+            var destination = new Uri("https://example.test/events");
+            var data = new NamespaceTopicEventSubscriptionData
+            {
+                DeliveryConfiguration = new DeliveryConfiguration
+                {
+                    DeliveryMode = DeliveryMode.Push,
+                    Push = new PushInfo { Destination = new WebHookEventSubscriptionDestination { Endpoint = destination } }
+                }
+            };
+
+            await topic.GetNamespaceTopicEventSubscriptions().CreateOrUpdateAsync(WaitUntil.Started, "webhook", data);
+
+            var request = arm.Requests.Single(r => r.Method == HttpMethod.Put);
+            request.Uri.AbsolutePath.Should().Be(subscriptionPath);
+            request.Uri.Query.Should().Be("?api-version=2025-02-15");
+            using (var json = JsonDocument.Parse(request.Body))
+            {
+                var push = json.RootElement.GetProperty("properties").GetProperty("deliveryConfiguration").GetProperty("push");
+                push.GetProperty("destination").GetProperty("endpointType").GetString().Should().Be("WebHook");
+                push.GetProperty("destination").GetProperty("properties").GetProperty("endpointUrl").GetString().Should().Be(destination.AbsoluteUri);
+            }
         }
 
         [Fact]
@@ -200,25 +375,30 @@ namespace ServiceBusExplorer.Tests.Helpers
                 .Which.Value.Should().BeTrue();
         }
 
-        private static Dictionary<string, EventGridSenderClient> GetSenderClients(EventGridLibrary library)
+        private sealed class TestLibrary : EventGridLibrary
         {
-            var field = typeof(EventGridLibrary).GetField("senderClients", BindingFlags.Instance | BindingFlags.NonPublic);
-            field.Should().NotBeNull();
-            return (Dictionary<string, EventGridSenderClient>)field.GetValue(library);
-        }
+            public TestLibrary(EventGridArmTransport arm, int waitSeconds = 30, WriteToLogDelegate log = null)
+                : base(arm.CreateClient(), waitSeconds, log ?? ((_, __) => { }))
+            {
+            }
 
-        private static Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient> GetReceiverClients(EventGridLibrary library)
-        {
-            var field = typeof(EventGridLibrary).GetField("receiverClients", BindingFlags.Instance | BindingFlags.NonPublic);
-            field.Should().NotBeNull();
-            return (Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient>)field.GetValue(library);
-        }
+            public List<FakeEventGridSenderClient> Senders { get; } = new List<FakeEventGridSenderClient>();
+            public FakeEventGridReceiverClient Receiver { get; } = new FakeEventGridReceiverClient();
+            public List<(Uri Endpoint, string Topic, string Subscription, string Key)> ReceiverCreations { get; } =
+                new List<(Uri, string, string, string)>();
 
-        private static Dictionary<string, AzureKeyCredential> GetTopicCredentials(EventGridLibrary library)
-        {
-            var field = typeof(EventGridLibrary).GetField("topicCredentials", BindingFlags.Instance | BindingFlags.NonPublic);
-            field.Should().NotBeNull();
-            return (Dictionary<string, AzureKeyCredential>)field.GetValue(library);
+            internal override EventGridSenderClient CreateSenderClient(Uri endpoint, string topicName, AzureKeyCredential credential)
+            {
+                var sender = new FakeEventGridSenderClient();
+                Senders.Add(sender);
+                return sender;
+            }
+
+            internal override EventGridReceiverClient CreateReceiverClient(Uri endpoint, string topicName, string subscriptionName, AzureKeyCredential credential)
+            {
+                ReceiverCreations.Add((endpoint, topicName, subscriptionName, credential.Key));
+                return Receiver;
+            }
         }
 
         private sealed class FakeEventGridSenderClient : EventGridSenderClient
@@ -241,7 +421,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         private sealed class FakeEventGridReceiverClient : EventGridReceiverClient
         {
-            public ReceiveResult NextReceiveResult { get; set; }
+            public ReceiveResult NextReceiveResult { get; set; } = EventGridNamespacesModelFactory.ReceiveResult(Array.Empty<ReceiveDetails>());
             public AcknowledgeResult NextAcknowledgeResult { get; set; }
             public ReleaseResult NextReleaseResult { get; set; }
             public RejectResult NextRejectResult { get; set; }

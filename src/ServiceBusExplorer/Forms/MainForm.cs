@@ -254,6 +254,7 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
+        private NamespaceTopicEndpoint namespaceTopicEndpoint;
         private readonly System.Windows.Forms.Timer filterDebounceTimer;
         private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
         private string _pendingSelectionName;
@@ -677,6 +678,9 @@ namespace ServiceBusExplorer.Forms
                     panelMain.Controls.Clear();
                     SetEmptyMainPanelBackground(panelMain);
 
+                    serviceBusTreeView.Nodes.Clear();
+                    rootNode = null;
+                    namespaceTopicEndpoint = null;
                     await ShowEventGridEntities(EntityType.All);
                 }
             }
@@ -4588,7 +4592,6 @@ namespace ServiceBusExplorer.Forms
         public string NamespaceName { get; set; }
         public string ResourceGroupName { get; set; }
         public string TopicName { get; set; }
-        public string NamespaceHostname { get; set; }
         public List<Dictionary<string, List<string>>> Filters { get; set; }
 
         public List<EntraTenantIdItem> EntraTenantIds { get; set; } = new List<EntraTenantIdItem>();
@@ -5033,27 +5036,54 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.SuspendLayout();
                     serviceBusTreeView.BeginUpdate();
                     updating = true;
-                    treeNodesToLazyLoad = new List<TreeNode>();
-                    AsyncPageable<NamespaceTopicResource> topics = null;
-                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
 
+                    var library = eventGridLibrary;
+                    var resourceGroup = ResourceGroupName;
+                    var namespaceName = NamespaceName;
+                    var endpoint = namespaceTopicEndpoint;
+                    EventGridNamespaceResource eventGridNamespace = null;
                     if (entityType == EntityType.All)
                     {
+                        eventGridNamespace = (await library.GetNamespacesAsync(resourceGroup, namespaceName)).Value;
+                        endpoint = new NamespaceTopicEndpoint(eventGridNamespace.Data.TopicsConfiguration?.Hostname);
+                    }
+
+                    IReadOnlyList<NamespaceTopicResource> topics = null;
+                    if (SelectedEntities.Contains(Constants.TopicEntities) && (entityType == EntityType.All || entityType == EntityType.Topic))
+                    {
+                        try
+                        {
+                            topics = await library.GetTopicsAsync(resourceGroup, namespaceName, endpoint);
+                        }
+                        catch (Exception ex) when (FilterOutException(ex))
+                        {
+                            WriteToLog($"Failed to retrieve Event Grid topics. Exception: {ex.GetBaseException()}");
+                            return;
+                        }
+                    }
+
+                    if (library != eventGridLibrary)
+                    {
+                        return;
+                    }
+
+                    treeNodesToLazyLoad = new List<TreeNode>();
+                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                    if (eventGridNamespace != null)
+                    {
                         serviceBusTreeView.Nodes.Clear();
-
-                        EventGridNamespaceResource eventGridNamespace = (await eventGridLibrary.GetNamespacesAsync(ResourceGroupName, NamespaceName)).Value;
-                        NamespaceHostname = EventGridLibrary.GetNamespaceHostname(eventGridNamespace.Data.TopicsConfiguration?.Hostname);
-
+                        namespaceTopicEndpoint = endpoint;
+                        var namespaceUrl = endpoint.ToString();
                         rootNode = serviceBusTreeView.Nodes.Add(
-                            NamespaceHostname,
-                            NamespaceHostname,
+                            namespaceUrl,
+                            namespaceUrl,
                             EventGridNamespaceIconIndex,
                             EventGridNamespaceIconIndex);
                         rootNode.Tag = eventGridNamespace;
 
                         HandleNodeMouseClick(rootNode);
 
-                        if (SelectedEntities.Contains(Constants.TopicEntities))
+                        if (topics != null)
                         {
                             topicListNode = rootNode.Nodes.Add(Constants.TopicEntities, Constants.TopicEntities, EventGridEntityIconIndex, EventGridEntityIconIndex);
                             topicListNode.ContextMenuStrip = eventGridTopicsContextMenuStrip;
@@ -5061,57 +5091,28 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
 
-                    if (SelectedEntities.Contains(Constants.TopicEntities) &&
-                        (entityType == EntityType.All ||
-                         entityType == EntityType.Topic))
+                    if (topics != null)
                     {
-                        try
+                        topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
+                            ? Constants.TopicEntities
+                            : FilteredTopicEntities;
+                        topicListNode.Nodes.Clear();
+
+                        foreach (var topic in topics)
                         {
-                            topics = await eventGridLibrary.GetTopicsAsync(ResourceGroupName, NamespaceName, NamespaceHostname);
-
-                            IAsyncEnumerator<NamespaceTopicResource> enumerator = topics.GetAsyncEnumerator();
-
-                            topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
-                                ? Constants.TopicEntities
-                                : FilteredTopicEntities;
-                            topicListNode.Nodes.Clear();
-
-                            if (topics != null)
+                            if (string.IsNullOrWhiteSpace(topic.Data.Name))
                             {
-                                try
-                                {
-                                    while (await enumerator.MoveNextAsync())
-                                    {
-                                        var topic = enumerator.Current;
-                                        if (string.IsNullOrWhiteSpace(topic.Data.Name))
-                                        {
-                                            continue;
-                                        }
-                                        var entityNode = CreateNode(topic.Data.Name, topic, topicListNode, true);
-                                        LazyLoadEventGridNode(entityNode);
-                                    }
-                                }
-                                finally
-                                {
-                                    await enumerator.DisposeAsync();
-                                }
+                                continue;
                             }
-
-                            if (entityType == EntityType.Topic)
-                            {
-                                serviceBusTreeView.SelectedNode = topicListNode;
-                                serviceBusTreeView.SelectedNode.EnsureVisible();
-                                HandleNodeMouseClick(topicListNode);
-                            }
+                            var entityNode = CreateNode(topic.Data.Name, topic, topicListNode, true);
+                            LazyLoadEventGridNode(entityNode);
                         }
-                        catch (Exception ex) when (FilterOutException(ex))
+
+                        if (entityType == EntityType.Topic)
                         {
-                            if (ex is AggregateException)
-                            {
-                                ex = ((AggregateException)ex).InnerExceptions.First();
-                            }
-                            WriteToLog($"Failed to retrieve Event Grid topics. Exception: {ex}");
-                            serviceBusTreeView.Nodes.Remove(topicListNode);
+                            serviceBusTreeView.SelectedNode = topicListNode;
+                            serviceBusTreeView.SelectedNode.EnsureVisible();
+                            HandleNodeMouseClick(topicListNode);
                         }
                     }
 
@@ -5337,10 +5338,9 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                if (entityNode.Tag is NamespaceTopicResource)
+                if (entityNode.Tag is NamespaceTopicResource topic)
                 {
-                    var topic = (NamespaceTopicResource)entityNode.Tag;
-                    var subscriptions = await eventGridLibrary.GetEventSubscriptionsAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
+                    var subscriptions = eventGridLibrary.GetEventSubscriptionsAsync(topic);
 
                     if (subscriptions != null ||
                         !string.IsNullOrWhiteSpace(FilterExpressionHelper.SubscriptionFilterExpression))
@@ -5569,7 +5569,7 @@ namespace ServiceBusExplorer.Forms
             {
                 ThemeManager.ReplaceHostedContent(
                     panelMain,
-                    () => new HandleEventGridTopicControl(topic, NamespaceHostname),
+                    () => new HandleEventGridTopicControl(topic, namespaceTopicEndpoint.ToString()),
                     control => control.Location = new Point(1, panelLog.HeaderHeight + 1));
             }
             catch (Exception ex)
