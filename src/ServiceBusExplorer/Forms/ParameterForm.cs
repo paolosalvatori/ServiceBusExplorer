@@ -31,7 +31,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ParameterForm : Form
+    public partial class ParameterForm : ThemedForm
     {
         #region Private Fields
         private IList<bool> canBeNullList;

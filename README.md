@@ -164,6 +164,20 @@ For more information about this, see the
 In Visual Studio 2022 the informational bar looks like this ![AutoscalingTurnedOff](./media/AutoscalingTurnedOff.png) 
 when it is running as a DPI-unaware process.
 
+## Developing themed UI
+
+New forms and controls should follow the selected theme (light, dark or high contrast). See [docs/theming.md](./docs/theming.md).
+
+## Upstream release baseline
+
+The build embeds the latest upstream release the source is based on, and the application compares that baseline with the latest upstream release when deciding whether to show update notices. The baseline is resolved from tags in the `refs/upstream-release-tags/*` namespace that are reachable from `HEAD`. This requires a full (non-shallow) clone. Fetch the tags with:
+
+```
+git fetch --no-tags https://github.com/paolosalvatori/ServiceBusExplorer.git "+refs/tags/*:refs/upstream-release-tags/*"
+```
+
+Alternatively, pass the baseline explicitly, for example `dotnet build -p:UpstreamReleaseVersion=6.3.1`. If no baseline is available, the build emits a warning and new-upstream-release notices are disabled.
+
 
 # Azure Service Bus
 Microsoft Azure Service Bus is a reliable information delivery service. The purpose of this service is to make communication easier. When two or more parties want to exchange information, they need a communication facilitator. Service Bus is a brokered, or third-party communication mechanism. This is similar to a postal service in the physical world. Postal services make it very easy to send different kinds of letters and packages with a variety of delivery guarantees, anywhere in the world.
@@ -196,6 +210,8 @@ Here are a couple of alternatives. We do not take responsibility for them though
 | [Service Bus TUI](https://github.com/MonsieurTib/service-bus-tui) | free, open source, cross platform, terminal based             |
 | [bussin](https://bussin.dev) | free, source-available, browser based PWA, no installation required |
 | [Queue Studio for Service Bus](https://marketplace.visualstudio.com/items?itemName=factodus.queue-studio-service-bus) | free with a paid Pro tier, VS Code extension, works with the Service Bus emulator |
+| [Dispatched](https://dispatchedapp.com) | free, open source, cross platform, desktop app and CLI, works with the Service Bus emulator |
+| [Service Bus Dojo](https://servicebusdojo.com/) | free with a paid Pro tier, macOS, iOS, Android, queues only |
 
 [PowerShell]: https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-manage-with-ps
 [Purple Explorer]: https://github.com/philipmat/PurpleExplorer

@@ -24,7 +24,8 @@ namespace EventGridExplorerLibrary
 
         #region Private Fields
         private EventGridControlPlaneClient eventGridControlPlaneClient;
-        private Dictionary<string, (Uri Endpoint, AzureKeyCredential Credential)> topicCredentials = new Dictionary<string, (Uri Endpoint, AzureKeyCredential Credential)>();
+        private Uri namespaceEndpoint;
+        private Dictionary<string, AzureKeyCredential> topicCredentials = new Dictionary<string, AzureKeyCredential>();
         private Dictionary<string, EventGridSenderClient> senderClients = new Dictionary<string, EventGridSenderClient>();
         private Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient> receiverClients = new Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient>();
         private int maxWaitTime;
@@ -46,15 +47,31 @@ namespace EventGridExplorerLibrary
         }
 
 
+        public static string GetNamespaceHostname(string hostname)
+        {
+            if (string.IsNullOrWhiteSpace(hostname))
+            {
+                throw new InvalidOperationException("The Event Grid namespace has no topics hostname. Ensure that namespace topics are enabled and refresh the namespace.");
+            }
+
+            return "https://" + hostname;
+        }
+
         public async Task<AsyncPageable<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName, string hostname)
         {
+            if (!Uri.TryCreate(hostname, UriKind.Absolute, out var endpoint) ||
+                endpoint.Scheme != Uri.UriSchemeHttps || string.IsNullOrWhiteSpace(endpoint.Host))
+            {
+                throw new ArgumentException("A valid HTTPS Event Grid namespace endpoint is required. Refresh the namespace and try again.", nameof(hostname));
+            }
+
             NamespaceTopicCollection namespaceTopicCollection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
             var pages = namespaceTopicCollection.GetAllAsync();
             var enumerator = pages.GetAsyncEnumerator();
 
             try
             {
-                var endpoint = new Uri(hostname);
+                namespaceEndpoint = endpoint;
                 topicCredentials.Clear();
                 senderClients.Clear();
                 receiverClients.Clear();
@@ -65,7 +82,7 @@ namespace EventGridExplorerLibrary
                     NamespaceTopicResource namespaceTopicResource = (await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopicAsync(topicName)).Value;
                     var key = (await namespaceTopicResource.GetSharedAccessKeysAsync()).Value;
                     var credential = new AzureKeyCredential(key.Key1);
-                    topicCredentials[topicName] = (endpoint, credential);
+                    topicCredentials[topicName] = credential;
                     senderClients[topicName] = new EventGridSenderClient(endpoint, topicName, credential);
                 }
             }
@@ -110,7 +127,7 @@ namespace EventGridExplorerLibrary
         {
             var eventData = JsonSerializer.Deserialize<object>(eventDataJson);
             var cloudEvent = new CloudEvent(eventSource, eventType, eventData);
-            await senderClients[topicName].SendAsync(cloudEvent);
+            await GetSenderClient(topicName).SendAsync(cloudEvent);
         }
 
         public async Task PublishEventsAsync(string topicName, string eventSource, string eventType, List<string> publishEvents)
@@ -123,7 +140,7 @@ namespace EventGridExplorerLibrary
                 cloudEvents[i] = new CloudEvent(eventSource, eventType, eventModel);
             }
 
-            await senderClients[topicName].SendAsync(cloudEvents);
+            await GetSenderClient(topicName).SendAsync(cloudEvents);
         }
 
         public async Task<ReceiveResult> ReceiveEventsAsync(string topicName, string subscriptionName, int maxEventNum)
@@ -206,13 +223,23 @@ namespace EventGridExplorerLibrary
             return false;
         }
 
+        private EventGridSenderClient GetSenderClient(string topicName)
+        {
+            if (string.IsNullOrWhiteSpace(topicName) || !senderClients.TryGetValue(topicName, out var senderClient))
+            {
+                throw new InvalidOperationException($"The Event Grid topic '{topicName}' is not loaded. Refresh the namespace topics and try again.");
+            }
+
+            return senderClient;
+        }
+
         private EventGridReceiverClient GetReceiverClient(string topicName, string subscriptionName)
         {
             var clientKey = (topicName, subscriptionName);
             if (!receiverClients.TryGetValue(clientKey, out var receiverClient))
             {
                 var topicCredential = topicCredentials[topicName];
-                receiverClient = new EventGridReceiverClient(topicCredential.Endpoint, topicName, subscriptionName, topicCredential.Credential);
+                receiverClient = new EventGridReceiverClient(namespaceEndpoint, topicName, subscriptionName, topicCredential);
                 receiverClients[clientKey] = receiverClient;
             }
 

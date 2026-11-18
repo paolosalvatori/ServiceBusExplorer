@@ -18,6 +18,68 @@ namespace ServiceBusExplorer.Tests.Helpers
 {
     public class EventGridLibraryTests
     {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void GetNamespaceHostname_MissingHostname_ExplainsHowToRecover(string hostname)
+        {
+            Action getHostname = () => EventGridLibrary.GetNamespaceHostname(hostname);
+
+            getHostname.Should().Throw<InvalidOperationException>()
+                .WithMessage("*no topics hostname*refresh the namespace*");
+        }
+
+        [Fact]
+        public void GetNamespaceHostname_ConfiguredHostname_ReturnsHttpsEndpoint()
+        {
+            EventGridLibrary.GetNamespaceHostname("example.westus-1.eventgrid.azure.net")
+                .Should().Be("https://example.westus-1.eventgrid.azure.net");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("https://")]
+        [InlineData("relative-host")]
+        [InlineData("http://example.westus-1.eventgrid.azure.net")]
+        public async Task GetTopicsAsync_InvalidEndpoint_FailsBeforeAccessingAzure(string hostname)
+        {
+            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 30, string.Empty, (_, __) => { });
+            typeof(EventGridLibrary).GetField("eventGridControlPlaneClient", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(library, null);
+            Func<Task> getTopics = () => library.GetTopicsAsync("group", "namespace", hostname);
+
+            (await getTopics.Should().ThrowAsync<ArgumentException>())
+                .WithMessage("*valid HTTPS Event Grid namespace endpoint*Refresh*")
+                .Which.ParamName.Should().Be("hostname");
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(true, true)]
+        public async Task Publish_UncachedTopic_ExplainsHowToRecover(bool batch, bool removed)
+        {
+            var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 30, string.Empty, (_, __) => { });
+            var fakeSender = new FakeEventGridSenderClient();
+            if (removed)
+            {
+                GetSenderClients(library)["orders"] = fakeSender;
+                GetSenderClients(library).Clear();
+            }
+            GetSenderClients(library)["another-topic"] = fakeSender;
+            Func<Task> publish = () => batch
+                ? library.PublishEventsAsync("orders", "/shop", "Order.Created", new List<string> { "one" })
+                : library.PublishEventAsync("orders", "/shop", "Order.Created", "{}");
+
+            await publish.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*topic 'orders' is not loaded*Refresh the namespace topics*");
+            fakeSender.SingleEvents.Should().BeEmpty();
+            fakeSender.BatchEvents.Should().BeEmpty();
+        }
+
         [Fact]
         public async Task PublishEventAsync_And_PublishEventsAsync_DelegateToSenderClient()
         {
@@ -68,7 +130,9 @@ namespace ServiceBusExplorer.Tests.Helpers
         public void ReceiveEventsAsync_LazilyCreatesAndCachesReceiverClientPerSubscription()
         {
             var library = new EventGridLibrary("00000000-0000-0000-0000-000000000000", null, 20, string.Empty, (_, __) => { });
-            GetTopicCredentials(library)["orders"] = (new Uri("https://example.westus-1.eventgrid.azure.net"), new AzureKeyCredential("test-key"));
+            typeof(EventGridLibrary).GetField("namespaceEndpoint", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(library, new Uri("https://example.westus-1.eventgrid.azure.net"));
+            GetTopicCredentials(library)["orders"] = new AzureKeyCredential("test-key");
 
             var getReceiverMethod = typeof(EventGridLibrary).GetMethod("GetReceiverClient", BindingFlags.Instance | BindingFlags.NonPublic);
             getReceiverMethod.Should().NotBeNull();
@@ -150,11 +214,11 @@ namespace ServiceBusExplorer.Tests.Helpers
             return (Dictionary<(string TopicName, string SubscriptionName), EventGridReceiverClient>)field.GetValue(library);
         }
 
-        private static Dictionary<string, (Uri Endpoint, AzureKeyCredential Credential)> GetTopicCredentials(EventGridLibrary library)
+        private static Dictionary<string, AzureKeyCredential> GetTopicCredentials(EventGridLibrary library)
         {
             var field = typeof(EventGridLibrary).GetField("topicCredentials", BindingFlags.Instance | BindingFlags.NonPublic);
             field.Should().NotBeNull();
-            return (Dictionary<string, (Uri Endpoint, AzureKeyCredential Credential)>)field.GetValue(library);
+            return (Dictionary<string, AzureKeyCredential>)field.GetValue(library);
         }
 
         private sealed class FakeEventGridSenderClient : EventGridSenderClient
