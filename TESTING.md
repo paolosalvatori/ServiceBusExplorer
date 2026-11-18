@@ -60,3 +60,42 @@ Items 3-17 require manual testing with a live Azure Service Bus connection.
 ---
 
 **Legend:** ✅ pass | ❌ fail | ⬜ not tested | 🔄 flaky
+
+## Event Hubs migration regressions (PR #909)
+
+Automated coverage in `ServiceBusExplorer.Tests/Helpers`:
+
+- `EventHubBatchRetryTests`: later partition-key group failures (transient and exhausted retries) never resend an acknowledged earlier group.
+- `PartitionMetadataTests`: requests start concurrently, results retain partition order, and failures wait for outstanding requests before disposal.
+- `EventHubConnectionValidationTests`: compatible IoT endpoint/name acceptance and rejection of HostName strings, messages/events, and mismatched EntityPath without exposing credentials.
+- `PartitionInspectorTests`: thrown/null inspector results preserve original failure position and report the stop/replay policy.
+
+Windows/live Azure checks still required:
+
+1. Open a multi-partition listener; verify metadata loads and all partition choices appear.
+2. In IoT Hub > Built-in endpoints, copy the Event Hubs-compatible connection string and name into the IoT listener dialog; verify receiving with the chosen consumer group. Verify an old HostName string or messages/events is rejected with guidance.
+3. Enable checkpointing and use an inspector that throws on a known event (also test returning null). Verify the log identifies the original partition/sequence/offset, the listener stops, the button returns to Start, and the failed event is not checkpointed. Disable the faulty inspector and restart from the saved checkpoint to verify replay. Repeat while stopping/closing the listener to check cleanup races and absence of hangs.
+
+### November 18 review follow-up
+
+- Notification Hubs dependency reconciled with #908 at `bf8c7aa0369e3930977cd1e5a17fdf30e29c30db`. Its control and three regression-test files are copied exactly (the designer differs only by two trimmed comment-line spaces); its NH-only settings/connection normalization blocks are integrated into the shared helper. #909 now carries the same final credential/template behavior, without competing variants or changes to #908.
+- `EventHubClientCleanupTests` covers concurrent producer disposal (including a synchronous failure) and shared-consumer lifetime until all partition readers have completed or failed.
+- `EventHubCheckpointBatchTests` covers count/timed idle flush, stop flush of the last successful event, disable/re-enable behavior, and a failed checkpoint retry. Checkpoints update the existing in-memory store; file persistence remains at application close. The store is synchronized across partition readers.
+- `EventHubBatchRetryTests` also verifies acknowledged group counts/logs on partial failure and excludes failed-attempt/backoff time from latency.
+- `ServiceBusHelperEntraTests.EventHubFactoriesAcceptModernConnectionStrings` constructs producer/consumer clients from namespace/entity-scoped strings and strings with an existing transport option without legacy rewriting.
+
+Additional Windows/live Azure checks: grow the sender count after a run, repeat after a sender fault, and close the sending tab during a slow send/close. Verify responsiveness and no retained producer connections. Start/stop a multi-partition listener repeatedly and verify only its shared consumer owns the connection; closing one reader must not close the consumer under other readers. Verify partial checkpoint batches flush on idle/stop and replay still starts before a failed inspector event.
+
+### Notification Hubs dependency reconciliation
+
+Retained #908's complete `FcmTemplateRegistrationTests`, `NotificationHubConnectionStringTests`, and `NotificationHubReviewRegressionTests` (23 cases). They cover both legacy FCM/v1 body writebacks and modification reporting; template names and creation; preserving unedited credentials; removing only the selected credential; replacement values and legacy custom endpoints; and connection normalization.
+
+Manual Windows/live Azure validation remains required for replacement-only credential inputs, loading v1 JSON, legacy/v1 send selection, saving and reloading both template types, and explicit per-credential removal. These tests were not performed in the Linux environment.
+
+### Copilot follow-up: retry, cancellation, and application close
+
+- `EventHubSendCancellationTests` exercises single and grouped sends against SDK 5.12.2 exceptions: permanent failures stop after one attempt; transient failures can recover. It also covers cancellation during an SDK send, before later groups, retry backoff, long think time, and before starting (13 cases).
+- `ListenerShutdownCoordinatorTests` verifies final checkpoint completion before persistence, joining repeated close requests, waiting for every listener even when one fails, retrying a failed close, and disposal unregistering while a flush is pending, and propagation of checkpoint-file write failures (5 cases).
+- The existing two-argument retry API and its synchronization-context behavior remain intact. Event Hubs sends use the cancellation-aware overload.
+
+Manual Windows/live Azure checks still required: close the app with partial checkpoint batches, repeat Close while readers stop, restart to verify saved offsets, and exercise checkpoint/close errors. Stop/Cancel a sender during a slow network send, retry delay, and long think time; verify no later partition-key group is sent. No manual UI/live Azure results are claimed by the automated tests.

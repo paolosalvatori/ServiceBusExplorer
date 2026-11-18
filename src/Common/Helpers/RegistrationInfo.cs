@@ -189,13 +189,21 @@ namespace ServiceBusExplorer.Helpers
                 {
                     return "apple";
                 }
-                if (registration is GcmTemplateRegistrationDescription)
+                if (registration is FcmTemplateRegistrationDescription)
                 {
                     return "gcmtemplate";
                 }
-                if (registration is GcmRegistrationDescription)
+                if (registration is FcmRegistrationDescription)
                 {
                     return "gcm";
+                }
+                if (registration is FcmV1TemplateRegistrationDescription)
+                {
+                    return "fcmv1template";
+                }
+                if (registration is FcmV1RegistrationDescription)
+                {
+                    return "fcmv1";
                 }
                 return "unknown";
             }
@@ -236,9 +244,13 @@ namespace ServiceBusExplorer.Helpers
                     {
                         registrationInfo.ChannelUri = ((AppleRegistrationDescription)registration).DeviceToken;
                     }
-                    if (registration is GcmRegistrationDescription)
+                    if (registration is FcmRegistrationDescription)
                     {
-                        registrationInfo.ChannelUri = ((GcmRegistrationDescription)registration).GcmRegistrationId;
+                        registrationInfo.ChannelUri = ((FcmRegistrationDescription)registration).FcmRegistrationId;
+                    }
+                    if (registration is FcmV1RegistrationDescription fcmV1Registration)
+                    {
+                        registrationInfo.ChannelUri = fcmV1Registration.FcmV1RegistrationId;
                     }
                     Registrations.Add(registrationInfo);
                 }
