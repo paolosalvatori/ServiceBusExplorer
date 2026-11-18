@@ -3048,9 +3048,14 @@ namespace ServiceBusExplorer.Controls
                         registrationsDataGridView.Tag = true;
                         return;
                     }
-                    if (registration is FcmV1TemplateRegistrationDescription && e.ChangedItem.Value is string)
+                    if (UpdateFcmTemplateProperty(registration, BodyTemplate, e.ChangedItem.Value))
                     {
-                        ((FcmV1TemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
+                        registrationsDataGridView.Tag = true;
+                    }
+                    break;
+                case nameof(FcmV1TemplateRegistrationDescription.TemplateName):
+                    if (UpdateFcmTemplateProperty(registration, e.ChangedItem.Label, e.ChangedItem.Value))
+                    {
                         registrationsDataGridView.Tag = true;
                     }
                     break;
@@ -3091,6 +3096,56 @@ namespace ServiceBusExplorer.Controls
                     }
                     break;
             }
+        }
+
+        internal static bool UpdateFcmTemplateProperty(RegistrationDescription registration, string propertyName, object value)
+        {
+            // The property grid edits a CustomObject, so copy changes back to the SDK model.
+            if (propertyName == BodyTemplate && value is string body)
+            {
+                if (registration is FcmTemplateRegistrationDescription legacyTemplate)
+                {
+                    legacyTemplate.BodyTemplate = new CDataMember(body);
+                    return true;
+                }
+                if (registration is FcmV1TemplateRegistrationDescription template)
+                {
+                    template.BodyTemplate = new CDataMember(body);
+                    return true;
+                }
+            }
+            if (propertyName == nameof(FcmV1TemplateRegistrationDescription.TemplateName) &&
+                (value == null || value is string))
+            {
+                if (registration is FcmV1TemplateRegistrationDescription template)
+                {
+                    template.TemplateName = value as string;
+                    return true;
+                }
+                if (registration is FcmTemplateRegistrationDescription legacyTemplate)
+                {
+                    legacyTemplate.TemplateName = value as string;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal static FcmV1TemplateRegistrationDescription CreateFcmV1TemplateRegistration(CustomObject properties, ISet<string> tags)
+        {
+            var bodyTemplate = properties.Properties.Any(p => string.Equals(p.Name, BodyTemplate, StringComparison.InvariantCultureIgnoreCase))
+                ? properties[BodyTemplate] as string : null;
+            var registration = tags != null && tags.Count > 0 ?
+                new FcmV1TemplateRegistrationDescription(properties[FcmV1RegistrationId] as string, bodyTemplate, tags) :
+                string.IsNullOrWhiteSpace(bodyTemplate) ?
+                new FcmV1TemplateRegistrationDescription(properties[FcmV1RegistrationId] as string) :
+                new FcmV1TemplateRegistrationDescription(properties[FcmV1RegistrationId] as string, bodyTemplate);
+            var name = nameof(FcmV1TemplateRegistrationDescription.TemplateName);
+            if (properties.Properties.Any(p => string.Equals(p.Name, name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                registration.TemplateName = properties[name] as string;
+            }
+            return registration;
         }
 
         private async void btnCreateRegistration_Click(object sender, EventArgs e)
@@ -3325,14 +3380,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else if (form.RegistrationType == typeof(FcmV1TemplateRegistrationDescription))
                 {
-                    var bodyTemplate = form.RegistrationObject.Properties.Any(p => string.Compare(p.Name, BodyTemplate, StringComparison.InvariantCultureIgnoreCase) == 0)
-                                           ? form.RegistrationObject[BodyTemplate] as string
-                                           : null;
-                    var registration = tags != null && tags.Count > 0 ?
-                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, bodyTemplate, tags) :
-                                       string.IsNullOrWhiteSpace(bodyTemplate) ?
-                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string) :
-                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, bodyTemplate);
+                    var registration = CreateFcmV1TemplateRegistration(form.RegistrationObject, tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {

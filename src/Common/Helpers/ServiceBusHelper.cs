@@ -832,7 +832,7 @@ namespace ServiceBusExplorer
                                 MaxRetries = Math.Max(0, Math.Min(100, RetryHelper.RetryCount))
                             }
                         };
-                        notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(serviceBusNamespace.ConnectionStringWithoutTransportType, notificationHubSettings);
+                        notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(NormalizeNotificationHubConnectionString(serviceBusNamespace.ConnectionString), notificationHubSettings);
                     }
                     catch (Exception)
                     {
