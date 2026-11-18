@@ -93,6 +93,11 @@ namespace ServiceBusExplorer.Controls
         private const string FcmRegistrationId = "FcmRegistrationId";
         private const string FcmV1RegistrationId = "FcmV1RegistrationId";
         private const string BodyTemplate = "BodyTemplate";
+        private FcmV1Credential pendingFcmV1Credential;
+        private bool removeLegacyFcm;
+        private bool removeFcmV1;
+        private readonly Button btnLoadFcmV1 = new Button();
+        private readonly Button btnRemoveFcmV1 = new Button();
         private const string Tags = "Tags";
         private const string MpnsHeaders = "MpnsHeaders";
         private const string WnsHeaders = "WnsHeaders";
@@ -206,6 +211,22 @@ namespace ServiceBusExplorer.Controls
             this.notificationHubDescription = notificationHubDescription;
 
             InitializeComponent();
+            btnLoadFcmV1.Text = "Load v1 JSON...";
+            btnLoadFcmV1.SetBounds(16, 124, 124, 24);
+            btnLoadFcmV1.ForeColor = SystemColors.ControlText;
+            btnLoadFcmV1.Click += LoadFcmV1Credential;
+            btnRemoveFcmV1.Text = "Remove v1";
+            btnRemoveFcmV1.SetBounds(146, 124, 100, 24);
+            btnRemoveFcmV1.ForeColor = SystemColors.ControlText;
+            btnRemoveFcmV1.Click += (sender, args) =>
+            {
+                pendingFcmV1Credential = null;
+                removeFcmV1 = true;
+                lblGcmEndpoint.Text = "FCM v1: removal pending";
+            };
+            grouperGoogleCloudMessaggingSettings.Controls.Add(btnLoadFcmV1);
+            grouperGoogleCloudMessaggingSettings.Controls.Add(btnRemoveFcmV1);
+
             InitializeControls();
         }
         #endregion
@@ -369,8 +390,8 @@ namespace ServiceBusExplorer.Controls
             if (authorizationRulesDataGridView.Columns.Count == 0)
             {
                 authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "IssuerName", DataPropertyName = "IssuerName" });
-                authorizationRulesDataGridView.Columns.Add(new DataGridViewComboBoxColumn { Name = "ClaimType", DataPropertyName = "ClaimType", DataSource = claimTypes, FlatStyle = FlatStyle.Flat });
-                authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "ClaimValue", DataPropertyName = "ClaimValue" });
+                authorizationRulesDataGridView.Columns.Add(new DataGridViewComboBoxColumn { Visible = false, Name = "ClaimType", DataPropertyName = "ClaimType", DataSource = claimTypes, FlatStyle = FlatStyle.Flat });
+                authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Visible = false, Name = "ClaimValue", DataPropertyName = "ClaimValue" });
                 if (serviceBusHelper.IsCloudNamespace)
                 {
                     authorizationRulesDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "KeyName", DataPropertyName = "KeyName" });
@@ -1206,31 +1227,23 @@ namespace ServiceBusExplorer.Controls
                 txtClientSecret.Text = string.Empty;
             }
 
-            if (notificationHubDescription.FcmV1Credential != null)
+            // Replacement-only inputs: never render loaded private keys or API keys.
+            txtGcmApiKey.Text = string.Empty;
+            pendingFcmV1Credential = null;
+            removeLegacyFcm = false;
+            removeFcmV1 = false;
+            lblGcmApiKey.Text = notificationHubDescription.FcmCredential == null
+                ? "Legacy key (not configured):" : "Legacy key (configured; blank keeps it):";
+            lblGcmEndpoint.Text = notificationHubDescription.FcmV1Credential == null
+                ? "FCM v1: not configured" : "FCM v1: " + notificationHubDescription.FcmV1Credential.ClientEmail;
+            txtGcmEndpoint.Text = notificationHubDescription.FcmV1Credential?.FcmV1Endpoint
+                ?? notificationHubDescription.FcmCredential?.FcmEndpoint ?? string.Empty;
+            var hasBothFcmCredentials = notificationHubDescription.FcmCredential != null &&
+                                        notificationHubDescription.FcmV1Credential != null;
+            cboGcmSendFormat.Visible = hasBothFcmCredentials;
+            if (hasBothFcmCredentials && cboGcmSendFormat.SelectedIndex < 0)
             {
-                txtGcmApiKey.Text = new JavaScriptSerializer().Serialize(new Dictionary<string, string>
-                {
-                    ["private_key"] = notificationHubDescription.FcmV1Credential.PrivateKey,
-                    ["client_email"] = notificationHubDescription.FcmV1Credential.ClientEmail,
-                    ["project_id"] = notificationHubDescription.FcmV1Credential.ProjectId
-                });
-                txtGcmEndpoint.Text = notificationHubDescription.FcmV1Credential.FcmV1Endpoint;
-            }
-            else if (notificationHubDescription.FcmCredential != null)
-            {
-                if (!string.IsNullOrWhiteSpace(notificationHubDescription.FcmCredential.GoogleApiKey))
-                {
-                    txtGcmApiKey.Text = notificationHubDescription.FcmCredential.GoogleApiKey;
-                }
-                if (!string.IsNullOrWhiteSpace(notificationHubDescription.FcmCredential.FcmEndpoint))
-                {
-                    txtGcmEndpoint.Text = notificationHubDescription.FcmCredential.FcmEndpoint;
-                }
-            }
-            else
-            {
-                txtGcmApiKey.Text = string.Empty;
-                txtGcmEndpoint.Text = string.Empty;
+                cboGcmSendFormat.SelectedIndex = 0;
             }
 
             if (notificationHubDescription.MpnsCredential != null)
@@ -1491,7 +1504,18 @@ namespace ServiceBusExplorer.Controls
                 return null;
             }
 
-            return NotificationHubClient.CreateClientFromConnectionString(connectionString, notificationHubDescription.Path, true);
+            return NotificationHubClient.CreateClientFromConnectionString(
+                ServiceBusHelper.NormalizeNotificationHubConnectionString(connectionString), notificationHubDescription.Path, true);
+        }
+
+        private bool UseFcmV1ForSend()
+        {
+            if (notificationHubDescription.FcmV1Credential == null)
+            {
+                return false;
+            }
+
+            return notificationHubDescription.FcmCredential == null || cboGcmSendFormat.SelectedIndex != 1;
         }
 
         private async void btnSend_Click(object sender, EventArgs e)
@@ -1580,14 +1604,14 @@ namespace ServiceBusExplorer.Controls
                     case GoogleNativeNotificationPage:
                         if (!string.IsNullOrWhiteSpace(gcmPayload))
                         {
+                            var useFcmV1 = UseFcmV1ForSend();
                             var serializer = new JavaScriptSerializer();
                             try
                             {
-                                serializer.Deserialize<dynamic>(gcmPayload);
-                                if (notificationHubDescription.FcmV1Credential != null)
+                                var payload = serializer.Deserialize<Dictionary<string, object>>(gcmPayload);
+                                if (useFcmV1)
                                 {
-                                    var payload = serializer.Deserialize<Dictionary<string, object>>(gcmPayload);
-                                    if (payload == null || !payload.ContainsKey("message"))
+                                    if (payload == null || !payload.TryGetValue("message", out var message) || !(message is Dictionary<string, object>))
                                     {
                                         writeToLog("FCM HTTP v1 payloads must include a root 'message' object.", false);
                                         return;
@@ -1602,7 +1626,7 @@ namespace ServiceBusExplorer.Controls
                             var headers = NotificationInfo.GcmHeaders.ToDictionary(p => p.Name, p => p.Value);
                             tags = NotificationInfo.GcmTags.Select(t => t.Tag).ToArray();
                             tagExpression = txtGcmTagExpression.Text;
-                            notification = notificationHubDescription.FcmV1Credential != null
+                            notification = useFcmV1
                                                ? (Notification)new FcmV1Notification(gcmPayload) { Headers = headers }
                                                : new FcmNotification(gcmPayload) { Headers = headers };
                         }
@@ -2070,7 +2094,7 @@ namespace ServiceBusExplorer.Controls
                         description.WnsCredential = new WnsCredential(txtPackageSid.Text, txtClientSecret.Text);
                     }
 
-                    SetFcmCredential(description, txtGcmApiKey.Text);
+                    ApplyFcmCredentials(description, txtGcmApiKey.Text, pendingFcmV1Credential, removeLegacyFcm, removeFcmV1);
 
                     if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) &&
                         !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
@@ -2153,7 +2177,7 @@ namespace ServiceBusExplorer.Controls
                             }
                             else
                             {
-                                throw new NotSupportedException("Claim-based Notification Hubs authorization rules are no longer supported. Use a shared access authorization rule instead.");
+                                throw new NotSupportedException("Notification Hubs authorization rule creation is not supported for non-cloud namespaces by this SDK. Use an Azure Notification Hubs namespace.");
                             }
                         }
                     }
@@ -2212,7 +2236,8 @@ namespace ServiceBusExplorer.Controls
                                                                ? new WnsCredential(txtPackageSid.Text, txtClientSecret.Text)
                                                                : null;
 
-                    SetFcmCredential(notificationHubDescription, txtGcmApiKey.Text);
+                    ApplyFcmCredentials(notificationHubDescription, txtGcmApiKey.Text,
+                        pendingFcmV1Credential, removeLegacyFcm, removeFcmV1);
 
                     if (!string.IsNullOrWhiteSpace(mpnsCredentialCertificatePath) && !string.IsNullOrWhiteSpace(mpnsCredentialCertificateKey))
                     {
@@ -2286,7 +2311,7 @@ namespace ServiceBusExplorer.Controls
                             }
                             else
                             {
-                                throw new NotSupportedException("Claim-based Notification Hubs authorization rules are no longer supported. Use a shared access authorization rule instead.");
+                                throw new NotSupportedException("Notification Hubs authorization rule creation is not supported for non-cloud namespaces by this SDK. Use an Azure Notification Hubs namespace.");
                             }
                         }
                     }
@@ -3011,15 +3036,14 @@ namespace ServiceBusExplorer.Controls
                     }
                     break;
                 case BodyTemplate:
-                    if (registration is MpnsTemplateRegistrationDescription && e.ChangedItem.Value is string)
+                    if (UpdateTemplateProperty(registration, BodyTemplate, e.ChangedItem.Value))
                     {
-                        ((MpnsTemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
                         registrationsDataGridView.Tag = true;
-                        return;
                     }
-                    if (registration is WindowsTemplateRegistrationDescription && e.ChangedItem.Value is string)
+                    break;
+                case nameof(FcmV1TemplateRegistrationDescription.TemplateName):
+                    if (UpdateTemplateProperty(registration, e.ChangedItem.Label, e.ChangedItem.Value))
                     {
-                        ((WindowsTemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
                         registrationsDataGridView.Tag = true;
                     }
                     break;
@@ -3060,6 +3084,71 @@ namespace ServiceBusExplorer.Controls
                     }
                     break;
             }
+        }
+
+        internal static bool UpdateTemplateProperty(RegistrationDescription registration, string propertyName, object value)
+        {
+            // SDK 4.2 has separate platform subclasses, not a common template base.
+            if (propertyName == BodyTemplate && value is string body)
+            {
+                switch (registration)
+                {
+                    case AppleTemplateRegistrationDescription template:
+                        template.BodyTemplate = new CDataMember(body);
+                        return true;
+                    case WindowsTemplateRegistrationDescription template:
+                        template.BodyTemplate = new CDataMember(body);
+                        return true;
+                    case MpnsTemplateRegistrationDescription template:
+                        template.BodyTemplate = new CDataMember(body);
+                        return true;
+                    case FcmTemplateRegistrationDescription template:
+                        template.BodyTemplate = new CDataMember(body);
+                        return true;
+                    case FcmV1TemplateRegistrationDescription template:
+                        template.BodyTemplate = new CDataMember(body);
+                        return true;
+                }
+            }
+            if (propertyName == "TemplateName" && (value == null || value is string))
+            {
+                switch (registration)
+                {
+                    case AppleTemplateRegistrationDescription template:
+                        template.TemplateName = value as string;
+                        return true;
+                    case WindowsTemplateRegistrationDescription template:
+                        template.TemplateName = value as string;
+                        return true;
+                    case MpnsTemplateRegistrationDescription template:
+                        template.TemplateName = value as string;
+                        return true;
+                    case FcmTemplateRegistrationDescription template:
+                        template.TemplateName = value as string;
+                        return true;
+                    case FcmV1TemplateRegistrationDescription template:
+                        template.TemplateName = value as string;
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        internal static FcmV1TemplateRegistrationDescription CreateFcmV1TemplateRegistration(CustomObject properties, ISet<string> tags)
+        {
+            var bodyTemplate = properties.Properties.Any(p => string.Equals(p.Name, BodyTemplate, StringComparison.InvariantCultureIgnoreCase))
+                ? properties[BodyTemplate] as string : null;
+            var registration = tags != null && tags.Count > 0 ?
+                new FcmV1TemplateRegistrationDescription(properties[FcmV1RegistrationId] as string, bodyTemplate, tags) :
+                string.IsNullOrWhiteSpace(bodyTemplate) ?
+                new FcmV1TemplateRegistrationDescription(properties[FcmV1RegistrationId] as string) :
+                new FcmV1TemplateRegistrationDescription(properties[FcmV1RegistrationId] as string, bodyTemplate);
+            var name = nameof(FcmV1TemplateRegistrationDescription.TemplateName);
+            if (properties.Properties.Any(p => string.Equals(p.Name, name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                registration.TemplateName = properties[name] as string;
+            }
+            return registration;
         }
 
         private async void btnCreateRegistration_Click(object sender, EventArgs e)
@@ -3126,6 +3215,7 @@ namespace ServiceBusExplorer.Controls
                                                                                form.RegistrationObject[BodyTemplate] as string,
                                                                                mpnsHeaders,
                                                                                tags);
+                    UpdateTemplateProperty(registration, "TemplateName", form.RegistrationObject["TemplateName"]);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
@@ -3179,6 +3269,7 @@ namespace ServiceBusExplorer.Controls
                                                                                   form.RegistrationObject[BodyTemplate] as string,
                                                                                   wnsHeaders,
                                                                                   tags);
+                    UpdateTemplateProperty(registration, "TemplateName", form.RegistrationObject["TemplateName"]);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
@@ -3220,6 +3311,7 @@ namespace ServiceBusExplorer.Controls
                                        string.IsNullOrWhiteSpace(bodyTemplate) ?
                                        new AppleTemplateRegistrationDescription(form.RegistrationObject[DeviceToken] as string) :
                                        new AppleTemplateRegistrationDescription(form.RegistrationObject[DeviceToken] as string, bodyTemplate);
+                    UpdateTemplateProperty(registration, "TemplateName", form.RegistrationObject["TemplateName"]);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
@@ -3261,6 +3353,7 @@ namespace ServiceBusExplorer.Controls
                                        string.IsNullOrWhiteSpace(bodyTemplate) ?
                                        new FcmTemplateRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string) :
                                        new FcmTemplateRegistrationDescription(form.RegistrationObject[FcmRegistrationId] as string, bodyTemplate);
+                    UpdateTemplateProperty(registration, "TemplateName", form.RegistrationObject["TemplateName"]);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
@@ -3294,14 +3387,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 else if (form.RegistrationType == typeof(FcmV1TemplateRegistrationDescription))
                 {
-                    var bodyTemplate = form.RegistrationObject.Properties.Any(p => string.Compare(p.Name, BodyTemplate, StringComparison.InvariantCultureIgnoreCase) == 0)
-                                           ? form.RegistrationObject[BodyTemplate] as string
-                                           : null;
-                    var registration = tags != null && tags.Count > 0 ?
-                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, bodyTemplate, tags) :
-                                       string.IsNullOrWhiteSpace(bodyTemplate) ?
-                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string) :
-                                       new FcmV1TemplateRegistrationDescription(form.RegistrationObject[FcmV1RegistrationId] as string, bodyTemplate);
+                    var registration = CreateFcmV1TemplateRegistration(form.RegistrationObject, tags);
                     registration = await notificationHubClient.CreateRegistrationAsync(registration);
                     registrationInfo = new RegistrationInfo
                     {
@@ -3367,8 +3453,8 @@ namespace ServiceBusExplorer.Controls
                 int columnWidth;
                 if (serviceBusHelper.IsCloudNamespace)
                 {
-                    columnWidth = width / 8;
-                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (7 * columnWidth);
+                    columnWidth = width / 6;
+                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (5 * columnWidth);
                     if (authorizationRulesDataGridView.Columns["KeyName"] != null &&
                         authorizationRulesDataGridView.Columns["PrimaryKey"] != null &&
                         authorizationRulesDataGridView.Columns["SecondaryKey"] != null)
@@ -3380,8 +3466,8 @@ namespace ServiceBusExplorer.Controls
                 }
                 else
                 {
-                    columnWidth = width / 5;
-                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (4 * columnWidth);
+                    columnWidth = width / 3;
+                    authorizationRulesDataGridView.Columns["IssuerName"].Width = width - (2 * columnWidth);
                 }
                 authorizationRulesDataGridView.Columns["ClaimType"].Width = columnWidth;
                 authorizationRulesDataGridView.Columns["ClaimValue"].Width = columnWidth;
@@ -3491,32 +3577,60 @@ namespace ServiceBusExplorer.Controls
 
         private void btnClearGcmNotification_Click(object sender, EventArgs e)
         {
-            txtGcmApiKey.Text = null;
+            txtGcmApiKey.Text = string.Empty;
+            removeLegacyFcm = true;
+            lblGcmApiKey.Text = "Legacy key: removal pending";
         }
 
-        private static void SetFcmCredential(NotificationHubDescription description, string credentialText)
+        private void LoadFcmV1Credential(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(credentialText))
+            using (var dialog = new OpenFileDialog { Filter = "Service-account JSON (*.json)|*.json|All files (*.*)|*.*" })
             {
-                description.FcmCredential = null;
-                description.FcmV1Credential = null;
-                return;
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                try
+                {
+                    var json = System.IO.File.ReadAllText(dialog.FileName);
+                    // Validate before retaining the replacement; no private key is displayed.
+                    var replacement = ParseFcmV1Credential(json);
+                    pendingFcmV1Credential = replacement;
+                    removeFcmV1 = false;
+                    lblGcmEndpoint.Text = "FCM v1 replacement: " + replacement.ClientEmail;
+                }
+                catch (Exception)
+                {
+                    writeToLog("Unable to load FCM v1 credentials. Select valid service-account JSON containing private_key, project_id and client_email.", false);
+                }
             }
+        }
 
-            var trimmedCredential = credentialText.Trim();
-            if (trimmedCredential.StartsWith("{", StringComparison.Ordinal))
+        internal static FcmV1Credential ParseFcmV1Credential(string json)
+        {
+            var account = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(json);
+            return new FcmV1Credential(GetServiceAccountValue(account, "private_key"),
+                GetServiceAccountValue(account, "project_id"), GetServiceAccountValue(account, "client_email"));
+        }
+
+        internal static void ApplyFcmCredentials(NotificationHubDescription description, string legacyKey,
+            FcmV1Credential replacement, bool removeLegacy, bool removeV1)
+        {
+            if (!string.IsNullOrWhiteSpace(legacyKey))
             {
-                var serviceAccount = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(trimmedCredential);
-                description.FcmV1Credential = new FcmV1Credential(
-                    GetServiceAccountValue(serviceAccount, "private_key"),
-                    GetServiceAccountValue(serviceAccount, "project_id"),
-                    GetServiceAccountValue(serviceAccount, "client_email"));
-                description.FcmCredential = null;
-                return;
+                // Update in place to retain custom endpoints and other SDK properties.
+                var credential = description.FcmCredential ?? new FcmCredential();
+                credential.GoogleApiKey = legacyKey.Trim();
+                description.FcmCredential = credential;
             }
+            else if (removeLegacy) description.FcmCredential = null;
 
-            description.FcmCredential = new FcmCredential(trimmedCredential);
-            description.FcmV1Credential = null;
+            if (replacement != null)
+            {
+                var credential = description.FcmV1Credential ?? replacement;
+                credential.PrivateKey = replacement.PrivateKey;
+                credential.ProjectId = replacement.ProjectId;
+                credential.ClientEmail = replacement.ClientEmail;
+                description.FcmV1Credential = credential;
+            }
+            else if (removeV1) description.FcmV1Credential = null;
         }
 
         private static string GetServiceAccountValue(IDictionary<string, object> serviceAccount, string name)

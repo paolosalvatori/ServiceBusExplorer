@@ -78,10 +78,16 @@ Windows/live Azure checks still required:
 
 ### November 18 review follow-up
 
-- Notification Hubs review fixes belong to #908 (verified at `6b521728`). #909's competing credential/template edits and test were removed; inherited #908 base content is unchanged. The branches still require reconciliation in dependency order before merging.
+- Notification Hubs dependency reconciled with #908 at `bf8c7aa0369e3930977cd1e5a17fdf30e29c30db`. Its control and three regression-test files are copied exactly (the designer differs only by two trimmed comment-line spaces); its NH-only settings/connection normalization blocks are integrated into the shared helper. #909 now carries the same final credential/template behavior, without competing variants or changes to #908.
 - `EventHubClientCleanupTests` covers concurrent producer disposal (including a synchronous failure) and shared-consumer lifetime until all partition readers have completed or failed.
 - `EventHubCheckpointBatchTests` covers count/timed idle flush, stop flush of the last successful event, disable/re-enable behavior, and a failed checkpoint retry. Checkpoints update the existing in-memory store; file persistence remains at application close. The store is synchronized across partition readers.
 - `EventHubBatchRetryTests` also verifies acknowledged group counts/logs on partial failure and excludes failed-attempt/backoff time from latency.
 - `ServiceBusHelperEntraTests.EventHubFactoriesAcceptModernConnectionStrings` constructs producer/consumer clients from namespace/entity-scoped strings and strings with an existing transport option without legacy rewriting.
 
 Additional Windows/live Azure checks: grow the sender count after a run, repeat after a sender fault, and close the sending tab during a slow send/close. Verify responsiveness and no retained producer connections. Start/stop a multi-partition listener repeatedly and verify only its shared consumer owns the connection; closing one reader must not close the consumer under other readers. Verify partial checkpoint batches flush on idle/stop and replay still starts before a failed inspector event.
+
+### Notification Hubs dependency reconciliation
+
+Retained #908's complete `FcmTemplateRegistrationTests`, `NotificationHubConnectionStringTests`, and `NotificationHubReviewRegressionTests` (23 cases). They cover both legacy FCM/v1 body writebacks and modification reporting; template names and creation; preserving unedited credentials; removing only the selected credential; replacement values and legacy custom endpoints; and connection normalization.
+
+Manual Windows/live Azure validation remains required for replacement-only credential inputs, loading v1 JSON, legacy/v1 send selection, saving and reloading both template types, and explicit per-credential removal. These tests were not performed in the Linux environment.

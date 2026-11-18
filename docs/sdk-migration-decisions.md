@@ -43,10 +43,15 @@ is available upstream or its PR merges, an upstream PR targets `main` and
 includes its ancestors. Merge in issue order and rebase later branches if
 an earlier PR is squash-merged; do not merge a later PR independently.
 
-The November 18 #909 review removes its competing Notification Hubs follow-up edits
-relative to the inherited `6692ae4` base; #908 owns the FCM credential/template fixes.
-This preserves signed history and does not update or merge either PR. Reconcile the
-stack with #908's final content before merging #909.
+The November 18 #909 dependency reconciliation incorporates #908's final Notification
+Hubs content at `bf8c7aa0369e3930977cd1e5a17fdf30e29c30db`. The NH control, designer,
+and three regression-test files match that head (only two trailing comment spaces are trimmed in the designer); the shared ServiceBusHelper
+contains the same NH settings and connection normalization while retaining #909's
+Event Hubs changes. Legacy and v1 credentials are preserved unless explicitly
+replaced/removed, and both FCM template bodies write back through the same handler.
+This is a new signed commit, without rewriting history or modifying/merging #908.
+#909 therefore no longer depends on a future content reconciliation to obtain these
+FCM fixes; the existing PR merge-order guidance still applies to the stacked history.
 
 Partition readers share the listener's metadata consumer. Stop waits for readers
 (and their final successful checkpoint flush) without closing that reusable client;
