@@ -2951,24 +2951,6 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        internal static bool UpdateRegistrationBodyTemplate(RegistrationDescription registration, string body)
-        {
-            switch (registration)
-            {
-                case FcmV1TemplateRegistrationDescription fcmV1:
-                    fcmV1.BodyTemplate = new CDataMember(body);
-                    return true;
-                case MpnsTemplateRegistrationDescription mpns:
-                    mpns.BodyTemplate = new CDataMember(body);
-                    return true;
-                case WindowsTemplateRegistrationDescription windows:
-                    windows.BodyTemplate = new CDataMember(body);
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         private void sessionPropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             var bindingList = registrationsBindingSource.DataSource as SortableBindingList<RegistrationInfo>;
@@ -3029,9 +3011,15 @@ namespace ServiceBusExplorer.Controls
                     }
                     break;
                 case BodyTemplate:
-                    if (e.ChangedItem.Value is string bodyTemplate &&
-                        UpdateRegistrationBodyTemplate(registration, bodyTemplate))
+                    if (registration is MpnsTemplateRegistrationDescription && e.ChangedItem.Value is string)
                     {
+                        ((MpnsTemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
+                        registrationsDataGridView.Tag = true;
+                        return;
+                    }
+                    if (registration is WindowsTemplateRegistrationDescription && e.ChangedItem.Value is string)
+                    {
+                        ((WindowsTemplateRegistrationDescription)registration).BodyTemplate = new CDataMember(e.ChangedItem.Value as string);
                         registrationsDataGridView.Tag = true;
                     }
                     break;
@@ -3523,6 +3511,7 @@ namespace ServiceBusExplorer.Controls
                     GetServiceAccountValue(serviceAccount, "private_key"),
                     GetServiceAccountValue(serviceAccount, "project_id"),
                     GetServiceAccountValue(serviceAccount, "client_email"));
+                description.FcmCredential = null;
                 return;
             }
 

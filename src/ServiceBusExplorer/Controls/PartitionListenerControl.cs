@@ -157,6 +157,7 @@ namespace ServiceBusExplorer.Controls
         private readonly string eventHubPath;
         private readonly EventHubConsumerClient eventHubMetadataClient;
         private readonly List<Task> partitionReadTasks = new List<Task>();
+        private Task stopListenerTask = Task.CompletedTask;
         private bool clearing;
         private bool cleared;
         private readonly string iotHubConnectionString;
@@ -220,11 +221,20 @@ namespace ServiceBusExplorer.Controls
         #region Private Methods
         private async void ListenerControl_Disposed(object sender, EventArgs e)
         {
-            await StopListenerAsync();
-            if (eventHubMetadataClient != null)
+            try
             {
-                await eventHubMetadataClient.DisposeAsync();
+                // The metadata client is shared by every partition reader and remains open across Stop/Start.
+                var readers = partitionReadTasks.ToArray();
+                try { await StopListenerAsync(); }
+                finally
+                {
+                    if (eventHubMetadataClient != null)
+                    {
+                        await EventHubClientCleanup.DisposeConsumerAfterReadersAsync(eventHubMetadataClient, readers);
+                    }
+                }
             }
+            catch (Exception ex) { HandleException(ex); }
         }
 
         private async Task LoadPartitionPropertiesAsync(EventHubConsumerClient client, IEnumerable<string> partitionIds)
@@ -871,10 +881,7 @@ namespace ServiceBusExplorer.Controls
                                 : ModernEventPosition.FromOffset(lease.Offset, offsetInclusive);
                         }
 
-                        var consumerClient = serviceBusHelper.CreateEventHubConsumerClient(eventHub,
-                                                                                          consumerGroupName,
-                                                                                          iotHubConnectionString);
-                        partitionReadTasks.Add(Task.Run(() => ReadPartitionAsync(consumerClient,
+                        partitionReadTasks.Add(Task.Run(() => ReadPartitionAsync(eventHubMetadataClient,
                                                                                  partitionRuntimeInformation.Id,
                                                                                  startingPosition,
                                                                                  ns,
@@ -940,12 +947,17 @@ namespace ServiceBusExplorer.Controls
                                               TimeSpan receiveTimeout,
                                               CancellationToken cancellationToken)
         {
+            var checkpointInterval = TimeSpan.FromSeconds(5);
+            var checkpoints = new EventHubCheckpointBatch(maxBatchSize, checkpointInterval,
+                lease => EventProcessorCheckpointHelper.CheckpointAsync(ns, eventHub, consumerGroupName, lease, lease.Offset));
             try
             {
                 var readOptions = new ReadEventOptions
                 {
                     CacheEventCount = maxBatchSize,
-                    MaximumWaitTime = receiveTimeout,
+                    // Idle reads also wake up to flush a partial checkpoint batch.
+                    MaximumWaitTime = receiveTimeout > TimeSpan.Zero && receiveTimeout < checkpointInterval
+                        ? receiveTimeout : checkpointInterval,
                     TrackLastEnqueuedEventProperties = true
                 };
 
@@ -962,10 +974,12 @@ namespace ServiceBusExplorer.Controls
                     var data = partitionEvent.Data;
                     if (data == null)
                     {
+                        await checkpoints.FlushIfDueAsync(checkpointEnabled).ConfigureAwait(false);
                         continue;
                     }
 
-                    var eventData = new EventData(new MemoryStream(data.EventBody.ToArray()))
+                    var body = data.EventBody.ToArray();
+                    var eventData = new EventData(new MemoryStream(body))
                     {
                         PartitionKey = data.PartitionKey,
                         SequenceNumber = data.SequenceNumber,
@@ -1016,7 +1030,7 @@ namespace ServiceBusExplorer.Controls
                                                                             data.PartitionKey,
                                                                             data.SequenceNumber,
                                                                             data.OffsetString,
-                                                                            data.EventBody.ToArray().Length,
+                                                                            body.Length,
                                                                             data.EnqueuedTime.UtcDateTime));
                             }
                         }
@@ -1026,22 +1040,14 @@ namespace ServiceBusExplorer.Controls
                         eventData.Dispose();
                     }
 
-                    UpdateStatistics(1, GetElapsedTime(), data.EventBody.ToArray().Length);
-                    if (checkpointEnabled)
+                    UpdateStatistics(1, GetElapsedTime(), body.Length);
+                    await checkpoints.ProcessedAsync(new Lease
                     {
-                        await EventProcessorCheckpointHelper.CheckpointAsync(
-                            ns,
-                            eventHub,
-                            consumerGroupName,
-                            new Lease
-                            {
-                                PartitionId = partitionId,
-                                SequenceNumber = data.SequenceNumber,
-                                Offset = data.OffsetString,
-                                Owner = "ServiceBusExplorer"
-                            },
-                            data.OffsetString);
-                    }
+                        PartitionId = partitionId,
+                        SequenceNumber = data.SequenceNumber,
+                        Offset = data.OffsetString,
+                        Owner = "ServiceBusExplorer"
+                    }, checkpointEnabled).ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -1056,7 +1062,9 @@ namespace ServiceBusExplorer.Controls
             {
                 try
                 {
-                    await consumerClient.DisposeAsync().ConfigureAwait(false);
+                    // Includes normal stop/cancellation and inspector failure: pending is always
+                    // the last successful event, never the event that failed inspection.
+                    await checkpoints.FlushAsync(checkpointEnabled).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -1337,7 +1345,15 @@ namespace ServiceBusExplorer.Controls
             GetPartitionRuntimeInformation();
         }
 
-        private async Task StopListenerAsync()
+        private Task StopListenerAsync()
+        {
+            // All callers run on the UI thread; overlapping close/failure/stop share cleanup.
+            if (!stopListenerTask.IsCompleted) return stopListenerTask;
+            stopListenerTask = StopListenerCoreAsync();
+            return stopListenerTask;
+        }
+
+        private async Task StopListenerCoreAsync()
         {
             cancellationTokenSource?.Cancel();
             lock (this)

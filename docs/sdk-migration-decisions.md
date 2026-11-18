@@ -42,3 +42,15 @@ branch that exists only in a contributor's fork. Until the preceding branch
 is available upstream or its PR merges, an upstream PR targets `main` and
 includes its ancestors. Merge in issue order and rebase later branches if
 an earlier PR is squash-merged; do not merge a later PR independently.
+
+The November 18 #909 review removes its competing Notification Hubs follow-up edits
+relative to the inherited `6692ae4` base; #908 owns the FCM credential/template fixes.
+This preserves signed history and does not update or merge either PR. Reconcile the
+stack with #908's final content before merging #909.
+
+Partition readers share the listener's metadata consumer. Stop waits for readers
+(and their final successful checkpoint flush) without closing that reusable client;
+control disposal closes it once all readers finish. Checkpoint batches use the
+configured maximum batch size or a five-second interval, including idle reads.
+Only successfully processed events advance the pending position. The existing
+checkpoint store remains in memory until application-close persistence.
