@@ -90,19 +90,22 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
         /// </summary>
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
-        public ServiceBusClient CreateServiceBusClient()
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
         {
+            var options = new ServiceBusClientOptions
+            {
+                TransportType = this.TransportType,
+                EnableCrossEntityTransactions = enableCrossEntityTransactions
+            };
             if (IsEntra)
             {
                 return new ServiceBusClient(
                     FullyQualifiedNamespace,
                     EntraTokenCredential,
-                    new ServiceBusClientOptions { TransportType = this.TransportType });
+                    options);
             }
 
-            return new ServiceBusClient(
-                ConnectionString,
-                new ServiceBusClientOptions { TransportType = this.TransportType });
+            return new ServiceBusClient(ConnectionString, options);
         }
 
         /// <summary>

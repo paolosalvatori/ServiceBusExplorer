@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceBus.Messaging;
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
 using System;
@@ -19,10 +20,13 @@ namespace ServiceBusExplorer.WindowsAzure
      
         private readonly string servicePath = string.Empty;      
 
-        public ServiceBusQueue(ServiceBusNamespace serviceBusNamespace, Microsoft.ServiceBus.NamespaceManager namespaceManager)
-            : base(serviceBusNamespace, namespaceManager)
+        public ServiceBusQueue(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager)
+            : base(serviceBusNamespace, namespaceManager.Address)
         {
+            ManagementClient = namespaceManager;
         }
+
+        private ServiceBusManagementClient ManagementClient { get; }
 
         protected override EntityType EntityType => EntityType.Queue;
 
@@ -34,41 +38,11 @@ namespace ServiceBusExplorer.WindowsAzure
         /// an empty collection if no queue exists in this service namespace.</returns>
         public IEnumerable<QueueDescription> GetQueues(string filter, int timeoutInSeconds)
         {
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
                 if (string.IsNullOrEmpty(ServiceBusNamespace.EntityPath))
                 {
-                    var taskList = new List<Task>();
-                    //Documentation states AND is the only logical clause allowed in the filter (And FYI a maximum of only 3 filter expressions allowed)
-                    //https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.namespacemanager.getqueuesasync?view=azure-dotnet#Microsoft_ServiceBus_NamespaceManager_GetQueuesAsync_System_String_
-                    //Split on ' OR ' and combine queues returned
-                    IEnumerable<QueueDescription> queues = new List<QueueDescription>();
-                    var filters = new List<string>();
-                    if (string.IsNullOrWhiteSpace(filter))
-                    {
-                        filters.Add(filter);
-                    }
-                    else
-                    {
-                        filters = filter.ToLowerInvariant().Split(new[] { " or " }, StringSplitOptions.None).ToList();
-                    }
-                    foreach (var splitFilter in filters)
-                    {
-                        var task = string.IsNullOrWhiteSpace(filter) ? NamespaceManager.GetQueuesAsync() : NamespaceManager.GetQueuesAsync(splitFilter);
-                        taskList.Add(task);
-                        taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-                        Task.WaitAny(taskList.ToArray());
-                        if (task.IsCompleted)
-                        {
-                            queues = queues.Union(task.Result);
-                            taskList.Clear();
-                        }
-                        else
-                        {
-                            throw new TimeoutException();
-                        }
-                    }
-                    return queues;
+                    return ManagementClient.GetQueues(filter, timeoutInSeconds);
                 }
 
                 try
@@ -77,11 +51,16 @@ namespace ServiceBusExplorer.WindowsAzure
                         GetQueueUsingEntityPath(timeoutInSeconds)
                     };
                 }
-                catch (MessagingException ex) when (!ex.IsTransient)
+                catch (Azure.RequestFailedException ex) when (ex.Status == 404)
                 {
                     // EntityPath refers to a non-queue entity (e.g. event hub) — return empty list.
                     // Logging is handled by the caller (MainForm.ShowEntities) to avoid duplicate
                     // messages, since this method is also invoked from DashboardControl.LoadDataAsync.
+                    return new List<QueueDescription>();
+                }
+                catch (Azure.Messaging.ServiceBus.ServiceBusException ex) when (
+                    ex.Reason == Azure.Messaging.ServiceBus.ServiceBusFailureReason.MessagingEntityNotFound)
+                {
                     return new List<QueueDescription>();
                 }
             }
@@ -99,9 +78,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(PathCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetQueue(path), WriteToLog);
+                return RetryHelper.RetryFunc(() => ManagementClient.GetQueue(path), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -121,8 +100,8 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 var uriBuilder = new UriBuilder
                 {
-                    Host = NamespaceManager.Address.Host,
-                    Path = $"{NamespaceManager.Address.AbsolutePath}/{queuePath}",
+                    Host = ManagementClient.Address.Host,
+                    Path = $"{ManagementClient.Address.AbsolutePath}/{queuePath}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -144,8 +123,8 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 var uriBuilder = new UriBuilder
                 {
-                    Host = NamespaceManager.Address.Host,
-                    Path = $"{NamespaceManager.Address.AbsolutePath}/{QueueClient.FormatDeadLetterPath(queuePath)}",
+                    Host = ManagementClient.Address.Host,
+                    Path = $"{ManagementClient.Address.AbsolutePath}/{QueueClient.FormatDeadLetterPath(queuePath)}",
                     Scheme = "sb",
                 };
                 return uriBuilder.Uri;
@@ -163,9 +142,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                var queue = RetryHelper.RetryFunc(() => NamespaceManager.CreateQueue(description), WriteToLog);
+                var queue = RetryHelper.RetryFunc(() => ManagementClient.CreateQueue(description), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, QueueCreated, description.Path));
                 OnCreated(queue);
                 return queue;
@@ -184,9 +163,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(DescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                var queue = RetryHelper.RetryFunc(() => NamespaceManager.UpdateQueue(description), WriteToLog);
+                var queue = RetryHelper.RetryFunc(() => ManagementClient.UpdateQueue(description), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, QueueUpdated, description.Path));
                 OnCreated(queue);
                 return queue;
@@ -218,9 +197,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(QueueDescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteQueueAsync(queueDescription.Path), WriteToLog);
+                await RetryHelper.RetryActionAsync(() => ManagementClient.DeleteQueueAsync(queueDescription.Path), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, QueueDeleted, queueDescription.Path));
                 OnDeleted(queueDescription);
             }
@@ -246,9 +225,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(NewPathCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                var queueDescription = RetryHelper.RetryFunc(() => NamespaceManager.RenameQueue(path, newPath), WriteToLog);
+                var queueDescription = RetryHelper.RetryFunc(() => ManagementClient.RenameQueue(path, newPath), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, QueueRenamed, path, newPath));
                 OnDeleted(new QueueDescription(path));
                 OnCreated(queueDescription);
@@ -259,23 +238,7 @@ namespace ServiceBusExplorer.WindowsAzure
 
         private QueueDescription GetQueueUsingEntityPath(int timeoutInSeconds)
         {
-            var taskList = new List<Task>();
-            var getQueueTask = NamespaceManager.GetQueueAsync(ServiceBusNamespace.EntityPath);
-            taskList.Add(getQueueTask);
-            taskList.Add(Task.Delay(TimeSpan.FromSeconds(timeoutInSeconds)));
-            Task.WaitAny(taskList.ToArray());
-            if (getQueueTask.IsCompleted)
-            {
-                try
-                {
-                    return getQueueTask.Result;
-                }
-                catch (AggregateException ex)
-                {
-                    throw ex.InnerExceptions.First();
-                }
-            }
-            throw new TimeoutException();
+            return ManagementClient.GetQueue(ServiceBusNamespace.EntityPath, timeoutInSeconds);
         }
 
         private async Task DeleteQueue(string path)
@@ -284,9 +247,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(PathCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                await RetryHelper.RetryActionAsync(() => NamespaceManager.DeleteQueueAsync(path), WriteToLog);
+                await RetryHelper.RetryActionAsync(() => ManagementClient.DeleteQueueAsync(path), WriteToLog);
                 Log(string.Format(CultureInfo.CurrentCulture, QueueDeleted, path));
                 OnDeleted(new QueueDescription(path));
             }
