@@ -3042,11 +3042,6 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                var bindingList = registrationsBindingSource.DataSource as SortableBindingList<RegistrationInfo>;
-                if (bindingList == null)
-                {
-                    return;
-                }
                 var tagsAsList = form.RegistrationObject[Tags] as List<TagInfo>;
                 HashSet<string> tags = null;
                 if (tagsAsList != null)
@@ -3249,10 +3244,12 @@ namespace ServiceBusExplorer.Controls
                 writeToLog(string.Format(RegistrationCreatedMessage,
                                          registrationInfo.PlatformType,
                                          notificationHubDescription.Path));
+                if (!(registrationsBindingSource.DataSource is SortableBindingList<RegistrationInfo> bindingList))
+                {
+                    bindingList = new SortableBindingList<RegistrationInfo>();
+                    registrationsBindingSource.DataSource = bindingList;
+                }
                 bindingList.Add(registrationInfo);
-                registrationsBindingSource.DataSource = null;
-                registrationsBindingSource.DataSource = new SortableBindingList<RegistrationInfo>(RegistrationInfo.Registrations);
-                registrationsDataGridView.DataSource = registrationsBindingSource;
             }
         }
 
