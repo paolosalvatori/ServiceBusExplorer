@@ -6450,7 +6450,7 @@ namespace ServiceBusExplorer.Forms
             node.ForeColor = Color.Empty;
         }
 
-        static (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
+        internal static (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
         {
             return tag switch
             {
@@ -6466,7 +6466,10 @@ namespace ServiceBusExplorer.Forms
                 SubscriptionWrapper subscriptionWrapper => (true, subscriptionWrapper.SubscriptionDescription?.MessageCountDetails ?? subscriptionWrapper.TopicDescription?.MessageCountDetails),
                 RuleWrapper ruleWrapper => (true, ruleWrapper.SubscriptionDescription.MessageCountDetails),
                 UrlSegmentWrapper _ => (false, null),
-                EventGridSubscriptionWrapper _ => (true, null),
+                EventGridNamespaceResource _ => (false, null),
+                NamespaceTopic _ => (false, null),
+                NamespaceTopicResource _ => (true, null),
+                EventGridSubscriptionWrapper wrapper => (wrapper.SubscriptionDescription != null, null),
                 _ => throw new NotSupportedException($"{tag.GetType().FullName} is not supported in {nameof(GetColorDataFromNodeTag)}")
             };
         }
