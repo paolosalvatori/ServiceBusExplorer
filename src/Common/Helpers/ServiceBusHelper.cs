@@ -4593,12 +4593,12 @@ namespace ServiceBusExplorer
             "Endpoint", "SharedAccessKeyName", "SharedAccessKey", "SharedAccessSignature"
         };
 
+        private const int MaxNotificationHubRetries = 100; // SDK-supported inclusive upper bound.
+
         /// <summary>
         /// Keeps only the connection string fields supported by the Notification Hubs SDK, dropping
         /// Service Bus specific settings such as TransportType that the SDK would fold into the key.
         /// </summary>
-        private const int MaxNotificationHubRetries = 100; // SDK-supported inclusive upper bound.
-
         public static string NormalizeNotificationHubConnectionString(string connectionString)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
