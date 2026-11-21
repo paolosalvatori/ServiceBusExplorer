@@ -51,13 +51,10 @@ namespace ServiceBusExplorer.Forms
         private const string WindowsTemplateRegistrationDescription = "WindowsTemplateRegistrationDescription";
         private const string AppleRegistrationDescription = "AppleRegistrationDescription";
         private const string AppleTemplateRegistrationDescription = "AppleTemplateRegistrationDescription";
-        private const string FcmRegistrationDescription = "FcmRegistrationDescription";
-        private const string FcmTemplateRegistrationDescription = "FcmTemplateRegistrationDescription";
         private const string FcmV1RegistrationDescription = "FcmV1RegistrationDescription";
         private const string FcmV1TemplateRegistrationDescription = "FcmV1TemplateRegistrationDescription";
         private const string DeviceToken = "DeviceToken";
         private const string ChannelUri = "ChannelUri";
-        private const string FcmRegistrationId = "FcmRegistrationId";
         private const string FcmV1RegistrationId = "FcmV1RegistrationId";
         private const string BodyTemplate = "BodyTemplate";
         private const string Tags = "Tags";
@@ -84,8 +81,6 @@ namespace ServiceBusExplorer.Forms
                                                             WindowsTemplateRegistrationDescription,
                                                             AppleRegistrationDescription,
                                                             AppleTemplateRegistrationDescription,
-                                                            FcmRegistrationDescription,
-                                                            FcmTemplateRegistrationDescription,
                                                             FcmV1RegistrationDescription,
                                                             FcmV1TemplateRegistrationDescription});
         }
@@ -195,7 +190,6 @@ namespace ServiceBusExplorer.Forms
                         Editor = p.Name == BodyTemplate ||
                                 p.Name == ChannelUri ||
                                 p.Name == DeviceToken ||
-                                p.Name == FcmRegistrationId ||
                                 p.Name == FcmV1RegistrationId ?
                                 new CustomTextEditor() as UITypeEditor :
                                 p.Name == Expressions ||
