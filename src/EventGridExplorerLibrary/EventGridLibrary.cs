@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,12 +25,14 @@ namespace EventGridExplorerLibrary
 
         #region Private Fields
         private readonly EventGridControlPlaneClient eventGridControlPlaneClient;
+        private readonly object topicRefreshLock = new object();
+        private long topicRefreshVersion;
         private volatile NamespaceClients clients = new NamespaceClients(null);
         private readonly TimeSpan receiveWait;
         private readonly WriteToLogDelegate writeToLog;
         #endregion
 
-        public EventGridLibrary(string subscriptionId, string apiVersion, int maxWaitTime, string customId, WriteToLogDelegate writeToLog)
+        public EventGridLibrary(string subscriptionId, int maxWaitTime, string customId, WriteToLogDelegate writeToLog)
             : this(new EventGridControlPlaneClient(subscriptionId, string.IsNullOrEmpty(customId) ? null : customId), maxWaitTime, writeToLog)
         {
         }
@@ -41,32 +44,33 @@ namespace EventGridExplorerLibrary
             this.writeToLog = writeToLog;
         }
 
-        public async Task<Response<EventGridNamespaceResource>> GetNamespacesAsync(string resourceGroupName, string namespaceName)
+        public async Task<Response<EventGridNamespaceResource>> GetNamespacesAsync(string resourceGroupName, string namespaceName,
+            CancellationToken cancellationToken = default)
         {
-            return await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetAsync();
+            return await eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName, NamespaceTopicEndpoint endpoint)
+        public async Task<IReadOnlyList<NamespaceTopicResource>> GetTopicsAsync(string resourceGroupName, string namespaceName,
+            NamespaceTopicEndpoint endpoint, CancellationToken cancellationToken = default)
         {
-            if (endpoint == null)
+            cancellationToken.ThrowIfCancellationRequested();
+            long version;
+            lock (topicRefreshLock)
             {
-                throw new ArgumentNullException(nameof(endpoint), "The Event Grid namespace endpoint is not loaded. Refresh the namespace and try again.");
+                version = ++topicRefreshVersion;
             }
 
-            var next = new NamespaceClients(endpoint.Address);
+            var next = new NamespaceClients(endpoint?.Address);
             var topics = new List<NamespaceTopicResource>();
             var collection = eventGridControlPlaneClient.GetNamespaceResource(resourceGroupName, namespaceName).GetNamespaceTopics();
-            var enumerator = collection.GetAllAsync().GetAsyncEnumerator();
+            var enumerator = collection.GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);
             try
             {
                 while (await enumerator.MoveNextAsync())
                 {
                     var topic = enumerator.Current;
-                    var keys = (await topic.GetSharedAccessKeysAsync()).Value;
-                    var credential = new AzureKeyCredential(keys.Key1);
-                    var name = topic.Data.Name;
-                    next.Topics[name] = (credential, CreateSenderClient(endpoint.Address, name, credential));
                     topics.Add(topic);
+                    next.Topics[topic.Data.Name] = new TopicState(topic);
                 }
             }
             finally
@@ -74,7 +78,14 @@ namespace EventGridExplorerLibrary
                 await enumerator.DisposeAsync();
             }
 
-            clients = next;
+            lock (topicRefreshLock)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (version == topicRefreshVersion)
+                {
+                    clients = next;
+                }
+            }
             return topics;
         }
 
@@ -113,7 +124,7 @@ namespace EventGridExplorerLibrary
         {
             var eventData = JsonSerializer.Deserialize<object>(eventDataJson);
             var cloudEvent = new CloudEvent(eventSource, eventType, eventData);
-            await clients.GetTopic(topicName).Sender.SendAsync(cloudEvent);
+            await WithTopicClientsAsync(topicName, topic => topic.Sender.Value.SendAsync(cloudEvent));
         }
 
         public async Task PublishEventsAsync(string topicName, string eventSource, string eventType, List<string> publishEvents)
@@ -126,15 +137,16 @@ namespace EventGridExplorerLibrary
                 cloudEvents[i] = new CloudEvent(eventSource, eventType, eventModel);
             }
 
-            await clients.GetTopic(topicName).Sender.SendAsync(cloudEvents);
+            await WithTopicClientsAsync(topicName, topic => topic.Sender.Value.SendAsync(cloudEvents));
         }
 
         public async Task<ReceiveResult> ReceiveEventsAsync(string topicName, string subscriptionName, int maxEventNum)
         {
             try
             {
-                var receiverClient = GetReceiverClient(topicName, subscriptionName);
-                return (await receiverClient.ReceiveAsync(maxEvents: maxEventNum, maxWaitTime: receiveWait)).Value;
+                var response = await WithTopicClientsAsync(topicName, topic => topic.GetReceiver(subscriptionName)
+                    .ReceiveAsync(maxEvents: maxEventNum, maxWaitTime: receiveWait));
+                return response.Value;
             }
             catch (Exception ex)
             {
@@ -150,25 +162,42 @@ namespace EventGridExplorerLibrary
                 IReadOnlyList<string> succeededLockTokens;
                 IReadOnlyList<FailedLockToken> failedLockTokens;
 
-                switch (action)
+                try
                 {
-                    case "Acknowledge":
-                        AcknowledgeResult acknowledgeResult = await GetReceiverClient(topicName, subscriptionName).AcknowledgeAsync(lockTokens);
-                        succeededLockTokens = acknowledgeResult.SucceededLockTokens;
-                        failedLockTokens = acknowledgeResult.FailedLockTokens;
-                        break;
-                    case "Release":
-                        ReleaseResult releaseResult = await GetReceiverClient(topicName, subscriptionName).ReleaseAsync(lockTokens);
-                        succeededLockTokens = releaseResult.SucceededLockTokens;
-                        failedLockTokens = releaseResult.FailedLockTokens;
-                        break;
-                    case "Reject":
-                        RejectResult rejectResult = await GetReceiverClient(topicName, subscriptionName).RejectAsync(lockTokens);
-                        succeededLockTokens = rejectResult.SucceededLockTokens;
-                        failedLockTokens = rejectResult.FailedLockTokens;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(action), action, "Use Acknowledge, Release, or Reject.");
+                    switch (action)
+                    {
+                        case "Acknowledge":
+                            AcknowledgeResult acknowledgeResult = await WithTopicClientsAsync(topicName, topic =>
+                                topic.GetReceiver(subscriptionName).AcknowledgeAsync(lockTokens));
+                            succeededLockTokens = acknowledgeResult.SucceededLockTokens;
+                            failedLockTokens = acknowledgeResult.FailedLockTokens;
+                            break;
+                        case "Release":
+                            ReleaseResult releaseResult = await WithTopicClientsAsync(topicName, topic =>
+                                topic.GetReceiver(subscriptionName).ReleaseAsync(lockTokens));
+                            succeededLockTokens = releaseResult.SucceededLockTokens;
+                            failedLockTokens = releaseResult.FailedLockTokens;
+                            break;
+                        case "Reject":
+                            RejectResult rejectResult = await WithTopicClientsAsync(topicName, topic =>
+                                topic.GetReceiver(subscriptionName).RejectAsync(lockTokens));
+                            succeededLockTokens = rejectResult.SucceededLockTokens;
+                            failedLockTokens = rejectResult.FailedLockTokens;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(action), action, "Use Acknowledge, Release, or Reject.");
+                    }
+                }
+                catch (EventGridDataPlaneException ex)
+                {
+                    writeToLog(ex.Message);
+                    return false;
+                }
+                catch (RequestFailedException ex)
+                {
+                    writeToLog($"Event Grid could not {action.ToLowerInvariant()} events for topic '{topicName}' (HTTP {ex.Status}). " +
+                        "The operation was not retried automatically.");
+                    return false;
                 }
 
                 writeToLog($"Event Action: {action}");
@@ -199,17 +228,76 @@ namespace EventGridExplorerLibrary
             return false;
         }
 
-        private EventGridReceiverClient GetReceiverClient(string topicName, string subscriptionName)
+        private async Task<TResult> WithTopicClientsAsync<TResult>(string topicName, Func<TopicClients, Task<TResult>> operation)
         {
             var current = clients;
             if (current.Endpoint == null)
             {
-                throw new InvalidOperationException("The Event Grid namespace endpoint is not loaded. Refresh the namespace topics and try again.");
+                throw new EventGridDataPlaneException("The Event Grid namespace endpoint is not loaded. Refresh the namespace topics and try again.");
             }
 
             var topic = current.GetTopic(topicName);
-            return current.Receivers.GetOrAdd((topicName, subscriptionName),
-                key => CreateReceiverClient(current.Endpoint, key.Topic, key.Subscription, topic.Credential));
+            var initialization = topic.GetOrStart(() => LoadTopicClientsAsync(current.Endpoint, topic.Resource, topicName));
+            TopicClients dataPlane;
+            try
+            {
+                dataPlane = await initialization;
+            }
+            catch
+            {
+                topic.Invalidate(initialization);
+                throw;
+            }
+
+            try
+            {
+                return await operation(dataPlane);
+            }
+            catch (RequestFailedException ex) when (ex.Status == 401)
+            {
+                // A concurrent retry may already have fetched a new key. Only discard ours.
+                topic.Invalidate(initialization);
+                throw new EventGridDataPlaneException(
+                    $"Event Grid rejected authorization for topic '{topicName}'. If its access key rotated, retry the operation to fetch the current key. " +
+                    "Also verify that local key authentication is enabled and the namespace is reachable. " +
+                    "The operation was not retried automatically.", ex);
+            }
+            catch (RequestFailedException ex) when (ex.Status == 403)
+            {
+                throw new EventGridDataPlaneException(
+                    $"Event Grid denied data-plane access to topic '{topicName}' (HTTP 403). Check local key authentication " +
+                    "and the namespace network access policy. The operation was not retried automatically.", ex);
+            }
+        }
+
+        private async Task<TopicClients> LoadTopicClientsAsync(Uri endpoint, NamespaceTopicResource resource, string topicName)
+        {
+            string key;
+            try
+            {
+                key = (await resource.GetSharedAccessKeysAsync()).Value?.Key1;
+            }
+            catch (RequestFailedException ex)
+            {
+                var advice = ex.Status == 429
+                    ? "Wait for throttling to clear and retry."
+                    : "For publish, pull or settlement, verify that your account can list topic keys and that local key authentication is enabled, then retry.";
+                throw new EventGridDataPlaneException(
+                    $"Could not read an access key for Event Grid topic '{topicName}' (HTTP {ex.Status}). Browsing is still available. " +
+                    advice, ex);
+            }
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new EventGridDataPlaneException(
+                    $"No access key was returned for Event Grid topic '{topicName}'. Browsing is still available. " +
+                    "Verify that local key authentication is enabled and retry.");
+            }
+
+            var credential = new AzureKeyCredential(key);
+            return new TopicClients(
+                () => CreateSenderClient(endpoint, topicName, credential),
+                subscription => CreateReceiverClient(endpoint, topicName, subscription, credential));
         }
 
         internal virtual EventGridSenderClient CreateSenderClient(Uri endpoint, string topicName, AzureKeyCredential credential)
@@ -230,19 +318,71 @@ namespace EventGridExplorerLibrary
             }
 
             public Uri Endpoint { get; }
-            public Dictionary<string, (AzureKeyCredential Credential, EventGridSenderClient Sender)> Topics { get; } =
-                new Dictionary<string, (AzureKeyCredential, EventGridSenderClient)>();
-            public ConcurrentDictionary<(string Topic, string Subscription), EventGridReceiverClient> Receivers { get; } =
-                new ConcurrentDictionary<(string, string), EventGridReceiverClient>();
+            public Dictionary<string, TopicState> Topics { get; } = new Dictionary<string, TopicState>();
 
-            public (AzureKeyCredential Credential, EventGridSenderClient Sender) GetTopic(string name)
+            public TopicState GetTopic(string name)
             {
                 if (string.IsNullOrWhiteSpace(name) || !Topics.TryGetValue(name, out var topic))
                 {
-                    throw new InvalidOperationException($"The Event Grid topic '{name}' is not loaded. Refresh the namespace topics and try again.");
+                    throw new EventGridDataPlaneException($"The Event Grid topic '{name}' is not loaded. Refresh the namespace topics and try again.");
                 }
 
                 return topic;
+            }
+        }
+
+        private sealed class TopicState
+        {
+            private readonly object initializationLock = new object();
+            private Task<TopicClients> initialization;
+
+            public TopicState(NamespaceTopicResource resource) => Resource = resource;
+
+            public NamespaceTopicResource Resource { get; }
+
+            public Task<TopicClients> GetOrStart(Func<Task<TopicClients>> load)
+            {
+                lock (initializationLock)
+                {
+                    return initialization ?? (initialization = load());
+                }
+            }
+
+            public void Invalidate(Task<TopicClients> used)
+            {
+                lock (initializationLock)
+                {
+                    if (ReferenceEquals(initialization, used))
+                    {
+                        initialization = null;
+                    }
+                }
+            }
+        }
+
+        private sealed class TopicClients
+        {
+            private readonly Func<string, EventGridReceiverClient> createReceiver;
+            private readonly ConcurrentDictionary<string, Lazy<EventGridReceiverClient>> receivers =
+                new ConcurrentDictionary<string, Lazy<EventGridReceiverClient>>();
+
+            public TopicClients(Func<EventGridSenderClient> createSender, Func<string, EventGridReceiverClient> createReceiver)
+            {
+                Sender = new Lazy<EventGridSenderClient>(createSender);
+                this.createReceiver = createReceiver;
+            }
+
+            public Lazy<EventGridSenderClient> Sender { get; }
+
+            public EventGridReceiverClient GetReceiver(string subscription) =>
+                receivers.GetOrAdd(subscription, name => new Lazy<EventGridReceiverClient>(() => createReceiver(name))).Value;
+        }
+
+        private sealed class EventGridDataPlaneException : InvalidOperationException
+        {
+            public EventGridDataPlaneException(string message, Exception innerException = null)
+                : base(message, innerException)
+            {
             }
         }
 
