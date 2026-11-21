@@ -322,7 +322,7 @@ namespace ServiceBusExplorer.Controls
             registrationPageList.AddRange(pages);
             currentRegistrationPage = pageIndex;
             SetRegistrationPage(registrations);
-            writeToLog(string.Format(RegistrationRetrievedFormat, count, notificationHubDescription.Path));
+            writeToLog(string.Format(RegistrationsRetrievedFormat, count, notificationHubDescription.Path));
         }
 
         #endregion
