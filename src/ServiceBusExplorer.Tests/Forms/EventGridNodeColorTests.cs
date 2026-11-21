@@ -1,4 +1,4 @@
-using System.Runtime.Serialization;
+using System;
 using Azure.ResourceManager.EventGrid;
 using EventGridExplorerLibrary;
 using ServiceBusExplorer.Forms;
@@ -9,30 +9,56 @@ namespace ServiceBusExplorer.Tests.Forms
 {
     public class EventGridNodeColorTests
     {
-        [Fact]
-        public void EventGridTreeTagsUseEntityOrGroupColorsWithoutMessageCounts()
+        public enum TagShape
         {
-            var eventGridNamespace = Uninitialized<EventGridNamespaceResource>();
-            var topic = Uninitialized<NamespaceTopicResource>();
-            var subscription = Uninitialized<NamespaceTopicEventSubscriptionResource>();
-
-            AssertColorData(eventGridNamespace, false);
-            AssertColorData(new NamespaceTopic(), false);
-            AssertColorData(topic, true);
-            AssertColorData(new EventGridSubscriptionWrapper(null, topic, null), false);
-            AssertColorData(new EventGridSubscriptionWrapper(subscription, topic), true);
+            UntaggedGroup,
+            EventGridNamespace,
+            EventGridTopicsFolder,
+            EventGridTopic,
+            EventGridSubscriptionsFolder,
+            EventGridSubscription,
+            ServiceBusSubscriptionsFolder,
         }
 
-        private static T Uninitialized<T>()
+        [Theory]
+        [InlineData(TagShape.UntaggedGroup, false)]
+        [InlineData(TagShape.EventGridNamespace, false)]
+        [InlineData(TagShape.EventGridTopicsFolder, false)]
+        [InlineData(TagShape.EventGridTopic, true)]
+        [InlineData(TagShape.EventGridSubscriptionsFolder, true)]
+        [InlineData(TagShape.EventGridSubscription, true)]
+        [InlineData(TagShape.ServiceBusSubscriptionsFolder, true)]
+        public void KnownTagsKeepTheirColorRuleCategory(TagShape shape, bool isLeaf)
         {
-            return (T)FormatterServices.GetUninitializedObject(typeof(T));
-        }
+            object tag = shape switch
+            {
+                TagShape.UntaggedGroup => null,
+                TagShape.EventGridNamespace => new TestNamespace(),
+                TagShape.EventGridTopicsFolder => new NamespaceTopic(),
+                TagShape.EventGridTopic => new TestTopic(),
+                TagShape.EventGridSubscriptionsFolder => new EventGridSubscriptionWrapper(null, new TestTopic(), null),
+                TagShape.EventGridSubscription => new EventGridSubscriptionWrapper(new TestSubscription(), new TestTopic()),
+                TagShape.ServiceBusSubscriptionsFolder => new SubscriptionWrapper(null, null, null),
+                _ => throw new ArgumentOutOfRangeException(nameof(shape))
+            };
 
-        private static void AssertColorData(object tag, bool isLeaf)
-        {
             var result = MainForm.GetColorDataFromNodeTag(tag);
-            Assert.Equal(isLeaf, result.IsLeaf);
+
+            Assert.Equal<bool?>(isLeaf, result.IsLeaf);
             Assert.Null(result.MessageCountDetails);
         }
+
+        [Fact]
+        public void UnknownTagHasNoColorRuleCategory()
+        {
+            var result = MainForm.GetColorDataFromNodeTag(new object());
+
+            Assert.Null(result.IsLeaf);
+            Assert.Null(result.MessageCountDetails);
+        }
+
+        private sealed class TestNamespace : EventGridNamespaceResource { }
+        private sealed class TestTopic : NamespaceTopicResource { }
+        private sealed class TestSubscription : NamespaceTopicEventSubscriptionResource { }
     }
 }
