@@ -34,14 +34,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         internal static object Topic(string name) =>
             new { id = TopicsPath + "/" + name, name, type = NamespaceTopicResource.ResourceType.ToString(), properties = new { } };
 
-        internal void AddRefresh(params string[] names)
-        {
-            AddTopicPage(names);
-            foreach (var name in names)
-            {
-                AddKeys(name + "-key");
-            }
-        }
+        internal void AddRefresh(params string[] names) => AddTopicPage(names);
 
         internal void AddTopicPage(string[] names, string nextLink = null) =>
             AddResponse(new { value = names.Select(Topic), nextLink });

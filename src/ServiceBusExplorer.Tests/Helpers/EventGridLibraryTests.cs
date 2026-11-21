@@ -58,25 +58,28 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public async Task GetTopicsAsync_MissingEndpoint_FailsBeforeAnyArmRequest()
+        public async Task GetTopicsAsync_WithoutEndpointStillBrowsesButBlocksDataPlaneBeforeFetchingKeys()
         {
             var arm = new EventGridArmTransport();
+            arm.AddRefresh("orders");
             var library = new TestLibrary(arm);
-            Func<Task> refresh = () => library.GetTopicsAsync("group", "store", null);
 
-            await refresh.Should().ThrowAsync<ArgumentNullException>().WithMessage("*namespace endpoint is not loaded*Refresh*");
-            arm.Requests.Should().BeEmpty();
+            var topics = await library.GetTopicsAsync("group", "store", null);
+            topics.Select(t => t.Data.Name).Should().Equal("orders");
+            Func<Task> publish = () => library.PublishEventAsync("orders", "/shop", "Order.Created", "{}");
+
+            await publish.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*namespace endpoint is not loaded*Refresh*");
+            arm.Requests.Should().ContainSingle().Which.Method.Should().Be(HttpMethod.Get);
         }
 
         [Fact]
-        public async Task GetTopicsAsync_LoadsAllPagesOnceAndFetchesKeysDirectlyOnEachListedTopic()
+        public async Task GetTopicsAsync_LoadsAllPagesAndSubscriptionsWithoutReadingKeys()
         {
             var arm = new EventGridArmTransport();
             var nextLink = "https://management.azure.com" + EventGridArmTransport.TopicsPath + "?page=2";
             arm.AddTopicPage(new[] { "orders" }, nextLink);
-            arm.AddKeys("orders-key");
             arm.AddTopicPage(new[] { "shipments" });
-            arm.AddKeys("shipments-key");
             var library = new TestLibrary(arm);
 
             var topics = await library.GetTopicsAsync("group", "store", Endpoint);
@@ -90,10 +93,10 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
             var path = EventGridArmTransport.TopicsPath;
             arm.Requests.Select(r => (r.Method, r.Uri.AbsolutePath)).Should().Equal(
-                (HttpMethod.Get, path), (HttpMethod.Post, path + "/orders/listKeys"),
-                (HttpMethod.Get, path), (HttpMethod.Post, path + "/shipments/listKeys"),
-                (HttpMethod.Get, path + "/orders/eventSubscriptions"));
-            arm.Requests[2].Uri.Should().Be(new Uri(nextLink));
+                (HttpMethod.Get, path), (HttpMethod.Get, path), (HttpMethod.Get, path + "/orders/eventSubscriptions"));
+            arm.Requests[1].Uri.Should().Be(new Uri(nextLink));
+            library.Senders.Should().BeEmpty();
+            library.ReceiverCreations.Should().BeEmpty();
         }
 
         [Theory]
@@ -118,7 +121,8 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             await publish.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("*topic 'orders' is not loaded*Refresh the namespace topics*");
-            library.Senders.Should().OnlyContain(s => s.SingleEvents.Count == 0 && s.BatchEvents.Count == 0);
+            library.Senders.Should().BeEmpty();
+            arm.Requests.Should().OnlyContain(request => request.Method == HttpMethod.Get);
         }
 
         [Fact]
@@ -128,6 +132,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var library = new TestLibrary(arm);
             arm.AddRefresh("orders");
             await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
 
             await library.PublishEventAsync("orders", "/shop/orders", "Order.Created", "{\"id\":42}");
             await library.PublishEventsAsync("orders", "/shop/orders", "Order.Updated", new List<string> { "one", "two" });
@@ -139,6 +144,7 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             fakeSender.BatchEvents.Should().ContainSingle();
             fakeSender.BatchEvents[0].Select(e => e.Type).Should().Equal("Order.Updated", "Order.Updated");
+            arm.Requests.Count(r => r.Uri.AbsolutePath.EndsWith("/orders/listKeys")).Should().Be(1);
         }
 
         [Theory]
@@ -151,6 +157,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var library = new TestLibrary(arm, configuredWaitSeconds);
             arm.AddRefresh("orders");
             await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
             var cloudEvent = new CloudEvent("/source", "Sample.Event", "payload");
             var details = EventGridNamespacesModelFactory.ReceiveDetails(
                 EventGridNamespacesModelFactory.BrokerProperties("lock-1", 1),
@@ -175,6 +182,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var library = new TestLibrary(arm);
             arm.AddRefresh("orders");
             await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
             library.ReceiverCreations.Should().BeEmpty();
 
             await library.ReceiveEventsAsync("orders", "sub-a", 1);
@@ -200,13 +208,14 @@ namespace ServiceBusExplorer.Tests.Helpers
             var library = new TestLibrary(arm);
             arm.AddRefresh("orders", "shipments");
             await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
+            await library.PublishEventAsync("orders", "/shop", "BeforeRefresh", "{}");
             await library.ReceiveEventsAsync("orders", "existing", 1);
-            var originalSender = library.Senders[0];
+            var originalSender = library.Senders.Single();
 
-            arm.AddTopicPage(new[] { "new-topic", "unreadable" });
-            arm.AddKeys("new-key");
+            arm.AddTopicPage(new[] { "new-topic" }, "https://management.azure.com" + EventGridArmTransport.TopicsPath + "?page=2");
             Func<Task> publishPartial = () => library.PublishEventAsync("new-topic", "/shop", "Order.Created", "{}");
-            arm.AddResponse(new { error = new { code = "Forbidden", message = "Access to topic keys denied" } },
+            arm.AddResponse(new { error = new { code = "Forbidden", message = "Access to topic listing denied" } },
                 HttpStatusCode.Forbidden, async () =>
                 {
                     await library.PublishEventAsync("orders", "/shop", "DuringRefresh", "{}");
@@ -217,12 +226,118 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             await library.PublishEventAsync("orders", "/shop", "Order.Created", "{}");
             await library.ReceiveEventsAsync("orders", "existing", 1);
+            arm.AddKeys("shipments-key");
             await library.ReceiveEventsAsync("shipments", "new-sub", 1);
-            originalSender.SingleEvents.Select(e => e.Type).Should().Equal("DuringRefresh", "Order.Created");
+            originalSender.SingleEvents.Select(e => e.Type).Should().Equal("BeforeRefresh", "DuringRefresh", "Order.Created");
             library.ReceiverCreations.Should().Equal(
                 (Endpoint.Address, "orders", "existing", "orders-key"),
                 (Endpoint.Address, "shipments", "new-sub", "shipments-key"));
             await publishPartial.Should().ThrowAsync<InvalidOperationException>().WithMessage("*topic 'new-topic' is not loaded*");
+        }
+
+        [Fact]
+        public async Task GetTopicsAsync_AnOlderRefreshCannotReplaceTheNewerSnapshot()
+        {
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            var requested = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var finishOlder = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            arm.AddResponse(new { value = new[] { EventGridArmTransport.Topic("old") } }, beforeResponse: () =>
+            {
+                requested.TrySetResult(true);
+                return finishOlder.Task;
+            });
+            arm.AddRefresh("new");
+            var older = library.GetTopicsAsync("group", "store", Endpoint);
+            try
+            {
+                (await Task.WhenAny(requested.Task, older)).Should().BeSameAs(requested.Task);
+                var newer = library.GetTopicsAsync("group", "store", Endpoint);
+                (await Task.WhenAny(newer, Task.Delay(TimeSpan.FromSeconds(5)))).Should().BeSameAs(newer);
+                (await newer).Select(t => t.Data.Name).Should().Equal("new");
+            }
+            finally
+            {
+                finishOlder.TrySetResult(true);
+            }
+            await older;
+
+            arm.AddKeys("new-key");
+            await library.PublishEventAsync("new", "/source", "Test", "{}");
+            Func<Task> oldTopic = () => library.PublishEventAsync("old", "/source", "Test", "{}");
+            await oldTopic.Should().ThrowAsync<InvalidOperationException>().WithMessage("*topic 'old' is not loaded*");
+        }
+
+        [Fact]
+        public async Task DeniedTopicKeyLeavesOtherTopicsAvailableAndCanBeRetried()
+        {
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            arm.AddRefresh("restricted", "orders");
+
+            var topics = await library.GetTopicsAsync("group", "store", Endpoint);
+            topics.Select(t => t.Data.Name).Should().Equal("restricted", "orders");
+            arm.AddResponse(new { error = new { code = "Forbidden", message = "No listKeys permission" } }, HttpStatusCode.Forbidden);
+            Func<Task> restricted = () => library.PublishEventAsync("restricted", "/source", "Test", "{}");
+            await restricted.Should().ThrowAsync<InvalidOperationException>().WithMessage("*HTTP 403*Browsing is still available*can list topic keys*");
+            library.Senders.Should().BeEmpty();
+
+            arm.AddKeys("orders-key");
+            await library.PublishEventAsync("orders", "/source", "Test", "{}");
+            arm.AddKeys("restricted-key");
+            await restricted();
+
+            library.Senders.Should().HaveCount(2).And.OnlyContain(sender => sender.SingleEvents.Count == 1);
+            arm.Requests.Count(r => r.Uri.AbsolutePath.EndsWith("/restricted/listKeys")).Should().Be(2);
+            arm.Requests.Count(r => r.Uri.AbsolutePath.EndsWith("/orders/listKeys")).Should().Be(1);
+        }
+
+        [Fact]
+        public async Task UnauthorizedPublishDoesNotReplayAndLateFailureCannotInvalidateTheNewKey()
+        {
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            var oldSendStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var finishOldSend = new TaskCompletionSource<Response>(TaskCreationOptions.RunContinuationsAsynchronously);
+            library.SendSingle = (key, evt) =>
+            {
+                if (key == "old-key" && evt.Type == "Delayed")
+                {
+                    oldSendStarted.TrySetResult(true);
+                    return finishOldSend.Task;
+                }
+                if (key == "old-key")
+                {
+                    return Task.FromException<Response>(new RequestFailedException(401, "Unauthorized"));
+                }
+                return Task.FromResult<Response>(new FakeResponse());
+            };
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("old-key");
+
+            var delayed = library.PublishEventAsync("orders", "/source", "Delayed", "{}");
+            try
+            {
+                (await Task.WhenAny(oldSendStarted.Task, delayed)).Should().BeSameAs(oldSendStarted.Task);
+                Func<Task> publish = () => library.PublishEventAsync("orders", "/source", "Immediate", "{}");
+                await publish.Should().ThrowAsync<InvalidOperationException>().WithMessage("*retry the operation*not retried automatically*");
+                library.Senders.Single().SingleEvents.Select(evt => evt.Type).Should().Equal("Delayed", "Immediate");
+
+                arm.AddKeys("new-key");
+                await publish();
+            }
+            finally
+            {
+                finishOldSend.TrySetException(new RequestFailedException(401, "Unauthorized"));
+            }
+            Func<Task> finish = () => delayed;
+            await finish.Should().ThrowAsync<InvalidOperationException>().WithMessage("*not retried automatically*");
+            await library.PublishEventAsync("orders", "/source", "Next", "{}");
+
+            library.Senders.Should().HaveCount(2);
+            library.Senders[1].SingleEvents.Select(evt => evt.Type).Should().Equal("Immediate", "Next");
+            arm.Requests.Count(r => r.Uri.AbsolutePath.EndsWith("/orders/listKeys")).Should().Be(2);
         }
 
         [Theory]
@@ -234,22 +349,28 @@ namespace ServiceBusExplorer.Tests.Helpers
             var logs = new List<string>();
             var arm = new EventGridArmTransport();
             var library = new TestLibrary(arm, log: (msg, _) => logs.Add(msg));
-            Func<Task> settle = () => library.EventActionsAsync(action, new List<string> { "token" }, "orders", "sub", (_, __) => { });
+            var settlementLogs = new List<string>();
+            Func<Task<bool>> settle = () => library.EventActionsAsync(action, new List<string> { "token" }, "orders", "sub",
+                (msg, _) => settlementLogs.Add(msg));
 
             (await library.ReceiveEventsAsync("orders", "sub", 1)).Should().BeNull();
             logs.Should().ContainSingle().Which.Should().Contain("namespace endpoint is not loaded").And.Contain("Refresh");
-            await settle.Should().ThrowAsync<InvalidOperationException>().WithMessage("*namespace endpoint is not loaded*Refresh*");
+            (await settle()).Should().BeFalse();
+            settlementLogs.Should().ContainSingle().Which.Should().Contain("namespace endpoint is not loaded").And.Contain("Refresh");
 
             arm.AddRefresh("orders");
             await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
             (await library.ReceiveEventsAsync("orders", "sub", 1)).Should().NotBeNull();
             arm.AddRefresh();
             await library.GetTopicsAsync("group", "store", Endpoint);
             logs.Clear();
+            settlementLogs.Clear();
 
             (await library.ReceiveEventsAsync("orders", "sub", 1)).Should().BeNull();
             logs.Should().ContainSingle().Which.Should().Contain("topic 'orders' is not loaded").And.Contain("Refresh");
-            await settle.Should().ThrowAsync<InvalidOperationException>().WithMessage("*topic 'orders' is not loaded*Refresh*");
+            (await settle()).Should().BeFalse();
+            settlementLogs.Should().ContainSingle().Which.Should().Contain("topic 'orders' is not loaded").And.Contain("Refresh");
         }
 
         [Fact]
@@ -260,6 +381,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var library = new TestLibrary(arm);
             arm.AddRefresh("orders");
             await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
             library.Receiver.NextAcknowledgeResult = EventGridNamespacesModelFactory.AcknowledgeResult(
                 Array.Empty<FailedLockToken>(), new[] { "tok-1" });
             library.Receiver.NextReleaseResult = EventGridNamespacesModelFactory.ReleaseResult(
@@ -277,6 +399,29 @@ namespace ServiceBusExplorer.Tests.Helpers
             rejectSucceeded.Should().BeFalse();
             logs.Should().Contain(l => l.Contains("ExpiredLock"));
             logs.Should().Contain(l => l.Contains("Token expired"));
+        }
+
+        [Theory]
+        [InlineData(401, "retry the operation")]
+        [InlineData(403, "network access policy")]
+        [InlineData(429, "HTTP 429")]
+        public async Task EventActionsAsync_ReportsServiceFailureWithoutReplaying(int status, string expectedMessage)
+        {
+            var logs = new List<string>();
+            var arm = new EventGridArmTransport();
+            var library = new TestLibrary(arm);
+            arm.AddRefresh("orders");
+            await library.GetTopicsAsync("group", "store", Endpoint);
+            arm.AddKeys("orders-key");
+            library.Receiver.AcknowledgeError = new RequestFailedException(status, "Service failure");
+
+            var result = await library.EventActionsAsync("Acknowledge", new List<string> { "test-token" }, "orders", "sub",
+                (message, _) => logs.Add(message));
+
+            result.Should().BeFalse();
+            logs.Should().ContainSingle().Which.Should().Contain(expectedMessage).And.Contain("not retried automatically");
+            library.Receiver.AcknowledgeCalls.Should().Be(1);
+            arm.Requests.Count(r => r.Uri.AbsolutePath.EndsWith("/orders/listKeys")).Should().Be(1);
         }
 
         [Fact]
@@ -382,6 +527,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
             }
 
+            public Func<string, CloudEvent, Task<Response>> SendSingle { get; set; }
             public List<FakeEventGridSenderClient> Senders { get; } = new List<FakeEventGridSenderClient>();
             public FakeEventGridReceiverClient Receiver { get; } = new FakeEventGridReceiverClient();
             public List<(Uri Endpoint, string Topic, string Subscription, string Key)> ReceiverCreations { get; } =
@@ -389,7 +535,10 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             internal override EventGridSenderClient CreateSenderClient(Uri endpoint, string topicName, AzureKeyCredential credential)
             {
-                var sender = new FakeEventGridSenderClient();
+                var sender = new FakeEventGridSenderClient
+                {
+                    SendSingle = SendSingle == null ? null : cloudEvent => SendSingle(credential.Key, cloudEvent)
+                };
                 Senders.Add(sender);
                 return sender;
             }
@@ -403,13 +552,14 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         private sealed class FakeEventGridSenderClient : EventGridSenderClient
         {
+            public Func<CloudEvent, Task<Response>> SendSingle { get; set; }
             public List<CloudEvent> SingleEvents { get; } = new List<CloudEvent>();
             public List<IReadOnlyList<CloudEvent>> BatchEvents { get; } = new List<IReadOnlyList<CloudEvent>>();
 
             public override Task<Response> SendAsync(CloudEvent cloudEvent, CancellationToken cancellationToken = default)
             {
                 SingleEvents.Add(cloudEvent);
-                return Task.FromResult<Response>(new FakeResponse());
+                return SendSingle == null ? Task.FromResult<Response>(new FakeResponse()) : SendSingle(cloudEvent);
             }
 
             public override Task<Response> SendAsync(IEnumerable<CloudEvent> cloudEvents, CancellationToken cancellationToken = default)
@@ -423,6 +573,8 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             public ReceiveResult NextReceiveResult { get; set; } = EventGridNamespacesModelFactory.ReceiveResult(Array.Empty<ReceiveDetails>());
             public AcknowledgeResult NextAcknowledgeResult { get; set; }
+            public Exception AcknowledgeError { get; set; }
+            public int AcknowledgeCalls { get; private set; }
             public ReleaseResult NextReleaseResult { get; set; }
             public RejectResult NextRejectResult { get; set; }
             public int? LastMaxEvents { get; private set; }
@@ -437,7 +589,10 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             public override Task<Response<AcknowledgeResult>> AcknowledgeAsync(IEnumerable<string> lockTokens, CancellationToken cancellationToken = default)
             {
-                return Task.FromResult(Response.FromValue(NextAcknowledgeResult, new FakeResponse()));
+                AcknowledgeCalls++;
+                return AcknowledgeError == null
+                    ? Task.FromResult(Response.FromValue(NextAcknowledgeResult, new FakeResponse()))
+                    : Task.FromException<Response<AcknowledgeResult>>(AcknowledgeError);
             }
 
             public override Task<Response<ReleaseResult>> ReleaseAsync(IEnumerable<string> lockTokens, ReleaseDelay? releaseDelayInSeconds = null, CancellationToken cancellationToken = default)
