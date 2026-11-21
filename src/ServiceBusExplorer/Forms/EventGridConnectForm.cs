@@ -13,7 +13,6 @@ namespace ServiceBusExplorer.Forms
         public string ResourceGroup;
         public string NamespaceName;
         public string SubscriptionId;
-        public string ApiVersion;
         public int RetryTimeout;
         public string CloudTenant;
         public string CustomId;
@@ -36,7 +35,6 @@ namespace ServiceBusExplorer.Forms
             ResourceGroup = txtResourceGroupName.Text.Trim();
             NamespaceName = txtNamespaceName.Text.Trim();
             SubscriptionId = txtSubscriptionId.Text.Trim();
-            ApiVersion = cboApiVersion.Text.Trim(); 
 
             int.TryParse(txtRetryTimeout.Text, out var retryTimoutInSeconds);
             RetryTimeout = retryTimoutInSeconds;
@@ -50,11 +48,6 @@ namespace ServiceBusExplorer.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
-        }
-
-        private void EventGridConnectForm_Load(object sender, EventArgs e)
-        {
-            cboApiVersion.SelectedIndex = 0;
         }
     }
 }

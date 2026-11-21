@@ -254,6 +254,8 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
+        private CancellationTokenSource eventGridRefresh;
+        private readonly ContextMenuStrip eventGridRootContextMenuStrip;
         private NamespaceTopicEndpoint namespaceTopicEndpoint;
         private readonly System.Windows.Forms.Timer filterDebounceTimer;
         private readonly ServiceBusExplorer.Helpers.TreeViewFilterHelper treeViewFilterHelper = new ServiceBusExplorer.Helpers.TreeViewFilterHelper();
@@ -282,6 +284,8 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            eventGridRootContextMenuStrip = new ContextMenuStrip(components);
+            eventGridRootContextMenuStrip.Items.Add("Refresh Event Grid Topics", null, async (sender, args) => await ShowEventGridEntities());
             ThemeManager.SetHeaderBrandLogo(logoPictureBox);
             logTask = Task.Factory.StartNew(AsyncWriteToLog).ContinueWith(t =>
             {
@@ -563,6 +567,7 @@ namespace ServiceBusExplorer.Forms
         {
             var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
             serviceBusHelper.Connect(serviceBusNamespace);
+            ResetEventGridConnection();
             SetTitle(serviceBusNamespace.Namespace, "Service Bus");
 
             foreach (var userControl in panelMain.Controls.OfType<UserControl>())
@@ -623,6 +628,7 @@ namespace ServiceBusExplorer.Forms
                             connectForm.ConnectionString, StaticWriteToLog);
 
                     serviceBusHelper.Connect(serviceBusNamespace);
+                    ResetEventGridConnection();
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
                     panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
@@ -660,9 +666,9 @@ namespace ServiceBusExplorer.Forms
                     NamespaceName = connectForm.NamespaceName;
                     ResourceGroupName = connectForm.ResourceGroup;
 
+                    ResetEventGridConnection();
                     eventGridLibrary = new EventGridLibrary(
                         connectForm.SubscriptionId,
-                        connectForm.ApiVersion,
                         connectForm.RetryTimeout,
                         connectForm.CustomId,
                         WriteToLog);
@@ -681,7 +687,7 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.Nodes.Clear();
                     rootNode = null;
                     namespaceTopicEndpoint = null;
-                    await ShowEventGridEntities(EntityType.All);
+                    await ShowEventGridEntities();
                 }
             }
             catch (Exception ex)
@@ -2245,11 +2251,16 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
-                    await eventGridLibrary.CreateTopicAsync(ResourceGroupName, NamespaceName, createTopicForm.TopicName);
+                    var library = eventGridLibrary;
+                    await library.CreateTopicAsync(ResourceGroupName, NamespaceName, createTopicForm.TopicName);
+                    if (eventGridLibrary != library)
+                    {
+                        return;
+                    }
 
                     WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicCreatedFormat, createTopicForm.TopicName));
 
-                    await ShowEventGridEntities(EntityType.All);
+                    await ShowEventGridEntities();
                 }
             }
             catch (Exception ex)
@@ -2592,11 +2603,16 @@ namespace ServiceBusExplorer.Forms
                     // Event Grid Topic Node
                     if (serviceBusTreeView.SelectedNode.Tag is NamespaceTopicResource topic)
                     {
-                        await eventGridLibrary.DeleteTopicAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
+                        var library = eventGridLibrary;
+                        await library.DeleteTopicAsync(ResourceGroupName, NamespaceName, topic.Data.Name);
+                        if (eventGridLibrary != library)
+                        {
+                            return;
+                        }
 
                         WriteToLog(string.Format(CultureInfo.CurrentCulture, TopicDeletedFormat, topic.Data.Name));
 
-                        await ShowEventGridEntities(EntityType.All);
+                        await ShowEventGridEntities();
                     }
 
                     // Relay Node
@@ -3739,7 +3755,8 @@ namespace ServiceBusExplorer.Forms
                 // Root Node
                 if (node == rootNode)
                 {
-                    var list = CloneItems(rootContextMenuStrip.Items);
+                    var list = CloneItems((node.Tag is EventGridNamespaceResource
+                        ? eventGridRootContextMenuStrip : rootContextMenuStrip).Items);
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
 
                     if (node.Tag != null && node.Tag is EventGridNamespaceResource eventGridNamespace)
@@ -5023,76 +5040,108 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private async Task ShowEventGridEntities(EntityType entityType)
+        private void ResetEventGridConnection()
         {
-            var updating = false;
+            eventGridRefresh?.Cancel();
+            eventGridLibrary = null;
+            namespaceTopicEndpoint = null;
+        }
 
-            try
+        private async Task ShowEventGridEntities()
+        {
+            var library = eventGridLibrary;
+            if (library == null)
             {
-                if (serviceBusHelper != null)
+                return;
+            }
+
+            eventGridRefresh?.Cancel();
+            using (var refresh = new CancellationTokenSource())
+            {
+                eventGridRefresh = refresh;
+                var resourceGroup = ResourceGroupName;
+                var namespaceName = NamespaceName;
+                try
                 {
-                    Cursor.Current = Cursors.WaitCursor;
-                    serviceBusTreeView.SuspendDrawing();
-                    serviceBusTreeView.SuspendLayout();
-                    serviceBusTreeView.BeginUpdate();
-                    updating = true;
-
-                    var library = eventGridLibrary;
-                    var resourceGroup = ResourceGroupName;
-                    var namespaceName = NamespaceName;
-                    var endpoint = namespaceTopicEndpoint;
-                    EventGridNamespaceResource eventGridNamespace = null;
-                    if (entityType == EntityType.All)
+                    // Show the authenticated namespace before requesting any topics. A failure on
+                    // the topics request must not remove the namespace or a previously loaded tree.
+                    if (!(rootNode?.Tag is EventGridNamespaceResource) || namespaceTopicEndpoint == null)
                     {
-                        eventGridNamespace = (await library.GetNamespacesAsync(resourceGroup, namespaceName)).Value;
-                        endpoint = new NamespaceTopicEndpoint(eventGridNamespace.Data.TopicsConfiguration?.Hostname);
-                    }
-
-                    IReadOnlyList<NamespaceTopicResource> topics = null;
-                    if (SelectedEntities.Contains(Constants.TopicEntities) && (entityType == EntityType.All || entityType == EntityType.Topic))
-                    {
-                        try
+                        var eventGridNamespace = (await library.GetNamespacesAsync(resourceGroup, namespaceName, refresh.Token)).Value;
+                        if (!IsCurrentRefresh())
                         {
-                            topics = await library.GetTopicsAsync(resourceGroup, namespaceName, endpoint);
-                        }
-                        catch (Exception ex) when (FilterOutException(ex))
-                        {
-                            WriteToLog($"Failed to retrieve Event Grid topics. Exception: {ex.GetBaseException()}");
                             return;
                         }
+
+                        try
+                        {
+                            namespaceTopicEndpoint = new NamespaceTopicEndpoint(eventGridNamespace.Data.TopicsConfiguration?.Hostname);
+                        }
+                        catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException || ex is UriFormatException)
+                        {
+                            WriteToLog($"Event Grid data operations are unavailable: {ex.Message}");
+                        }
+
+                        var namespaceLabel = namespaceTopicEndpoint?.ToString() ?? eventGridNamespace.Data.Name ?? namespaceName;
+                        if (!(rootNode?.Tag is EventGridNamespaceResource))
+                        {
+                            rootNode = serviceBusTreeView.Nodes.Add(
+                                namespaceLabel,
+                                namespaceLabel,
+                                EventGridNamespaceIconIndex,
+                                EventGridNamespaceIconIndex);
+                            rootNode.Tag = eventGridNamespace;
+                            rootNode.ContextMenuStrip = eventGridRootContextMenuStrip;
+                            serviceBusTreeView.SelectedNode = rootNode;
+                            rootNode.EnsureVisible();
+                            HandleNodeMouseClick(rootNode);
+                        }
+                        else
+                        {
+                            rootNode.Name = namespaceLabel;
+                            rootNode.Text = namespaceLabel;
+                            rootNode.Tag = eventGridNamespace;
+                        }
                     }
 
-                    if (library != eventGridLibrary)
+                    if (!SelectedEntities.Contains(Constants.TopicEntities))
                     {
                         return;
                     }
 
-                    treeNodesToLazyLoad = new List<TreeNode>();
-                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
-                    if (eventGridNamespace != null)
+                    IReadOnlyList<NamespaceTopicResource> topics;
+                    try
                     {
-                        serviceBusTreeView.Nodes.Clear();
-                        namespaceTopicEndpoint = endpoint;
-                        var namespaceUrl = endpoint.ToString();
-                        rootNode = serviceBusTreeView.Nodes.Add(
-                            namespaceUrl,
-                            namespaceUrl,
-                            EventGridNamespaceIconIndex,
-                            EventGridNamespaceIconIndex);
-                        rootNode.Tag = eventGridNamespace;
+                        topics = await library.GetTopicsAsync(resourceGroup, namespaceName, namespaceTopicEndpoint, refresh.Token);
+                    }
+                    catch (Exception ex) when (!(ex is OperationCanceledException && refresh.IsCancellationRequested))
+                    {
+                        if (IsCurrentRefresh())
+                        {
+                            WriteToLog($"Failed to retrieve Event Grid topics. Use Refresh Event Grid Topics to retry. {ex.GetBaseException().Message}");
+                        }
+                        return;
+                    }
 
-                        HandleNodeMouseClick(rootNode);
+                    if (!IsCurrentRefresh())
+                    {
+                        return;
+                    }
 
-                        if (topics != null)
+                    // Suspend painting only for synchronous tree changes, not while awaiting ARM.
+                    serviceBusTreeView.BeginUpdate();
+                    try
+                    {
+                        treeNodesToLazyLoad = new List<TreeNode>();
+                        var topicListNode = FindNode(Constants.TopicEntities, rootNode);
+                        if (topicListNode == null)
                         {
                             topicListNode = rootNode.Nodes.Add(Constants.TopicEntities, Constants.TopicEntities, EventGridEntityIconIndex, EventGridEntityIconIndex);
                             topicListNode.ContextMenuStrip = eventGridTopicsContextMenuStrip;
                             topicListNode.Tag = new NamespaceTopic();
                         }
-                    }
 
-                    if (topics != null)
-                    {
+                        var selectRoot = serviceBusTreeView.SelectedNode != rootNode;
                         topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                             ? Constants.TopicEntities
                             : FilteredTopicEntities;
@@ -5100,60 +5149,51 @@ namespace ServiceBusExplorer.Forms
 
                         foreach (var topic in topics)
                         {
-                            if (string.IsNullOrWhiteSpace(topic.Data.Name))
+                            if (!string.IsNullOrWhiteSpace(topic.Data.Name))
                             {
-                                continue;
+                                var entityNode = CreateNode(topic.Data.Name, topic, topicListNode, true);
+                                LazyLoadEventGridNode(entityNode);
                             }
-                            var entityNode = CreateNode(topic.Data.Name, topic, topicListNode, true);
-                            LazyLoadEventGridNode(entityNode);
                         }
 
-                        if (entityType == EntityType.Topic)
+                        topicListNode.Expand();
+                        rootNode.Expand();
+                        if (selectRoot)
                         {
-                            serviceBusTreeView.SelectedNode = topicListNode;
-                            serviceBusTreeView.SelectedNode.EnsureVisible();
-                            HandleNodeMouseClick(topicListNode);
+                            serviceBusTreeView.SelectedNode = rootNode;
+                            rootNode.EnsureVisible();
+                            HandleNodeMouseClick(rootNode);
                         }
                     }
-
-                    topicListNode?.Expand();
-
-                    rootNode.Expand();
-                    if (entityType != EntityType.All)
-                        return;
-
-                    serviceBusTreeView.SelectedNode = rootNode;
-                    serviceBusTreeView.SelectedNode.EnsureVisible();
-                    HandleNodeMouseClick(rootNode);
+                    finally
+                    {
+                        serviceBusTreeView.EndUpdate();
+                        InvalidateTreeViewFilter();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                if (updating)
+                catch (OperationCanceledException) when (refresh.IsCancellationRequested)
                 {
-                    serviceBusTreeView.ResumeDrawing();
-                    serviceBusTreeView.ResumeLayout();
-                    serviceBusTreeView.EndUpdate();
-                    serviceBusTreeView.Refresh();
-                    InvalidateTreeViewFilter();
+                    // A newer refresh/connection or form close superseded this request.
                 }
-                Cursor.Current = Cursors.Default;
-            }
-
-            bool FilterOutException(Exception ex)
-            {
-                if (ex is AggregateException && ((AggregateException)ex).InnerExceptions.Count == 1)
+                catch (Exception ex)
                 {
-                    ex = ((AggregateException)ex).InnerExceptions.First();
+                    if (IsCurrentRefresh())
+                    {
+                        HandleException(ex);
+                    }
                 }
-                return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
+                finally
+                {
+                    if (eventGridRefresh == refresh)
+                    {
+                        eventGridRefresh = null;
+                    }
+                }
+
+                bool IsCurrentRefresh() => !IsDisposed && !Disposing && !refresh.IsCancellationRequested
+                    && eventGridRefresh == refresh && eventGridLibrary == library;
             }
         }
-
 
         private void RefreshEventGridEventSubscriptions(string topicName)
         {
@@ -5336,11 +5376,12 @@ namespace ServiceBusExplorer.Forms
 
         private async void LazyLoadEventGridNode(TreeNode entityNode)
         {
+            var library = eventGridLibrary;
             try
             {
-                if (entityNode.Tag is NamespaceTopicResource topic)
+                if (library != null && entityNode.Tag is NamespaceTopicResource topic)
                 {
-                    var subscriptions = eventGridLibrary.GetEventSubscriptionsAsync(topic);
+                    var subscriptions = library.GetEventSubscriptionsAsync(topic);
 
                     if (subscriptions != null ||
                         !string.IsNullOrWhiteSpace(FilterExpressionHelper.SubscriptionFilterExpression))
@@ -5366,6 +5407,11 @@ namespace ServiceBusExplorer.Forms
                         {
                             while (await enumerator.MoveNextAsync())
                             {
+                                if (library != eventGridLibrary || subscriptionsNode.TreeView != serviceBusTreeView)
+                                {
+                                    return;
+                                }
+
                                 var subscription = enumerator.Current;
                                 var subscriptionNode = subscriptionsNode.Nodes.Add(
                                 subscription.Data.Name,
@@ -5569,7 +5615,7 @@ namespace ServiceBusExplorer.Forms
             {
                 ThemeManager.ReplaceHostedContent(
                     panelMain,
-                    () => new HandleEventGridTopicControl(topic, namespaceTopicEndpoint.ToString()),
+                    () => new HandleEventGridTopicControl(topic, namespaceTopicEndpoint?.ToString()),
                     control => control.Location = new Point(1, panelLog.HeaderHeight + 1));
             }
             catch (Exception ex)
@@ -6980,10 +7026,16 @@ namespace ServiceBusExplorer.Forms
                                 subscription.SubscriptionDescription.Data.Name,
                                 eventForm.GetMax ? MaxEventsReceive : eventForm.EventCount);
 
+                        if (receivedEvents == null)
+                        {
+                            // The library has already logged the receive failure.
+                            return;
+                        }
+
                         WriteToLog(string.Format(
                             CultureInfo.CurrentCulture,
-                            receivedEvents != null && receivedEvents.Details.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural,
-                            receivedEvents != null ? receivedEvents.Details.Count : 0,
+                            receivedEvents.Details.Count == 1 ? EventsReceivedFormatSingular : EventsReceivedFormatPlural,
+                            receivedEvents.Details.Count,
                             subscription.SubscriptionDescription.Data.Name));
 
                         var control = panelMain.Controls[0] as HandleEventGridSubscriptionControl;
@@ -7004,6 +7056,7 @@ namespace ServiceBusExplorer.Forms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             cancellationTokenSource.Cancel(false);
+            eventGridRefresh?.Cancel();
             if (saveMessageToFile)
             {
                 MessageAndPropertiesHelper.WriteMessage(MessageText);
