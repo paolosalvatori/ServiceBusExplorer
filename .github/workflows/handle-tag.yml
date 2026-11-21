@@ -6,9 +6,6 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   check-tag-branch:
     # This job is based on replies in https://github.community/t/how-to-create-filter-on-both-tag-and-branch/16936/6
