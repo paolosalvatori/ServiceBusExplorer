@@ -669,6 +669,7 @@ namespace ServiceBusExplorer
 
             var options = new EventHubProducerClientOptions
             {
+                RetryOptions = { MaximumRetries = 0 },
                 ConnectionOptions =
                 {
                     TransportType = UseAmqpWebSockets
@@ -1905,7 +1906,7 @@ namespace ServiceBusExplorer
                     {
                         long elapsedMilliseconds = 0;
                         var number = messageNumber;
-                        await RetryHelper.RetryActionAsync(async () =>
+                        await RetryHelper.RetryEventHubActionAsync(async () =>
                         {
                             var eventData = eventDataInspector != null ?
                                             eventDataInspector.BeforeSendMessage(eventDataCircularList.Next.Clone()) :
@@ -2067,7 +2068,7 @@ namespace ServiceBusExplorer
                     // Retry only the current group. Earlier acknowledged groups must
                     // never be replayed when a later partition-key group fails.
                     var group = sdkEventDataList.Skip(index).Take(end - index).ToArray();
-                    await RetryHelper.RetryActionAsync(async () =>
+                    await RetryHelper.RetryEventHubActionAsync(async () =>
                     {
                         // Time only the successful SDK send, not conversion, failed attempts or retry delays.
                         stopwatch.Restart();

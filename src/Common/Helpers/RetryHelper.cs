@@ -130,6 +130,21 @@ namespace ServiceBusExplorer.Helpers
             } while (numRetries-- > 0);
         }
 
+        public static async Task RetryEventHubActionAsync(Func<Task> action, WriteToLogDelegate writeToLog, CancellationToken cancellationToken)
+        {
+            for (var attempt = 0; ; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try { await action(); return; }
+                catch (Exception ex) when ((ex is Azure.Messaging.EventHubs.EventHubsException sdk && sdk.IsTransient) || ex is TimeoutException)
+                {
+                    if (attempt >= RetryCount) throw;
+                    writeToLog(string.Format("Event Hubs transient send failure: {0}. Retry {1}/{2}.", ex.Message, attempt + 1, RetryCount));
+                    await Task.Delay(RetryTimeout, cancellationToken);
+                }
+            }
+        }
+
         public static Task RetryActionAsync(Func<Task> action, WriteToLogDelegate writeToLog)
         {
             return RetryActionAsync(action, writeToLog, CancellationToken.None);

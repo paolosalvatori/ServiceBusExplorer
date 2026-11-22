@@ -89,14 +89,39 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public async Task PersistenceFailureDoesNotAuthorizeCloseAndCanBeRetried()
+        public async Task PersistenceFailureIsReportedButAuthorizesCloseAfterDrain()
         {
             var coordinator = new ListenerShutdownCoordinator();
-            Func<Task> close = () => coordinator.StopAndPersistAsync(() => throw new InvalidOperationException("write failed"));
-            await close.Should().ThrowAsync<InvalidOperationException>();
-            coordinator.CanClose.Should().BeFalse();
-            await coordinator.StopAndPersistAsync(() => { });
+            Exception reported = null;
+            await coordinator.StopAndPersistAsync(() => throw new IOException("write failed"), ex => reported = ex);
+            reported.Should().BeOfType<IOException>();
             coordinator.CanClose.Should().BeTrue();
+        }
+
+        [Fact]
+        public void SystemShutdownDoesNotWaitForUiContinuationAndPersistsCompletedSnapshot()
+        {
+            var coordinator = new ListenerShutdownCoordinator();
+            var pending = new TaskCompletionSource<bool>();
+            int stops = 0, writes = 0;
+            coordinator.Register(() => { stops++; return pending.Task; });
+            coordinator.StopForSystemShutdown(() => writes++, ex => { });
+            stops.Should().Be(1);
+            writes.Should().Be(1);
+            pending.Task.IsCompleted.Should().BeFalse();
+            pending.SetResult(true);
+        }
+
+        [Fact]
+        public void SystemShutdownContinuesAfterStopOrPersistenceFailure()
+        {
+            var coordinator = new ListenerShutdownCoordinator();
+            int errors = 0, stops = 0;
+            coordinator.Register(() => throw new InvalidOperationException());
+            coordinator.Register(() => { stops++; return Task.CompletedTask; });
+            coordinator.StopForSystemShutdown(() => throw new IOException(), ex => errors++);
+            errors.Should().Be(2);
+            stops.Should().Be(1);
         }
     }
 }

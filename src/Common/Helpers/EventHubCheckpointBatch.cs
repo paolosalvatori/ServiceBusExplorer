@@ -41,7 +41,8 @@ namespace ServiceBusExplorer.Helpers
 
         public async Task FlushAsync(bool enabled)
         {
-            if (enabled && pending != null)
+            // Pending was accepted while enabled; turning off must not discard eligible progress.
+            if (pending != null)
             {
                 await checkpoint(pending).ConfigureAwait(false);
             }

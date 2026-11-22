@@ -7137,6 +7137,12 @@ namespace ServiceBusExplorer.Forms
 
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (e.CloseReason == System.Windows.Forms.CloseReason.WindowsShutDown || e.CloseReason == System.Windows.Forms.CloseReason.TaskManagerClosing)
+            {
+                cancellationTokenSource.Cancel(false);
+                ListenerShutdownCoordinator.Shared.StopForSystemShutdown(PersistOnClose, ReportCloseFailure);
+                return;
+            }
             if (ListenerShutdownCoordinator.Shared.CanClose) return;
             // Cancel this close synchronously; an async-void handler alone cannot delay FormClosing.
             e.Cancel = true;
@@ -7146,13 +7152,13 @@ namespace ServiceBusExplorer.Forms
             try
             {
                 cancellationTokenSource.Cancel(false);
-                await ListenerShutdownCoordinator.Shared.StopAndPersistAsync(PersistOnClose);
+                await ListenerShutdownCoordinator.Shared.StopAndPersistAsync(PersistOnClose, ReportCloseFailure);
                 // Post the second close even when all awaits completed synchronously, avoiding reentrancy.
                 if (!IsDisposed) BeginInvoke(new Action(Close));
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                ReportCloseFailure(ex);
                 if (!IsDisposed) Enabled = true;
             }
             finally { closeInProgress = false; }
@@ -7162,16 +7168,25 @@ namespace ServiceBusExplorer.Forms
         {
             if (saveMessageToFile)
             {
-                MessageAndPropertiesHelper.WriteMessage(MessageText);
+                try { MessageAndPropertiesHelper.WriteMessage(MessageText); }
+                catch (Exception ex) { ReportCloseFailure(ex); }
             }
             if (savePropertiesToFile)
             {
-                MessageAndPropertiesHelper.WriteProperties();
+                try { MessageAndPropertiesHelper.WriteProperties(); }
+                catch (Exception ex) { ReportCloseFailure(ex); }
             }
             if (saveCheckpointsToFile)
             {
-                EventProcessorCheckpointHelper.WriteCheckpoints();
+                try { EventProcessorCheckpointHelper.WriteCheckpoints(); }
+                catch (Exception ex) { ReportCloseFailure(ex); }
             }
+        }
+
+        private void ReportCloseFailure(Exception ex)
+        {
+            // The asynchronous log pump is already stopping; write this final diagnostic directly.
+            WriteToLog("Close: " + ex.Message, false);
         }
 
         private async void filterEntity_Click(object sender, EventArgs e)

@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using ServiceBusExplorer.Utilities.Helpers;
@@ -73,6 +74,13 @@ namespace ServiceBusExplorer.Helpers
                         itemList = new List<EventProcessorCheckpointInfo>();
                         return;
                     }
+                    mapDictionary.Clear();
+                    // Upgrade old connection-string identities without retaining credentials.
+                    foreach (var item in itemList)
+                        item.Namespace = EventHubCheckpointIdentity.NormalizeStoredNamespace(item.Namespace);
+                    itemList = itemList.Where(item => item.Namespace != null)
+                        .GroupBy(item => string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup))
+                        .Select(group => group.First()).ToList();
                     foreach (var item in itemList)
                     {
                         mapDictionary.Add(string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup), item);
@@ -315,7 +323,7 @@ namespace ServiceBusExplorer.Helpers
                 return;
             }
 
-            // Let close report a persistence failure and remain open for a retry.
+            // Let close report a persistence failure; closing policy belongs to the caller.
             File.WriteAllText(path, content);
         }
         #endregion

@@ -29,7 +29,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public async Task IdleTimeoutFlushesPartialBatchAndDisablingDiscardsPending()
+        public async Task IdleTimeoutFlushesPartialBatchAndDisablingFlushesEligiblePendingOnce()
         {
             var now = DateTimeOffset.UtcNow;
             var saved = new List<long>();
@@ -45,10 +45,10 @@ namespace ServiceBusExplorer.Tests.Helpers
             await batch.ProcessedAsync(LeaseAt(2), true);
             await batch.FlushIfDueAsync(false);
             await batch.FlushAsync(true);
-            saved.Should().Equal(1);
+            saved.Should().Equal(1, 2);
             await batch.ProcessedAsync(LeaseAt(3), false);
             await batch.FlushAsync(true);
-            saved.Should().Equal(1);
+            saved.Should().Equal(1, 2);
         }
 
         [Fact]

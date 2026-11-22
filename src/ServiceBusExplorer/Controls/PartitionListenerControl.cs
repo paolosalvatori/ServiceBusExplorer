@@ -104,7 +104,6 @@ namespace ServiceBusExplorer.Controls
         private const string ScaleTooltip = "Select a scale to enhance the visibility of counter data in the chart.";
         private const string MaxCountTooltip = "The maximum amount of event data the user is willing to accept in one call.";
         private const string StartDateTimeUtcTooltip = "The starting date and time in UTC format for this receiver. The Receive method starts receiving the next event after this StartingDateTimeUtc value. If null, the receiver starts receiving events from the beginning of the Event Hubs event stream.";
-        private const string OffsetInclusiveTooltip = "if set to true, the Starting Offset is treated as an inclusive offset meaning the first event returned is the one that has the starting offset. Normally first event returned is the event after the starting offset.";
 
         //***************************
         // Constants
@@ -406,7 +405,10 @@ namespace ServiceBusExplorer.Controls
             toolTip.SetToolTip(checkBoxTrackMessages, TrackingTooltip);
             toolTip.SetToolTip(checkBoxGraph, GraphTooltip);
             toolTip.SetToolTip(checkBoxCheckpoint, CheckpointAtReceiveTimeoutTooltip);
-            toolTip.SetToolTip(checkBoxOffsetInclusive, OffsetInclusiveTooltip);
+            toolTip.SetToolTip(checkBoxOffsetInclusive, "Saved checkpoints always resume after the last processed event.");
+            // This listener exposes time/checkpoint starts, not an explicit offset input.
+            checkBoxOffsetInclusive.Enabled = false;
+            checkBoxOffsetInclusive.Checked = false;
 
             toolTip.SetToolTip(txtEventDataTotal, EventsTotalTooltip);
             toolTip.SetToolTip(txtEventDataPerSecond, EventsPerSecondTooltip);
@@ -865,7 +867,8 @@ namespace ServiceBusExplorer.Controls
                     Interval = 1000 * txtRefreshInformation.IntegerValue
                 };
                 timer.Elapsed += timer_Elapsed;
-                var ns = serviceBusHelper != null && !string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ? serviceBusHelper.Namespace : iotHubConnectionString;
+                var ns = string.IsNullOrWhiteSpace(iotHubConnectionString)
+                    ? serviceBusHelper.Namespace : eventHubMetadataClient.FullyQualifiedNamespace;
                 var eventHub = eventHubPath;
                 var maxBatchSize = txtMaxBatchSize.IntegerValue > 0 ? txtMaxBatchSize.IntegerValue : 1;
                 var receiveTimeout = TimeSpan.FromSeconds(txtReceiveTimeout.IntegerValue);
@@ -874,7 +877,7 @@ namespace ServiceBusExplorer.Controls
                     var startDateTimeEnabled = pickerStartingDateTimeUtc.Checked;
                     var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);
                     var cancellationToken = cancellationTokenSource.Token;
-                    var offsetInclusive = checkBoxOffsetInclusive.Checked;
+                    // Saved offsets identify the last successfully processed event, never an explicit start position.
                     foreach (var partitionRuntimeInformation in partitionRuntumeInformationList)
                     {
                         ModernEventPosition startingPosition;
@@ -888,11 +891,7 @@ namespace ServiceBusExplorer.Controls
                                                                                 eventHub,
                                                                                 consumerGroupName,
                                                                                 partitionRuntimeInformation.Id);
-                            startingPosition = lease == null ||
-                                               string.IsNullOrWhiteSpace(lease.Offset) ||
-                                               string.Equals(lease.Offset, "-1", StringComparison.Ordinal)
-                                ? ModernEventPosition.Earliest
-                                : ModernEventPosition.FromOffset(lease.Offset, offsetInclusive);
+                            startingPosition = EventHubCheckpointIdentity.ResumeAfter(lease);
                         }
 
                         partitionReadTasks.Add(Task.Run(() => ReadPartitionAsync(eventHubMetadataClient,

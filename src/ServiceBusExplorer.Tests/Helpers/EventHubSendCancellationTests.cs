@@ -14,6 +14,34 @@ namespace ServiceBusExplorer.Tests.Helpers
     public class EventHubSendCancellationTests
     {
         [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TransientFailuresUseOneBoundedApplicationRetryBudget(bool batch)
+        {
+            var producer = new Producer { Send = token => throw new EventHubsException(true, "outage", EventHubsException.FailureReason.ServiceCommunicationProblem) };
+            using (var cancellation = new CancellationTokenSource())
+            {
+                Func<Task> send = () => SendAsync(producer, cancellation, batch);
+                await send.Should().ThrowAsync<Exception>().WithMessage("*outage*");
+                producer.Calls.Should().Be(RetryHelper.RetryCount + 1);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task NonTransientNonSdkFailuresAreNotRetried(bool batch)
+        {
+            var producer = new Producer { Send = token => throw new InvalidOperationException("invalid send") };
+            using (var cancellation = new CancellationTokenSource())
+            {
+                Func<Task> send = () => SendAsync(producer, cancellation, batch);
+                await send.Should().ThrowAsync<Exception>().WithMessage("*invalid send*");
+                producer.Calls.Should().Be(1);
+            }
+        }
+
+        [Theory]
         [InlineData(false, false)]
         [InlineData(true, false)]
         [InlineData(false, true)]
