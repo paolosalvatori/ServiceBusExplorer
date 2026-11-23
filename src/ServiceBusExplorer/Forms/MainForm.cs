@@ -6439,18 +6439,22 @@ namespace ServiceBusExplorer.Forms
         {
             var (isLeaf, messageCountDetails) = GetColorDataFromNodeTag(node.Tag);
 
-            foreach (var nodeColorInfo in NodesColors.Where(nc => nc.IsLeaf == isLeaf))
+            if (isLeaf is bool knownLeaf)
             {
-                if (ShouldApplyColorToNode(node, nodeColorInfo, messageCountDetails))
+                foreach (var nodeColorInfo in NodesColors.Where(nc => nc.IsLeaf == knownLeaf))
                 {
-                    node.ForeColor = nodeColorInfo.Color;
-                    return;
+                    if (ShouldApplyColorToNode(node, nodeColorInfo, messageCountDetails))
+                    {
+                        node.ForeColor = nodeColorInfo.Color;
+                        return;
+                    }
                 }
             }
             node.ForeColor = Color.Empty;
         }
 
-        static (bool IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
+        // An unknown tag has no color rule category and keeps the default foreground.
+        internal static (bool? IsLeaf, MessageCountDetails MessageCountDetails) GetColorDataFromNodeTag(object tag)
         {
             return tag switch
             {
@@ -6466,8 +6470,12 @@ namespace ServiceBusExplorer.Forms
                 SubscriptionWrapper subscriptionWrapper => (true, subscriptionWrapper.SubscriptionDescription?.MessageCountDetails ?? subscriptionWrapper.TopicDescription?.MessageCountDetails),
                 RuleWrapper ruleWrapper => (true, ruleWrapper.SubscriptionDescription.MessageCountDetails),
                 UrlSegmentWrapper _ => (false, null),
+                EventGridNamespaceResource _ => (false, null),
+                NamespaceTopic _ => (false, null),
+                NamespaceTopicResource _ => (true, null),
+                // Preserve existing leaf-rule behavior for both kinds of Subscriptions folder.
                 EventGridSubscriptionWrapper _ => (true, null),
-                _ => throw new NotSupportedException($"{tag.GetType().FullName} is not supported in {nameof(GetColorDataFromNodeTag)}")
+                _ => (null, null)
             };
         }
 
