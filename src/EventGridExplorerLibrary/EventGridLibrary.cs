@@ -17,6 +17,8 @@ namespace EventGridExplorerLibrary
     {
         #region Private Constants
         private const string ExceptionFormat = "Exception: {0}";
+        private const string DataPlaneRetryNotice =
+            "Explorer did not issue an additional retry. The Azure SDK may retry transient failures.";
         // Minimum wait time value for receive operation in Seconds
         private const int MinWaitTimeInSeconds = 10;
         // Maximum wait time value for receive operation in Seconds
@@ -196,7 +198,7 @@ namespace EventGridExplorerLibrary
                 catch (RequestFailedException ex)
                 {
                     writeToLog($"Event Grid could not {action.ToLowerInvariant()} events for topic '{topicName}' (HTTP {ex.Status}). " +
-                        "The operation was not retried automatically.");
+                        DataPlaneRetryNotice);
                     return false;
                 }
 
@@ -260,13 +262,13 @@ namespace EventGridExplorerLibrary
                 throw new EventGridDataPlaneException(
                     $"Event Grid rejected authorization for topic '{topicName}'. If its access key rotated, retry the operation to fetch the current key. " +
                     "Also verify that local key authentication is enabled and the namespace is reachable. " +
-                    "The operation was not retried automatically.", ex);
+                    DataPlaneRetryNotice, ex);
             }
             catch (RequestFailedException ex) when (ex.Status == 403)
             {
                 throw new EventGridDataPlaneException(
                     $"Event Grid denied data-plane access to topic '{topicName}' (HTTP 403). Check local key authentication " +
-                    "and the namespace network access policy. The operation was not retried automatically.", ex);
+                    "and the namespace network access policy. " + DataPlaneRetryNotice, ex);
             }
         }
 

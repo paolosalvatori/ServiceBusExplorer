@@ -255,6 +255,7 @@ namespace ServiceBusExplorer.Forms
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
         private CancellationTokenSource eventGridRefresh;
+        private readonly EventGridSubscriptionLoads<TreeNode> eventGridSubscriptionLoads = new EventGridSubscriptionLoads<TreeNode>();
         private readonly ContextMenuStrip eventGridRootContextMenuStrip;
         private NamespaceTopicEndpoint namespaceTopicEndpoint;
         private readonly System.Windows.Forms.Timer filterDebounceTimer;
@@ -2280,7 +2281,8 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
-                    await eventGridLibrary.CreateSubscriptionAsync(
+                    var library = eventGridLibrary;
+                    await library.CreateSubscriptionAsync(
                         ResourceGroupName,
                         NamespaceName,
                         subscription.TopicDescription.Data.Name,
@@ -2289,8 +2291,11 @@ namespace ServiceBusExplorer.Forms
                         createSubscriptionForm.filterList,
                         createSubscriptionForm.eventTypesList);
 
-                    WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionCreatedFormat, createSubscriptionForm.SubscriptionName));
-                    RefreshEventGridEventSubscriptions(subscription.TopicDescription.Data.Name);
+                    if (eventGridLibrary == library)
+                    {
+                        WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionCreatedFormat, createSubscriptionForm.SubscriptionName));
+                        await RefreshEventGridEventSubscriptionsAsync(subscription.TopicDescription.Data.Name);
+                    }
                 }
             }
             catch (Exception ex)
@@ -2749,15 +2754,19 @@ namespace ServiceBusExplorer.Forms
                     // Event Grid Subscription Node
                     if (serviceBusTreeView.SelectedNode.Tag is EventGridSubscriptionWrapper subscription)
                     {
-                        await eventGridLibrary.DeleteSubscriptionAsync(
+                        var library = eventGridLibrary;
+                        await library.DeleteSubscriptionAsync(
                             ResourceGroupName,
                             NamespaceName,
                             subscription.TopicDescription.Data.Name,
                             subscription.SubscriptionDescription.Data.Name);
 
-                        WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionDeletedFormat, subscription.SubscriptionDescription.Data.Name));
-
-                        RefreshEventGridEventSubscriptions(subscription.TopicDescription.Data.Name);
+                        if (eventGridLibrary == library)
+                        {
+                            WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionDeletedFormat, subscription.SubscriptionDescription.Data.Name));
+                            await RefreshEventGridEventSubscriptionsAsync(subscription.TopicDescription.Data.Name);
+                        }
+                        return;
                     }
 
                     // Rules Node
@@ -5043,6 +5052,7 @@ namespace ServiceBusExplorer.Forms
         private void ResetEventGridConnection()
         {
             eventGridRefresh?.Cancel();
+            eventGridSubscriptionLoads.Reset();
             eventGridLibrary = null;
             namespaceTopicEndpoint = null;
         }
@@ -5128,6 +5138,7 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
+                    var topicNodes = new List<TreeNode>();
                     // Suspend painting only for synchronous tree changes, not while awaiting ARM.
                     serviceBusTreeView.BeginUpdate();
                     try
@@ -5145,6 +5156,7 @@ namespace ServiceBusExplorer.Forms
                         topicListNode.Text = string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                             ? Constants.TopicEntities
                             : FilteredTopicEntities;
+                        eventGridSubscriptionLoads.Reset();
                         topicListNode.Nodes.Clear();
 
                         foreach (var topic in topics)
@@ -5152,7 +5164,14 @@ namespace ServiceBusExplorer.Forms
                             if (!string.IsNullOrWhiteSpace(topic.Data.Name))
                             {
                                 var entityNode = CreateNode(topic.Data.Name, topic, topicListNode, true);
-                                LazyLoadEventGridNode(entityNode);
+                                if (entityNode == null)
+                                {
+                                    continue;
+                                }
+
+                                entityNode.Nodes.Add(CreateEventGridSubscriptionsNode(topic));
+                                eventGridSubscriptionLoads.Track(topic.Data.Name, entityNode);
+                                topicNodes.Add(entityNode);
                             }
                         }
 
@@ -5169,6 +5188,11 @@ namespace ServiceBusExplorer.Forms
                     {
                         serviceBusTreeView.EndUpdate();
                         InvalidateTreeViewFilter();
+                    }
+
+                    foreach (var topicNode in topicNodes)
+                    {
+                        _ = LoadEventGridSubscriptionsAsync(topicNode);
                     }
                 }
                 catch (OperationCanceledException) when (refresh.IsCancellationRequested)
@@ -5195,72 +5219,10 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void RefreshEventGridEventSubscriptions(string topicName)
+        private Task RefreshEventGridEventSubscriptionsAsync(string topicName)
         {
-            var updating = false;
-
-            try
-            {
-                if (serviceBusHelper != null)
-                {
-                    Cursor.Current = Cursors.WaitCursor;
-                    serviceBusTreeView.SuspendDrawing();
-                    serviceBusTreeView.SuspendLayout();
-                    serviceBusTreeView.BeginUpdate();
-                    treeNodesToLazyLoad = new List<TreeNode>();
-                    var topicListNode = FindNode(Constants.TopicEntities, rootNode);
-
-                    updating = true;
-
-
-                    try
-                    {
-                        var topicsNode = serviceBusTreeView.Nodes.Find("Topics", true).FirstOrDefault();
-                        serviceBusTreeView.SelectedNode.EnsureVisible();
-                        var myTopicNode = topicsNode.Nodes.Find(topicName, false).FirstOrDefault();
-                        LazyLoadEventGridNode(myTopicNode);
-                        var subscriptionNode = myTopicNode.Nodes.Find("Subscriptions", false).FirstOrDefault();
-                        HandleNodeMouseClick(myTopicNode);
-                        serviceBusTreeView.SelectedNode.EnsureVisible();
-                        subscriptionNode.ExpandAll();
-
-                    }
-                    catch (Exception ex) when (FilterOutException(ex))
-                    {
-                        if (ex is AggregateException)
-                        {
-                            ex = ((AggregateException)ex).InnerExceptions.First();
-                        }
-                        WriteToLog($"Failed to retrieve Event Grid topics. Exception: {ex}");
-                        serviceBusTreeView.Nodes.Remove(topicListNode);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
-            finally
-            {
-                if (updating)
-                {
-                    serviceBusTreeView.ResumeDrawing();
-                    serviceBusTreeView.ResumeLayout();
-                    serviceBusTreeView.EndUpdate();
-                    serviceBusTreeView.Refresh();
-                    InvalidateTreeViewFilter();
-                }
-                Cursor.Current = Cursors.Default;
-            }
-
-            bool FilterOutException(Exception ex)
-            {
-                if (ex is AggregateException && ((AggregateException)ex).InnerExceptions.Count == 1)
-                {
-                    ex = ((AggregateException)ex).InnerExceptions.First();
-                }
-                return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
-            }
+            var topicNode = eventGridSubscriptionLoads.Find(topicName);
+            return topicNode == null ? Task.CompletedTask : LoadEventGridSubscriptionsAsync(topicNode, expand: true);
         }
 
         /// <summary>
@@ -5374,72 +5336,93 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private async void LazyLoadEventGridNode(TreeNode entityNode)
+        private TreeNode CreateEventGridSubscriptionsNode(NamespaceTopicResource topic)
+        {
+            var filter = FilterExpressionHelper.SubscriptionFilterExpression;
+            return new TreeNode(string.IsNullOrWhiteSpace(filter) ? SubscriptionEntities : FilteredSubscriptionEntities,
+                EventGridEntityIconIndex, EventGridEntityIconIndex)
+            {
+                Name = SubscriptionEntities,
+                ContextMenuStrip = eventGridSubscriptionsContextMenuStrip,
+                Tag = new EventGridSubscriptionWrapper(null, topic, filter)
+            };
+        }
+
+        private Task LoadEventGridSubscriptionsAsync(TreeNode entityNode, bool expand = false)
         {
             var library = eventGridLibrary;
-            try
+            var treeRoot = rootNode;
+            if (library == null || treeRoot == null || !(entityNode.Tag is NamespaceTopicResource topic))
             {
-                if (library != null && entityNode.Tag is NamespaceTopicResource topic)
+                return Task.CompletedTask;
+            }
+
+            return eventGridSubscriptionLoads.LoadAsync(topic.Data.Name, entityNode,
+                () => !IsDisposed && !Disposing && library == eventGridLibrary && treeRoot == rootNode,
+                async isCurrent =>
                 {
-                    var subscriptions = library.GetEventSubscriptionsAsync(topic);
-
-                    if (subscriptions != null ||
-                        !string.IsNullOrWhiteSpace(FilterExpressionHelper.SubscriptionFilterExpression))
+                    var nodes = new List<TreeNode>();
+                    var enumerator = library.GetEventSubscriptionsAsync(topic).GetAsyncEnumerator();
+                    try
                     {
-                        entityNode.Nodes.Clear();
-
-                        var subscriptionsNode = entityNode.Nodes.Add(
-                            SubscriptionEntities,
-                            SubscriptionEntities,
-                            EventGridEntityIconIndex,
-                            EventGridEntityIconIndex);
-                        subscriptionsNode.Text =
-                            string.IsNullOrWhiteSpace(
-                                FilterExpressionHelper.SubscriptionFilterExpression)
-                                ? SubscriptionEntities
-                                : FilteredSubscriptionEntities;
-                        subscriptionsNode.ContextMenuStrip = eventGridSubscriptionsContextMenuStrip;
-                        subscriptionsNode.Tag = new EventGridSubscriptionWrapper(null, topic, FilterExpressionHelper.SubscriptionFilterExpression);
-
-                        IAsyncEnumerator<NamespaceTopicEventSubscriptionResource> enumerator = subscriptions.GetAsyncEnumerator();
-
-                        try
+                        while (isCurrent() && await enumerator.MoveNextAsync())
                         {
-                            while (await enumerator.MoveNextAsync())
+                            if (!isCurrent())
                             {
-                                if (library != eventGridLibrary || subscriptionsNode.TreeView != serviceBusTreeView)
-                                {
-                                    return;
-                                }
-
-                                var subscription = enumerator.Current;
-                                var subscriptionNode = subscriptionsNode.Nodes.Add(
-                                subscription.Data.Name,
-                                subscription.Data.Name,
-                                EventGridSubscriptionIconIndex,
-                                EventGridSubscriptionIconIndex);
-                                subscriptionNode.ContextMenuStrip = eventGridSubscriptionContextMenuStrip;
-                                subscriptionNode.Tag = new EventGridSubscriptionWrapper(subscription, topic);
-                                subscriptionNode.Nodes.Clear();
-
-                                WriteToLog(
-                                    string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, subscription.Data.Name, topic.Data.Name),
-                                    false);
-                                treeNodesToLazyLoad.Add(subscriptionNode);
-                                ApplyColor(subscriptionNode);
+                                break;
                             }
-                        }
-                        finally
-                        {
-                            await enumerator.DisposeAsync();
+
+                            var subscription = enumerator.Current;
+                            var node = new TreeNode(subscription.Data.Name, EventGridSubscriptionIconIndex, EventGridSubscriptionIconIndex)
+                            {
+                                Name = subscription.Data.Name,
+                                ContextMenuStrip = eventGridSubscriptionContextMenuStrip,
+                                Tag = new EventGridSubscriptionWrapper(subscription, topic)
+                            };
+                            ApplyColor(node);
+                            nodes.Add(node);
                         }
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-            }
+                    finally
+                    {
+                        await enumerator.DisposeAsync();
+                    }
+
+                    return nodes.ToArray();
+                },
+                nodes =>
+                {
+                    var selected = serviceBusTreeView.SelectedNode;
+                    serviceBusTreeView.BeginUpdate();
+                    try
+                    {
+                        treeViewFilterHelper.UpdateUnfilteredTree(treeRoot.Nodes, filterTreeViewTextBox.Text, () =>
+                        {
+                            var subscriptionsNode = entityNode.Nodes[SubscriptionEntities];
+                            subscriptionsNode.Nodes.Clear();
+                            subscriptionsNode.Nodes.AddRange(nodes);
+                            if (expand)
+                            {
+                                subscriptionsNode.Expand();
+                            }
+                        });
+
+                        if (selected?.TreeView == serviceBusTreeView)
+                        {
+                            serviceBusTreeView.SelectedNode = selected;
+                        }
+                    }
+                    finally
+                    {
+                        serviceBusTreeView.EndUpdate();
+                    }
+
+                    foreach (var node in nodes)
+                    {
+                        WriteToLog(string.Format(CultureInfo.CurrentCulture, SubscriptionRetrievedFormat, node.Text, topic.Data.Name), false);
+                    }
+                },
+                HandleException);
         }
 
         private void CreateEventHubSubTree(EventHubDescription eventHub, TreeNode entityNode)
@@ -7057,6 +7040,7 @@ namespace ServiceBusExplorer.Forms
         {
             cancellationTokenSource.Cancel(false);
             eventGridRefresh?.Cancel();
+            eventGridSubscriptionLoads.Reset();
             if (saveMessageToFile)
             {
                 MessageAndPropertiesHelper.WriteMessage(MessageText);

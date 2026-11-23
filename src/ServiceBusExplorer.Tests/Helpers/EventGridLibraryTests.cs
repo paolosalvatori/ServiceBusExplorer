@@ -321,7 +321,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 (await Task.WhenAny(oldSendStarted.Task, delayed)).Should().BeSameAs(oldSendStarted.Task);
                 Func<Task> publish = () => library.PublishEventAsync("orders", "/source", "Immediate", "{}");
-                await publish.Should().ThrowAsync<InvalidOperationException>().WithMessage("*retry the operation*not retried automatically*");
+                await publish.Should().ThrowAsync<InvalidOperationException>().WithMessage("*retry the operation*Explorer did not issue an additional retry*");
                 library.Senders.Single().SingleEvents.Select(evt => evt.Type).Should().Equal("Delayed", "Immediate");
 
                 arm.AddKeys("new-key");
@@ -332,7 +332,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 finishOldSend.TrySetException(new RequestFailedException(401, "Unauthorized"));
             }
             Func<Task> finish = () => delayed;
-            await finish.Should().ThrowAsync<InvalidOperationException>().WithMessage("*not retried automatically*");
+            await finish.Should().ThrowAsync<InvalidOperationException>().WithMessage("*Explorer did not issue an additional retry*");
             await library.PublishEventAsync("orders", "/source", "Next", "{}");
 
             library.Senders.Should().HaveCount(2);
@@ -405,6 +405,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         [InlineData(401, "retry the operation")]
         [InlineData(403, "network access policy")]
         [InlineData(429, "HTTP 429")]
+        [InlineData(500, "HTTP 500")]
         public async Task EventActionsAsync_ReportsServiceFailureWithoutReplaying(int status, string expectedMessage)
         {
             var logs = new List<string>();
@@ -419,7 +420,9 @@ namespace ServiceBusExplorer.Tests.Helpers
                 (message, _) => logs.Add(message));
 
             result.Should().BeFalse();
-            logs.Should().ContainSingle().Which.Should().Contain(expectedMessage).And.Contain("not retried automatically");
+            logs.Should().ContainSingle().Which.Should().Contain(expectedMessage)
+                .And.Contain("Explorer did not issue an additional retry.")
+                .And.Contain("The Azure SDK may retry transient failures.");
             library.Receiver.AcknowledgeCalls.Should().Be(1);
             arm.Requests.Count(r => r.Uri.AbsolutePath.EndsWith("/orders/listKeys")).Should().Be(1);
         }
