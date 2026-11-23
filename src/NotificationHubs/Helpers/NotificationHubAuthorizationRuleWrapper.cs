@@ -190,11 +190,6 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 }
                 Send = true;
                 Listen = true;
-                if (AuthorizationRule != null &&
-                    !AuthorizationRule.Rights.Contains(AccessRights.Manage))
-                {
-                    AuthorizationRule.Rights = new[] {AccessRights.Manage, AccessRights.Send, AccessRights.Listen};
-                }
             }
         }
 
@@ -211,13 +206,6 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 {
                     Manage = false;
                 }
-                if (AuthorizationRule == null || AuthorizationRule.Rights.Contains(AccessRights.Send))
-                {
-                    return;
-                }
-                var list = AuthorizationRule.Rights.ToList();
-                list.Add(AccessRights.Send);
-                AuthorizationRule.Rights = list;
             }
         }
 
@@ -234,13 +222,6 @@ namespace ServiceBusExplorer.NotificationHubs.Helpers
                 {
                     Manage = false;
                 }
-                if (AuthorizationRule == null || AuthorizationRule.Rights.Contains(AccessRights.Listen))
-                {
-                    return;
-                }
-                var list = AuthorizationRule.Rights.ToList();
-                list.Add(AccessRights.Listen);
-                AuthorizationRule.Rights = list;
             }
         } 
         #endregion

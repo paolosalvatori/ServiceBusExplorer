@@ -174,7 +174,7 @@ namespace ServiceBusExplorer.Controls
         private FcmV1Credential pendingFcmV1Credential;
         private bool removeLegacyFcm;
         private bool removeFcmV1;
-        private bool notificationHubSettingsNeedRefresh;
+        private readonly NotificationHubSettingsRecovery settingsRecovery = new NotificationHubSettingsRecovery();
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly WriteToLogDelegate writeToLog;
         private List<MethodInfo> mpnsMethodInfoList;
@@ -230,8 +230,7 @@ namespace ServiceBusExplorer.Controls
             try
             {
                 notificationHubDescription = hubDescription;
-                notificationHubSettingsNeedRefresh = false;
-                InitializeData();
+                settingsRecovery.Initialize(InitializeData);
             }
             catch (Exception ex)
             {
@@ -2067,7 +2066,10 @@ namespace ServiceBusExplorer.Controls
                         }
                     }
                     
-                    ApplyAuthorizationRules(description);
+                    if (!TryApplyAuthorizationRules(description))
+                    {
+                        return;
+                    }
 
                     notificationHubDescription = serviceBusHelper.CreateNotificationHub(description);
                     InitializeData();
@@ -2103,7 +2105,7 @@ namespace ServiceBusExplorer.Controls
             }
             else
             {
-                if (notificationHubSettingsNeedRefresh)
+                if (settingsRecovery.NeedsRefresh)
                 {
                     writeToLog("Refresh the notification hub before retrying the update.", false);
                     return;
@@ -2153,7 +2155,11 @@ namespace ServiceBusExplorer.Controls
 
                     description.UserMetadata = txtUserMetadata.Text;
 
-                    ApplyAuthorizationRules(description);
+                    if (!TryApplyAuthorizationRules(description))
+                    {
+                        return;
+                    }
+
                     notificationHubDescription = serviceBusHelper.UpdateNotificationHub(description);
                 }
                 catch (Exception ex)
@@ -2165,7 +2171,7 @@ namespace ServiceBusExplorer.Controls
                     }
                     catch (Exception)
                     {
-                        notificationHubSettingsNeedRefresh = true;
+                        settingsRecovery.RequireRefresh();
                         writeToLog("Unable to reload the notification hub after the update failed. Showing the last confirmed settings. Refresh before retrying.", false);
                     }
                 }
@@ -2176,6 +2182,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 catch (Exception ex)
                 {
+                    settingsRecovery.RequireRefresh();
                     HandleException(ex);
                 }
             }
@@ -2196,66 +2203,97 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void ApplyAuthorizationRules(NotificationHubDescription description)
+        private bool TryApplyAuthorizationRules(NotificationHubDescription description)
         {
-            authorizationRulesDataGridView.EndEdit();
+            if (!authorizationRulesDataGridView.EndEdit())
+            {
+                writeToLog("Correct the authorization rule edit before updating the notification hub.", false);
+                return false;
+            }
+
             authorizationRulesBindingSource.EndEdit();
             var rules = authorizationRulesBindingSource.DataSource as BindingList<NotificationHubAuthorizationRuleWrapper>;
             if (rules == null)
             {
-                return;
+                return true;
             }
 
-            ReplaceAuthorizationRules(description, rules, serviceBusHelper.IsCloudNamespace,
+            return TryReplaceAuthorizationRules(description, rules, serviceBusHelper.IsCloudNamespace,
                 i => writeToLog(string.Format(KeyNameCannotBeNull, i)),
-                () => writeToLog("Skipped a new authorization rule: this SDK supports creating Notification Hubs rules only in Azure namespaces.", false));
+                () => writeToLog("Skipped a new authorization rule: this SDK supports creating Notification Hubs rules only in Azure namespaces.", false),
+                i => writeToLog($"Authorization rule on row {i + 1} has no permissions. Select at least one permission or delete the rule explicitly.", false));
         }
 
-        internal static void ReplaceAuthorizationRules(NotificationHubDescription description,
-            IList<NotificationHubAuthorizationRuleWrapper> rules, bool allowNew, Action<int> missingKeyName, Action skippedNewRule)
+        internal static bool TryReplaceAuthorizationRules(NotificationHubDescription description,
+            IList<NotificationHubAuthorizationRuleWrapper> rules, bool allowNew, Action<int> missingKeyName,
+            Action skippedNewRule, Action<int> missingRights)
         {
+            // An empty set is invalid in the SDK. Reject it before changing the draft or any staged rules.
+            for (var i = 0; i < rules.Count; i++)
+            {
+                var rule = rules[i];
+                var willSaveRule = rule.AuthorizationRule != null ||
+                    (allowNew && !string.IsNullOrWhiteSpace(rule.KeyName));
+                if (willSaveRule && !rule.Manage && !rule.Send && !rule.Listen)
+                {
+                    missingRights(i);
+                    return false;
+                }
+            }
+
             description.Authorization.Clear();
             for (var i = 0; i < rules.Count; i++)
             {
                 var rule = rules[i];
-                if (rule.AuthorizationRule != null)
+                if (rule.AuthorizationRule == null)
                 {
-                    description.Authorization.Add(rule.AuthorizationRule);
+                    if (!allowNew)
+                    {
+                        skippedNewRule();
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(rule.KeyName))
+                    {
+                        missingKeyName(i);
+                        continue;
+                    }
                 }
-                else if (!allowNew)
+
+                var rights = new List<AccessRights>();
+                if (rule.Manage)
                 {
-                    skippedNewRule();
-                }
-                else if (string.IsNullOrWhiteSpace(rule.KeyName))
-                {
-                    missingKeyName(i);
+                    rights.AddRange(new[] { AccessRights.Manage, AccessRights.Send, AccessRights.Listen });
                 }
                 else
                 {
-                    var rights = new List<AccessRights>();
-                    if (rule.Manage)
+                    if (rule.Send)
                     {
-                        rights.AddRange(new[] { AccessRights.Manage, AccessRights.Send, AccessRights.Listen });
-                    }
-                    else
-                    {
-                        if (rule.Send)
-                        {
-                            rights.Add(AccessRights.Send);
-                        }
-
-                        if (rule.Listen)
-                        {
-                            rights.Add(AccessRights.Listen);
-                        }
+                        rights.Add(AccessRights.Send);
                     }
 
+                    if (rule.Listen)
+                    {
+                        rights.Add(AccessRights.Listen);
+                    }
+                }
+
+                if (rule.AuthorizationRule != null)
+                {
+                    // Keep the staged SDK rule and replace only its permissions, not its keys or metadata.
+                    rule.AuthorizationRule.Rights = rights;
+                    description.Authorization.Add(rule.AuthorizationRule);
+                }
+                else
+                {
                     var primaryKey = rule.PrimaryKey ?? SharedAccessAuthorizationRule.GenerateRandomKey();
                     description.Authorization.Add(string.IsNullOrWhiteSpace(rule.SecondaryKey)
                         ? new SharedAccessAuthorizationRule(rule.KeyName, primaryKey, rights)
                         : new SharedAccessAuthorizationRule(rule.KeyName, primaryKey, rule.SecondaryKey, rights));
                 }
             }
+
+            return true;
         }
 
         private static void textBox_GotFocus(object sender, EventArgs e)

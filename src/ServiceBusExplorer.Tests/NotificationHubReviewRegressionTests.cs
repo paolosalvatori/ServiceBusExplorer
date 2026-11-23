@@ -6,6 +6,7 @@ using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.NotificationHubs.Messaging;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.NotificationHubs.Helpers;
+using ServiceBusExplorer.UIHelpers;
 using Xunit;
 
 namespace ServiceBusExplorer.Tests
@@ -99,8 +100,9 @@ namespace ServiceBusExplorer.Tests
             var draft = HandleNotificationHubControl.CopyNotificationHubDescription(confirmed);
             HandleNotificationHubControl.ApplyFcmCredentials(draft,
                 new FcmV1Credential("new test private", "new-test-project", "new@example.test"), true, false);
-            HandleNotificationHubControl.ReplaceAuthorizationRules(draft, new[] { ruleEdit }, true,
-                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException());
+            HandleNotificationHubControl.TryReplaceAuthorizationRules(draft, new[] { ruleEdit }, true,
+                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException(),
+                _ => throw new InvalidOperationException()).Should().BeTrue();
 
             draft.Path.Should().Be(confirmed.Path);
             draft.IsDisabled.Should().BeTrue();
@@ -120,12 +122,13 @@ namespace ServiceBusExplorer.Tests
             var rules = new[]
             {
                 new NotificationHubAuthorizationRuleWrapper(existing),
-                new NotificationHubAuthorizationRuleWrapper { KeyName = "unsupported", Listen = true }
+                new NotificationHubAuthorizationRuleWrapper { KeyName = "unsupported" }
             };
             var skipped = 0;
             HandleNotificationHubControl.ApplyFcmCredentials(hub, null, false, true);
-            HandleNotificationHubControl.ReplaceAuthorizationRules(hub, rules, false,
-                _ => throw new InvalidOperationException(), () => skipped++);
+            HandleNotificationHubControl.TryReplaceAuthorizationRules(hub, rules, false,
+                _ => throw new InvalidOperationException(), () => skipped++,
+                _ => throw new InvalidOperationException()).Should().BeTrue();
 
             skipped.Should().Be(1);
             hub.Authorization.Should().ContainSingle().Which.Should().BeSameAs(existing);
@@ -138,12 +141,122 @@ namespace ServiceBusExplorer.Tests
             var hub = DualCredentials();
             hub.Authorization.Add(new SharedAccessAuthorizationRule("deleted", TestKey(), new[] { AccessRights.Send }));
             var rules = new[] { new NotificationHubAuthorizationRuleWrapper { KeyName = "new", PrimaryKey = TestKey(), Listen = true } };
-            HandleNotificationHubControl.ReplaceAuthorizationRules(hub, rules, true,
-                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException());
+            HandleNotificationHubControl.TryReplaceAuthorizationRules(hub, rules, true,
+                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException(),
+                _ => throw new InvalidOperationException()).Should().BeTrue();
 
             var rule = hub.Authorization.Should().ContainSingle().Which;
             rule.KeyName.Should().Be("new");
             rule.Rights.Should().Equal(AccessRights.Listen);
+        }
+
+        [Theory]
+        [InlineData(AccessRights.Manage, AccessRights.Send, AccessRights.Listen)]
+        [InlineData(AccessRights.Send, AccessRights.Listen)]
+        [InlineData(AccessRights.Listen, AccessRights.Send)]
+        public void ExistingRuleSave_RemovesUncheckedRightsAndPreservesRule(AccessRights permission, params AccessRights[] expected)
+        {
+            var hub = DualCredentials();
+            var secondaryKey = Convert.ToBase64String(Enumerable.Repeat((byte)1, 32).ToArray());
+            var rule = new SharedAccessAuthorizationRule("test-rule", TestKey(), secondaryKey,
+                new[] { AccessRights.Manage, AccessRights.Send, AccessRights.Listen })
+            {
+                IssuerName = "test-issuer",
+                Revision = 7
+            };
+            var createdTime = rule.CreatedTime;
+            var modifiedTime = rule.ModifiedTime;
+            var claimType = rule.ClaimType;
+            var claimValue = rule.ClaimValue;
+            var edit = new NotificationHubAuthorizationRuleWrapper(rule);
+            switch (permission)
+            {
+                case AccessRights.Manage: edit.Manage = false; break;
+                case AccessRights.Send: edit.Send = false; break;
+                case AccessRights.Listen: edit.Listen = false; break;
+            }
+
+            HandleNotificationHubControl.TryReplaceAuthorizationRules(hub, new[] { edit }, false,
+                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException(),
+                _ => throw new InvalidOperationException()).Should().BeTrue();
+
+            var saved = hub.Authorization.Should().ContainSingle().Which.Should().BeOfType<SharedAccessAuthorizationRule>().Which;
+            saved.Should().BeSameAs(rule);
+            saved.Rights.Should().Equal(expected);
+            saved.KeyName.Should().Be("test-rule");
+            saved.PrimaryKey.Should().Be(TestKey());
+            saved.SecondaryKey.Should().Be(secondaryKey);
+            saved.IssuerName.Should().Be("test-issuer");
+            saved.ClaimType.Should().Be(claimType);
+            saved.ClaimValue.Should().Be(claimValue);
+            saved.CreatedTime.Should().Be(createdTime);
+            saved.ModifiedTime.Should().Be(modifiedTime);
+            saved.Revision.Should().Be(7);
+        }
+
+        [Fact]
+        public void ExistingRuleSave_SelectingManageIncludesSendAndListen()
+        {
+            var hub = DualCredentials();
+            var rule = new SharedAccessAuthorizationRule("test-rule", TestKey(), new[] { AccessRights.Listen });
+            var edit = new NotificationHubAuthorizationRuleWrapper(rule) { Manage = true };
+            rule.Rights.Should().Equal(AccessRights.Listen);
+
+            HandleNotificationHubControl.TryReplaceAuthorizationRules(hub, new[] { edit }, true,
+                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException(),
+                _ => throw new InvalidOperationException()).Should().BeTrue();
+
+            hub.Authorization.Should().ContainSingle().Which.Rights
+                .Should().Equal(AccessRights.Manage, AccessRights.Send, AccessRights.Listen);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void RuleWithoutPermissions_BlocksSaveWithoutChangingAnyRule(bool isExisting)
+        {
+            var hub = DualCredentials();
+            var original = new SharedAccessAuthorizationRule("test-original", TestKey(), new[] { AccessRights.Send });
+            hub.Authorization.Add(original);
+            var staged = new SharedAccessAuthorizationRule("test-staged", TestKey(), new[] { AccessRights.Send });
+            var stagedEdit = new NotificationHubAuthorizationRuleWrapper(staged) { Listen = true };
+            var invalidEdit = isExisting
+                ? new NotificationHubAuthorizationRuleWrapper(original) { Send = false }
+                : new NotificationHubAuthorizationRuleWrapper { KeyName = "test-new" };
+            var reportedRow = -1;
+
+            HandleNotificationHubControl.TryReplaceAuthorizationRules(hub, new[] { stagedEdit, invalidEdit }, true,
+                _ => throw new InvalidOperationException(), () => throw new InvalidOperationException(),
+                i => reportedRow = i).Should().BeFalse();
+
+            reportedRow.Should().Be(1);
+            hub.Authorization.Should().ContainSingle().Which.Should().BeSameAs(original);
+            original.Rights.Should().Equal(AccessRights.Send);
+            staged.Rights.Should().Equal(AccessRights.Send);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void FailedRefresh_KeepsSavingBlockedUntilInitializationSucceeds(bool alreadyBlocked)
+        {
+            var recovery = new NotificationHubSettingsRecovery();
+            if (alreadyBlocked)
+            {
+                recovery.RequireRefresh();
+            }
+
+            var error = new InvalidOperationException("test initialization failure");
+            Assert.Same(error, Assert.Throws<InvalidOperationException>(() => recovery.Initialize(() =>
+            {
+                Assert.True(recovery.NeedsRefresh);
+                throw error;
+            })));
+            Assert.True(recovery.NeedsRefresh);
+
+            recovery.Initialize(() => Assert.True(recovery.NeedsRefresh));
+
+            Assert.False(recovery.NeedsRefresh);
         }
 
         [Fact]
