@@ -164,6 +164,8 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Fields
         private readonly List<CollectionQueryResult<RegistrationDescription>> registrationPageList = new List<CollectionQueryResult<RegistrationDescription>>();
+        private readonly RegistrationPageRequests<(GetRegistrationsMethod Method, int TopCount, string Tag, string PnsHandle)> registrationRequests =
+            new RegistrationPageRequests<(GetRegistrationsMethod, int, string, string)>((GetRegistrationsMethod.All, 100, null, null));
         private int currentRegistrationPage = -1;
         private NotificationHubDescription notificationHubDescription;
         private readonly ServiceBusHelper serviceBusHelper;
@@ -180,15 +182,10 @@ namespace ServiceBusExplorer.Controls
         private string apnsCredentialCertificatePath;
         private string apnsCredentialCertificateKey;
         private NotificationHubClient notificationHubClient;
-        private GetRegistrationsMethod currentGetRegistrationsMethod = GetRegistrationsMethod.All;
-        private int currentTopCount = 100;
-        private string currentPnsHandle;
-        private string currentTagName;
         private int currentRegistrationRowIndex;
         private bool sorting;
         private string registrationsFilterExpression;
         private Func<RegistrationDescription, bool> registrationsFilter;
-        private int registrationReadVersion;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         #endregion
 
@@ -235,7 +232,6 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                Cursor.Current = Cursors.WaitCursor;
                 if (showForm)
                 {
                     using (var registrationsForm = new RegistrationsForm(writeToLog))
@@ -258,43 +254,48 @@ namespace ServiceBusExplorer.Controls
             {
                 HandleException(ex);
             }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
         }
+
         private async Task LoadRegistrationPageAsync(string continuationToken,
             (GetRegistrationsMethod Method, int TopCount, string Tag, string PnsHandle)? selection = null)
         {
-            var (method, topCount, tag, pnsHandle) = selection ??
-                (currentGetRegistrationsMethod, currentTopCount, currentTagName, currentPnsHandle);
-            var readVersion = ++registrationReadVersion;
-            var firstPage = string.IsNullOrWhiteSpace(continuationToken);
-            CollectionQueryResult<RegistrationDescription> result;
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                await registrationRequests.RunAsync(continuationToken, selection,
+                    FetchRegistrationPageAsync, ApplyRegistrationPage, () => !IsDisposed);
+            }
+            finally
+            {
+                if (!registrationRequests.IsLoading && !IsDisposed)
+                {
+                    Cursor.Current = Cursors.Default;
+                }
+            }
+        }
+
+        private Task<CollectionQueryResult<RegistrationDescription>> FetchRegistrationPageAsync(
+            (GetRegistrationsMethod Method, int TopCount, string Tag, string PnsHandle) query, string continuationToken)
+        {
+            var (method, topCount, tag, pnsHandle) = query;
             switch (method)
             {
                 case GetRegistrationsMethod.All:
-                    result = firstPage ? await notificationHubClient.GetAllRegistrationsAsync(topCount) :
-                        await notificationHubClient.GetAllRegistrationsAsync(continuationToken, topCount);
-                    break;
+                    return continuationToken == null ? notificationHubClient.GetAllRegistrationsAsync(topCount) :
+                        notificationHubClient.GetAllRegistrationsAsync(continuationToken, topCount);
                 case GetRegistrationsMethod.Tag:
-                    result = firstPage ? await notificationHubClient.GetRegistrationsByTagAsync(tag, topCount) :
-                        await notificationHubClient.GetRegistrationsByTagAsync(tag, continuationToken, topCount);
-                    break;
+                    return continuationToken == null ? notificationHubClient.GetRegistrationsByTagAsync(tag, topCount) :
+                        notificationHubClient.GetRegistrationsByTagAsync(tag, continuationToken, topCount);
                 case GetRegistrationsMethod.PnsHandle:
-                    result = firstPage ? await notificationHubClient.GetRegistrationsByChannelAsync(pnsHandle, topCount) :
-                        await notificationHubClient.GetRegistrationsByChannelAsync(pnsHandle, continuationToken, topCount);
-                    break;
+                    return continuationToken == null ? notificationHubClient.GetRegistrationsByChannelAsync(pnsHandle, topCount) :
+                        notificationHubClient.GetRegistrationsByChannelAsync(pnsHandle, continuationToken, topCount);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(selection));
+                    throw new ArgumentOutOfRangeException(nameof(query));
             }
+        }
 
-            // A newer request controls the view. Don't replace its pages with a stale response.
-            if (readVersion != registrationReadVersion || IsDisposed)
-            {
-                return;
-            }
-
+        private void ApplyRegistrationPage(bool firstPage, CollectionQueryResult<RegistrationDescription> result)
+        {
             if (result == null)
             {
                 throw new InvalidOperationException("Notification Hubs returned no registration page.");
@@ -311,13 +312,6 @@ namespace ServiceBusExplorer.Controls
             var registrations = SelectRegistrations(pages, pageIndex, registrationsFilter).ToList();
 
             // Keep the previous view if the request or its filter cannot be evaluated.
-            if (firstPage)
-            {
-                currentGetRegistrationsMethod = method;
-                currentTopCount = topCount;
-                currentTagName = tag;
-                currentPnsHandle = pnsHandle;
-            }
             registrationPageList.Clear();
             registrationPageList.AddRange(pages);
             currentRegistrationPage = pageIndex;
@@ -2823,6 +2817,10 @@ namespace ServiceBusExplorer.Controls
 
         private void btnFirstRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0)
             {
                 return;
@@ -2833,6 +2831,10 @@ namespace ServiceBusExplorer.Controls
 
         private void btnPreviousRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0 || currentRegistrationPage == 0)
             {
                 return;
@@ -2843,6 +2845,10 @@ namespace ServiceBusExplorer.Controls
 
         private void btnNextRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0)
             {
                 GetRegistrations(false, null);
@@ -2850,7 +2856,7 @@ namespace ServiceBusExplorer.Controls
             }
             if (currentRegistrationPage == registrationPageList.Count - 1)
             {
-                if (registrationPageList[currentRegistrationPage].Count() == currentTopCount &&
+                if (registrationPageList[currentRegistrationPage].Count() == registrationRequests.CommittedQuery.TopCount &&
                     !string.IsNullOrWhiteSpace(registrationPageList[currentRegistrationPage].ContinuationToken))
                 {
                     GetRegistrations(false, registrationPageList[currentRegistrationPage].ContinuationToken);
@@ -2865,13 +2871,17 @@ namespace ServiceBusExplorer.Controls
 
         private void btnLastRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0)
             {
                 GetRegistrations(false, null);
                 return;
             }
             var lastPageIndex = registrationPageList.Count - 1;
-            if (registrationPageList[lastPageIndex].Count() == currentTopCount &&
+            if (registrationPageList[lastPageIndex].Count() == registrationRequests.CommittedQuery.TopCount &&
                 !string.IsNullOrWhiteSpace(registrationPageList[lastPageIndex].ContinuationToken))
             {
                 GetRegistrations(false, registrationPageList[lastPageIndex].ContinuationToken);
@@ -3273,7 +3283,7 @@ namespace ServiceBusExplorer.Controls
                                          notificationHubDescription.Path));
                 try
                 {
-                    // Rebuild from Azure using the current query. The new registration might not
+                    // Rebuild from Azure using the latest selected query. The new registration might not
                     // match that query, and the server is responsible for page order and tokens.
                     await LoadRegistrationPageAsync(null);
                 }
