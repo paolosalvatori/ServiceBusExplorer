@@ -29,6 +29,7 @@ using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Utilities.Helpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 
 
 #endregion
@@ -129,6 +130,7 @@ namespace ServiceBusExplorer.UIHelpers
                     break;
             }
             textBox.OnTextChanged();
+            ThemeManager.ApplyEditorStyles(textBox);
         }
         #endregion
 
@@ -150,6 +152,7 @@ namespace ServiceBusExplorer.UIHelpers
                 textBox.Language = Language.Custom;
                 textBox.Text = string.IsNullOrEmpty(message) ? "" : message;
             }
+            ThemeManager.ApplyEditorStyles(textBox);
         }
         #endregion
     }

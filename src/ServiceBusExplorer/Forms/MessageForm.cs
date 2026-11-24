@@ -42,7 +42,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class MessageForm : Form
+    public partial class MessageForm : ThemedForm
     {
         #region Private Constants
         //***************************

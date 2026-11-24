@@ -4,7 +4,7 @@
 
 | # | Test | Command/Action | Expected | Status |
 |---|------|----------------|----------|--------|
-| 1 | Build | `dotnet build src/ServiceBusExplorer.sln` | 0 errors | ✅ |
+| 1 | Build | `dotnet build src/ServiceBusExplorer.slnx` | 0 errors | ✅ |
 | 2 | Unit tests | `dotnet test src/ServiceBusExplorer.Tests` | All 49 pass | ✅ |
 | 3 | TreeView filter | Type in filter box above tree | Nodes filter in real-time | ⬜ |
 | 4 | Filter after refresh | F5 after filtering | Filter re-applied | ⬜ |

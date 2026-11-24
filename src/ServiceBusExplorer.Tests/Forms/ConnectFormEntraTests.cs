@@ -30,6 +30,43 @@ namespace ServiceBusExplorer.Tests.Forms
         private const string ConnectionStringPartTenantId = "TenantId=";
         private const string ConnectionStringPartEntityPath = "EntityPath=";
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void AuthModeSwitch_PlaceholderToEntra_SelectsManualConnection(bool enterEndpointBeforeSwitch)
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+
+                using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
+                           ConfigFileUse.ApplicationConfig, null))
+                {
+                    var namespacePicker = GetComboBox(form, ControlNameServiceBusNamespace);
+                    var authModePicker = GetComboBox(form, ControlNameAuthMode);
+                    var endpoint = GetTextBox(form, ControlNameUri);
+                    var okButton = FindControl<System.Windows.Forms.Button>(form, "btnOk");
+
+                    namespacePicker.SelectedIndex.Should().Be(0);
+                    if (enterEndpointBeforeSwitch)
+                    {
+                        endpoint.Text = "myns.servicebus.windows.net";
+                    }
+
+                    authModePicker.SelectedIndex = 1;
+
+                    namespacePicker.SelectedIndex.Should().Be(1);
+                    okButton.Enabled.Should().Be(enterEndpointBeforeSwitch);
+
+                    if (!enterEndpointBeforeSwitch)
+                    {
+                        endpoint.Text = "myns.servicebus.windows.net";
+                        okButton.Enabled.Should().BeTrue();
+                    }
+                }
+            });
+        }
+
         [Fact]
         public void BuildCurrentConnectionString_ManualEntraMode_BuildsStructuredEntraEntry()
         {

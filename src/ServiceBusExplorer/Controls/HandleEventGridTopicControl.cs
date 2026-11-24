@@ -42,7 +42,7 @@ namespace ServiceBusExplorer.Controls
             {
                 new[] {Id, topic.Id},
                 new[] {TopicName, topic.Data.Name},
-                new[] {TopicEndpoint, hostname + "/topics/" + topic.Data.Name},
+                new[] {TopicEndpoint, hostname == null ? "(Unavailable)" : hostname + "/topics/" + topic.Data.Name},
                 new[] {InputSchema, topic.Data.InputSchema.ToString()},
                 new[] {EventRetentionInDays, topic.Data.EventRetentionInDays.ToString()},
                 new[] {ProvisioningState, topic.Data.ProvisioningState.ToString()},

@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Messaging.EventGrid" />
+		<PackageReference Include="Azure.Messaging.EventGrid.Namespaces" />
 		<PackageReference Include="Azure.Identity" />
 		<PackageReference Include="Azure.ResourceManager.EventGrid" />
 		<PackageReference Include="Newtonsoft.Json" />
@@ -27,6 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="ServiceBusExplorer.Tests" />
 		<ProjectReference Include="..\Utilities\Utilities.csproj" />
 	</ItemGroup>
 

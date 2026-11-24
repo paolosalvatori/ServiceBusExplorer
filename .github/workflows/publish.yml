@@ -10,9 +10,6 @@ on:
         required: true
         type: string
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   publish:
     name: publish
@@ -25,7 +22,7 @@ jobs:
         echo "OUTPUT_PATH=$env:GITHUB_WORKSPACE\src\ServiceBusExplorer\bin\Release" >> $env:GITHUB_ENV
         echo "RELEASE_VERSION=$env:STEP_RELEASE_VERSION" >> $env:GITHUB_ENV
        
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
     - name: Verify release version and get just the numbers and the dots
       id: get-number-version
@@ -41,7 +38,7 @@ jobs:
 
     - name: Get cached build
       id: get-cached-build
-      uses: actions/cache@v4
+      uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
       with:
         path: src/ServiceBusExplorer/bin/Release
         key: cached-output-${{ github.sha }}
