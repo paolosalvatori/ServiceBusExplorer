@@ -350,6 +350,8 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
             UpdateRegion();
+            ServiceBusExplorer.UIHelpers.Theming.ThemeManager.Register(this);
+            ServiceBusExplorer.UIHelpers.Theming.ThemeManager.Register(content);
             base.OnOpening(e);
         }
 

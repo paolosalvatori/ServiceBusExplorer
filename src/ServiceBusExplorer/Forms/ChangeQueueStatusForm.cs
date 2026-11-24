@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ChangeQueueStatusForm : Form
+    public partial class ChangeQueueStatusForm : ThemedForm
     {
         public EntityStatus EntityStatus { get; private set; }
 

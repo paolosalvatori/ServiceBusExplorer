@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -54,6 +54,7 @@ namespace ServiceBusExplorer.Helpers
         public int ReceiverThinkTime { get; set; }
         public int MonitorRefreshInterval { get; set; }
         public bool ShowMessageCount { get; set; }
+        public Enums.ThemeMode ThemeMode { get; set; } = Enums.ThemeMode.FollowOperatingSystem;
         public bool UseAscii { get; set; }
         public bool SaveMessageToFile { get; set; }
         public bool SavePropertiesToFile { get; set; }
@@ -120,6 +121,7 @@ namespace ServiceBusExplorer.Helpers
             MonitorRefreshInterval = 30;
 
             ShowMessageCount = true;
+            ThemeMode = Enums.ThemeMode.FollowOperatingSystem;
             UseAscii = true;
             SaveMessageToFile = true;
             SavePropertiesToFile = true;
@@ -170,6 +172,7 @@ namespace ServiceBusExplorer.Helpers
             if (ReceiverThinkTime != otherProperties.ReceiverThinkTime) return false;
             if (MonitorRefreshInterval != otherProperties.MonitorRefreshInterval) return false;
             if (ShowMessageCount != otherProperties.ShowMessageCount) return false;
+            if (ThemeMode != otherProperties.ThemeMode) return false;
             if (UseAscii != otherProperties.UseAscii) return false;
             if (SaveMessageToFile != otherProperties.SaveMessageToFile) return false;
             if (SavePropertiesToFile != otherProperties.SavePropertiesToFile) return false;
@@ -200,7 +203,7 @@ namespace ServiceBusExplorer.Helpers
             return true;
         }
 
-        // GetHashCode is based on mutable fields so these fields must not be changed while 
+        // GetHashCode is based on mutable fields so these fields must not be changed while
         // it is being in a container.
         public override int GetHashCode()
         {
@@ -256,6 +259,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ShowMessageCountParameter:
                     return ShowMessageCount;
+
+                case ConfigurationParameters.ThemeMode:
+                    return ThemeMode;
 
                 case ConfigurationParameters.UseAsciiParameter:
                     return UseAscii;

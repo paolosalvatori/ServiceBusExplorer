@@ -9,8 +9,11 @@ namespace ServiceBusExplorer.Helpers
         private readonly Dictionary<TreeNode, List<TreeNode>> snapshot = new Dictionary<TreeNode, List<TreeNode>>();
         private readonly Dictionary<TreeNode, List<TreeNode>> childSnapshot = new Dictionary<TreeNode, List<TreeNode>>();
 
+        private bool filterApplied;
+
         public void ApplyFilter(TreeNodeCollection categoryNodes, string filterText)
         {
+            filterApplied = !string.IsNullOrWhiteSpace(filterText);
             foreach (TreeNode categoryNode in categoryNodes)
             {
                 // Restore previous snapshot first so we always work with full node set
@@ -31,7 +34,7 @@ namespace ServiceBusExplorer.Helpers
                 }
                 snapshot[categoryNode] = children;
 
-                if (!string.IsNullOrWhiteSpace(filterText))
+                if (filterApplied)
                 {
                     categoryNode.Nodes.Clear();
                     foreach (var node in children)
@@ -59,8 +62,31 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
+        internal void UpdateUnfilteredTree(TreeNodeCollection categoryNodes, string filterText, Action update)
+        {
+            if (filterApplied)
+            {
+                // Restore detached nodes before updating; dropping the snapshots alone would lose them.
+                ApplyFilter(categoryNodes, string.Empty);
+            }
+
+            Clear();
+            try
+            {
+                update();
+            }
+            finally
+            {
+                if (!string.IsNullOrWhiteSpace(filterText))
+                {
+                    ApplyFilter(categoryNodes, filterText);
+                }
+            }
+        }
+
         public void Clear()
         {
+            filterApplied = false;
             snapshot.Clear();
             childSnapshot.Clear();
         }

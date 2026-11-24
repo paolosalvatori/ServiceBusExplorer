@@ -33,7 +33,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class ReceiveModeForm : Form
+    public partial class ReceiveModeForm : ThemedForm
     {
         #region Private Constants
         //***************************
