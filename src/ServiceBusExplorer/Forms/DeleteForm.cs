@@ -30,7 +30,7 @@ using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class DeleteForm : Form
+    public partial class DeleteForm : ThemedForm
     {
         #region Private Constants
         //***************************

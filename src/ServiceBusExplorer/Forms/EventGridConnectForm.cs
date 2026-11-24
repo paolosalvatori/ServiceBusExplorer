@@ -1,4 +1,5 @@
 ﻿using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +7,12 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class EventGridConnectForm : Form
+    public partial class EventGridConnectForm : ThemedForm
     {
         #region Public Fields
         public string ResourceGroup;
         public string NamespaceName;
         public string SubscriptionId;
-        public string ApiVersion;
         public int RetryTimeout;
         public string CloudTenant;
         public string CustomId;
@@ -22,6 +22,7 @@ namespace ServiceBusExplorer.Forms
         public EventGridConnectForm()
         {
             InitializeComponent();
+            ThemeManager.SetHeaderBrandLogo(pbAzure);
         }
 
         private void customCloud_CheckedChanged(object sender, EventArgs e)
@@ -34,7 +35,6 @@ namespace ServiceBusExplorer.Forms
             ResourceGroup = txtResourceGroupName.Text.Trim();
             NamespaceName = txtNamespaceName.Text.Trim();
             SubscriptionId = txtSubscriptionId.Text.Trim();
-            ApiVersion = cboApiVersion.Text.Trim(); 
 
             int.TryParse(txtRetryTimeout.Text, out var retryTimoutInSeconds);
             RetryTimeout = retryTimoutInSeconds;
@@ -48,11 +48,6 @@ namespace ServiceBusExplorer.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
-        }
-
-        private void EventGridConnectForm_Load(object sender, EventArgs e)
-        {
-            cboApiVersion.SelectedIndex = 0;
         }
     }
 }

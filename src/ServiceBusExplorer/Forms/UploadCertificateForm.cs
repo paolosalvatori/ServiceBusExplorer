@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class UploadCertificateForm : Form
+    public partial class UploadCertificateForm : ThemedForm
     {
         #region Public Constructor
         public UploadCertificateForm()

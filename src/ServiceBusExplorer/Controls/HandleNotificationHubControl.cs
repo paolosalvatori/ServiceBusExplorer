@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Azure.NotificationHubs;
@@ -169,6 +170,8 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Fields
         private readonly List<ICollectionQueryResult<RegistrationDescription>> registrationPageList = new List<ICollectionQueryResult<RegistrationDescription>>();
+        private readonly RegistrationPageRequests<(GetRegistrationsMethod Method, int TopCount, string Tag, string PnsHandle)> registrationRequests =
+            new RegistrationPageRequests<(GetRegistrationsMethod, int, string, string)>((GetRegistrationsMethod.All, 100, null, null));
         private int currentRegistrationPage = -1;
         private NotificationHubDescription notificationHubDescription;
         private FcmV1Credential pendingFcmV1Credential;
@@ -189,13 +192,10 @@ namespace ServiceBusExplorer.Controls
         private string apnsCredentialCertificatePath;
         private string apnsCredentialCertificateKey;
         private NotificationHubClient notificationHubClient;
-        private GetRegistrationsMethod currentGetRegistrationsMethod = GetRegistrationsMethod.All;
-        private int currentTopCount = 100;
-        private string currentPnsHandle;
-        private string currentTagName;
         private int currentRegistrationRowIndex;
         private bool sorting;
         private string registrationsFilterExpression;
+        private Func<RegistrationDescription, bool> registrationsFilter;
         private readonly BindingSource dataPointBindingSource = new BindingSource();
         #endregion
 
@@ -242,96 +242,93 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                Cursor.Current = Cursors.WaitCursor;
                 if (showForm)
                 {
-
                     using (var registrationsForm = new RegistrationsForm(writeToLog))
                     {
-                        if (registrationsForm.ShowDialog() != DialogResult.OK)
+                        if (registrationsForm.ShowDialog() != DialogResult.OK || notificationHubClient == null)
                         {
                             return;
                         }
 
-                        if (notificationHubClient == null)
-                        {
-                            return;
-                        }
-                        currentGetRegistrationsMethod = registrationsForm.GetRegistrationsMethod;
-                        currentTopCount = registrationsForm.TopCount;
-                        currentTagName = registrationsForm.TagName;
-                        currentPnsHandle = registrationsForm.PnsHandle;
+                        await LoadRegistrationPageAsync(null, (registrationsForm.GetRegistrationsMethod,
+                            registrationsForm.TopCount, registrationsForm.TagName, registrationsForm.PnsHandle));
                     }
                 }
-                ICollectionQueryResult<RegistrationDescription> collectionQueryResult = null;
-                if (string.IsNullOrWhiteSpace(continuationToken))
+                else
                 {
-                    registrationPageList.Clear();
-                    currentRegistrationPage = -1;
+                    await LoadRegistrationPageAsync(continuationToken);
                 }
-                switch (currentGetRegistrationsMethod)
-                {
-                    case GetRegistrationsMethod.All:
-                        {
-                            collectionQueryResult = string.IsNullOrWhiteSpace(continuationToken) ?
-                                                    await notificationHubClient.GetAllRegistrationsAsync(currentTopCount) :
-                                                    await notificationHubClient.GetAllRegistrationsAsync(continuationToken, currentTopCount);
-                        }
-                        break;
-                    case GetRegistrationsMethod.Tag:
-                        {
-                            collectionQueryResult = string.IsNullOrWhiteSpace(continuationToken) ?
-                                                    await notificationHubClient.GetRegistrationsByTagAsync(currentTagName, currentTopCount) :
-                                                    await notificationHubClient.GetRegistrationsByTagAsync(currentTagName, continuationToken, currentTopCount);
-                        }
-                        break;
-                    case GetRegistrationsMethod.PnsHandle:
-                        {
-                            collectionQueryResult = string.IsNullOrWhiteSpace(continuationToken) ?
-                                                    await notificationHubClient.GetRegistrationsByChannelAsync(currentPnsHandle, currentTopCount) :
-                                                    await notificationHubClient.GetRegistrationsByChannelAsync(currentPnsHandle, continuationToken, currentTopCount);
-                        }
-                        break;
-                }
-                if (collectionQueryResult == null)
-                {
-                    return;
-                }
-                var count = collectionQueryResult.Count();
-                if (count == 0)
-                {
-                    if (registrationPageList.Count > 0)
-                    {
-                        currentRegistrationPage = registrationPageList.Count - 1;
-                        SetRegistrationPage();
-                    }
-                    else
-                    {
-                        if (mainTabControl.TabPages[RegistrationsPage] == null)
-                        {
-                            EnablePage(RegistrationsPage);
-                            mainTabControl.SelectTab(RegistrationsPage);
-                            registrationsBindingSource.DataSource = null;
-                            registrationsDataGridView.DataSource = registrationsBindingSource;
-                            writeToLog(string.Format(RegistrationsRetrievedFormat, 0, notificationHubDescription.Path));
-                        }
-                    }
-                    return;
-                }
-                registrationPageList.Add(collectionQueryResult);
-                currentRegistrationPage = registrationPageList.Count - 1;
-                writeToLog(string.Format(RegistrationsRetrievedFormat, count, notificationHubDescription.Path));
-                SetRegistrationPage();
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
+        }
+
+        private async Task LoadRegistrationPageAsync(string continuationToken,
+            (GetRegistrationsMethod Method, int TopCount, string Tag, string PnsHandle)? selection = null)
+        {
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                await registrationRequests.RunAsync(continuationToken, selection,
+                    FetchRegistrationPageAsync, ApplyRegistrationPage, () => !IsDisposed);
+            }
             finally
             {
-                Cursor.Current = Cursors.Default;
+                if (!registrationRequests.IsLoading && !IsDisposed)
+                {
+                    Cursor.Current = Cursors.Default;
+                }
             }
         }
+
+        private Task<ICollectionQueryResult<RegistrationDescription>> FetchRegistrationPageAsync(
+            (GetRegistrationsMethod Method, int TopCount, string Tag, string PnsHandle) query, string continuationToken)
+        {
+            var (method, topCount, tag, pnsHandle) = query;
+            switch (method)
+            {
+                case GetRegistrationsMethod.All:
+                    return continuationToken == null ? notificationHubClient.GetAllRegistrationsAsync(topCount) :
+                        notificationHubClient.GetAllRegistrationsAsync(continuationToken, topCount);
+                case GetRegistrationsMethod.Tag:
+                    return continuationToken == null ? notificationHubClient.GetRegistrationsByTagAsync(tag, topCount) :
+                        notificationHubClient.GetRegistrationsByTagAsync(tag, continuationToken, topCount);
+                case GetRegistrationsMethod.PnsHandle:
+                    return continuationToken == null ? notificationHubClient.GetRegistrationsByChannelAsync(pnsHandle, topCount) :
+                        notificationHubClient.GetRegistrationsByChannelAsync(pnsHandle, continuationToken, topCount);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(query));
+            }
+        }
+
+        private void ApplyRegistrationPage(bool firstPage, ICollectionQueryResult<RegistrationDescription> result)
+        {
+            if (result == null)
+            {
+                throw new InvalidOperationException("Notification Hubs returned no registration page.");
+            }
+
+            var count = result.Count();
+            var pages = firstPage ? new List<ICollectionQueryResult<RegistrationDescription>>() :
+                new List<ICollectionQueryResult<RegistrationDescription>>(registrationPageList);
+            if (count > 0)
+            {
+                pages.Add(result);
+            }
+            var pageIndex = pages.Count - 1;
+            var registrations = SelectRegistrations(pages, pageIndex, registrationsFilter).ToList();
+
+            // Keep the previous view if the request or its filter cannot be evaluated.
+            registrationPageList.Clear();
+            registrationPageList.AddRange(pages);
+            currentRegistrationPage = pageIndex;
+            SetRegistrationPage(registrations);
+            writeToLog(string.Format(RegistrationsRetrievedFormat, count, notificationHubDescription.Path));
+        }
+
         #endregion
 
         #region Private Methods
@@ -2787,29 +2784,57 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void SetRegistrationPage()
+        private void SetRegistrationPage(IReadOnlyList<RegistrationDescription> projectedRegistrations = null)
         {
-            if (currentRegistrationPage < 0 || currentRegistrationPage >= registrationPageList.Count)
-            {
-                return;
-            }
             if (mainTabControl.TabPages[RegistrationsPage] == null)
             {
                 EnablePage(RegistrationsPage);
             }
-            RegistrationInfo.SetRegistrations(registrationPageList[currentRegistrationPage]);
-            registrationsBindingSource.DataSource = null;
-            registrationsBindingSource.DataSource = new SortableBindingList<RegistrationInfo>(RegistrationInfo.Registrations);
+
+            var registrations = projectedRegistrations ??
+                SelectRegistrations(registrationPageList, currentRegistrationPage, registrationsFilter).ToList();
+            RegistrationInfo.SetRegistrations(registrations);
+            var bindingList = new SortableBindingList<RegistrationInfo>(RegistrationInfo.Registrations);
+            if (registrationsFilter != null)
+            {
+                bindingList.AllowEdit = false;
+                bindingList.AllowNew = false;
+                bindingList.AllowRemove = false;
+            }
+            registrationsBindingSource.DataSource = bindingList;
             registrationsDataGridView.DataSource = registrationsBindingSource;
+
+            var pageCount = registrationPageList.Count;
+            var page = currentRegistrationPage + 1;
+            txtCurrentRegistrationPage.Text = registrationsFilter == null
+                ? string.Format(RegistrationPageFormat, page, pageCount)
+                : string.Format(CultureInfo.CurrentCulture, "{0} filtered registrations across {1} loaded page(s)", bindingList.Count, pageCount);
+
             if (mainTabControl.TabPages[RegistrationsPage] != null)
             {
                 mainTabControl.SelectTab(RegistrationsPage);
             }
-            txtCurrentRegistrationPage.Text = string.Format(RegistrationPageFormat, currentRegistrationPage + 1, registrationPageList.Count);
+        }
+
+        internal static IEnumerable<RegistrationDescription> SelectRegistrations(
+            IReadOnlyList<IEnumerable<RegistrationDescription>> pages, int pageIndex,
+            Func<RegistrationDescription, bool> filter)
+        {
+            if (filter != null)
+            {
+                return pages.SelectMany(page => page).Where(filter);
+            }
+
+            return pageIndex >= 0 && pageIndex < pages.Count ? pages[pageIndex] :
+                Enumerable.Empty<RegistrationDescription>();
         }
 
         private void btnFirstRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0)
             {
                 return;
@@ -2820,6 +2845,10 @@ namespace ServiceBusExplorer.Controls
 
         private void btnPreviousRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0 || currentRegistrationPage == 0)
             {
                 return;
@@ -2830,6 +2859,10 @@ namespace ServiceBusExplorer.Controls
 
         private void btnNextRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0)
             {
                 GetRegistrations(false, null);
@@ -2837,7 +2870,7 @@ namespace ServiceBusExplorer.Controls
             }
             if (currentRegistrationPage == registrationPageList.Count - 1)
             {
-                if (registrationPageList[currentRegistrationPage].Count() == currentTopCount &&
+                if (registrationPageList[currentRegistrationPage].Count() == registrationRequests.CommittedQuery.TopCount &&
                     !string.IsNullOrWhiteSpace(registrationPageList[currentRegistrationPage].ContinuationToken))
                 {
                     GetRegistrations(false, registrationPageList[currentRegistrationPage].ContinuationToken);
@@ -2852,13 +2885,17 @@ namespace ServiceBusExplorer.Controls
 
         private void btnLastRegistrationPage_Click(object sender, EventArgs e)
         {
+            if (!registrationRequests.CanPage)
+            {
+                return;
+            }
             if (registrationPageList.Count == 0)
             {
                 GetRegistrations(false, null);
                 return;
             }
             var lastPageIndex = registrationPageList.Count - 1;
-            if (registrationPageList[lastPageIndex].Count() == currentTopCount &&
+            if (registrationPageList[lastPageIndex].Count() == registrationRequests.CommittedQuery.TopCount &&
                 !string.IsNullOrWhiteSpace(registrationPageList[lastPageIndex].ContinuationToken))
             {
                 GetRegistrations(false, registrationPageList[lastPageIndex].ContinuationToken);
@@ -3112,11 +3149,6 @@ namespace ServiceBusExplorer.Controls
                 {
                     return;
                 }
-                var bindingList = registrationsBindingSource.DataSource as SortableBindingList<RegistrationInfo>;
-                if (bindingList == null)
-                {
-                    return;
-                }
                 var tagsAsList = form.RegistrationObject[Tags] as List<TagInfo>;
                 HashSet<string> tags = null;
                 if (tagsAsList != null)
@@ -3315,10 +3347,17 @@ namespace ServiceBusExplorer.Controls
                 writeToLog(string.Format(RegistrationCreatedMessage,
                                          registrationInfo.PlatformType,
                                          notificationHubDescription.Path));
-                bindingList.Add(registrationInfo);
-                registrationsBindingSource.DataSource = null;
-                registrationsBindingSource.DataSource = new SortableBindingList<RegistrationInfo>(RegistrationInfo.Registrations);
-                registrationsDataGridView.DataSource = registrationsBindingSource;
+                try
+                {
+                    // Rebuild from Azure using the latest selected query. The new registration might not
+                    // match that query, and the server is responsible for page order and tokens.
+                    await LoadRegistrationPageAsync(null);
+                }
+                catch (Exception ex)
+                {
+                    writeToLog("The registration was created, but the list could not be refreshed. Use Refresh to reload the list; do not create the registration again.");
+                    HandleException(ex);
+                }
             }
         }
 
@@ -3668,10 +3707,6 @@ namespace ServiceBusExplorer.Controls
             {
                 registrationsDataGridView.SuspendDrawing();
                 registrationsDataGridView.SuspendLayout();
-                if (registrationPageList == null || registrationPageList.Count == 0)
-                {
-                    return;
-                }
                 using (var form = new TextForm(FilterExpressionTitle, FilterExpressionLabel, registrationsFilterExpression))
                 {
                     form.Size = new Size(600, 200);
@@ -3679,38 +3714,37 @@ namespace ServiceBusExplorer.Controls
                     {
                         return;
                     }
-                    registrationsFilterExpression = form.Content;
-                    if (string.IsNullOrWhiteSpace(registrationsFilterExpression))
+
+                    var expression = form.Content;
+                    Func<RegistrationDescription, bool> filter = null;
+                    List<RegistrationDescription> registrations;
+                    try
                     {
-                        currentRegistrationPage = 0;
-                        SetRegistrationPage();
+                        if (!string.IsNullOrWhiteSpace(expression))
+                        {
+                            var expressionBuilder = new ExpressionBuilder<RegistrationDescription>();
+                            filter = expressionBuilder.GetExpression(expression).Compile();
+                        }
+                        // Evaluate against the current data before replacing a working filter.
+                        registrations = SelectRegistrations(registrationPageList, currentRegistrationPage, filter).ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        writeToLog(string.Format(FilterExpressionNotValidMessage, expression));
+                        HandleException(ex);
+                        return;
+                    }
+
+                    registrationsFilterExpression = expression;
+                    registrationsFilter = filter;
+                    SetRegistrationPage(registrations);
+                    if (filter == null)
+                    {
                         writeToLog(FilterExpressionRemovedMessage);
                     }
                     else
                     {
-                        IEnumerable<RegistrationDescription> filteredCollection;
-                        try
-                        {
-                            var expressionBuilder = new ExpressionBuilder<RegistrationDescription>();
-                            var predicate = expressionBuilder.GetExpression(registrationsFilterExpression).Compile();
-                            filteredCollection = registrationPageList.SelectMany(rd => rd).Where(predicate).ToList();
-                        }
-                        catch (Exception ex)
-                        {
-                            writeToLog(string.Format(FilterExpressionNotValidMessage, registrationsFilterExpression));
-                            HandleException(ex);
-                            return;
-                        }
-                        RegistrationInfo.SetRegistrations(filteredCollection);
-                        var bindingList = new SortableBindingList<RegistrationInfo>(RegistrationInfo.Registrations)
-                        {
-                            AllowEdit = false,
-                            AllowNew = false,
-                            AllowRemove = false
-                        };
-                        registrationsBindingSource.DataSource = bindingList;
-                        registrationsDataGridView.DataSource = registrationsBindingSource;
-                        writeToLog(string.Format(FilterExpressionAppliedMessage, registrationsFilterExpression, bindingList.Count));
+                        writeToLog(string.Format(FilterExpressionAppliedMessage, expression, registrationsBindingSource.Count));
                     }
                 }
             }
