@@ -104,7 +104,6 @@ namespace ServiceBusExplorer.Controls
         private const string ScaleTooltip = "Select a scale to enhance the visibility of counter data in the chart.";
         private const string MaxCountTooltip = "The maximum amount of event data the user is willing to accept in one call.";
         private const string StartDateTimeUtcTooltip = "The starting date and time in UTC format for this receiver. The Receive method starts receiving the next event after this StartingDateTimeUtc value. If null, the receiver starts receiving events from the beginning of the Event Hubs event stream.";
-        private const string OffsetInclusiveTooltip = "if set to true, the Starting Offset is treated as an inclusive offset meaning the first event returned is the one that has the starting offset. Normally first event returned is the event after the starting offset.";
 
         //***************************
         // Constants
@@ -157,6 +156,9 @@ namespace ServiceBusExplorer.Controls
         private readonly string eventHubPath;
         private readonly EventHubConsumerClient eventHubMetadataClient;
         private readonly List<Task> partitionReadTasks = new List<Task>();
+        private Task stopListenerTask = Task.CompletedTask;
+        private bool shuttingDown;
+        private readonly ConcurrentBag<EventHubCheckpointBatch> checkpointBatches = new ConcurrentBag<EventHubCheckpointBatch>();
         private bool clearing;
         private bool cleared;
         private readonly string iotHubConnectionString;
@@ -190,6 +192,7 @@ namespace ServiceBusExplorer.Controls
             InitializeComponent();
             InitializeControls();
             Disposed += ListenerControl_Disposed;
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
         }
 
         public PartitionListenerControl(WriteToLogDelegate writeToLog,
@@ -214,20 +217,43 @@ namespace ServiceBusExplorer.Controls
             InitializeComponent();
             InitializeControls();
             Disposed += ListenerControl_Disposed;
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
         }
         #endregion
 
         #region Private Methods
         private async void ListenerControl_Disposed(object sender, EventArgs e)
         {
-            await StopListenerAsync();
-            if (eventHubMetadataClient != null)
+            try
             {
-                await eventHubMetadataClient.DisposeAsync();
+                // The metadata client is shared by every partition reader and remains open across Stop/Start.
+                var readers = partitionReadTasks.ToArray();
+                try
+                {
+                    await ShutdownAsync();
+                    ListenerShutdownCoordinator.Shared.Unregister(ShutdownAsync);
+                }
+                finally
+                {
+                    if (eventHubMetadataClient != null)
+                    {
+                        await EventHubClientCleanup.DisposeConsumerAfterReadersAsync(eventHubMetadataClient, readers);
+                    }
+                }
             }
+            catch (Exception ex) { HandleException(ex); }
         }
 
         private async Task LoadPartitionPropertiesAsync(EventHubConsumerClient client, IEnumerable<string> partitionIds)
+        {
+            foreach (var properties in await FetchPartitionPropertiesAsync(client, partitionIds).ConfigureAwait(false))
+            {
+                partitionRuntumeInformationList.Add(properties);
+            }
+        }
+
+        internal static async Task<ModernPartitionProperties[]> FetchPartitionPropertiesAsync(
+            EventHubConsumerClient client, IEnumerable<string> partitionIds)
         {
             try
             {
@@ -237,11 +263,10 @@ namespace ServiceBusExplorer.Controls
                     var properties = await client.GetEventHubPropertiesAsync().ConfigureAwait(false);
                     ids = properties.PartitionIds;
                 }
-                foreach (var partitionId in ids)
-                {
-                    partitionRuntumeInformationList.Add(
-                        await client.GetPartitionPropertiesAsync(partitionId).ConfigureAwait(false));
-                }
+                // Fetch concurrently, then publish on one continuation. Never mutate the
+                // shared list from the individual requests or publish a partial result.
+                return await Task.WhenAll(ids.Select(
+                    partitionId => client.GetPartitionPropertiesAsync(partitionId))).ConfigureAwait(false);
             }
             catch
             {
@@ -380,7 +405,10 @@ namespace ServiceBusExplorer.Controls
             toolTip.SetToolTip(checkBoxTrackMessages, TrackingTooltip);
             toolTip.SetToolTip(checkBoxGraph, GraphTooltip);
             toolTip.SetToolTip(checkBoxCheckpoint, CheckpointAtReceiveTimeoutTooltip);
-            toolTip.SetToolTip(checkBoxOffsetInclusive, OffsetInclusiveTooltip);
+            toolTip.SetToolTip(checkBoxOffsetInclusive, "Saved checkpoints always resume after the last processed event.");
+            // This listener exposes time/checkpoint starts, not an explicit offset input.
+            checkBoxOffsetInclusive.Enabled = false;
+            checkBoxOffsetInclusive.Checked = false;
 
             toolTip.SetToolTip(txtEventDataTotal, EventsTotalTooltip);
             toolTip.SetToolTip(txtEventDataPerSecond, EventsPerSecondTooltip);
@@ -804,6 +832,12 @@ namespace ServiceBusExplorer.Controls
         // ReSharper disable once FunctionComplexityOverflow
         private async void btnStart_Click(object sender, EventArgs e)
         {
+            if (shuttingDown || !stopListenerTask.IsCompleted) return;
+            if (stopListenerTask.IsFaulted)
+            {
+                try { await StopListenerAsync(); }
+                catch (Exception ex) { HandleException(ex); return; }
+            }
             if (string.Compare(btnStart.Text, Start, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 if (startLog != null && checkBoxLogging.Checked)
@@ -833,7 +867,8 @@ namespace ServiceBusExplorer.Controls
                     Interval = 1000 * txtRefreshInformation.IntegerValue
                 };
                 timer.Elapsed += timer_Elapsed;
-                var ns = serviceBusHelper != null && !string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ? serviceBusHelper.Namespace : iotHubConnectionString;
+                var ns = string.IsNullOrWhiteSpace(iotHubConnectionString)
+                    ? serviceBusHelper.Namespace : eventHubMetadataClient.FullyQualifiedNamespace;
                 var eventHub = eventHubPath;
                 var maxBatchSize = txtMaxBatchSize.IntegerValue > 0 ? txtMaxBatchSize.IntegerValue : 1;
                 var receiveTimeout = TimeSpan.FromSeconds(txtReceiveTimeout.IntegerValue);
@@ -842,7 +877,7 @@ namespace ServiceBusExplorer.Controls
                     var startDateTimeEnabled = pickerStartingDateTimeUtc.Checked;
                     var startDateTimeValue = DateTime.SpecifyKind(pickerStartingDateTimeUtc.Value, DateTimeKind.Utc);
                     var cancellationToken = cancellationTokenSource.Token;
-                    var offsetInclusive = checkBoxOffsetInclusive.Checked;
+                    // Saved offsets identify the last successfully processed event, never an explicit start position.
                     foreach (var partitionRuntimeInformation in partitionRuntumeInformationList)
                     {
                         ModernEventPosition startingPosition;
@@ -856,17 +891,10 @@ namespace ServiceBusExplorer.Controls
                                                                                 eventHub,
                                                                                 consumerGroupName,
                                                                                 partitionRuntimeInformation.Id);
-                            startingPosition = lease == null ||
-                                               string.IsNullOrWhiteSpace(lease.Offset) ||
-                                               string.Equals(lease.Offset, "-1", StringComparison.Ordinal)
-                                ? ModernEventPosition.Earliest
-                                : ModernEventPosition.FromOffset(lease.Offset, offsetInclusive);
+                            startingPosition = EventHubCheckpointIdentity.ResumeAfter(lease);
                         }
 
-                        var consumerClient = serviceBusHelper.CreateEventHubConsumerClient(eventHub,
-                                                                                          consumerGroupName,
-                                                                                          iotHubConnectionString);
-                        partitionReadTasks.Add(Task.Run(() => ReadPartitionAsync(consumerClient,
+                        partitionReadTasks.Add(Task.Run(() => ReadPartitionAsync(eventHubMetadataClient,
                                                                                  partitionRuntimeInformation.Id,
                                                                                  startingPosition,
                                                                                  ns,
@@ -932,12 +960,18 @@ namespace ServiceBusExplorer.Controls
                                               TimeSpan receiveTimeout,
                                               CancellationToken cancellationToken)
         {
+            var checkpointInterval = TimeSpan.FromSeconds(5);
+            var checkpoints = new EventHubCheckpointBatch(maxBatchSize, checkpointInterval,
+                lease => EventProcessorCheckpointHelper.CheckpointAsync(ns, eventHub, consumerGroupName, lease, lease.Offset));
+            checkpointBatches.Add(checkpoints);
             try
             {
                 var readOptions = new ReadEventOptions
                 {
                     CacheEventCount = maxBatchSize,
-                    MaximumWaitTime = receiveTimeout,
+                    // Idle reads also wake up to flush a partial checkpoint batch.
+                    MaximumWaitTime = receiveTimeout > TimeSpan.Zero && receiveTimeout < checkpointInterval
+                        ? receiveTimeout : checkpointInterval,
                     TrackLastEnqueuedEventProperties = true
                 };
 
@@ -954,10 +988,12 @@ namespace ServiceBusExplorer.Controls
                     var data = partitionEvent.Data;
                     if (data == null)
                     {
+                        await checkpoints.FlushIfDueAsync(checkpointEnabled).ConfigureAwait(false);
                         continue;
                     }
 
-                    var eventData = new EventData(new MemoryStream(data.EventBody.ToArray()))
+                    var body = data.EventBody.ToArray();
+                    var eventData = new EventData(new MemoryStream(body))
                     {
                         PartitionKey = data.PartitionKey,
                         SequenceNumber = data.SequenceNumber,
@@ -975,11 +1011,7 @@ namespace ServiceBusExplorer.Controls
 
                     if (receiverEventDataInspector != null)
                     {
-                        eventData = receiverEventDataInspector.AfterReceiveMessage(eventData);
-                        if (eventData == null)
-                        {
-                            throw new InvalidOperationException("The Event Data inspector returned null.");
-                        }
+                        eventData = InspectReceivedEvent(receiverEventDataInspector, eventData, partitionId);
                     }
 
                     if (loggingEnabled)
@@ -1012,7 +1044,7 @@ namespace ServiceBusExplorer.Controls
                                                                             data.PartitionKey,
                                                                             data.SequenceNumber,
                                                                             data.OffsetString,
-                                                                            data.EventBody.ToArray().Length,
+                                                                            body.Length,
                                                                             data.EnqueuedTime.UtcDateTime));
                             }
                         }
@@ -1022,22 +1054,14 @@ namespace ServiceBusExplorer.Controls
                         eventData.Dispose();
                     }
 
-                    UpdateStatistics(1, GetElapsedTime(), data.EventBody.ToArray().Length);
-                    if (checkpointEnabled)
+                    UpdateStatistics(1, GetElapsedTime(), body.Length);
+                    await checkpoints.ProcessedAsync(new Lease
                     {
-                        await EventProcessorCheckpointHelper.CheckpointAsync(
-                            ns,
-                            eventHub,
-                            consumerGroupName,
-                            new Lease
-                            {
-                                PartitionId = partitionId,
-                                SequenceNumber = data.SequenceNumber,
-                                Offset = data.OffsetString,
-                                Owner = "ServiceBusExplorer"
-                            },
-                            data.OffsetString);
-                    }
+                        PartitionId = partitionId,
+                        SequenceNumber = data.SequenceNumber,
+                        Offset = data.OffsetString,
+                        Owner = "ServiceBusExplorer"
+                    }, checkpointEnabled).ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -1046,10 +1070,82 @@ namespace ServiceBusExplorer.Controls
             catch (Exception ex)
             {
                 HandleException(ex);
+                StopFailedListener(cancellationToken);
             }
             finally
             {
-                await consumerClient.DisposeAsync().ConfigureAwait(false);
+                try
+                {
+                    // Includes normal stop/cancellation and inspector failure: pending is always
+                    // the last successful event, never the event that failed inspection.
+                    await checkpoints.FlushAsync(checkpointEnabled).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex);
+                    StopFailedListener(cancellationToken);
+                }
+            }
+        }
+
+        internal static EventData InspectReceivedEvent(IEventDataInspector inspector, EventData eventData, string partitionId)
+        {
+            // Preserve service metadata even if the inspector mutates the envelope before failing.
+            var sequenceNumber = eventData.SequenceNumber;
+            var offset = eventData.Offset;
+            try
+            {
+                return inspector.AfterReceiveMessage(eventData) ??
+                    throw new InvalidOperationException("The Event Data inspector returned null.");
+            }
+            catch (Exception ex)
+            {
+                eventData.Dispose();
+                throw new InvalidOperationException(
+                    $"Inspector failed for partition {partitionId}, sequence {sequenceNumber}, offset {offset}. " +
+                    "The listener is stopping. This event was not checkpointed; restart to replay from the last saved checkpoint.", ex);
+            }
+        }
+
+        private void StopFailedListener(CancellationToken readerToken)
+        {
+            // Queue cleanup on the UI thread without awaiting it from the reader:
+            // StopListenerAsync waits for every reader, including this one.
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+            try
+            {
+                BeginInvoke(new Action(async () =>
+                {
+                    if (IsDisposed || cancellationTokenSource == null ||
+                        cancellationTokenSource.Token != readerToken || readerToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    btnStart.Enabled = false;
+                    try
+                    {
+                        await StopListenerAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex);
+                    }
+                    finally
+                    {
+                        if (!IsDisposed)
+                        {
+                            btnStart.Text = Start;
+                            btnStart.Enabled = !shuttingDown;
+                        }
+                    }
+                }));
+            }
+            catch (InvalidOperationException) when (IsDisposed || !IsHandleCreated)
+            {
+                // Disposal already owns listener cleanup.
             }
         }
 
@@ -1263,7 +1359,22 @@ namespace ServiceBusExplorer.Controls
             GetPartitionRuntimeInformation();
         }
 
-        private async Task StopListenerAsync()
+        internal Task ShutdownAsync()
+        {
+            shuttingDown = true;
+            if (!IsDisposed) Enabled = false;
+            return StopListenerAsync();
+        }
+
+        private Task StopListenerAsync()
+        {
+            // All callers run on the UI thread; overlapping close/failure/stop share cleanup.
+            if (!stopListenerTask.IsCompleted) return stopListenerTask;
+            stopListenerTask = StopListenerCoreAsync();
+            return stopListenerTask;
+        }
+
+        private async Task StopListenerCoreAsync()
         {
             cancellationTokenSource?.Cancel();
             lock (this)
@@ -1273,8 +1384,12 @@ namespace ServiceBusExplorer.Controls
             if (partitionReadTasks.Count > 0)
             {
                 await Task.WhenAll(partitionReadTasks);
-                partitionReadTasks.Clear();
             }
+            // Readers have finished: retry any final flush that failed, before persistence or disposal.
+            // Keep pending batches registered if this fails so a subsequent close can retry safely.
+            await Task.WhenAll(checkpointBatches.Select(batch => batch.FlushAsync(checkpointEnabled)));
+            partitionReadTasks.Clear();
+            while (checkpointBatches.TryTake(out _)) { }
             if (stopLog != null)
             {
                 await stopLog();

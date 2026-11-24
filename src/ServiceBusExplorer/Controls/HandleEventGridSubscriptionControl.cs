@@ -16,6 +16,7 @@ using System.Windows.Forms;
 
 namespace ServiceBusExplorer.Controls
 {
+
     public partial class HandleEventGridSubscriptionControl : UserControl
     {
         #region Private Constants
@@ -168,7 +169,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 cloudEvent = bindingList[e.RowIndex];
 
-                string eventJson = JsonSerializer.Serialize(cloudEvent, new JsonSerializerOptions { WriteIndented = true });
+                var eventJson = JsonSerializer.Serialize(cloudEvent, new JsonSerializerOptions { WriteIndented = true });
                 receiveEventInfo.Text = eventJson;
             }
             // ReSharper disable once EmptyGeneralCatchClause
@@ -187,12 +188,12 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
 
-            receivedEvents = allEvents.Value;
-            List<CloudEvent> cloudEvents = new List<CloudEvent>();  
+            receivedEvents = allEvents.Details;
+            var cloudEvents = new List<CloudEvent>();  
             
-            foreach (var cloudEvent in receivedEvents)
+            foreach (var receiveDetails in receivedEvents)
             {
-                cloudEvents.Add(cloudEvent.Event);
+                cloudEvents.Add(receiveDetails.Event);
             }
 
             var eventBindingList = new SortableBindingList<CloudEvent>(cloudEvents)
@@ -269,18 +270,16 @@ namespace ServiceBusExplorer.Controls
 
         private async void btnEventAction_Click(object sender, EventArgs e)
         {
-            List<string> lockTokens = new List<string>();
-            List<int> selectedRows = new List<int>();
+            var lockTokens = new List<string>();
+            var selectedRows = new List<int>();
             var button = sender as Button;
 
             foreach (DataGridViewRow row in eventsDataGridView.Rows)
             {
                 if (row.Cells[EventStatusColIndex].Value == null)
                 {
-                    var checkboxCell = row.Cells[0] as DataGridViewCheckBoxCell;
-
                     // Determine selected events
-                    if (Convert.ToBoolean(checkboxCell.Value))
+                    if (row.Cells[0] is DataGridViewCheckBoxCell checkboxCell && Convert.ToBoolean(checkboxCell.Value))
                     {
                         lockTokens.Add(receivedEvents[row.Index].BrokerProperties.LockToken);
                         selectedRows.Add(row.Index);
@@ -293,7 +292,7 @@ namespace ServiceBusExplorer.Controls
 
             if (eventActionResult)
             {
-                foreach (int index in selectedRows)
+                foreach (var index in selectedRows)
                 {
                     // Update status column
                     eventsDataGridView.Rows[index].Cells[EventStatusColIndex].Value = button.Text;

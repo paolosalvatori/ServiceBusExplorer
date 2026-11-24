@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers;
 
 namespace ServiceBusExplorer.Controls
 {
@@ -68,9 +69,18 @@ namespace ServiceBusExplorer.Controls
                 : new DataGridViewCellStyle(cellStyle)
                 {
                     BackColor = actualColor.Value,
-                    SelectionBackColor = actualColor.Value
+                    ForeColor = ChooseTextColorForSwatch(actualColor.Value),
+                    SelectionBackColor = actualColor.Value,
+                    SelectionForeColor = ChooseTextColorForSwatch(actualColor.Value)
                 };
             base.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value, colorText, errorText, actualCellStyle, advancedBorderStyle, paintParts);
+        }
+
+        private static Color ChooseTextColorForSwatch(Color swatch)
+        {
+            var whiteRatio = ColorContrast.Ratio(swatch, Color.White);
+            var blackRatio = ColorContrast.Ratio(swatch, Color.Black);
+            return whiteRatio >= blackRatio ? Color.White : Color.Black;
         }
 
         private static Color? GetActualColor(object value)
