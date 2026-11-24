@@ -241,6 +241,31 @@ namespace ServiceBusExplorer.Tests.Helpers
                 .Should().BeFalse();
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData(";EntityPath=hub1")]
+        [InlineData(";TransportType=Amqp")]
+        public async Task EventHubFactoriesAcceptModernConnectionStrings(string suffix)
+        {
+            var helper = new ServiceBusHelper((message, asynchronous) => { });
+            var connection = "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=service;SharedAccessKey=c2VjcmV0" + suffix;
+            SetPrivateField(helper, "connectionString", connection);
+            var producer = helper.CreateEventHubProducerClient("hub1");
+            var consumer = helper.CreateEventHubConsumerClient("hub1", "$Default", connection);
+            try
+            {
+                producer.EventHubName.Should().Be("hub1");
+                consumer.EventHubName.Should().Be("hub1");
+                producer.FullyQualifiedNamespace.Should().Be("myns.servicebus.windows.net");
+                consumer.FullyQualifiedNamespace.Should().Be(producer.FullyQualifiedNamespace);
+            }
+            finally
+            {
+                await producer.DisposeAsync();
+                await consumer.DisposeAsync();
+            }
+        }
+
         static T GetPrivateField<T>(object instance, string fieldName)
         {
             var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
