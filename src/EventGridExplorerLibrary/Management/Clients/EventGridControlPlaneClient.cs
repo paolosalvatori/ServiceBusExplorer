@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.Messaging.EventGrid.Namespaces;
 using Azure.ResourceManager;
 using Azure.ResourceManager.EventGrid;
 using Azure.ResourceManager.EventGrid.Models;
@@ -19,27 +18,26 @@ namespace EventGridExplorerLibrary
     /// </summary>
     public class EventGridControlPlaneClient : IEventGridControlPlaneClient
     {
-        private const string AadScope = "https://management.core.windows.net";
         private const string AuthorityHostUri = "https://login.microsoftonline.com/";
-        private const string NamespaceTopicEventSubscriptionsApiVersion = "2023-12-15-preview";
-        private const string NamespaceTopicEventSubscriptionsResourceType = "Microsoft.EventGrid/namespaces/topics/eventSubscriptions";
         private readonly string subscriptionId;
-        private readonly string tenantId;
+        private readonly TokenCredential credential;
+        private readonly ArmClientOptions options;
         public ArmClient armclient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventGridClient"/> class.
+        /// Initializes a new instance of the <see cref="EventGridControlPlaneClient"/> class.
         /// </summary>
         public EventGridControlPlaneClient(string subscriptionId, string tenantId)
+            : this(subscriptionId, GetTokenCredential(tenantId), new ArmClientOptions())
+        {
+        }
+
+        internal EventGridControlPlaneClient(string subscriptionId, TokenCredential credential, ArmClientOptions options)
         {
             this.subscriptionId = subscriptionId;
-            this.tenantId = tenantId;
-            this.armclient = new ArmClient(this.GetTokenCredential());
-
-            // Setting this API version is needed to support name space topic event subscriptions with webhook as a destination.
-            ArmClientOptions options = new ArmClientOptions();
-            options.SetApiVersion(NamespaceTopicEventSubscriptionsResourceType, NamespaceTopicEventSubscriptionsApiVersion);
-            
+            this.credential = credential;
+            this.options = options;
+            armclient = CreateArmClient();
         }
 
         /// <inheritdoc/>
@@ -133,7 +131,7 @@ namespace EventGridExplorerLibrary
                 return $"{subscriptionName} for topic {namespaceTopicName} already exists";
             }
 
-            var azureOperation = collection.CreateOrUpdate(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
+            var azureOperation = await collection.CreateOrUpdateAsync(WaitUntil.Completed, subscriptionName, namespaceTopicEventSubscriptionData);
             return azureOperation.Value.Id;
         }
 
@@ -141,27 +139,20 @@ namespace EventGridExplorerLibrary
         public EventGridNamespaceResource GetNamespaceResource(string resourceGroupName, string namespaceName)
         {
             var namespaceArmId = CreateArmId(this.subscriptionId, resourceGroupName) + namespaceName;
-            ArmClient client = GetArmClient();
+            ArmClient client = armclient ?? (armclient = CreateArmClient());
             ResourceIdentifier namespaceIdentifier = new ResourceIdentifier(namespaceArmId);
             EventGridNamespaceResource namespaceResource = client.GetEventGridNamespaceResource(namespaceIdentifier);
             return namespaceResource;
         }
 
-        private ArmClient GetArmClient()
+        private ArmClient CreateArmClient()
         {
-            // TODO: handle recreation of client if token expires
-            if (armclient == null)
-            {
-                armclient = new ArmClient(GetTokenCredential());
-            }
-
-            return armclient;
+            // The GA namespace topic event-subscription API supports webhook destinations.
+            return new ArmClient(credential, default, options);
         }
 
-        private InteractiveBrowserCredential GetTokenCredential()
+        private static InteractiveBrowserCredential GetTokenCredential(string tenantId)
         {
-            string[] scope = { AadScope + "/.default" };
-
             var credentialOption = new InteractiveBrowserCredentialOptions()
             {
                 TenantId = tenantId,

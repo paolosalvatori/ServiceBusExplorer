@@ -138,5 +138,76 @@ namespace ServiceBusExplorer.Tests.Helpers
             subsContainer.Nodes[0].Text.Should().Be("sub-a");
             subsContainer.Nodes[1].Text.Should().Be("sub-b");
         }
+
+        [Fact]
+        public void UpdateUnfilteredTree_HiddenTopicRetainsSubscriptionsWhenFilterCleared()
+        {
+            using var tree = BuildTree();
+            var root = tree.Nodes[0];
+            var topics = root.Nodes[1];
+            var topic = topics.Nodes[0];
+            var subscriptions = topic.Nodes[0];
+
+            helper.ApplyFilter(root.Nodes, "queue-orders");
+            topic.TreeView.Should().BeNull();
+
+            helper.UpdateUnfilteredTree(root.Nodes, "queue-orders", () =>
+                subscriptions.Nodes.Add("sub-late"));
+
+            topics.Nodes.Count.Should().Be(0);
+            helper.ApplyFilter(root.Nodes, "");
+            topics.Nodes[0].Should().BeSameAs(topic);
+            subscriptions.Nodes.Count.Should().Be(3);
+            subscriptions.Nodes[2].Text.Should().Be("sub-late");
+        }
+
+        [Fact]
+        public void UpdateUnfilteredTree_NewMatchingSubscriptionRevealsHiddenTopic()
+        {
+            using var tree = BuildTree();
+            var root = tree.Nodes[0];
+            var topics = root.Nodes[1];
+            var topic = topics.Nodes[0];
+            var subscriptions = topic.Nodes[0];
+
+            helper.ApplyFilter(root.Nodes, "sub-late");
+            topics.Nodes.Count.Should().Be(0);
+
+            helper.UpdateUnfilteredTree(root.Nodes, "sub-late", () =>
+                subscriptions.Nodes.Add("sub-late"));
+
+            topics.Nodes[0].Should().BeSameAs(topic);
+            subscriptions.Nodes.Count.Should().Be(1);
+            subscriptions.Nodes[0].Text.Should().Be("sub-late");
+        }
+
+        [Fact]
+        public void UpdateUnfilteredTree_NestedReplacementDoesNotRestoreOldSubscriptions()
+        {
+            using var tree = BuildTree();
+            var root = tree.Nodes[0];
+            var topics = root.Nodes[1];
+            var topic = topics.Nodes[0];
+            var subscriptions = topic.Nodes[0];
+
+            helper.ApplyFilter(root.Nodes, "sub-b");
+            subscriptions.Nodes.Count.Should().Be(1);
+
+            helper.UpdateUnfilteredTree(root.Nodes, "sub-b", () =>
+            {
+                // The mutation receives the authoritative list rather than the filtered projection.
+                subscriptions.Nodes.Count.Should().Be(2);
+                subscriptions.Nodes.Clear();
+                subscriptions.Nodes.Add("sub-b-new");
+                subscriptions.Nodes.Add("sub-c-new");
+            });
+
+            subscriptions.Nodes.Count.Should().Be(1);
+            subscriptions.Nodes[0].Text.Should().Be("sub-b-new");
+            helper.ApplyFilter(root.Nodes, "");
+            subscriptions.Nodes.Count.Should().Be(2);
+            subscriptions.Nodes[0].Text.Should().Be("sub-b-new");
+            subscriptions.Nodes[1].Text.Should().Be("sub-c-new");
+        }
     }
 }
