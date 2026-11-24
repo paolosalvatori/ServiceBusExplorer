@@ -142,6 +142,7 @@ namespace ServiceBusExplorer
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
+        private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
         private string ns;
@@ -203,6 +204,7 @@ namespace ServiceBusExplorer
             EventDataInspectors = serviceBusHelper.EventDataInspectors;
             BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
+            notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
             SharedAccessKey = serviceBusHelper.SharedAccessKey;
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
@@ -806,16 +808,17 @@ namespace ServiceBusExplorer
                 {
                     try
                     {
-                        var notificationHubSettings = new AzureNotificationHubs.NotificationHubSettings
+                        notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
+
+                        // Set retry count
+                        if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
                         {
-                            RetryOptions = new AzureNotificationHubs.NotificationHubRetryOptions
-                            {
-                                // SDK 4.2 uses exponential backoff (1s base, 60s cap).
-                                // Intentionally use its defaults: the old min/max/delta algorithm has no exact mapping.
-                                MaxRetries = Math.Max(0, Math.Min(MaxNotificationHubRetries, RetryHelper.RetryCount))
-                            }
-                        };
-                        notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(NormalizeNotificationHubConnectionString(serviceBusNamespace.ConnectionString), notificationHubSettings);
+                            notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
+                                                                                                                            defaultNotificationHubsRetryExponential.MaximumBackoff,
+                                                                                                                            defaultNotificationHubsRetryExponential.DeltaBackoff,
+                                                                                                                            defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
+                                                                                                                            RetryHelper.RetryCount);
+                        }
                     }
                     catch (Exception)
                     {
@@ -4404,43 +4407,6 @@ namespace ServiceBusExplorer
             }
 
             return true;
-        }
-
-        private static readonly string[] NotificationHubConnectionStringKeys =
-        {
-            "Endpoint", "SharedAccessKeyName", "SharedAccessKey", "SharedAccessSignature"
-        };
-
-        /// <summary>
-        /// Keeps only the connection string fields supported by the Notification Hubs SDK, dropping
-        /// Service Bus specific settings such as TransportType that the SDK would fold into the key.
-        /// </summary>
-        private const int MaxNotificationHubRetries = 100; // SDK-supported inclusive upper bound.
-
-        public static string NormalizeNotificationHubConnectionString(string connectionString)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                return connectionString;
-            }
-
-            var parts = new List<string>();
-            foreach (var segment in connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                var separator = segment.IndexOf('=');
-                if (separator <= 0)
-                {
-                    continue;
-                }
-
-                var key = segment.Substring(0, separator).Trim();
-                if (NotificationHubConnectionStringKeys.Any(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase)))
-                {
-                    parts.Add(key + "=" + segment.Substring(separator + 1).Trim());
-                }
-            }
-
-            return string.Join(";", parts);
         }
 
         /// <summary>

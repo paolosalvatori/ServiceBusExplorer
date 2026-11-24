@@ -13,7 +13,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public void RetryFunc_OperationCanceledException_DoesNotRetry()
         {
-            int callCount = 0;
+            var callCount = 0;
 
             Action act = () => RetryHelper.RetryFunc<bool>(() =>
             {
@@ -29,9 +29,9 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public void RetryAction_OperationCanceledException_DoesNotRetry()
         {
-            int callCount = 0;
+            var callCount = 0;
 
-            Action act = () => RetryHelper.RetryAction(() =>
+            var act = () => RetryHelper.RetryAction(() =>
             {
                 callCount++;
                 throw new OperationCanceledException("cancelled");
@@ -45,7 +45,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public async Task RetryFuncAsync_OperationCanceledException_DoesNotRetry()
         {
-            int callCount = 0;
+            var callCount = 0;
 
             Func<Task> act = () => RetryHelper.RetryFuncAsync<bool>(async () =>
             {
@@ -62,9 +62,9 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public async Task RetryActionAsync_OperationCanceledException_DoesNotRetry()
         {
-            int callCount = 0;
+            var callCount = 0;
 
-            Func<Task> act = () => RetryHelper.RetryActionAsync(async () =>
+            var act = () => RetryHelper.RetryActionAsync(async () =>
             {
                 callCount++;
                 await Task.CompletedTask;
@@ -81,7 +81,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             // Simulates the EntraCredentialFactory pattern: AuthenticationFailedException
             // is wrapped in OperationCanceledException to escape the retry loop.
-            int callCount = 0;
+            var callCount = 0;
             var innerException = new InvalidOperationException("authentication failed");
 
             Action act = () => RetryHelper.RetryFunc<bool>(() =>

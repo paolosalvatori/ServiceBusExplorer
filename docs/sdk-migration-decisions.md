@@ -1,19 +1,7 @@
 # SDK migration decisions for review
 
-The Modernize SDKs milestone is being implemented in issue order: #472,
-#687, then #727. The branches form a dependency chain in that order.
-
-## Notification Hubs (#472)
-
-The SDK upgrade adds FCM HTTP v1 service-account credentials and notifications.
-Legacy API-key credentials remain available for reading and editing existing
-hubs; they do not provide a supported modern Android delivery path. Review
-whether to remove that compatibility option after existing users migrate.
-
-The new SDK no longer exposes the old claim-based `AllowRule`. Saving a hub
-with unsupported claim-based authorization reports an error instead of silently
-discarding its rules. A separate compatibility implementation would be needed
-if editing those rules must remain supported.
+This document describes the Event Hubs data-plane SDK migration. The separate
+Notification Hubs SDK migration is not included.
 
 ## Event Hubs (#687)
 
@@ -34,24 +22,6 @@ data-plane upgrade.
 Local partition checkpoint files retain their existing JSON format and legacy
 lease model. This avoids invalidating saved offsets; the listener does not
 introduce distributed ownership or Azure Blob checkpoint storage.
-
-## Pull request dependencies
-
-The task branches are stacked, but an upstream pull request cannot target a
-branch that exists only in a contributor's fork. Until the preceding branch
-is available upstream or its PR merges, an upstream PR targets `main` and
-includes its ancestors. Merge in issue order and rebase later branches if
-an earlier PR is squash-merged; do not merge a later PR independently.
-
-The November 18 #909 dependency reconciliation incorporates #908's final Notification
-Hubs content at `bf8c7aa0369e3930977cd1e5a17fdf30e29c30db`. The NH control, designer,
-and three regression-test files match that head (only two trailing comment spaces are trimmed in the designer); the shared ServiceBusHelper
-contains the same NH settings and connection normalization while retaining #909's
-Event Hubs changes. Legacy and v1 credentials are preserved unless explicitly
-replaced/removed, and both FCM template bodies write back through the same handler.
-This is a new signed commit, without rewriting history or modifying/merging #908.
-#909 therefore no longer depends on a future content reconciliation to obtain these
-FCM fixes; the existing PR merge-order guidance still applies to the stacked history.
 
 Partition readers share the listener's metadata consumer. Stop waits for readers
 (and their final successful checkpoint flush) without closing that reusable client;
