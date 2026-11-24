@@ -1,19 +1,7 @@
 # SDK migration decisions for review
 
-The Modernize SDKs milestone is being implemented in issue order: #472,
-#687, then #727. The branches form a dependency chain in that order.
-
-## Notification Hubs (#472)
-
-The SDK upgrade adds FCM HTTP v1 service-account credentials and notifications.
-Legacy API-key credentials remain available for reading and editing existing
-hubs; they do not provide a supported modern Android delivery path. Review
-whether to remove that compatibility option after existing users migrate.
-
-The new SDK no longer exposes the old claim-based `AllowRule`. Saving a hub
-with unsupported claim-based authorization reports an error instead of silently
-discarding its rules. A separate compatibility implementation would be needed
-if editing those rules must remain supported.
+This document describes the Event Hubs data-plane SDK migration. The separate
+Notification Hubs SDK migration is not included.
 
 ## Event Hubs (#687)
 
@@ -35,10 +23,9 @@ Local partition checkpoint files retain their existing JSON format and legacy
 lease model. This avoids invalidating saved offsets; the listener does not
 introduce distributed ownership or Azure Blob checkpoint storage.
 
-## Pull request dependencies
-
-The task branches are stacked, but an upstream pull request cannot target a
-branch that exists only in a contributor's fork. Until the preceding branch
-is available upstream or its PR merges, an upstream PR targets `main` and
-includes its ancestors. Merge in issue order and rebase later branches if
-an earlier PR is squash-merged; do not merge a later PR independently.
+Partition readers share the listener's metadata consumer. Stop waits for readers
+(and their final successful checkpoint flush) without closing that reusable client;
+control disposal closes it once all readers finish. Checkpoint batches use the
+configured maximum batch size or a five-second interval, including idle reads.
+Only successfully processed events advance the pending position. The existing
+checkpoint store remains in memory until application-close persistence.

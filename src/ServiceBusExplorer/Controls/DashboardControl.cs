@@ -8,10 +8,11 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using ServiceBusExplorer.UIHelpers.Theming;
 
 namespace ServiceBusExplorer.Controls
 {
-    public partial class DashboardControl : UserControl
+    public class DashboardControl : UserControl, IThemeAware
     {
         private DataGridView dataGridView;
         private Button refreshButton;
@@ -29,7 +30,7 @@ namespace ServiceBusExplorer.Controls
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
         private int isLoading;
-        private List<DashboardRow> _allRows = new List<DashboardRow>();
+        private List<DashboardRow> allRows = new List<DashboardRow>();
         private CheckBox syncWithTreeViewCheckBox;
 
         public Action<string, string> OnRowSelected { get; set; }
@@ -383,7 +384,7 @@ namespace ServiceBusExplorer.Controls
                     writeToLog?.Invoke(error);
                 }
 
-                _allRows = rows;
+                allRows = rows;
                 PopulateGrid(rows);
                 statusLabel.Text = $"Last refresh: {DateTime.Now:HH:mm:ss} — {rows.Count} items";
             }
@@ -403,10 +404,10 @@ namespace ServiceBusExplorer.Controls
         {
             if (!syncWithTreeViewCheckBox.Checked || string.IsNullOrWhiteSpace(filterText))
             {
-                PopulateGrid(_allRows);
+                PopulateGrid(allRows);
                 return;
             }
-            var filtered = _allRows
+            var filtered = allRows
                 .Where(r => r.Name.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
             PopulateGrid(filtered);
@@ -424,7 +425,7 @@ namespace ServiceBusExplorer.Controls
 
                 if (row.DeadLetter > 0)
                 {
-                    dataGridView.Rows[idx].DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 230);
+                    dataGridView.Rows[idx].DefaultCellStyle.BackColor = DeadLetterColor;
                 }
             }
 
@@ -499,7 +500,7 @@ namespace ServiceBusExplorer.Controls
 
                     // Update color coding
                     row.DefaultCellStyle.BackColor = deadLetter > 0
-                        ? Color.FromArgb(255, 235, 230)
+                        ? DeadLetterColor
                         : Color.Empty;
                     return;
                 }
@@ -556,6 +557,23 @@ namespace ServiceBusExplorer.Controls
                 }
             }
             dataGridView.Rows.Insert(insertIndex, name, type, 0L, 0L, 0L, 0L);
+        }
+
+        private static Color DeadLetterColor => ThemeManager.IsThemed
+            ? ThemeManager.Palette.ErrorBackground : Color.FromArgb(255, 235, 230);
+
+        void IThemeAware.ApplyTheme()
+        {
+            statusLabel.ForeColor = hintLabel.ForeColor = ThemeManager.IsThemed
+                ? ThemeManager.Palette.MutedText : SystemColors.GrayText;
+            warningPanel.BackColor = ThemeManager.IsThemed
+                ? ThemeManager.Palette.WarningBackground : Color.FromArgb(255, 243, 205);
+            warningPanel.Controls[0].BackColor = warningPanel.BackColor;
+            warningPanel.Controls[0].ForeColor = ThemeManager.IsThemed
+                ? ThemeManager.Palette.WarningText : Color.FromArgb(102, 77, 3);
+            foreach (DataGridViewRow row in dataGridView.Rows)
+                row.DefaultCellStyle.BackColor = row.Cells["DeadLetter"].Value is long count && count > 0
+                    ? DeadLetterColor : Color.Empty;
         }
 
         protected override void Dispose(bool disposing)

@@ -38,7 +38,7 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
-    public partial class RegistrationForm : Form
+    public partial class RegistrationForm : ThemedForm
     {
         #region Private Constants
         //***************************
@@ -51,14 +51,11 @@ namespace ServiceBusExplorer.Forms
         private const string WindowsTemplateRegistrationDescription = "WindowsTemplateRegistrationDescription";
         private const string AppleRegistrationDescription = "AppleRegistrationDescription";
         private const string AppleTemplateRegistrationDescription = "AppleTemplateRegistrationDescription";
-        private const string FcmRegistrationDescription = "FcmRegistrationDescription";
-        private const string FcmTemplateRegistrationDescription = "FcmTemplateRegistrationDescription";
-        private const string FcmV1RegistrationDescription = "FcmV1RegistrationDescription";
-        private const string FcmV1TemplateRegistrationDescription = "FcmV1TemplateRegistrationDescription";
+        private const string GcmRegistrationDescription = "GcmRegistrationDescription";
+        private const string GcmTemplateRegistrationDescription = "GcmTemplateRegistrationDescription";
         private const string DeviceToken = "DeviceToken";
         private const string ChannelUri = "ChannelUri";
-        private const string FcmRegistrationId = "FcmRegistrationId";
-        private const string FcmV1RegistrationId = "FcmV1RegistrationId";
+        private const string GcmRegistrationId = "GcmRegistrationId";
         private const string BodyTemplate = "BodyTemplate";
         private const string Tags = "Tags";
         private const string MpnsHeaders = "MpnsHeaders";
@@ -70,7 +67,7 @@ namespace ServiceBusExplorer.Forms
         //***************************
         // Formats
         //***************************
-        private const string RegistrationTypeFormat = "Microsoft.Azure.NotificationHubs.{0},{1}";
+        private const string RegistrationTypeFormat = "Microsoft.ServiceBus.Notifications.{0},{1}";
         #endregion
 
         #region Public Constructor
@@ -84,10 +81,8 @@ namespace ServiceBusExplorer.Forms
                                                             WindowsTemplateRegistrationDescription,
                                                             AppleRegistrationDescription,
                                                             AppleTemplateRegistrationDescription,
-                                                            FcmRegistrationDescription,
-                                                            FcmTemplateRegistrationDescription,
-                                                            FcmV1RegistrationDescription,
-                                                            FcmV1TemplateRegistrationDescription});
+                                                            GcmRegistrationDescription,
+                                                            GcmTemplateRegistrationDescription});
         }
 
         #endregion
@@ -195,8 +190,7 @@ namespace ServiceBusExplorer.Forms
                         Editor = p.Name == BodyTemplate ||
                                 p.Name == ChannelUri ||
                                 p.Name == DeviceToken ||
-                                p.Name == FcmRegistrationId ||
-                                p.Name == FcmV1RegistrationId ?
+                                p.Name == GcmRegistrationId ?
                                 new CustomTextEditor() as UITypeEditor :
                                 p.Name == Expressions ||
                                 p.Name == ExpressionLengths ||
