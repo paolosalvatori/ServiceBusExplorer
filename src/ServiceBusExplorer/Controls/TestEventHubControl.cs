@@ -46,6 +46,7 @@ namespace ServiceBusExplorer.Controls
 {
     using Enums;
     using ServiceBusExplorer.UIHelpers;
+    using ServiceBusExplorer.UIHelpers.Theming;
     using ServiceBusExplorer.Utilities.Helpers;
     using static ServiceBusExplorer.ServiceBusHelper;
 
@@ -126,6 +127,9 @@ namespace ServiceBusExplorer.Controls
         private int actionCount;
         private int senderTaskCount = 1;
         private bool isSenderFaulted;
+        private readonly List<Task> senderTasks = new List<Task>();
+        private Task managerTask = Task.CompletedTask;
+        private Task graphTask = Task.CompletedTask;
         TestControlHelper controlHelper;
         private BlockingCollection<Tuple<long, long, DirectionType>> blockingCollection;
         private IEventDataGenerator senderEventDataGenerator;
@@ -375,6 +379,9 @@ namespace ServiceBusExplorer.Controls
                         controlHelper.StartLog();
                     }
                     btnStart.Enabled = false;
+                    await Task.WhenAll(senderTasks.Concat(new[] { managerTask, graphTask }));
+                    if (IsDisposed) return;
+                    senderTasks.Clear();
                     Cursor.Current = Cursors.WaitCursor;
 
                     //*****************************************************************************************************
@@ -462,23 +469,6 @@ namespace ServiceBusExplorer.Controls
                                 }
                             }
                         }
-                        if (Interlocked.Decrement(ref actionCount) == 0)
-                        {
-                            managerResetEvent.Set();
-                        }
-                    };
-
-                    AsyncCallback updateGraphCallback = a =>
-                    {
-                        var action = a.AsyncState as Action;
-                        if (action != null)
-                        {
-                            action.EndInvoke(a);
-                            if (Interlocked.Decrement(ref actionCount) == 0)
-                            {
-                                managerResetEvent.Set();
-                            }
-                        }
                     };
 
                     blockingCollection = new BlockingCollection<Tuple<long, long, DirectionType>>();
@@ -495,7 +485,13 @@ namespace ServiceBusExplorer.Controls
                             eventHubClientCollection.Count == 0 ||
                             eventHubClientCollection.Count < senderTaskCount)
                         {
+                            var oldClients = eventHubClientCollection;
                             eventHubClientCollection = new List<EventHubProducerClient>(senderTaskCount);
+                            if (oldClients != null)
+                            {
+                                await EventHubClientCleanup.DisposeProducersAsync(oldClients);
+                            }
+                            if (IsDisposed) return;
                             for (var i = 0; i < senderTaskCount; i++)
                             {
                                 eventHubClientCollection.Add(controlHelper.ServiceBusHelper.CreateEventHubProducerClient(eventHubDescription.Path));
@@ -623,12 +619,13 @@ namespace ServiceBusExplorer.Controls
                                     return currentIndex++;
                                 }
                             };
+                            var senderClients = eventHubClientCollection.ToArray();
                             Action<int, IEnumerable<EventData>> senderAction =
                                 (taskId, messageTemplateEnumerable) =>
                                 {
                                     try
                                     {
-                                        var traceMessage = controlHelper.ServiceBusHelper.SendEventData(eventHubClientCollection[taskId],
+                                        var traceMessage = controlHelper.ServiceBusHelper.SendEventData(senderClients[taskId],
                                                                                             messageTemplateEnumerable,
                                                                                             getMessageNumber,
                                                                                             eventDataCount,
@@ -661,25 +658,23 @@ namespace ServiceBusExplorer.Controls
                                     }
                                 };
 
-                            // Define Sender AsyncCallback
-                            AsyncCallback senderCallback = a =>
-                            {
-                                var action = a.AsyncState as Action<int, IEnumerable<EventData>>;
-                                if (action != null)
-                                {
-                                    action.EndInvoke(a);
-                                    if (Interlocked.Decrement(ref actionCount) == 0)
-                                    {
-                                        managerResetEvent.Set();
-                                    }
-                                }
-                            };
-
-                            // Start Sender Actions
+                            // Reserve the graph worker before any sender can finish.
+                            Interlocked.Increment(ref actionCount);
                             for (var i = 0; i < Math.Min(eventDataCount, senderTaskCount); i++)
                             {
-                                senderAction.BeginInvoke(i, eventDataTemplateList, senderCallback, senderAction);
+                                var taskId = i;
                                 Interlocked.Increment(ref actionCount);
+                                senderTasks.Add(Task.Run(() =>
+                                {
+                                    try { senderAction(taskId, eventDataTemplateList); }
+                                    finally
+                                    {
+                                        if (Interlocked.Decrement(ref actionCount) == 0)
+                                        {
+                                            managerResetEvent.Set();
+                                        }
+                                    }
+                                }));
                             }
                         }
                         catch (Exception ex)
@@ -687,14 +682,26 @@ namespace ServiceBusExplorer.Controls
                             HandleException(ex);
                         }
                     }
-                    if (actionCount > 0)
+                    if (senderTasks.Count > 0)
                     {
                         managerCancellationTokenSource = new CancellationTokenSource();
-                        managerAction.BeginInvoke(managerCancellationTokenSource, null, null);
                         graphCancellationTokenSource = new CancellationTokenSource();
-                        updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
-                        Interlocked.Increment(ref actionCount);
                         btnStart.Text = StopCaption;
+                        graphTask = Task.Run(() =>
+                        {
+                            try { updateGraphAction(); }
+                            catch (Exception ex) { HandleException(ex); }
+                            finally
+                            {
+                                if (Interlocked.Decrement(ref actionCount) == 0) managerResetEvent.Set();
+                            }
+                        });
+                        var managerCancellation = managerCancellationTokenSource;
+                        managerTask = Task.Run(() =>
+                        {
+                            try { managerAction(managerCancellation); }
+                            catch (Exception ex) { HandleException(ex); }
+                        });
                     }
                 }
             }
@@ -704,19 +711,9 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
-                btnStart.Enabled = true;
+                if (!IsDisposed) btnStart.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
-        }
-
-        private static string GetAmqpConnectionString(string connectionString)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ApplicationException(ConnectionStringCannotBeNull);
-            }
-            var builder = new ServiceBusConnectionStringBuilder(connectionString) { TransportType = TransportType.Amqp };
-            return builder.ToString();
         }
 
         private void HandleException(Exception ex)
@@ -862,6 +859,7 @@ namespace ServiceBusExplorer.Controls
             {
                 senderCancellationTokenSource.Cancel();
             }
+            await Task.WhenAll(senderTasks.Concat(new[] { managerTask, graphTask }));
         }
 
         internal async void btnCancel_Click(object sender, EventArgs e)
@@ -1016,6 +1014,7 @@ namespace ServiceBusExplorer.Controls
 
             chart.Titles.Clear();
             chart.Titles.Add(title);
+            ThemeManager.Apply(chart);
             tabPageGraph.Refresh();
         }
 
@@ -1268,57 +1267,45 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+                senderCancellationTokenSource?.Cancel();
+                managerCancellationTokenSource?.Cancel();
+                graphCancellationTokenSource?.Cancel();
+                var clients = eventHubClientCollection.ToArray();
+                eventHubClientCollection.Clear();
+                var pendingWorkers = senderTasks.Concat(new[] { managerTask, graphTask }).ToArray();
+                var senderCancellation = senderCancellationTokenSource;
+                var managerCancellation = managerCancellationTokenSource;
+                var graphCancellation = graphCancellationTokenSource;
+                var resetEvent = managerResetEvent;
+                var statisticsQueue = blockingCollection;
+                var generator = senderEventDataGenerator as IDisposable;
+                var inspector = senderEventDataInspector as IDisposable;
+                // Control.Dispose cannot be awaited. Keep cleanup off the UI thread and observe failures.
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        try { await Task.WhenAll(pendingWorkers).ConfigureAwait(false); }
+                        finally
+                        {
+                            try { await EventHubClientCleanup.DisposeProducersAsync(clients).ConfigureAwait(false); }
+                            finally
+                            {
+                                senderCancellation?.Dispose();
+                                managerCancellation?.Dispose();
+                                graphCancellation?.Dispose();
+                                resetEvent?.Dispose();
+                                statisticsQueue?.Dispose();
+                                generator?.Dispose();
+                                inspector?.Dispose();
+                            }
+                        }
+                    }
+                    catch (Exception ex) { HandleException(ex); }
+                });
                 if (disposing && (components != null))
                 {
                     components.Dispose();
-                }
-
-                if (senderCancellationTokenSource != null)
-                {
-                    senderCancellationTokenSource.Dispose();
-                }
-
-                if (managerCancellationTokenSource != null)
-                {
-                    managerCancellationTokenSource.Dispose();
-                }
-
-                if (graphCancellationTokenSource != null)
-                {
-                    graphCancellationTokenSource.Dispose();
-                }
-
-                if (managerResetEvent != null)
-                {
-                    managerResetEvent.Dispose();
-                }
-
-                if (blockingCollection != null)
-                {
-                    blockingCollection.Dispose();
-                }
-
-                foreach (var eventHubClient in eventHubClientCollection)
-                {
-                    eventHubClient.DisposeAsync().AsTask().GetAwaiter().GetResult();
-                }
-
-                if (senderEventDataGenerator != null)
-                {
-                    var disposable = senderEventDataGenerator as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
-                }
-
-                if (senderEventDataInspector != null)
-                {
-                    var disposable = senderEventDataInspector as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
                 }
 
                 for (var i = 0; i < Controls.Count; i++)
