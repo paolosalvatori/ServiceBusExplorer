@@ -15,11 +15,12 @@
 		<PackageVersion Include="Microsoft.Azure.Relay" Version="3.0.1" />
 		<PackageVersion Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
 		<PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.2.1" />
 		<PackageVersion Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
 		<PackageVersion Include="Microsoft.Rest.ClientRuntime.Azure" Version="3.3.19" />
 		<PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+		<!-- Compatibility bridge for legacy Service Bus/Relay (built against 6.x).
+             Jwt brings matching JsonWebTokens/Tokens transitively; do not pin them independently. -->
+		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.36.0" />
 		<PackageVersion Include="System.Resources.Extensions" Version="8.0.0" />
 		<PackageVersion Include="WindowsAzure.ServiceBus" Version="7.0.1" />
 		<PackageVersion Include="xunit" Version="2.9.3" />
