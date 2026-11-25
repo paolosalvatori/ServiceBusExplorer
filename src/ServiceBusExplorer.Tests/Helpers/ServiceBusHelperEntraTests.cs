@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Forms;
-using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.ServiceBus.Helpers;
 using Xunit;
 
@@ -703,7 +701,19 @@ namespace ServiceBusExplorer.Tests.Helpers
                 var previousMode = EntraCredentialFactory.UseSystemBrowserOnly;
                 var previousCrossThreadCheck = System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls;
                 var endpoint = new Uri("sb://localhost/");
-                var provider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenant);
+                var expectedHandle = IntPtr.Zero;
+                var requestedHandle = IntPtr.Zero;
+                var canceled = new StubInteractiveCredential((context, token) =>
+                    throw new AuthenticationFailedException("Synthetic dismissal", new OperationCanceledException()));
+                var callback = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenant);
+                var provider = TokenProvider.CreateAzureActiveDirectoryTokenProvider((authority, resource, state) =>
+                {
+                    requestedHandle = GetStaticOwner();
+                    if (requestedHandle != expectedHandle || requestedHandle == IntPtr.Zero)
+                        throw new AuthenticationFailedException("Listener requested a token before it owned a window.");
+                    CacheCredential("interactiveBrowserCredentials", tenant, canceled);
+                    return callback(authority, resource, state);
+                }, new Uri(EntraCredentialFactory.GetAuthority(tenant)), EntraCredentialFactory.ServiceBusAudience, null);
                 var factory = MessagingFactory.Create(endpoint, provider);
                 try
                 {
@@ -715,43 +725,28 @@ namespace ServiceBusExplorer.Tests.Helpers
                         main.Show();
                         var mainCredential = EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant);
                         var helper = new ServiceBusHelper((message, asynchronous) => { }) { NamespaceUri = endpoint, MessagingFactory = factory };
+                        var manager = new NamespaceManager(endpoint, provider);
+                        var queueType = typeof(ServiceBusHelper).Assembly.GetType("ServiceBusExplorer.WindowsAzure.ServiceBusQueue", true);
+                        var ns = new ServiceBusNamespace(endpoint.AbsoluteUri, "local", tenant, TransportType.Amqp);
+                        SetPrivateField(helper, "serviceBusQueue", Activator.CreateInstance(queueType, ns, manager));
                         using (var listener = new ContainerForm(helper, null, Enums.FormTypeEnum.Listener, new QueueDescription("test-queue")))
                         {
+                            canceled.Calls.Should().Be(0);
+                            listener.HandleCreated += (sender, args) => expectedHandle = listener.Handle;
                             try
                             {
-                                // Same constructor and Show() used by the queue's Create Listener command.
+                                // Create Queue Listener calls Show(). Its initial GetQueue goes through
+                                // the real legacy SDK and fails at our credential before any network I/O.
                                 listener.Show();
-                                listener.Activate();
-                                GetStaticOwner().Should().Be(listener.Handle);
-                                EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant).Should().NotBeSameAs(mainCredential);
-                                using (var inactive = new RecreatingOwnerForm())
-                                {
-                                    EntraWindowOwners.Register(inactive);
-                                    var unusedHandle = inactive.Handle;
-                                    inactive.Recreate();
-                                }
-                                GetStaticOwner().Should().Be(listener.Handle);
-                                var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
-                                    audience: EntraCredentialFactory.ServiceBusAudience, expires: DateTime.UtcNow.AddHours(1)));
-                                var recording = new RecordingCredential(token);
-                                CacheCredential("interactiveBrowserCredentials", tenant, recording);
-                                using (var unrelated = new System.Windows.Forms.Form())
-                                {
-                                    unrelated.Show();
-                                    unrelated.Activate();
-                                    GetStaticOwner().Should().Be(listener.Handle);
-                                    var panel = GetPrivateField<System.Windows.Forms.Panel>(listener, "panelMain");
-                                    var control = panel.Controls.OfType<ListenerControl>().Single();
-                                    var listenerHelper = GetPrivateField<ServiceBusHelper>(control, "serviceBusHelper");
-                                    var listenerProvider = listenerHelper.MessagingFactory.GetSettings().TokenProvider;
-                                    Task.Run(() => listenerProvider.GetWebTokenAsync(endpoint.AbsoluteUri, "Listen", false, TimeSpan.FromSeconds(2)))
-                                        .GetAwaiter().GetResult().Should().Contain(token);
-                                    recording.Calls.Should().Be(1);
-                                }
+                                System.Windows.Forms.Application.DoEvents();
+                                expectedHandle.Should().NotBe(IntPtr.Zero);
+                                requestedHandle.Should().Be(expectedHandle);
+                                canceled.Calls.Should().Be(1);
+                                listener.IsDisposed.Should().BeTrue();
                             }
                             finally
                             {
-                                listener.Close();
+                                if (!listener.IsDisposed) listener.Close();
                             }
                         }
                         GetStaticOwner().Should().Be(main.Handle);
@@ -787,7 +782,24 @@ namespace ServiceBusExplorer.Tests.Helpers
                         EntraWindowOwners.Register(form, mainWindow: true);
                         var handle = form.Handle;
                         var first = EntraCredentialFactory.CreateInteractiveBrowserCredential("window-test");
-                        form.Recreate();
+                        using (var tool = new RecreatingOwnerForm())
+                        using (var other = new RecreatingOwnerForm())
+                        {
+                            EntraWindowOwners.Register(tool);
+                            var toolHandle = tool.Handle;
+                            tool.RaiseActivated();
+                            GetStaticOwner().Should().Be(toolHandle);
+                            var toolCredential = EntraCredentialFactory.CreateInteractiveBrowserCredential("window-test");
+                            toolCredential.Should().NotBeSameAs(first);
+
+                            // A sign-in dialog does not register, even if it takes focus.
+                            var otherHandle = other.Handle;
+                            other.RaiseActivated();
+                            form.Recreate();
+                            GetStaticOwner().Should().Be(toolHandle);
+                            EntraCredentialFactory.CreateInteractiveBrowserCredential("window-test").Should().BeSameAs(toolCredential);
+                        }
+                        GetStaticOwner().Should().Be(form.Handle);
                         EntraCredentialFactory.CreateInteractiveBrowserCredential("window-test").Should().NotBeSameAs(first);
                     }
                     GetStaticOwner().Should().Be(IntPtr.Zero);
@@ -806,6 +818,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         sealed class RecreatingOwnerForm : System.Windows.Forms.Form
         {
             public void Recreate() => RecreateHandle();
+            public void RaiseActivated() => OnActivated(EventArgs.Empty);
         }
 
         [Fact]
