@@ -6,7 +6,7 @@
 	<ItemGroup>
 		<PackageVersion Include="Azure.Identity" Version="1.21.0" />
 		<PackageVersion Include="Azure.Messaging.EventGrid.Namespaces" Version="1.1.0" />
-		<PackageVersion Include="Azure.Messaging.EventHubs" Version="5.12.1" />
+		<PackageVersion Include="Azure.Messaging.EventHubs" Version="5.12.2" />
 		<PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
 		<PackageVersion Include="Azure.ResourceManager.EventGrid" Version="1.1.0" />
 		<PackageVersion Include="CommandLineParser" Version="2.9.1" />

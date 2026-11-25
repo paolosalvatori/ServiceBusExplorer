@@ -1,20 +1,20 @@
 ﻿#region Copyright
 //=======================================================================================
-// Microsoft Azure Customer Advisory Team 
+// Microsoft Azure Customer Advisory Team
 //
 // This sample is supplemental to the technical guidance published on my personal
-// blog at http://blogs.msdn.com/b/paolos/. 
-// 
+// blog at http://blogs.msdn.com/b/paolos/.
+//
 // Author: Paolo Salvatori
 //=======================================================================================
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// 
-// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE 
-// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT 
+//
+// LICENSED UNDER THE APACHE LICENSE, VERSION 2.0 (THE "LICENSE"); YOU MAY NOT USE THESE
+// FILES EXCEPT IN COMPLIANCE WITH THE LICENSE. YOU MAY OBTAIN A COPY OF THE LICENSE AT
 // http://www.apache.org/licenses/LICENSE-2.0
-// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE 
-// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING 
+// UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING, SOFTWARE DISTRIBUTED UNDER THE
+// LICENSE IS DISTRIBUTED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, EITHER EXPRESS OR IMPLIED. SEE THE LICENSE FOR THE SPECIFIC LANGUAGE GOVERNING
 // PERMISSIONS AND LIMITATIONS UNDER THE LICENSE.
 //=======================================================================================
 #endregion
@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using ServiceBusExplorer.Utilities.Helpers;
@@ -47,6 +48,8 @@ namespace ServiceBusExplorer.Helpers
         private static readonly Dictionary<string, EventProcessorCheckpointInfo> mapDictionary = new Dictionary<string, EventProcessorCheckpointInfo>();
         private static readonly string filePath = Path.Combine(Environment.CurrentDirectory, FileName);
         private static List<EventProcessorCheckpointInfo> itemList;
+        private static bool canWriteCheckpoints;
+        private static bool pendingSanitizedWrite;
         #endregion
 
         #region Public Static Methods
@@ -55,25 +58,50 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         public static void ReadCheckpoints()
         {
-            lock (filePath)
+            lock (mapDictionary)
             {
-                if (!File.Exists(filePath))
+                lock (filePath)
                 {
-                    itemList = new List<EventProcessorCheckpointInfo>();
-                    return;
-                }
-                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                {
-                    itemList = JsonSerializerHelper.Deserialize<List<EventProcessorCheckpointInfo>>(stream) ?? new List<EventProcessorCheckpointInfo>();
-                }
-                if (itemList == null || itemList.Count == 0)
-                {
-                    itemList = new List<EventProcessorCheckpointInfo>();
-                    return;
-                }
-                foreach (var item in itemList)
-                {
-                    mapDictionary.Add(string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup), item);
+                    // A failed read must never authorize overwriting the existing file.
+                    canWriteCheckpoints = false;
+                    pendingSanitizedWrite = false;
+                    var loaded = new List<EventProcessorCheckpointInfo>();
+                    if (File.Exists(filePath))
+                    {
+                        using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                            loaded = JsonSerializerHelper.Deserialize<List<EventProcessorCheckpointInfo>>(stream)
+                                ?? new List<EventProcessorCheckpointInfo>();
+                    }
+                    var changed = false;
+                    foreach (var item in loaded)
+                    {
+                        if (item == null) { changed = true; continue; }
+                        var normalized = EventHubCheckpointIdentity.NormalizeStoredNamespace(item.Namespace);
+                        changed |= normalized != item.Namespace || normalized == null;
+                        item.Namespace = normalized;
+                    }
+                    var normalizedItems = loaded.Where(item => item?.Namespace != null)
+                        .GroupBy(item => string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup))
+                        .Select(group => new EventProcessorCheckpointInfo
+                        {
+                            Namespace = group.First().Namespace,
+                            EventHub = group.First().EventHub,
+                            ConsumerGroup = group.First().ConsumerGroup,
+                            Leases = group.SelectMany(item => item.Leases ?? new Dictionary<string, Lease>())
+                                .Where(pair => pair.Value != null)
+                                .GroupBy(pair => pair.Key)
+                                .ToDictionary(partition => partition.Key, partition => partition
+                                    .OrderByDescending(pair => pair.Value.SequenceNumber)
+                                    // Equal sequences choose a stable full-lease representation, not file order.
+                                    .ThenBy(pair => JsonConvert.SerializeObject(pair.Value), StringComparer.Ordinal)
+                                    .First().Value)
+                        }).ToList();
+                    mapDictionary.Clear();
+                    itemList = normalizedItems;
+                    foreach (var item in itemList)
+                        mapDictionary.Add(string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup), item);
+                    pendingSanitizedWrite = changed;
+                    canWriteCheckpoints = true;
                 }
             }
         }
@@ -83,13 +111,16 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         public static void WriteCheckpoints()
         {
-            if (null == itemList || itemList.Count == 0)
+            lock (mapDictionary)
             {
-                return;
-            }
+                if (!canWriteCheckpoints || itemList == null || (itemList.Count == 0 && !pendingSanitizedWrite))
+                {
+                    return;
+                }
 
-            JsonSerializerHelper.Serialize(itemList, Formatting.Indented);
-            WriteFile(filePath, JsonSerializerHelper.Serialize(itemList, Formatting.Indented));
+                WriteFile(filePath, JsonSerializerHelper.Serialize(itemList, Formatting.Indented));
+                pendingSanitizedWrite = false;
+            }
         }
 
         /// <summary>
@@ -101,16 +132,19 @@ namespace ServiceBusExplorer.Helpers
         /// <returns>The in-memory or persisted lease for the event hub partition.</returns>
         public static Dictionary<string, Lease> GetLease(string ns, string eventHub, string consumerGroup)
         {
-            if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub) ||
-                string.IsNullOrWhiteSpace(consumerGroup))
+            lock (mapDictionary)
             {
-                return null;
+                if (string.IsNullOrWhiteSpace(ns) ||
+                    string.IsNullOrWhiteSpace(eventHub) ||
+                    string.IsNullOrWhiteSpace(consumerGroup))
+                {
+                    return null;
+                }
+                var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
+                return mapDictionary.ContainsKey(key) ?
+                       mapDictionary[key].Leases :
+                       null;
             }
-            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
-            return mapDictionary.ContainsKey(key) ?
-                   mapDictionary[key].Leases :
-                   null;
         }
 
         /// <summary>
@@ -123,20 +157,23 @@ namespace ServiceBusExplorer.Helpers
         /// <returns>The in-memory or persisted lease for the event hub partition.</returns>
         public static Lease GetLease(string ns, string eventHub, string consumerGroup, string partitionId)
         {
-            if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub) ||
-                string.IsNullOrWhiteSpace(consumerGroup) ||
-                string.IsNullOrWhiteSpace(partitionId))
+            lock (mapDictionary)
             {
-                return null;
+                if (string.IsNullOrWhiteSpace(ns) ||
+                    string.IsNullOrWhiteSpace(eventHub) ||
+                    string.IsNullOrWhiteSpace(consumerGroup) ||
+                    string.IsNullOrWhiteSpace(partitionId))
+                {
+                    return null;
+                }
+                var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
+                var value = mapDictionary.ContainsKey(key) &&
+                       mapDictionary[key].Leases != null &&
+                       mapDictionary[key].Leases.ContainsKey(partitionId) ?
+                       mapDictionary[key].Leases[partitionId] :
+                       GetDefaultLease(partitionId);
+                return value;
             }
-            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
-            var value = mapDictionary.ContainsKey(key) &&
-                   mapDictionary[key].Leases != null && 
-                   mapDictionary[key].Leases.ContainsKey(partitionId) ?
-                   mapDictionary[key].Leases[partitionId] :
-                   GetDefaultLease(partitionId);
-            return value;
         }
 
         /// <summary>
@@ -149,46 +186,49 @@ namespace ServiceBusExplorer.Helpers
         /// <param name="leases">A dictionary of partition leases.</param>
         public static void SetLease(string ns, string eventHub, string consumerGroup, Dictionary<string, Lease> leases)
         {
-            if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub) ||
-                string.IsNullOrWhiteSpace(consumerGroup))
+            lock (mapDictionary)
             {
-                return;
-            }
-            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
-            if (mapDictionary.ContainsKey(key))
-            {
-                if (leases != null)
-                {
-                    mapDictionary[key].Leases = leases;
-                }
-                else
-                {
-                    lock (mapDictionary)
-                    {
-                        itemList.Remove(mapDictionary[key]);
-                        mapDictionary.Remove(key);
-                    }
-                }
-            }
-            else
-            {
-                if (leases == null)
+                if (string.IsNullOrWhiteSpace(ns) ||
+                    string.IsNullOrWhiteSpace(eventHub) ||
+                    string.IsNullOrWhiteSpace(consumerGroup))
                 {
                     return;
                 }
+                var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
+                if (mapDictionary.ContainsKey(key))
+                {
+                    if (leases != null)
+                    {
+                        mapDictionary[key].Leases = leases;
+                    }
+                    else
+                    {
+                        lock (mapDictionary)
+                        {
+                            itemList.Remove(mapDictionary[key]);
+                            mapDictionary.Remove(key);
+                        }
+                    }
+                }
+                else
+                {
+                    if (leases == null)
+                    {
+                        return;
+                    }
 
-                var item = new EventProcessorCheckpointInfo 
-                {
-                    Namespace = ns, 
-                    EventHub = eventHub, 
-                    ConsumerGroup =  consumerGroup,    
-                    Leases = leases
-                };
-                lock (mapDictionary)
-                {
-                    itemList.Add(item);
-                    mapDictionary.Add(key, item);
+                    var item = new EventProcessorCheckpointInfo
+                    {
+                        Namespace = ns,
+                        EventHub = eventHub,
+                        ConsumerGroup =  consumerGroup,
+                        Leases = leases
+                    };
+                    lock (mapDictionary)
+                    {
+                        itemList.Add(item);
+                        mapDictionary.Add(key, item);
+                    }
                 }
             }
         }
@@ -204,112 +244,104 @@ namespace ServiceBusExplorer.Helpers
         /// <param name="lease">The lease for the event hub partition.</param>
         public static void SetLease(string ns, string eventHub, string consumerGroup, string partitionId, Lease lease)
         {
-            if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub) ||
-                string.IsNullOrWhiteSpace(consumerGroup) ||
-                string.IsNullOrWhiteSpace(partitionId))
+            lock (mapDictionary)
             {
-                return;
-            }
-            var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
-            if (mapDictionary.ContainsKey(key))
-            {
-                if (lease != null)
-                {
-                    if (mapDictionary[key].Leases == null)
-                    {
-                        mapDictionary[key].Leases = new Dictionary<string, Lease>();
-                    }
-                    mapDictionary[key].Leases[partitionId] = lease;
-                }
-                else
-                {
-                    if (mapDictionary[key].Leases == null || 
-                        !mapDictionary[key].Leases.ContainsKey(partitionId))
-                    {
-                        return;
-                    }
-                    mapDictionary[key].Leases.Remove(partitionId);
-                }
-            }
-            else
-            {
-                if (lease == null)
+                if (string.IsNullOrWhiteSpace(ns) ||
+                    string.IsNullOrWhiteSpace(eventHub) ||
+                    string.IsNullOrWhiteSpace(consumerGroup) ||
+                    string.IsNullOrWhiteSpace(partitionId))
                 {
                     return;
                 }
-                var item = new EventProcessorCheckpointInfo
+                var key = string.Format(KeyFormat, ns, eventHub, consumerGroup);
+                if (mapDictionary.ContainsKey(key))
                 {
-                    Namespace = ns,
-                    EventHub = eventHub,
-                    ConsumerGroup = consumerGroup,
-                    Leases = new Dictionary<string, Lease> { { partitionId, lease } }
-                };
-                lock (mapDictionary)
-                {
-                    itemList.Add(item);
-                    if (mapDictionary.ContainsKey(key))
+                    if (lease != null)
                     {
+                        if (mapDictionary[key].Leases == null)
+                        {
+                            mapDictionary[key].Leases = new Dictionary<string, Lease>();
+                        }
                         mapDictionary[key].Leases[partitionId] = lease;
                     }
                     else
                     {
-                        mapDictionary.Add(key, item);
+                        if (mapDictionary[key].Leases == null ||
+                            !mapDictionary[key].Leases.ContainsKey(partitionId))
+                        {
+                            return;
+                        }
+                        mapDictionary[key].Leases.Remove(partitionId);
                     }
                 }
-            }
-            if (lease != null)
-            {
-                mapDictionary[key].Leases[partitionId] = lease;
-            }
-            else
-            {
-                mapDictionary[key].Leases.Remove(partitionId);
+                else
+                {
+                    if (lease == null)
+                    {
+                        return;
+                    }
+                    var item = new EventProcessorCheckpointInfo
+                    {
+                        Namespace = ns,
+                        EventHub = eventHub,
+                        ConsumerGroup = consumerGroup,
+                        Leases = new Dictionary<string, Lease> { { partitionId, lease } }
+                    };
+                    lock (mapDictionary)
+                    {
+                        itemList.Add(item);
+                        if (mapDictionary.ContainsKey(key))
+                        {
+                            mapDictionary[key].Leases[partitionId] = lease;
+                        }
+                        else
+                        {
+                            mapDictionary.Add(key, item);
+                        }
+                    }
+                }
+                if (lease != null)
+                {
+                    mapDictionary[key].Leases[partitionId] = lease;
+                }
+                else
+                {
+                    mapDictionary[key].Leases.Remove(partitionId);
+                }
             }
         }
 
         public static Task CheckpointAsync(string ns, string eventHub, string consumerGroup, Lease lease, string offset)
         {
-            if (string.IsNullOrWhiteSpace(ns) ||
-                string.IsNullOrWhiteSpace(eventHub) ||
-                string.IsNullOrWhiteSpace(consumerGroup) ||
-                lease == null ||
-                string.IsNullOrWhiteSpace(offset))
+            lock (mapDictionary)
             {
+                if (string.IsNullOrWhiteSpace(ns) ||
+                    string.IsNullOrWhiteSpace(eventHub) ||
+                    string.IsNullOrWhiteSpace(consumerGroup) ||
+                    lease == null ||
+                    string.IsNullOrWhiteSpace(offset))
+                {
+                    return Task.CompletedTask;
+                }
+
+                lease.Offset = offset;
+                SetLease(ns, eventHub, consumerGroup, lease.PartitionId, lease);
+
                 return Task.CompletedTask;
             }
-
-            lease.Offset = offset;
-            SetLease(ns, eventHub, consumerGroup, lease.PartitionId, lease);
-
-            return Task.CompletedTask;
-        } 
+        }
         #endregion
 
         #region Private Static Methods
         private static void WriteFile(string path, string content)
         {
-            try
+            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(content))
             {
-                if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(content))
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-                using (var writer = new StreamWriter(path))
-                {
-                    writer.Write(content);
-                    writer.Flush();
-                }
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
-            {
-            }
+            // Let close report a persistence failure; closing policy belongs to the caller.
+            File.WriteAllText(path, content);
         }
         #endregion
 

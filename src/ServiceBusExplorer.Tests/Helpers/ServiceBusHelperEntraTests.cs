@@ -42,7 +42,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
-        public void CreateEventHubClient_EntraNamespace_ReturnsClient()
+        public async Task CreateEventHubProducerClient_EntraNamespace_ReturnsClient()
         {
             var helper = new ServiceBusHelper((message, asynchronous) => { });
             var entraNamespace = new ServiceBusNamespace(
@@ -53,22 +53,10 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             SetPrivateField(helper, "serviceBusNamespaceInstance", entraNamespace);
 
-            // The new implementation requires the cached eventHubMessagingFactory
-            // (created during Connect) to create EventHubClients.
-            var tokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider("tenant-id");
-            SetPrivateField(helper, "entraTokenProvider", tokenProvider);
-            var nsUri = new Uri("sb://myns.servicebus.windows.net/");
-            SetPrivateField(helper, "namespaceUri", nsUri);
-            var factory = MessagingFactory.Create(nsUri, new MessagingFactorySettings
-            {
-                TokenProvider = tokenProvider,
-                TransportType = Microsoft.ServiceBus.Messaging.TransportType.Amqp
-            });
-            SetPrivateField(helper, "eventHubMessagingFactory", factory);
-
-            var client = helper.CreateEventHubClient("hub1");
+            var client = helper.CreateEventHubProducerClient("hub1");
 
             client.Should().NotBeNull();
+            await client.DisposeAsync();
         }
 
         [Fact]
@@ -162,11 +150,11 @@ namespace ServiceBusExplorer.Tests.Helpers
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void CreateEventHubClient_NullOrEmptyPath_ThrowsArgumentExceptionWithParamName(string path)
+        public void CreateEventHubProducerClient_NullOrEmptyPath_ThrowsArgumentExceptionWithParamName(string path)
         {
             var helper = new ServiceBusHelper((message, asynchronous) => { });
 
-            var act = () => helper.CreateEventHubClient(path);
+            var act = () => helper.CreateEventHubProducerClient(path);
 
             act.Should().Throw<ArgumentException>()
                 .And.ParamName.Should().Be("path");
@@ -251,6 +239,31 @@ namespace ServiceBusExplorer.Tests.Helpers
             var ex = new MessagingException("Entity not found. Status code: 404");
             InvokePrivateStatic<bool>(typeof(ServiceBusHelper), "IsAudienceMismatchException", ex)
                 .Should().BeFalse();
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(";EntityPath=hub1")]
+        [InlineData(";TransportType=Amqp")]
+        public async Task EventHubFactoriesAcceptModernConnectionStrings(string suffix)
+        {
+            var helper = new ServiceBusHelper((message, asynchronous) => { });
+            var connection = "Endpoint=sb://myns.servicebus.windows.net/;SharedAccessKeyName=service;SharedAccessKey=c2VjcmV0" + suffix;
+            SetPrivateField(helper, "connectionString", connection);
+            var producer = helper.CreateEventHubProducerClient("hub1");
+            var consumer = helper.CreateEventHubConsumerClient("hub1", "$Default", connection);
+            try
+            {
+                producer.EventHubName.Should().Be("hub1");
+                consumer.EventHubName.Should().Be("hub1");
+                producer.FullyQualifiedNamespace.Should().Be("myns.servicebus.windows.net");
+                consumer.FullyQualifiedNamespace.Should().Be(producer.FullyQualifiedNamespace);
+            }
+            finally
+            {
+                await producer.DisposeAsync();
+                await consumer.DisposeAsync();
+            }
         }
 
         static T GetPrivateField<T>(object instance, string fieldName)
