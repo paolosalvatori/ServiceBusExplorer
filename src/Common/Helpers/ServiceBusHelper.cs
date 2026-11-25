@@ -147,7 +147,6 @@ namespace ServiceBusExplorer
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
-        private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
         private string ns;
@@ -210,7 +209,6 @@ namespace ServiceBusExplorer
             EventDataInspectors = serviceBusHelper.EventDataInspectors;
             BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
-            notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
             SharedAccessKey = serviceBusHelper.SharedAccessKey;
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
@@ -803,7 +801,6 @@ namespace ServiceBusExplorer
             IsEventHubNamespace = replacement.IsEventHubNamespace;
             namespaceManager = replacement.namespaceManager;
             notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
-            notificationHubTokenProvider = replacement.notificationHubTokenProvider;
             entraTokenProvider = replacement.entraTokenProvider;
             managementClient = replacement.managementClient;
             messagingFactory = replacement.messagingFactory;
@@ -826,7 +823,6 @@ namespace ServiceBusExplorer
             serviceBusNamespaceInstance = serviceBusNamespace;
             namespaceManager = null;
             notificationHubNamespaceManager = null;
-            notificationHubTokenProvider = null;
             entraTokenProvider = null;
             managementClient = null;
             messagingFactory = null;

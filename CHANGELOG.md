@@ -1,5 +1,21 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## Unreleased — modern Service Bus management (#911)
+
+- On-premises **Service Bus for Windows Server management is no longer supported**.
+  Windows/STS authentication and the legacy management endpoint are not implemented
+  by the modern administration SDK. Profiles remain readable, but connecting reports
+  an explicit unsupported error. Keep a previous release for that environment.
+- Queue/topic rename is unavailable on the modern administration path. Its context
+  and Actions menu entries are disabled; no create/delete workaround is attempted.
+  Other legacy paths retain their existing rename behavior where supported.
+- Topic counters aggregate subscription runtime counters (a message copied into
+  several subscriptions is counted several times); scheduled messages are counted
+  at the topic. Counter filters and color thresholds retain this meaning. Topic
+  listing still requires bounded subscription-runtime reads and can time out on
+  large namespaces; lazy counters require a distinct unloaded state throughout
+  filtering, node coloring and the selected-topic view and are deferred.
+
 ## [1.4.2] - 2026-03-30
 
 ### Added

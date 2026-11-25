@@ -81,8 +81,8 @@ service compatibility or emulator feature availability.
 
 ### Compatibility decisions for review
 
-- **Rename:** the new SDK has no rename operation. Rename reports an explicit
-  unsupported error and leaves the source untouched. It is not approximated
+- **Rename:** the new SDK has no rename operation. Rename is disabled in the context and Actions menus on this path; direct API
+  calls report an explicit unsupported error and leave the source untouched. It is not approximated
   with create/delete, which could lose messages, subscriptions or permissions.
   Review whether a separately approved transfer workflow is desirable.
 - **Filters:** administration no longer accepts server-side OData filters.
@@ -129,3 +129,24 @@ the outgoing HTTP administration URI.
   AMQP over TCP or WebSockets remains the transport choice.
 - Live emulator acceptance still needs to verify administration capabilities
   and the separate AMQP endpoint during stage 3.
+
+### Management review follow-up (#911)
+
+The unused Notification Hubs token-provider field and its assignments are removed;
+this avoids dangling assignments when combined with #908 without including its SDK
+upgrade in this branch. Re-run integrated CI after either migration lands.
+
+Topic message counts in this migration are **subscription aggregates**, not unique
+published messages: active, dead-letter and transfer counts sum the subscription
+snapshots; scheduled count comes from the topic snapshot. A message copied to two
+subscriptions can contribute twice. Runtime snapshots are not atomic. Listing uses
+paged topic runtime reads, safe path filtering and at most four concurrent
+subscription-runtime reads. It can still exhaust the configured timeout in a large
+namespace. Laziness is deferred: skipping those reads currently supplies zero values
+to counter filters, node-color thresholds and the selected-topic view. A follow-up
+must represent unloaded counts explicitly and load them asynchronously without
+changing those behaviors. This change does not claim that large-namespace latency
+has been eliminated.
+
+Live acceptance remains outstanding: **Validate management against live Azure and
+the emulator**. Offline builds and synthetic tests do not replace that validation.
