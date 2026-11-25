@@ -642,7 +642,11 @@ namespace ServiceBusExplorer.Helpers
                               null;
 
             if (!System.Uri.TryCreate(endpoint, UriKind.Absolute, out var endpointUri) ||
-                string.IsNullOrEmpty(endpointUri.Host) || endpointUri.Port == 0)
+                string.IsNullOrEmpty(endpointUri.Host) ||
+                // The legacy SDK registers an sb URI parser that can hide explicit port zero.
+                // Validate the same authority with the standard HTTP parser as well.
+                !System.Uri.TryCreate("http" + endpoint.Substring(endpoint.IndexOf(':')), UriKind.Absolute, out var portUri) ||
+                portUri.Port == 0)
             {
                 staticWriteToLog("The Service Bus endpoint or port is invalid.");
                 return null;
