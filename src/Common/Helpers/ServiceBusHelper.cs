@@ -4922,26 +4922,16 @@ namespace ServiceBusExplorer
                         var inspectedBatch = new List<BrokeredMessage>();
                         try
                         {
-                            foreach (var original in originals)
+                            for (var index = 0; index < originals.Count; index++)
                             {
-                                var candidate = ServiceBusReceivedMessageAdapter.CloneForResubmission(original);
-                                try
+                                // Fresh adaptation provides original public receiver headers
+                                // and an independent body; fallback originals remain untouched.
+                                using (var candidate = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(messages[index]))
                                 {
-                                    // BrokeredMessage.Clone may share the writable body buffer.
-                                    // Isolate it before any inspector can mutate bytes in place.
-                                    using (var bodyCopy = original.Clone())
-                                    using (var stream = bodyCopy.GetBody<Stream>())
-                                    using (var buffer = new MemoryStream())
-                                    {
-                                        stream.CopyTo(buffer);
-                                        candidate.SetBodyStream(new MemoryStream(buffer.ToArray()));
-                                    }
-                                    var inspected = messageInspector == null ? candidate :
-                                        ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
-                                    inspectedBatch.Add(inspected);
-                                    if (!ReferenceEquals(candidate, inspected)) candidate.Dispose();
+                                    var inspected = ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
+                                    try { inspectedBatch.Add(ServiceBusReceivedMessageAdapter.ToReceivedRow(messages[index], inspected)); }
+                                    finally { if (!ReferenceEquals(candidate, inspected)) inspected.Dispose(); }
                                 }
-                                catch { candidate.Dispose(); throw; }
                             }
                         }
                         catch

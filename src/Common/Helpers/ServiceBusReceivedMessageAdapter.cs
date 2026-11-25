@@ -64,6 +64,9 @@ namespace ServiceBusExplorer.Helpers
             return clone;
         }
 
+        public static BrokeredMessage InspectReceivedRow(BrokeredMessage source, IBrokeredMessageInspector inspector) =>
+            inspector == null ? source : Inspect(source, inspector.AfterReceiveMessage);
+
         public static BrokeredMessage Inspect(BrokeredMessage source, Func<BrokeredMessage, BrokeredMessage> inspect)
         {
             var identity = CaptureIdentity(source);
@@ -147,6 +150,40 @@ namespace ServiceBusExplorer.Helpers
             received.Add(brokeredMessage, new ReceivedBody { Message = message, Preview = (byte[])preview.Clone() });
 
             return brokeredMessage;
+        }
+
+        // Reuse the received-message adapter for public receiver headers, then overlay
+        // only editable content from the inspector. This is a receive row, not a send clone.
+        public static BrokeredMessage ToReceivedRow(ServiceBusReceivedMessage original, BrokeredMessage inspected)
+        {
+            var row = ToBrokeredMessage(original);
+            try
+            {
+                using (var copy = inspected.Clone())
+                using (var stream = copy.GetBody<Stream>())
+                using (var buffer = new MemoryStream())
+                {
+                    stream?.CopyTo(buffer);
+                    row.SetBodyStream(new MemoryStream(buffer.ToArray()));
+                }
+                row.MessageId = inspected.MessageId;
+                row.PartitionKey = null;
+                row.SessionId = inspected.SessionId;
+                row.PartitionKey = inspected.PartitionKey;
+                row.ViaPartitionKey = inspected.ViaPartitionKey;
+                row.CorrelationId = inspected.CorrelationId;
+                row.ContentType = inspected.ContentType;
+                row.Label = inspected.Label;
+                row.To = inspected.To;
+                row.ReplyTo = inspected.ReplyTo;
+                row.ReplyToSessionId = inspected.ReplyToSessionId;
+                row.TimeToLive = inspected.TimeToLive;
+                row.ScheduledEnqueueTimeUtc = inspected.ScheduledEnqueueTimeUtc;
+                row.Properties.Clear();
+                foreach (var property in inspected.Properties) row.Properties.Add(property.Key, property.Value);
+                return row;
+            }
+            catch { row.Dispose(); throw; }
         }
 
         private static void SetReceivedProperty(BrokeredMessage target, string name, object value) =>
