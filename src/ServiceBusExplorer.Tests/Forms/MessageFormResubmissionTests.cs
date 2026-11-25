@@ -56,6 +56,41 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData(false, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(true, false, false)]
+        [InlineData(true, true, false)]
+        [InlineData(false, false, true)]
+        [InlineData(false, true, true)]
+        [InlineData(true, false, true)]
+        [InlineData(true, true, true)]
+        public void LegacySerializedBodiesRemainReadableAfterEditorPreparation(bool bytes, bool edited, bool newId)
+        {
+            RunSta(() =>
+            {
+                const string original = "original å";
+                const string correction = "corrected ö";
+                using var source = bytes ? new BrokeredMessage(System.Text.Encoding.UTF8.GetBytes(original)) : new BrokeredMessage(original);
+                source.MessageId = "source-id";
+                source.SessionId = "route";
+                source.PartitionKey = "route";
+                using var editor = new MessageForm(source, new ServiceBusHelper((_, __) => { }), (_, __) => { });
+                ((CheckBox)editor.Controls.Find("chkNewMessageId", true).Single()).Checked = newId;
+                if (edited) editor.Controls.Find("txtMessageText", true).Single().Text = correction;
+                using var outbound = editor.BuildMessageForResubmission(source);
+                if (bytes) Assert.Equal(System.Text.Encoding.UTF8.GetBytes(edited ? correction : original), outbound.GetBody<byte[]>());
+                else Assert.Equal(edited ? correction : original, outbound.GetBody<string>());
+                Assert.Equal("route", outbound.SessionId);
+                Assert.Equal("route", outbound.PartitionKey);
+                if (newId) Assert.NotEqual("source-id", outbound.MessageId);
+                else Assert.Equal("source-id", outbound.MessageId);
+                using var originalCopy = source.Clone();
+                if (bytes) Assert.Equal(System.Text.Encoding.UTF8.GetBytes(original), originalCopy.GetBody<byte[]>());
+                else Assert.Equal(original, originalCopy.GetBody<string>());
+            });
+        }
+
         [Fact]
         public void EditedTextUsesUtf8AndRetainsOriginalMessageId()
         {
