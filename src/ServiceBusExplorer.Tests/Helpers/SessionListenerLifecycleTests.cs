@@ -112,7 +112,9 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             RunUi(async (form, listener) =>
             {
-                using var control = new TestQueueControl(null, (_, __) => { }, () => Task.CompletedTask,
+                // Supply identity only; do not run MainForm's configuration/environment-loading constructor.
+                var main = (ServiceBusExplorer.Forms.MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(ServiceBusExplorer.Forms.MainForm));
+                using var control = new TestQueueControl(main, (_, __) => { }, () => Task.CompletedTask,
                     () => { }, new ServiceBusHelper((_, __) => { }), new QueueInfo("synthetic"));
                 var events = new List<string>();
                 var worker = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
