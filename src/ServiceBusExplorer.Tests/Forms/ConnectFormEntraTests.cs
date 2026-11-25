@@ -76,6 +76,41 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData(TransportType.Amqp, TransportType.NetMessaging)]
+        [InlineData(TransportType.NetMessaging, TransportType.Amqp)]
+        public void DuplicatePaddedSettingsUseLastValueWithoutMutatingSavedText(TransportType first, TransportType last)
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                var value = "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic==;UseDevelopmentEmulator=true; TransportType =" + first +
+                    "; TRANSPORTTYPE = " + last + " ;RuntimePort=1111; RuntimePort =5671;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                var profile = ServiceBusNamespace.GetServiceBusNamespace("Duplicates", value, (_, __) => { });
+                profile.TransportType.Should().Be(last);
+                helper.ServiceBusNamespaces["Duplicates"] = profile;
+                using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Duplicates";
+                GetComboBox(form, ControlNameTransportType).SelectedItem.Should().Be(last);
+                GetTextBox(form, ControlNameUri).Text.Should().Be(value);
+                profile.ConnectionString.Should().Be(value);
+                var parsed = InvokeStaticPrivateMethod<System.Collections.Generic.Dictionary<string, string>>(typeof(ConnectForm), "ParseConnectionStringParts", value);
+                parsed["transporttype"].Should().Be(last.ToString());
+                parsed["runtimeport"].Should().Be("5671");
+                GetComboBox(form, ControlNameTransportType).SelectedItem = first;
+                var edited = GetTextBox(form, ControlNameUri).Text;
+                edited.Should().Contain(" TransportType =" + first + ";");
+                edited.Should().Contain(" TRANSPORTTYPE =" + first + ";");
+                var effective = ServiceBusNamespace.GetServiceBusNamespace("Edited", edited, (_, __) => { });
+                effective.TransportType.Should().Be(first);
+                var changed = InvokeStaticPrivateMethod<System.Collections.Generic.Dictionary<string, string>>(typeof(ConnectForm), "ParseConnectionStringParts", edited);
+                changed["runtimeport"].Should().Be(first == TransportType.Amqp ? "5671" : "9354");
+                edited.Should().Contain("SharedAccessKey=synthetic==;");
+                profile.ConnectionString.Should().Be(value);
+            });
+        }
+
         [Fact]
         public void AcceptingDialogStagesFiltersWithoutChangingActiveFilters()
         {
