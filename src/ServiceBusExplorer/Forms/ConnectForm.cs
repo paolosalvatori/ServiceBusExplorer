@@ -406,9 +406,10 @@ namespace ServiceBusExplorer.Forms
 
             return trimmedValue
                 .Split(';')
-                .Where(p => p.Contains('='))
-                .ToDictionary(s => s.Substring(0, s.IndexOf('=')).Trim(),
-                    s => s.Substring(s.IndexOf('=') + 1),
+                .Where(p => p.IndexOf('=') > 0)
+                .GroupBy(p => p.Substring(0, p.IndexOf('=')).Trim(), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key,
+                    group => group.Last().Substring(group.Last().IndexOf('=') + 1).Trim(),
                     StringComparer.OrdinalIgnoreCase);
         }
 
