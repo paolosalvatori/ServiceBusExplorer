@@ -22,6 +22,21 @@ namespace ServiceBusExplorer.Tests.Helpers
     {
         private const string EmulatorConnection = "Endpoint=sb://localhost:5672;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;UseDevelopmentEmulator=true;TransportType=Amqp;EntityPath=orders";
 
+        [Theory]
+        [InlineData("priority: high")]
+        [InlineData("<![CDATA[priority: high]]>")]
+        [InlineData("<Property>valid: value</Property>ignored")]
+        public void DirectCorrelationPropertyTextRejectsBeforeAnyMutation(string properties)
+        {
+            var sdk = new FakeAdministrationClient();
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Queues><Queue><Path>must-not-create</Path></Queue></Queues><Rule><Name>test</Name><Filter><CorrelationFilter><CorrelationId>known</CorrelationId><Properties>" + properties + "</Properties></CorrelationFilter></Filter></Rule></Entities>";
+            ((Action)(() => NewHelper(sdk).ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*No entities were changed*");
+            sdk.CreatedQueue.Should().BeNull();
+            sdk.CreatedTopic.Should().BeNull();
+            sdk.CreatedSubscription.Should().BeNull();
+            sdk.CreatedRule.Should().BeNull();
+        }
+
         [Fact]
         public void AdjacentCorrelationPropertiesAllSurviveCompactXml()
         {

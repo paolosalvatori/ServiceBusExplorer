@@ -226,6 +226,9 @@ namespace ServiceBusExplorer.Helpers
                     };
                     lock (mapDictionary)
                     {
+                        // In-memory checkpointing also works when file persistence is disabled.
+                        // This does not authorize writing a file that was never successfully read.
+                        if (itemList == null) itemList = new List<EventProcessorCheckpointInfo>();
                         itemList.Add(item);
                         mapDictionary.Add(key, item);
                     }
@@ -289,6 +292,9 @@ namespace ServiceBusExplorer.Helpers
                     };
                     lock (mapDictionary)
                     {
+                        // In-memory checkpointing also works when file persistence is disabled.
+                        // This does not authorize writing a file that was never successfully read.
+                        if (itemList == null) itemList = new List<EventProcessorCheckpointInfo>();
                         itemList.Add(item);
                         if (mapDictionary.ContainsKey(key))
                         {
