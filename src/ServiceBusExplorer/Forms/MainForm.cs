@@ -755,6 +755,7 @@ namespace ServiceBusExplorer.Forms
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
 
+                EntraSystemBrowserOnly = EntraCredentialFactory.UseSystemBrowserOnly,
                 EntraTenantIds = EntraTenantIds,
 
                 NodesColors = NodesColors
@@ -774,6 +775,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
+                EntraCredentialFactory.UseSystemBrowserOnly = optionForm.MainSettings.EntraSystemBrowserOnly;
                 configFileUse = optionForm.ConfigFileUse;
 
                 if (lastConfigFileUse != configFileUse)
@@ -4432,6 +4434,7 @@ namespace ServiceBusExplorer.Forms
 
             SetProxy(readSettings);
 
+            EntraCredentialFactory.UseSystemBrowserOnly = readSettings.EntraSystemBrowserOnly;
             EntraTenantIds = readSettings.EntraTenantIds;
             NodesColors = readSettings.NodesColors;
         }

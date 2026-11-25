@@ -54,7 +54,7 @@ namespace ServiceBusExplorer.Helpers
         public const string EventHubsAudience = "https://eventhubs.azure.net";
         static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> interactiveBrowserCredentials =
             new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
-        static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> fallbackInteractiveBrowserCredentials =
+        static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> systemBrowserCredentials =
             new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
         static readonly object credentialCacheLock = new object();
         static readonly ConcurrentDictionary<string, AzureActiveDirectoryTokenProvider.AuthenticationCallback> authenticationCallbacks =
@@ -68,6 +68,15 @@ namespace ServiceBusExplorer.Helpers
         static readonly ConcurrentDictionary<string, SemaphoreSlim> interactiveLoginGates =
             new ConcurrentDictionary<string, SemaphoreSlim>(StringComparer.OrdinalIgnoreCase);
         static IntPtr ownerWindowHandle = IntPtr.Zero;
+
+        static volatile bool useSystemBrowserOnly;
+
+        /// <summary>Use the system browser directly for subsequent Entra token requests.</summary>
+        public static bool UseSystemBrowserOnly
+        {
+            get => useSystemBrowserOnly;
+            set => useSystemBrowserOnly = value;
+        }
 
         static string NormalizeTenantId(string tenantId)
         {
@@ -99,13 +108,20 @@ namespace ServiceBusExplorer.Helpers
 
         /// <summary>
         /// Creates an InteractiveBrowserCredential configured for the given tenant.
-        /// Uses the Windows broker (WAM), falling back to the system browser if the broker is unavailable.
+        /// Uses the Windows broker (WAM) by default or the system browser when selected in Options.
         /// The credential internally caches tokens via MSAL, so repeated calls with
         /// the same tenant reuse the browser sign-in session.
         /// </summary>
         public static InteractiveBrowserCredential CreateInteractiveBrowserCredential(string tenantId = null)
         {
             var normalizedTenantId = NormalizeTenantId(tenantId);
+            return UseSystemBrowserOnly
+                ? CreateSystemBrowserCredential(normalizedTenantId)
+                : CreateBrokerCredential(normalizedTenantId);
+        }
+
+        static InteractiveBrowserCredential CreateBrokerCredential(string normalizedTenantId)
+        {
             lock (credentialCacheLock)
             {
                 return interactiveBrowserCredentials.GetOrAdd(normalizedTenantId, _ =>
@@ -125,11 +141,11 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Creates a non-broker InteractiveBrowserCredential used when the Windows broker is unavailable.
+        /// Creates a non-broker InteractiveBrowserCredential for browser-only sign-in and broker fallback.
         /// </summary>
-        static InteractiveBrowserCredential CreateFallbackInteractiveBrowserCredential(string normalizedTenantId)
+        static InteractiveBrowserCredential CreateSystemBrowserCredential(string normalizedTenantId)
         {
-            return fallbackInteractiveBrowserCredentials.GetOrAdd(normalizedTenantId, _ =>
+            return systemBrowserCredentials.GetOrAdd(normalizedTenantId, _ =>
             {
                 var options = new InteractiveBrowserCredentialOptions
                 {
@@ -174,7 +190,7 @@ namespace ServiceBusExplorer.Helpers
                         // Event Hub namespaces that require the Event Hubs audience.
                         var token = await GetAccessTokenAsync(
                                 normalizedTenantId,
-                                GetScopes(normalizedAudience),
+                                new TokenRequestContext(GetScopes(normalizedAudience)),
                                 CancellationToken.None)
                             .ConfigureAwait(false);
                         return token.Token;
@@ -237,7 +253,7 @@ namespace ServiceBusExplorer.Helpers
         public static void ClearCache()
         {
             lock (credentialCacheLock) interactiveBrowserCredentials.Clear();
-            fallbackInteractiveBrowserCredentials.Clear();
+            systemBrowserCredentials.Clear();
             authenticationCallbacks.Clear();
             tokenCredentials.Clear();
             tokenProviders.Clear();
@@ -254,19 +270,17 @@ namespace ServiceBusExplorer.Helpers
             return new[] { $"{normalizedResource}/.default" };
         }
 
-        static async Task<AccessToken> GetAccessTokenAsync(string tenantId, string[] scopes, CancellationToken cancellationToken)
+        static async Task<AccessToken> GetAccessTokenAsync(string tenantId, TokenRequestContext requestContext, CancellationToken cancellationToken)
         {
-            var gateKey = $"{tenantId}|{string.Join(" ", scopes ?? Array.Empty<string>())}";
+            var gateKey = $"{tenantId}|{string.Join(" ", requestContext.Scopes ?? Array.Empty<string>())}";
             var gate = interactiveLoginGates.GetOrAdd(gateKey, _ => new SemaphoreSlim(1, 1));
             await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                var requestContext = new TokenRequestContext(scopes);
-
                 return await AcquireTokenWithFallbackAsync(
                         tenantId,
-                        ct => CreateInteractiveBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
-                        ct => CreateFallbackInteractiveBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
+                        ct => CreateBrokerCredential(tenantId).GetTokenAsync(requestContext, ct),
+                        ct => CreateSystemBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
                         cancellationToken)
                     .ConfigureAwait(false);
             }
@@ -279,10 +293,15 @@ namespace ServiceBusExplorer.Helpers
         static async Task<AccessToken> AcquireTokenWithFallbackAsync(
             string tenantId,
             Func<CancellationToken, ValueTask<AccessToken>> brokerAcquire,
-            Func<CancellationToken, ValueTask<AccessToken>> fallbackAcquire,
+            Func<CancellationToken, ValueTask<AccessToken>> browserAcquire,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (UseSystemBrowserOnly)
+            {
+                return await browserAcquire(cancellationToken).ConfigureAwait(false);
+            }
+
             try
             {
                 return await brokerAcquire(cancellationToken).ConfigureAwait(false);
@@ -295,7 +314,7 @@ namespace ServiceBusExplorer.Helpers
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            return await fallbackAcquire(cancellationToken).ConfigureAwait(false);
+            return await browserAcquire(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -345,12 +364,12 @@ namespace ServiceBusExplorer.Helpers
 
             public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
             {
-                return GetAccessTokenAsync(tenantId, requestContext.Scopes, cancellationToken).GetAwaiter().GetResult();
+                return GetAccessTokenAsync(tenantId, requestContext, cancellationToken).GetAwaiter().GetResult();
             }
 
             public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
             {
-                return new ValueTask<AccessToken>(GetAccessTokenAsync(tenantId, requestContext.Scopes, cancellationToken));
+                return new ValueTask<AccessToken>(GetAccessTokenAsync(tenantId, requestContext, cancellationToken));
             }
         }
     }

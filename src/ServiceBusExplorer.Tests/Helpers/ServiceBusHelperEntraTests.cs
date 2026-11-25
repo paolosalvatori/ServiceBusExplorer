@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,10 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
+    [CollectionDefinition("Entra credential cache", DisableParallelization = true)]
+    public class EntraCredentialCacheCollection { }
+
+    [Collection("Entra credential cache")]
     public class ServiceBusHelperEntraTests
     {
         [Fact]
@@ -300,6 +305,66 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
+        public async Task CachedSdkEntryPointsHonorBrowserSelectionAndPreserveTokenRequests()
+        {
+            const string tenant = "browser-choice";
+            var broker = new RecordingCredential("broker");
+            var browser = new RecordingCredential("browser");
+            var previousChoice = EntraCredentialFactory.UseSystemBrowserOnly;
+            try
+            {
+                CacheCredential("interactiveBrowserCredentials", tenant, broker);
+                CacheCredential("systemBrowserCredentials", tenant, browser);
+                var modern = EntraCredentialFactory.CreateNewSdkTokenCredential(tenant);
+                var legacy = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenant, EntraCredentialFactory.EventHubsAudience);
+                var request = new TokenRequestContext(new[] { EntraCredentialFactory.ServiceBusAudience + "/.default" },
+                    "request-id", "claims challenge", tenant, isCaeEnabled: true);
+
+                EntraCredentialFactory.UseSystemBrowserOnly = true;
+                EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant).Should().BeSameAs(browser);
+                (await modern.GetTokenAsync(request, CancellationToken.None)).Token.Should().Be("browser");
+                browser.LastRequest.Should().Be(request);
+                (await legacy(null, null, null)).Should().Be("browser");
+                browser.LastRequest.Scopes.Should().Equal(EntraCredentialFactory.EventHubsAudience + "/.default");
+                broker.Calls.Should().Be(0);
+
+                EntraCredentialFactory.UseSystemBrowserOnly = false;
+                modern.GetToken(request, CancellationToken.None).Token.Should().Be("broker");
+                broker.LastRequest.Should().Be(request);
+                (await legacy(null, null, null)).Should().Be("broker");
+                browser.Calls.Should().Be(2);
+            }
+            finally
+            {
+                EntraCredentialFactory.UseSystemBrowserOnly = previousChoice;
+                EntraCredentialFactory.ClearCache();
+            }
+        }
+
+        static void CacheCredential(string fieldName, string tenant, InteractiveBrowserCredential credential)
+        {
+            var field = typeof(EntraCredentialFactory).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
+            var cache = (ConcurrentDictionary<string, InteractiveBrowserCredential>)field.GetValue(null);
+            cache[tenant] = credential;
+        }
+
+        sealed class RecordingCredential : InteractiveBrowserCredential
+        {
+            readonly string token;
+            public int Calls { get; private set; }
+            public TokenRequestContext LastRequest { get; private set; }
+
+            public RecordingCredential(string token) => this.token = token;
+
+            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                Calls++;
+                LastRequest = requestContext;
+                return new ValueTask<AccessToken>(new AccessToken(token, DateTimeOffset.UtcNow.AddMinutes(5)));
+            }
+        }
+
+        [Fact]
         public async Task AcquireTokenWithFallback_BrokerUnavailable_UsesFallbackAndRetriesBrokerNextTime()
         {
             const string tenantId = "broker-fallback-tenant";
@@ -446,6 +511,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Theory]
         [InlineData("access_denied")]
         [InlineData("invalid_grant")]
+        [InlineData("interaction_required")]
         [InlineData(MsalError.UnknownBrokerError)]
         [InlineData(MsalError.AuthenticationCanceledError)]
         public async Task AuthenticationFailuresNeverFallBack(string code)

@@ -241,6 +241,8 @@ namespace ServiceBusExplorer.Common.Helpers
             resultProperties.ProxyUserName = configuration.GetStringValue(ConfigurationParameters.ProxyUserName, string.Empty);
             resultProperties.ProxyPassword = configuration.GetStringValue(ConfigurationParameters.ProxyPassword, string.Empty);
 
+            resultProperties.EntraSystemBrowserOnly = configuration.GetBoolValue(
+                ConfigurationParameters.EntraSystemBrowserOnly, false, writeToLog);
             var entraTenantIdsValue = configuration.GetStringValue(ConfigurationParameters.EntraTenantIds, string.Empty);
             resultProperties.EntraTenantIds = entraTenantIdsValue == ConfigurationParameters.EntraTenantIdsClearedMarker
                 ? new List<EntraTenantIdItem>()
