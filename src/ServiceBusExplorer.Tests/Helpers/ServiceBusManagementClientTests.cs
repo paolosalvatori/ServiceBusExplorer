@@ -162,6 +162,82 @@ namespace ServiceBusExplorer.Tests.Helpers
             else sdk.CreatedRule.Filter.Should().BeOfType<FalseRuleFilter>();
         }
 
+        [Fact]
+        public async Task BrokerStringCorrelationExportRoundTripsUnicodeWhitespaceAndAdjacentProperties()
+        {
+            var filter = new CorrelationRuleFilter();
+            filter.ApplicationProperties["first"] = "  blå:雪\r\nline";
+            filter.ApplicationProperties["second"] = "value";
+            filter.ApplicationProperties["empty"] = "";
+            var sdk = new FakeAdministrationClient { ExportedFilter = filter };
+            var helper = NewHelper(sdk);
+            var logs = new List<string>();
+            var exporter = new ImportExportHelper((message, _) => logs.Add(message));
+            var xml = await exporter.ReadAndSerialize(helper, new List<IExtensibleDataObject> { NewClient(sdk).GetTopic("events") });
+            exporter.DeserializeAndCreate(helper, xml);
+            logs.Should().BeEmpty();
+            var imported = sdk.CreatedRule.Filter.Should().BeOfType<CorrelationRuleFilter>().Subject;
+            imported.ApplicationProperties.Should().BeEquivalentTo(filter.ApplicationProperties);
+        }
+
+        [Theory]
+        [InlineData("int")]
+        [InlineData("bool")]
+        [InlineData("double")]
+        [InlineData("guid")]
+        [InlineData("dateTime")]
+        [InlineData("name")]
+        [InlineData("sql")]
+        public async Task UnrepresentableBrokerRuleAbortsExportAndPreservesExistingDestination(string kind)
+        {
+            var filter = new CorrelationRuleFilter();
+            object value = kind == "int" ? (object)42 : kind == "bool" ? true : kind == "double" ? 1.5 :
+                kind == "guid" ? (object)Guid.Empty : kind == "dateTime" ? (object)new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc) : (object)"text";
+            filter.ApplicationProperties[kind == "name" ? "key:part" : "key"] = value;
+            RuleFilter exported = filter;
+            if (kind == "sql")
+            {
+                var sql = new SqlRuleFilter("value = @p"); sql.Parameters["p"] = 42; exported = sql;
+            }
+            var sdk = new FakeAdministrationClient { ExportedFilter = exported };
+            var helper = NewHelper(sdk);
+            var exporter = new ImportExportHelper((_, __) => { });
+            var directory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sbe-export-" + Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(directory);
+            var path = System.IO.Path.Combine(directory, "backup.xml");
+            const string previous = "<previous-backup />";
+            System.IO.File.WriteAllText(path, previous);
+            try
+            {
+                var invoked = false;
+                var exception = await Assert.ThrowsAnyAsync<Exception>(() => ServiceBusExplorer.Forms.MainForm.PrepareAndSaveExportAsync(
+                    () => exporter.ReadAndSerialize(helper, new List<IExtensibleDataObject> { NewClient(sdk).GetTopic("events") }),
+                    xml => { invoked = true; ServiceBusExplorer.Forms.MainForm.WriteExportAtomically(path, xml); return path; }));
+                exception.GetBaseException().Should().BeOfType<NotSupportedException>();
+                invoked.Should().BeFalse();
+                System.IO.File.ReadAllText(path).Should().Be(previous);
+                System.IO.Directory.GetFiles(directory).Should().ContainSingle();
+            }
+            finally { System.IO.Directory.Delete(directory, true); }
+        }
+
+        [Fact]
+        public async Task SuccessfulExportAtomicallyReplacesDestinationAfterPreparation()
+        {
+            var directory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sbe-export-" + Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(directory);
+            var path = System.IO.Path.Combine(directory, "backup.xml");
+            System.IO.File.WriteAllText(path, "previous");
+            try
+            {
+                await ServiceBusExplorer.Forms.MainForm.PrepareAndSaveExportAsync(() => Task.FromResult("<new>雪</new>"),
+                    xml => { System.IO.File.ReadAllText(path).Should().Be("previous"); ServiceBusExplorer.Forms.MainForm.WriteExportAtomically(path, xml); return path; });
+                System.IO.File.ReadAllText(path).Should().Be("<new>雪</new>");
+                System.IO.Directory.GetFiles(directory).Should().ContainSingle();
+            }
+            finally { System.IO.Directory.Delete(directory, true); }
+        }
+
         [Theory]
         [InlineData("<SqlFilter><SqlExpression>value = @p</SqlExpression><Parameters><Parameter name='p' type='int'>1</Parameter></Parameters></SqlFilter>")]
         [InlineData("<CorrelationFilter><Properties><Property type='int'>key: 1</Property></Properties></CorrelationFilter>")]

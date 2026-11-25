@@ -43,6 +43,47 @@ namespace ServiceBusExplorer.Tests.Forms
             finally { ServiceBusHelper.ConnectivityMode = oldMode; ServiceBusHelper.UseAmqpWebSockets = oldWebSockets; }
         }
 
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        public void FiltersArePublishedOnlyAfterSuccessfulConnection(bool success, bool throws)
+        {
+            var filters = new[] { FilterExpressionHelper.QueueFilterExpression, FilterExpressionHelper.TopicFilterExpression, FilterExpressionHelper.SubscriptionFilterExpression };
+            var mode = ServiceBusHelper.ConnectivityMode;
+            var sockets = ServiceBusHelper.UseAmqpWebSockets;
+            try
+            {
+                FilterExpressionHelper.QueueFilterExpression = "old queue";
+                FilterExpressionHelper.TopicFilterExpression = "old topic";
+                FilterExpressionHelper.SubscriptionFilterExpression = "old subscription";
+                var main = (MainForm)FormatterServices.GetUninitializedObject(typeof(MainForm));
+                Func<bool> connect = () =>
+                {
+                    Assert.Equal("old queue", FilterExpressionHelper.QueueFilterExpression);
+                    Assert.Equal("old topic", FilterExpressionHelper.TopicFilterExpression);
+                    Assert.Equal("old subscription", FilterExpressionHelper.SubscriptionFilterExpression);
+                    if (throws) throw new InvalidOperationException("synthetic rejection");
+                    return success;
+                };
+                Func<bool> attempt = () => main.ConnectWithSettings(connect, ConnectivityMode.Tcp, false,
+                    new List<string>(), "new queue", "new topic", "new subscription");
+                if (throws) Assert.Throws<InvalidOperationException>(() => attempt());
+                else Assert.Equal(success, attempt());
+                Assert.Equal(success ? "new queue" : "old queue", FilterExpressionHelper.QueueFilterExpression);
+                Assert.Equal(success ? "new topic" : "old topic", FilterExpressionHelper.TopicFilterExpression);
+                Assert.Equal(success ? "new subscription" : "old subscription", FilterExpressionHelper.SubscriptionFilterExpression);
+            }
+            finally
+            {
+                FilterExpressionHelper.QueueFilterExpression = filters[0];
+                FilterExpressionHelper.TopicFilterExpression = filters[1];
+                FilterExpressionHelper.SubscriptionFilterExpression = filters[2];
+                ServiceBusHelper.ConnectivityMode = mode;
+                ServiceBusHelper.UseAmqpWebSockets = sockets;
+            }
+        }
+
         [Fact]
         public void NamedSettingUpdatePreservesMatchingValuesAndEqualsSigns()
         {

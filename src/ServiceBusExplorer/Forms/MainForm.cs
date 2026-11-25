@@ -615,7 +615,8 @@ namespace ServiceBusExplorer.Forms
         }
 
         internal bool ConnectWithSettings(Func<bool> connect, Microsoft.ServiceBus.ConnectivityMode connectivity,
-            bool webSockets, List<string> selectedEntities)
+            bool webSockets, List<string> selectedEntities,
+            string queueFilter = null, string topicFilter = null, string subscriptionFilter = null)
         {
             var previousConnectivity = ServiceBusHelper.ConnectivityMode;
             var previousWebSockets = ServiceBusHelper.UseAmqpWebSockets;
@@ -625,7 +626,13 @@ namespace ServiceBusExplorer.Forms
                 ServiceBusHelper.ConnectivityMode = connectivity;
                 ServiceBusHelper.UseAmqpWebSockets = webSockets;
                 connected = connect();
-                if (connected) SelectedEntities = new List<string>(selectedEntities);
+                if (connected)
+                {
+                    SelectedEntities = new List<string>(selectedEntities);
+                    FilterExpressionHelper.QueueFilterExpression = queueFilter;
+                    FilterExpressionHelper.TopicFilterExpression = topicFilter;
+                    FilterExpressionHelper.SubscriptionFilterExpression = subscriptionFilter;
+                }
                 return connected;
             }
             finally
@@ -656,7 +663,8 @@ namespace ServiceBusExplorer.Forms
                             connectForm.ConnectionString, StaticWriteToLog);
 
                     if (!ConnectWithSettings(() => serviceBusHelper.Connect(serviceBusNamespace),
-                        connectForm.ConnectivityMode, connectForm.UseAmqpWebSockets, connectForm.SelectedEntities)) return;
+                        connectForm.ConnectivityMode, connectForm.UseAmqpWebSockets, connectForm.SelectedEntities,
+                        connectForm.QueueFilterExpression, connectForm.TopicFilterExpression, connectForm.SubscriptionFilterExpression)) return;
                     ResetEventGridConnection();
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -4694,14 +4702,7 @@ namespace ServiceBusExplorer.Forms
             {
                 return null;
             }
-            if (File.Exists(saveFileDialog.FileName))
-            {
-                File.Delete(saveFileDialog.FileName);
-            }
-            using (var writer = new StreamWriter(saveFileDialog.FileName))
-            {
-                writer.Write(text);
-            }
+            WriteExportAtomically(saveFileDialog.FileName, text);
             return saveFileDialog.FileName;
         }
 
@@ -5993,17 +5994,40 @@ namespace ServiceBusExplorer.Forms
         //    }
         //}
 
+        internal static void WriteExportAtomically(string path, string xml)
+        {
+            var destination = Path.GetFullPath(path);
+            var temporary = Path.Combine(Path.GetDirectoryName(destination), ".sbe-export-" + Guid.NewGuid().ToString("N") + ".tmp");
+            try
+            {
+                File.WriteAllText(temporary, xml, new UTF8Encoding(false));
+                if (File.Exists(destination)) File.Replace(temporary, destination, null);
+                else File.Move(temporary, destination);
+            }
+            finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        }
+
+        internal static async Task<string> PrepareAndSaveExportAsync(Func<Task<string>> prepare, Func<string, string> save)
+        {
+            // Do not select, truncate or replace the destination until the complete export exists.
+            var xml = await prepare();
+            return save(xml);
+        }
+
         private async void ExportEntities(List<IExtensibleDataObject> list, string entityName, string entityType)
         {
-            var xml = await serviceBusHelper.ExportEntities(list);
-            var path = entityType == null ?
-                       CreateFileName(string.Format(EntitiesFileNameFormat, serviceBusHelper.Namespace, entityName)) :
-                       CreateFileName(string.Format(EntityFileNameFormat, serviceBusHelper.Namespace, entityName, entityType));
-            var savedFile = SaveEntityToFile(xml, path);
-            if (savedFile != null)
+            try
             {
-                WriteToLog(string.Format(EntitiesExported, savedFile));
+                var savedFile = await PrepareAndSaveExportAsync(() => serviceBusHelper.ExportEntities(list), xml =>
+                {
+                    var path = entityType == null ?
+                        CreateFileName(string.Format(EntitiesFileNameFormat, serviceBusHelper.Namespace, entityName)) :
+                        CreateFileName(string.Format(EntityFileNameFormat, serviceBusHelper.Namespace, entityName, entityType));
+                    return SaveEntityToFile(xml, path);
+                });
+                if (savedFile != null) WriteToLog(string.Format(EntitiesExported, savedFile));
             }
+            catch (Exception ex) { HandleException(ex); }
         }
 
         private void copyStringToClipboard(string str)

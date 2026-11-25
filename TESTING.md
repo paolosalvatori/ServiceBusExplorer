@@ -142,3 +142,21 @@ Compact legacy correlation XML preserves every adjacent string property, includi
 ### Independent review follow-up: resubmission stage (#912)
 
 Secondary helpers retain original profile EntityPath metadata separately from normalized SDK connection strings. Queue and topic editor scope checks use this metadata, and IsPremiumNamespace itself returns the existing conservative non-premium default without constructing an administration client for entity-scoped SAS access. Audited callers: HandleQueueControl and HandleTopicControl are the only scope-check callers; direct ServiceBusHelper2 callers retain connection-string fallback. Synthetic helper/copy and throwing probe-double tests cover queue/topic scope preservation and no namespace SKU probe. Live entity-scoped SAS UI access remains a manual check; no namespace/network request is used by these tests.
+### Connection profile and filter publication follow-up
+
+Saved raw profile loading uses the same trimmed, case-insensitive keys as explicit transport
+editing. Programmatic transport selection does not rewrite the raw profile. Regression tests
+exercise the saved-profile dropdown with padded transport/runtime keys and unchanged credentials.
+The dialog stages queue/topic/subscription filters; MainForm publishes them only after connection
+success. Tests cover actual dialog acceptance plus successful, rejected and throwing attempts.
+All fixtures are synthetic; no live connection or broker mutation is used.
+
+### Atomic XML export and supported correlation values
+
+The existing XML rule format represents string correlation values only. Export rejects typed
+values, ambiguous property names and parameterized SQL rules instead of silently converting or
+omitting them. A serialization failure aborts the whole in-memory export before destination
+selection or writing. Completed exports replace files atomically. String correlation round-trip
+tests cover adjacent properties, Unicode, leading spaces, colons in values and CR/LF; rejection
+tests exercise the broker model through the real prepare/save boundary and preserve an existing
+backup. All management clients are test doubles; no broker writes occur.

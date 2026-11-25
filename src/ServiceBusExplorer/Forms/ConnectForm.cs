@@ -103,6 +103,7 @@ namespace ServiceBusExplorer.Forms
         private readonly ServiceBusHelper serviceBusHelper;
         private readonly ConfigFileUse configFileUse;
         private bool ignoreSelectedIndexChange;
+        private bool updatingTransportSelection;
         private bool ignoreAuthModeChange;
 
         #endregion
@@ -149,7 +150,7 @@ namespace ServiceBusExplorer.Forms
 
             cboTransportType.DataSource = Enum.GetValues(typeof(TransportType));
             var settings = new MessagingFactorySettings();
-            cboTransportType.SelectedItem = settings.TransportType;
+            SetTransportSelection(settings.TransportType);
 
             cboServiceBusNamespace.SelectedIndex = connectionStringIndex > 0 ? connectionStringIndex : 0;
 
@@ -222,6 +223,9 @@ namespace ServiceBusExplorer.Forms
         public string SharedAccessKeyName { get; private set; }
         public string SharedAccessKey { get; private set; }
         public string ConnectionString { get; private set; }
+        public string QueueFilterExpression { get; private set; }
+        public string TopicFilterExpression { get; private set; }
+        public string SubscriptionFilterExpression { get; private set; }
         public string EntityPath { get; private set; }
         public ConnectivityMode ConnectivityMode { get; private set; }
         public bool UseAmqpWebSockets { get; private set; }
@@ -273,9 +277,9 @@ namespace ServiceBusExplorer.Forms
             DialogResult = DialogResult.OK;
             ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
             UseAmqpWebSockets = useAmqpWebSocketsCheckBox.Checked;
-            FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
-            FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
-            FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
+            QueueFilterExpression = txtQueueFilterExpression.Text;
+            TopicFilterExpression = txtTopicFilterExpression.Text;
+            SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
             connectionStringIndex = cboServiceBusNamespace.SelectedIndex;
             if (cboServiceBusNamespace.Text == EnterConnectionString)
             {
@@ -403,7 +407,7 @@ namespace ServiceBusExplorer.Forms
             return trimmedValue
                 .Split(';')
                 .Where(p => p.Contains('='))
-                .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLowerInvariant(),
+                .ToDictionary(s => s.Substring(0, s.IndexOf('=')).Trim(),
                     s => s.Substring(s.IndexOf('=') + 1),
                     StringComparer.OrdinalIgnoreCase);
         }
@@ -416,7 +420,7 @@ namespace ServiceBusExplorer.Forms
             }
 
             var trimmedValue = value.Trim();
-            if (trimmedValue.IndexOf("Endpoint=", StringComparison.OrdinalIgnoreCase) < 0)
+            if (trimmedValue.IndexOf('=') < 0)
             {
                 return trimmedValue;
             }
@@ -473,7 +477,7 @@ namespace ServiceBusExplorer.Forms
                 txtUri.Text = savedNamespace.Uri;
                 cboTenantIds.Text = savedNamespace.TenantId;
                 txtEntityPath.Text = savedNamespace.EntityPath;
-                cboTransportType.SelectedItem = savedNamespace.TransportType;
+                SetTransportSelection(savedNamespace.TransportType);
                 return;
             }
 
@@ -582,23 +586,15 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
-                var cn = txtUri.Text;
-                if (cn[cn.Length - 1] == ';')
-                {
-                    cn = cn.Substring(0, cn.Length - 1);
-                }
-                var parameters =
-                    cn.Split(';').Where(p => Enumerable.Contains(p, '='))
-                        .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(),
-                            s => s.Substring(s.IndexOf('=') + 1));
+                var parameters = ParseConnectionStringParts(txtUri.Text);
                 if (!parameters.ContainsKey(ConnectionStringTransportType))
                 {
-                    cboTransportType.SelectedItem = TransportType.NetMessaging;
+                    SetTransportSelection(TransportType.NetMessaging);
                     return;
                 }
                 if (Enum.TryParse<TransportType>(parameters[ConnectionStringTransportType], true, out var transportType))
                 {
-                    cboTransportType.SelectedItem = transportType;
+                    SetTransportSelection(transportType);
                 }
             }
             else
@@ -703,7 +699,7 @@ namespace ServiceBusExplorer.Forms
                 }
             }
 
-            cboTransportType.SelectedItem = selectedNamespace.TransportType;
+            SetTransportSelection(selectedNamespace.TransportType);
             validation_TextChanged(sender, e);
         }
 
@@ -773,8 +769,17 @@ namespace ServiceBusExplorer.Forms
             return found || !append ? updated : updated.TrimEnd(';') + ";" + name + "=" + value;
         }
 
+        private void SetTransportSelection(TransportType transportType)
+        {
+            var previous = updatingTransportSelection;
+            updatingTransportSelection = true;
+            try { cboTransportType.SelectedItem = transportType; }
+            finally { updatingTransportSelection = previous; }
+        }
+
         private void cboTransportType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (updatingTransportSelection) return;
             GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
 
             if (UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint))
