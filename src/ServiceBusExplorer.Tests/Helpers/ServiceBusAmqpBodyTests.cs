@@ -20,6 +20,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 : AmqpMessageBody.FromSequence(new[] { (IList<object>)new List<object> { "text", 42, new byte[] { 0, 255 } }, new List<object> { true } });
             var raw = new AmqpAnnotatedMessage(body);
             raw.Properties.MessageId = new AmqpMessageId(kind);
+            raw.Header.DeliveryCount = 0;
             return ServiceBusReceivedMessage.FromAmqpMessage(raw, new BinaryData(Guid.Empty.ToByteArray()));
         }
 
