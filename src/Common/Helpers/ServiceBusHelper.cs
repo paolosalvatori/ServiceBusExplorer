@@ -748,8 +748,6 @@ namespace ServiceBusExplorer
         /// <returns>True if the operation succeeds, false otherwise.</returns>
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
-            this.serviceBusNamespaceInstance = serviceBusNamespace;
-
             var isEntra = serviceBusNamespace?.IsEntra == true;
 
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
@@ -759,9 +757,26 @@ namespace ServiceBusExplorer
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
-                throw new Exception($"Could not contact host in connection string: { endpoint }.");
+                throw new Exception("Could not resolve the Service Bus endpoint host.");
             }
+
+            // Reconnect must not leave adapters pointing at a previous namespace.
+            serviceBusNamespaceInstance = serviceBusNamespace;
+            namespaceManager = null;
+            notificationHubNamespaceManager = null;
+            notificationHubTokenProvider = null;
+            entraTokenProvider = null;
+            managementClient = null;
+            messagingFactory = null;
+            serviceBusQueue = null;
+            serviceBusTopic = null;
+            serviceBusSubscription = null;
+            serviceBusRule = null;
+            serviceBusRelay = null;
+            serviceBusNotificationHub = null;
+            serviceBusEventHub = null;
+            serviceBusConsumerGroup = null;
+            serviceBusPartition = null;
 
             var func = (() =>
             {
@@ -866,7 +881,7 @@ namespace ServiceBusExplorer
                 namespaceUri = managementClient.Address;
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
-                ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
+                ns = IsEmulator ? namespaceUri.Host : IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
                 // Event Hubs data-plane clients are created through Azure.Messaging.EventHubs.
                 if (IsEventHubNamespace || IsEmulator)
@@ -3994,6 +4009,10 @@ namespace ServiceBusExplorer
         {
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
             serviceBusHelper2.ConnectionString = ConnectionString;
+            if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)
+                serviceBusHelper2.AdministrationConnectionString = GetAdministrationConnectionString(serviceBusNamespaceInstance);
+            serviceBusHelper2.DataPlaneUnavailableReason = IsEmulator
+                ? "Emulator data-plane operations, including purge, are unavailable in this management-only stage." : null;
             serviceBusHelper2.TransportType = UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
@@ -4375,7 +4394,7 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    retained.Add(part.Trim());
+                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
                 }
             }
             return string.Join(";", retained);

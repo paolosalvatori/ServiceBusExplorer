@@ -23,6 +23,90 @@ namespace ServiceBusExplorer.Tests.Helpers
         private const string EmulatorConnection = "Endpoint=sb://localhost:5672;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;UseDevelopmentEmulator=true;TransportType=Amqp;EntityPath=orders";
 
         [Fact]
+        public void EmulatorReconnectClearsCloudAdaptersAndGuardsSecondaryDataPlane()
+        {
+            var helper = new ServiceBusHelper((_, __) => { });
+            var names = new[] { "Relay", "NotificationHub", "EventHub", "ConsumerGroup", "Partition" };
+            foreach (var name in names)
+            {
+                var type = typeof(ServiceBusHelper).Assembly.GetType("ServiceBusExplorer.WindowsAzure.ServiceBus" + name, true);
+                typeof(ServiceBusHelper).GetField("serviceBus" + name, BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(helper, FormatterServices.GetUninitializedObject(type));
+            }
+            helper.Connect(ServiceBusNamespace.GetServiceBusNamespace("test", EmulatorConnection, (_, __) => { })).Should().BeTrue();
+            foreach (var name in names)
+                typeof(ServiceBusHelper).GetField("serviceBus" + name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(helper).Should().BeNull();
+            var secondary = helper.GetServiceBusHelper2();
+            secondary.AdministrationConnectionString.Should().Contain(":5300").And.NotContain("EntityPath");
+            secondary.CreateAdministrationClient().Should().NotBeNull();
+            ((Action)(() => secondary.CreateServiceBusClient())).Should().Throw<NotSupportedException>().WithMessage("*purge*");
+        }
+
+        [Theory]
+        [InlineData("Relay")]
+        [InlineData("EventHub")]
+        [InlineData("NotificationHub")]
+        [InlineData("Rule")]
+        public void MixedImportRejectsUnsupportedContentBeforeFirstQueueMutation(string unsupported)
+        {
+            var sdk = new FakeAdministrationClient();
+            var helper = NewHelper(sdk);
+            typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(helper, ServiceBusNamespace.GetServiceBusNamespace("test", EmulatorConnection, (_, __) => { }));
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Queues><Queue><Path>must-not-create</Path></Queue></Queues><" + unsupported + "/></Entities>";
+            ((Action)(() => helper.ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*No entities were changed*");
+            sdk.CreatedQueue.Should().BeNull();
+        }
+
+        [Theory]
+        [InlineData("FalseFilter")]
+        [InlineData("CorrelationFilter")]
+        [InlineData("SqlFilter")]
+        public void NestedRuleImportIsExplicitlyRejectedWithoutLossyMutation(string filter)
+        {
+            var sdk = new FakeAdministrationClient();
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Topics><Topic><Path>events</Path><Subscriptions><Subscription><Name>sub</Name><Rules><Rule><Name>filter</Name><Filter><" + filter + "><Properties><Property>key:typed-value</Property></Properties></" + filter + "></Filter><Action><SqlRuleAction/></Action></Rule></Rules></Subscription></Subscriptions></Topic></Topics></Entities>";
+            ((Action)(() => NewHelper(sdk).ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*rule import*No entities were changed*");
+            sdk.CreatedRule.Should().BeNull();
+        }
+
+        [Fact]
+        public void NestedTopicAndSubscriptionImportPreservesFalseSettings()
+        {
+            var sdk = new FakeAdministrationClient();
+            var logs = new List<string>();
+            const string xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Topics><Topic><Path>events</Path><EnableBatchedOperations>false</EnableBatchedOperations><Subscriptions><Subscription><TopicPath>events</TopicPath><Name>sub</Name><EnableBatchedOperations>false</EnableBatchedOperations><EnableDeadLetteringOnMessageExpiration>false</EnableDeadLetteringOnMessageExpiration></Subscription></Subscriptions></Topic></Topics></Entities>";
+            new ImportExportHelper((message, _) => logs.Add(message)).DeserializeAndCreate(NewHelper(sdk), xml);
+            logs.Should().BeEmpty();
+            sdk.CreatedTopic.Name.Should().Be("events");
+            sdk.CreatedTopic.EnableBatchedOperations.Should().BeFalse();
+            sdk.CreatedSubscription.TopicName.Should().Be("events");
+            sdk.CreatedSubscription.SubscriptionName.Should().Be("sub");
+            sdk.CreatedSubscription.EnableBatchedOperations.Should().BeFalse();
+            sdk.CreatedSubscription.DeadLetteringOnMessageExpiration.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task SuccessfulMutationsDoNotDependOnOptionalRuntimeRefresh()
+        {
+            var sdk = new FakeAdministrationClient { RuntimeUnavailable = true };
+            var client = NewClient(sdk);
+            var created = client.CreateQueue(new QueueInfo("created"));
+            created.Path.Should().Be("created");
+            created.RuntimeProperties.Should().BeNull();
+            var updated = await client.UpdateQueueAsync(new QueueInfo("created") { UserMetadata = "changed" });
+            updated.UserMetadata.Should().Be("changed-server");
+            updated.RuntimeProperties.Should().BeNull();
+            client.UpdateQueue(updated).Should().NotBeNull();
+            client.CreateTopic(new TopicInfo("events")).RuntimeProperties.Should().BeNull();
+            client.CreateSubscription(new SubscriptionInfo("events", "sub")).RuntimeProperties.Should().BeNull();
+            client.UpdateTopic(new TopicInfo("events")).RuntimeProperties.Should().BeNull();
+            client.UpdateSubscription(new SubscriptionInfo("events", "sub")).RuntimeProperties.Should().BeNull();
+            (await client.UpdateTopicAsync(new TopicInfo("events"))).RuntimeProperties.Should().BeNull();
+            (await client.UpdateSubscriptionAsync(new SubscriptionInfo("events", "sub"))).RuntimeProperties.Should().BeNull();
+        }
+
+        [Fact]
         public void QueueListing_MaterializesAllPagesAndUsesNativeRuntimeCounts()
         {
             var client = NewClient(new FakeAdministrationClient());
@@ -265,11 +349,14 @@ namespace ServiceBusExplorer.Tests.Helpers
         private sealed class FakeAdministrationClient : ServiceBusAdministrationClient
         {
             public CreateQueueOptions CreatedQueue { get; private set; }
+            public CreateTopicOptions CreatedTopic { get; private set; }
+            public CreateSubscriptionOptions CreatedSubscription { get; private set; }
             public QueueProperties UpdatedQueue { get; private set; }
             public string DeletedQueue { get; private set; }
             public CreateRuleOptions CreatedRule { get; private set; }
             public string DeletedRule { get; private set; }
             public Exception QueueFailure { get; set; }
+            public bool RuntimeUnavailable { get; set; }
             private readonly Dictionary<string, QueueProperties> queues = new Dictionary<string, QueueProperties>();
 
             private static QueueProperties Queue(string name) => ServiceBusModelFactory.QueueProperties(name,
@@ -286,6 +373,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 return Result(queues.TryGetValue(name, out var queue) ? queue : Queue(name));
             }
             public override Task<Response<QueueRuntimeProperties>> GetQueueRuntimePropertiesAsync(string name, CancellationToken cancellationToken = default) =>
+                RuntimeUnavailable ? throw new InvalidOperationException("Synthetic runtime refresh unavailable") :
                 Result(ServiceBusModelFactory.QueueRuntimeProperties(name, totalMessageCount: 3000000000L, activeMessageCount: 2999999958L,
                     deadLetterMessageCount: 42, createdAt: new DateTimeOffset(2024, 1, 2, 0, 0, 0, TimeSpan.Zero)));
             public override AsyncPageable<QueueProperties> GetQueuesAsync(CancellationToken cancellationToken = default) => Pages(Queue("orders"), Queue("invoices"));
@@ -314,10 +402,23 @@ namespace ServiceBusExplorer.Tests.Helpers
                 DeletedQueue = name;
                 return Task.FromResult<Response>(null);
             }
+            public override Task<Response<TopicProperties>> CreateTopicAsync(CreateTopicOptions options, CancellationToken cancellationToken = default)
+            {
+                CreatedTopic = options;
+                return GetTopicAsync(options.Name, cancellationToken);
+            }
+            public override Task<Response<SubscriptionProperties>> CreateSubscriptionAsync(CreateSubscriptionOptions options, CancellationToken cancellationToken = default)
+            {
+                CreatedSubscription = options;
+                return GetSubscriptionAsync(options.TopicName, options.SubscriptionName, cancellationToken);
+            }
+            public override Task<Response<TopicProperties>> UpdateTopicAsync(TopicProperties properties, CancellationToken cancellationToken = default) => Result(properties);
+            public override Task<Response<SubscriptionProperties>> UpdateSubscriptionAsync(SubscriptionProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken cancellationToken = default) =>
                 Result(ServiceBusModelFactory.TopicProperties(name, maxSizeInMegabytes: 1024, defaultMessageTimeToLive: TimeSpan.MaxValue,
                     autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), status: EntityStatus.Active));
             public override Task<Response<TopicRuntimeProperties>> GetTopicRuntimePropertiesAsync(string name, CancellationToken cancellationToken = default) =>
+                RuntimeUnavailable ? throw new InvalidOperationException("Synthetic runtime refresh unavailable") :
                 Result(ServiceBusModelFactory.TopicRuntimeProperties(name, scheduledMessageCount: 3, subscriptionCount: 1));
             public override AsyncPageable<SubscriptionRuntimeProperties> GetSubscriptionsRuntimePropertiesAsync(string topic, CancellationToken cancellationToken = default) =>
                 Pages(GetSubscriptionRuntimePropertiesAsync(topic, "sub").Result.Value);
@@ -325,6 +426,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 Result(ServiceBusModelFactory.SubscriptionProperties(topic, name, lockDuration: TimeSpan.FromMinutes(1),
                     defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue, maxDeliveryCount: 10, status: EntityStatus.Active, userMetadata: ""));
             public override Task<Response<SubscriptionRuntimeProperties>> GetSubscriptionRuntimePropertiesAsync(string topic, string name, CancellationToken cancellationToken = default) =>
+                RuntimeUnavailable ? throw new InvalidOperationException("Synthetic runtime refresh unavailable") :
                 Result(ServiceBusModelFactory.SubscriptionRuntimeProperties(topic, name, totalMessageCount: 10, activeMessageCount: 8, deadLetterMessageCount: 2));
             public override AsyncPageable<SubscriptionProperties> GetSubscriptionsAsync(string topic, CancellationToken cancellationToken = default) =>
                 Pages(GetSubscriptionAsync(topic, "sub").Result.Value);

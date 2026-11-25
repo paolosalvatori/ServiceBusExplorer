@@ -19,6 +19,7 @@
 //=======================================================================================
 #endregion
 
+using System;
 using System.Threading.Tasks;
 
 using Azure.Core;
@@ -36,6 +37,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         readonly WriteToLogDelegate writeToLog;
 
         public string ConnectionString { get; set; }
+        public string AdministrationConnectionString { get; set; }
+        public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
         /// <summary>
@@ -92,6 +95,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
         public ServiceBusClient CreateServiceBusClient()
         {
+            if (DataPlaneUnavailableReason != null) throw new NotSupportedException(DataPlaneUnavailableReason);
             if (IsEntra)
             {
                 return new ServiceBusClient(
@@ -113,7 +117,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         {
             return IsEntra
                 ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
-                : new ServiceBusAdministrationClient(ConnectionString);
+                : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);
         }
 
         public async Task<bool> IsPremiumNamespace()

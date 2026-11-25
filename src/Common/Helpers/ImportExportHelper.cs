@@ -304,6 +304,12 @@ namespace ServiceBusExplorer.Helpers
                 using (var xmlReader = XmlReader.Create(stringReader))
                 {
                     var root = XElement.Load(xmlReader);
+                    // Validate the entire document before dispatching even its first mutation.
+                    if (serviceBusHelper.IsEmulator && root.Descendants().Any(element =>
+                        new[] { RelayEntity, EventHubEntity, NotificationHubEntity }.Contains(element.Name.LocalName)))
+                        throw new NotSupportedException("Emulator import supports queues and topics only; no entities were changed.");
+                    if (root.Descendants().Any(element => element.Name.LocalName == RuleEntity))
+                        throw new NotSupportedException("XML rule import is unavailable because legacy filter/action serialization cannot preserve all rule types and typed parameters. No entities were changed; configure rules explicitly instead.");
                     CreateQueues(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, QueueEntity)));
                     CreateTopics(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, TopicEntity)));
                     CreateRelays(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, RelayEntity)));

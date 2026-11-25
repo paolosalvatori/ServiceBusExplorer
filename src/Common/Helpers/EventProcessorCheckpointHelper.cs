@@ -48,6 +48,8 @@ namespace ServiceBusExplorer.Helpers
         private static readonly Dictionary<string, EventProcessorCheckpointInfo> mapDictionary = new Dictionary<string, EventProcessorCheckpointInfo>();
         private static readonly string filePath = Path.Combine(Environment.CurrentDirectory, FileName);
         private static List<EventProcessorCheckpointInfo> itemList;
+        private static bool canWriteCheckpoints;
+        private static bool pendingSanitizedWrite;
         #endregion
 
         #region Public Static Methods
@@ -60,31 +62,46 @@ namespace ServiceBusExplorer.Helpers
             {
                 lock (filePath)
                 {
-                    if (!File.Exists(filePath))
+                    // A failed read must never authorize overwriting the existing file.
+                    canWriteCheckpoints = false;
+                    pendingSanitizedWrite = false;
+                    var loaded = new List<EventProcessorCheckpointInfo>();
+                    if (File.Exists(filePath))
                     {
-                        itemList = new List<EventProcessorCheckpointInfo>();
-                        return;
+                        using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                            loaded = JsonSerializerHelper.Deserialize<List<EventProcessorCheckpointInfo>>(stream)
+                                ?? new List<EventProcessorCheckpointInfo>();
                     }
-                    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    var changed = false;
+                    foreach (var item in loaded)
                     {
-                        itemList = JsonSerializerHelper.Deserialize<List<EventProcessorCheckpointInfo>>(stream) ?? new List<EventProcessorCheckpointInfo>();
+                        if (item == null) { changed = true; continue; }
+                        var normalized = EventHubCheckpointIdentity.NormalizeStoredNamespace(item.Namespace);
+                        changed |= normalized != item.Namespace || normalized == null;
+                        item.Namespace = normalized;
                     }
-                    if (itemList == null || itemList.Count == 0)
-                    {
-                        itemList = new List<EventProcessorCheckpointInfo>();
-                        return;
-                    }
-                    mapDictionary.Clear();
-                    // Upgrade old connection-string identities without retaining credentials.
-                    foreach (var item in itemList)
-                        item.Namespace = EventHubCheckpointIdentity.NormalizeStoredNamespace(item.Namespace);
-                    itemList = itemList.Where(item => item.Namespace != null)
+                    var normalizedItems = loaded.Where(item => item?.Namespace != null)
                         .GroupBy(item => string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup))
-                        .Select(group => group.First()).ToList();
+                        .Select(group => new EventProcessorCheckpointInfo
+                        {
+                            Namespace = group.First().Namespace,
+                            EventHub = group.First().EventHub,
+                            ConsumerGroup = group.First().ConsumerGroup,
+                            Leases = group.SelectMany(item => item.Leases ?? new Dictionary<string, Lease>())
+                                .Where(pair => pair.Value != null)
+                                .GroupBy(pair => pair.Key)
+                                .ToDictionary(partition => partition.Key, partition => partition
+                                    .OrderByDescending(pair => pair.Value.SequenceNumber)
+                                    // Equal sequences choose a stable full-lease representation, not file order.
+                                    .ThenBy(pair => JsonConvert.SerializeObject(pair.Value), StringComparer.Ordinal)
+                                    .First().Value)
+                        }).ToList();
+                    mapDictionary.Clear();
+                    itemList = normalizedItems;
                     foreach (var item in itemList)
-                    {
                         mapDictionary.Add(string.Format(KeyFormat, item.Namespace, item.EventHub, item.ConsumerGroup), item);
-                    }
+                    pendingSanitizedWrite = changed;
+                    canWriteCheckpoints = true;
                 }
             }
         }
@@ -96,13 +113,13 @@ namespace ServiceBusExplorer.Helpers
         {
             lock (mapDictionary)
             {
-                if (null == itemList || itemList.Count == 0)
+                if (!canWriteCheckpoints || itemList == null || (itemList.Count == 0 && !pendingSanitizedWrite))
                 {
                     return;
                 }
 
-                JsonSerializerHelper.Serialize(itemList, Formatting.Indented);
                 WriteFile(filePath, JsonSerializerHelper.Serialize(itemList, Formatting.Indented));
+                pendingSanitizedWrite = false;
             }
         }
 
