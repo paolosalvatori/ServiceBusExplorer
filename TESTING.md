@@ -196,3 +196,5 @@ settlement boundary tests cover success and failure without a broker.
 Both receive and send inspector boundaries transfer retained AMQP body metadata to unchanged
 clones. Value/Sequence tests cover both directions and deliberate edits, which remain Data edits.
 Live legacy receiver settlement faults and interactive emulator/Azure workflows remain untested.
+
+Queue/receiver closure tests exercise in-place inspector stream edits through receive and resend, source identity through edited inspector clones and the editor's Submit preparation, and confirmed destructive-receive accounting before single/batch inspector failure. The shared legacy boundary is exercised offline; actual legacy broker receive/settlement and live emulator operations are not run.

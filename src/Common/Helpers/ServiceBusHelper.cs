@@ -3600,11 +3600,12 @@ namespace ServiceBusExplorer
                             var messageEnumerable = messageReceiver.ReceiveBatch(batchSize, TimeSpan.FromSeconds(timeout));
                             stopwatch.Stop();
 
-                            messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
-                            if (messageInspector != null)
+                            messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable?.ToList() ?? new List<BrokeredMessage>();
+                            messageList = InspectReceivedMessages(messageList, messageReceiver.Mode, messageInspector, count =>
                             {
-                                messageList = messageList.Select(b => ServiceBusReceivedMessageAdapter.Inspect(b, messageInspector.AfterReceiveMessage)).ToList();
-                            }
+                                messagesReceived += count;
+                                if (statistics) PublishConfirmedProgress(updateStatistics, count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                            });
                             isCompleted = messageEnumerable == null || !messageList.Any();
                             if (isCompleted)
                             {
@@ -3630,10 +3631,6 @@ namespace ServiceBusExplorer
                                     messagesReceived += messageList.Count;
                                 }
                             }
-                            else
-                            {
-                                messagesReceived += messageList.Count;
-                            }
                             if (stopwatch.ElapsedMilliseconds > maximumReceiveTime)
                             {
                                 maximumReceiveTime = stopwatch.ElapsedMilliseconds;
@@ -3643,7 +3640,7 @@ namespace ServiceBusExplorer
                                 minimumReceiveTime = stopwatch.ElapsedMilliseconds;
                             }
                             totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
-                            if (statistics)
+                            if (statistics && messageReceiver.Mode == ReceiveMode.PeekLock && completeReceive)
                             {
                                 if (messageReceiver.PrefetchCount > 0)
                                 {
@@ -3788,10 +3785,12 @@ namespace ServiceBusExplorer
                                 stopwatch.Start();
                                 inboundMessage = messageReceiver.Receive(TimeSpan.FromSeconds(timeout));
                                 stopwatch.Stop();
-                                if (inboundMessage != null && messageInspector != null)
-                                {
-                                    inboundMessage = ServiceBusReceivedMessageAdapter.Inspect(inboundMessage, messageInspector.AfterReceiveMessage);
-                                }
+                                inboundMessage = InspectReceivedMessages(inboundMessage == null ? new List<BrokeredMessage>() : new List<BrokeredMessage> { inboundMessage },
+                                    messageReceiver.Mode, messageInspector, count =>
+                                    {
+                                        messagesReceived += count;
+                                        if (statistics) PublishConfirmedProgress(updateStatistics, count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                    }).SingleOrDefault();
                                 isCompleted = inboundMessage == null &&
                                               messageDeferProvider.Count == 0;
                             }
@@ -3805,10 +3804,12 @@ namespace ServiceBusExplorer
                                         stopwatch.Start();
                                         inboundMessage = messageReceiver.Receive(sequenceNumber);
                                         stopwatch.Stop();
-                                        if (inboundMessage != null && messageInspector != null)
-                                        {
-                                            inboundMessage = ServiceBusReceivedMessageAdapter.Inspect(inboundMessage, messageInspector.AfterReceiveMessage);
-                                        }
+                                        inboundMessage = InspectReceivedMessages(inboundMessage == null ? new List<BrokeredMessage>() : new List<BrokeredMessage> { inboundMessage },
+                                            messageReceiver.Mode, messageInspector, count =>
+                                            {
+                                                messagesReceived += count;
+                                                if (statistics) PublishConfirmedProgress(updateStatistics, count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                            }).SingleOrDefault();
                                         readDeferredMessage = true;
                                     }
                                 }
@@ -3894,11 +3895,7 @@ namespace ServiceBusExplorer
                                         totalCompleteElapsedTime += stopwatch.ElapsedMilliseconds;
                                     }
                                 }
-                                else
-                                {
-                                    messagesReceived++;
-                                    if (statistics) PublishConfirmedProgress(updateStatistics, 1, receiveElapsed, DirectionType.Receive);
-                                }
+
                             }
 
                             if (logging)
@@ -4576,6 +4573,16 @@ namespace ServiceBusExplorer
         {
             if (receiveAndDelete && (requested || System.Transactions.Transaction.Current != null))
                 throw new NotSupportedException("ReceiveAndDelete cannot be rolled back. Select PeekLock for transactional receiving; no messages were read.");
+        }
+
+        // ReceiveAndDelete has already consumed the entire broker batch. Account for it
+        // before user code can throw, including when an inspector fails on its first row.
+        public static IList<BrokeredMessage> InspectReceivedMessages(IList<BrokeredMessage> messages,
+            ReceiveMode mode, IBrokeredMessageInspector inspector, Action<int> consumed)
+        {
+            if (mode == ReceiveMode.ReceiveAndDelete && messages.Count > 0) consumed(messages.Count);
+            return inspector == null ? messages : messages.Select(message =>
+                ServiceBusReceivedMessageAdapter.Inspect(message, inspector.AfterReceiveMessage)).ToList();
         }
 
         public static void SettleAndPublishReceive(Action settle, UpdateStatisticsDelegate updateStatistics, long elapsed)
