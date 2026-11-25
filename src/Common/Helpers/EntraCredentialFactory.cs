@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
@@ -63,10 +64,9 @@ namespace ServiceBusExplorer.Helpers
             new ConcurrentDictionary<string, TokenCredential>(StringComparer.OrdinalIgnoreCase);
         static readonly ConcurrentDictionary<string, TokenProvider> tokenProviders =
             new ConcurrentDictionary<string, TokenProvider>(StringComparer.OrdinalIgnoreCase);
-        // Gate prevents multiple concurrent interactive browser prompts for the same tenant/scope
-        // combination on first use. MSAL handles token freshness after the initial acquisition.
-        static readonly ConcurrentDictionary<string, SemaphoreSlim> interactiveLoginGates =
-            new ConcurrentDictionary<string, SemaphoreSlim>(StringComparer.OrdinalIgnoreCase);
+        // Serialize interactive requests for the same tenant, including different SDKs and audiences.
+        static readonly ConcurrentDictionary<string, InteractiveLoginGate> interactiveLoginGates =
+            new ConcurrentDictionary<string, InteractiveLoginGate>(StringComparer.OrdinalIgnoreCase);
         static IntPtr ownerWindowHandle = IntPtr.Zero;
 
         static volatile bool useSystemBrowserOnly;
@@ -182,26 +182,13 @@ namespace ServiceBusExplorer.Helpers
             {
                 return async (authorityUrl, resource, state) =>
                 {
-                    try
-                    {
-                        // Use our normalizedAudience instead of the SDK-supplied resource.
-                        // The old SDK always passes "https://servicebus.azure.net" as
-                        // the resource, even for Event Hub clients, which is wrong for
-                        // Event Hub namespaces that require the Event Hubs audience.
-                        var token = await GetAccessTokenAsync(
-                                normalizedTenantId,
-                                new TokenRequestContext(GetScopes(normalizedAudience)),
-                                CancellationToken.None)
-                            .ConfigureAwait(false);
-                        return token.Token;
-                    }
-                    catch (AuthenticationFailedException ex)
-                    {
-                        // Surface as OperationCanceledException so the RetryHelper
-                        // does not re-open a browser window up to 10 times.
-                        throw new OperationCanceledException(
-                            "Interactive browser authentication failed or was cancelled.", ex);
-                    }
+                    // The legacy SDK supplies the Service Bus resource even for Event Hubs.
+                    var token = await GetAccessTokenAsync(
+                            normalizedTenantId,
+                            new TokenRequestContext(GetScopes(normalizedAudience)),
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
+                    return token.Token;
                 };
             });
         }
@@ -272,22 +259,76 @@ namespace ServiceBusExplorer.Helpers
 
         static async Task<AccessToken> GetAccessTokenAsync(string tenantId, TokenRequestContext requestContext, CancellationToken cancellationToken)
         {
-            var gateKey = $"{tenantId}|{string.Join(" ", requestContext.Scopes ?? Array.Empty<string>())}";
-            var gate = interactiveLoginGates.GetOrAdd(gateKey, _ => new SemaphoreSlim(1, 1));
-            await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var gate = interactiveLoginGates.GetOrAdd(tenantId, _ => new InteractiveLoginGate());
+            var attempt = gate.CurrentAttempt;
+            await gate.Mutex.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                return await AcquireTokenWithFallbackAsync(
-                        tenantId,
-                        ct => CreateBrokerCredential(tenantId).GetTokenAsync(requestContext, ct),
-                        ct => CreateSystemBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                // Requests already waiting on a failed sign-in see that same failure. A new
+                // request can try again, and successful calls still acquire their own scopes/claims.
+                cancellationToken.ThrowIfCancellationRequested();
+                attempt.Failure?.Throw();
+                try
+                {
+                    return await AcquireTokenWithFallbackAsync(
+                            tenantId,
+                            ct => CreateBrokerCredential(tenantId).GetTokenAsync(requestContext, ct),
+                            ct => CreateSystemBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // Keep the origin of the failure when the legacy SDK wraps it as unauthorized.
+                    Exception failure = ex;
+                    if (ex is OperationCanceledException canceled)
+                    {
+                        failure = new SignInCanceledException(canceled);
+                    }
+                    else if (!IsTokenAcquisitionFailure(ex))
+                    {
+                        failure = new AuthenticationFailedException("Entra token acquisition failed.", ex);
+                    }
+                    attempt.Failure = ExceptionDispatchInfo.Capture(failure);
+                    gate.CurrentAttempt = new SignInAttempt();
+                    if (failure != ex) throw failure;
+                    throw;
+                }
             }
             finally
             {
-                gate.Release();
+                gate.Mutex.Release();
             }
+        }
+
+        sealed class InteractiveLoginGate
+        {
+            public readonly SemaphoreSlim Mutex = new SemaphoreSlim(1, 1);
+            public volatile SignInAttempt CurrentAttempt = new SignInAttempt();
+        }
+
+        sealed class SignInAttempt
+        {
+            public ExceptionDispatchInfo Failure;
+        }
+
+        sealed class SignInCanceledException : OperationCanceledException
+        {
+            public SignInCanceledException(OperationCanceledException cause)
+                : base(cause.Message, cause, cause.CancellationToken) { }
+        }
+
+        /// <summary>Recognizes credential failures and cancellation inside the legacy SDK's management exceptions.</summary>
+        public static bool IsTokenAcquisitionFailure(Exception exception)
+        {
+            for (var current = exception; current != null; current = current.InnerException)
+            {
+                if (current is AuthenticationFailedException || current is MsalException || current is SignInCanceledException)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         static async Task<AccessToken> AcquireTokenWithFallbackAsync(

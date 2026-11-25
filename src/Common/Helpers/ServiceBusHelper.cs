@@ -736,8 +736,6 @@ namespace ServiceBusExplorer
         /// <returns>True if the operation succeeds, false otherwise.</returns>
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
-            this.serviceBusNamespaceInstance = serviceBusNamespace;
-
             var isEntra = serviceBusNamespace?.IsEntra == true;
 
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
@@ -753,44 +751,18 @@ namespace ServiceBusExplorer
 
             var func = (() =>
             {
+                if (isEntra)
+                {
+                    // Commit the candidate only after the management probe and its sign-in succeed.
+                    (namespaceManager, entraTokenProvider, IsEventHubNamespace) = ConnectEntra(serviceBusNamespace);
+                }
+                serviceBusNamespaceInstance = serviceBusNamespace;
                 connectionString = serviceBusNamespace.ConnectionString;
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
-
-                // Reset connection-scoped state so reconnects don't carry over stale values.
-                IsEventHubNamespace = false;
-
-                if (isEntra)
+                if (!isEntra)
                 {
-                    var endpointUri = new Uri(serviceBusNamespace.Uri);
-                    var tenantId = serviceBusNamespace.TenantId;
-
-                    // Try Service Bus scope first; if the management probe fails with an
-                    // authorization error, the namespace may be an Event Hub namespace that
-                    // requires the Event Hub audience instead.
-                    entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
-                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
-
-                    try
-                    {
-                        // Lightweight scope probe — check for a non-existent queue.
-                        // This issues a single REST call (no entity enumeration) and
-                        // will throw UnauthorizedAccessException if the token audience is wrong.
-                        namespaceManager.QueueExists("$__scope_probe__$");
-                    }
-                    catch (Exception ex) when (IsAudienceMismatchException(ex))
-                    {
-                        // Audience mismatch — the namespace expects a different token audience
-                        // (Event Hub vs Service Bus). Retry with Event Hub scope.
-                        WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
-                        entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
-                            tenantId, EntraCredentialFactory.EventHubsAudience);
-                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
-                        IsEventHubNamespace = true;
-                    }
-                }
-                else
-                {
+                    IsEventHubNamespace = false;
                     entraTokenProvider = null;
                     namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 }
@@ -4342,6 +4314,28 @@ namespace ServiceBusExplorer
             }
         }
 
+        private (Microsoft.ServiceBus.NamespaceManager, TokenProvider, bool) ConnectEntra(ServiceBusNamespace candidate)
+        {
+            var endpoint = new Uri(candidate.Uri);
+            var provider = EntraCredentialFactory.CreateOldSdkTokenProvider(candidate.TenantId);
+            var manager = new Microsoft.ServiceBus.NamespaceManager(endpoint, provider);
+            try
+            {
+                manager.QueueExists("$__scope_probe__$");
+                return (manager, provider, false);
+            }
+            catch (Exception ex) when (IsAudienceMismatchException(ex))
+            {
+                WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
+                provider = EntraCredentialFactory.CreateOldSdkTokenProvider(candidate.TenantId, EntraCredentialFactory.EventHubsAudience);
+                // Populate the legacy provider's cache before replacing the active connection.
+                // A canceled Event Hubs sign-in must also stop Connect before it loads entities.
+                provider.GetWebTokenAsync(endpoint.AbsoluteUri, "Manage", false, manager.Settings.OperationTimeout)
+                    .GetAwaiter().GetResult();
+                return (new Microsoft.ServiceBus.NamespaceManager(endpoint, provider), provider, true);
+            }
+        }
+
         /// <summary>
         /// Determines whether an exception thrown by the scope probe indicates an
         /// audience mismatch (Service Bus token sent to an Event Hub namespace)
@@ -4354,6 +4348,10 @@ namespace ServiceBusExplorer
         /// </summary>
         private static bool IsAudienceMismatchException(Exception ex)
         {
+            // The legacy SDK also wraps local credential failures in UnauthorizedAccessException.
+            // Only a response from the namespace can justify switching the audience.
+            if (EntraCredentialFactory.IsTokenAcquisitionFailure(ex)) return false;
+
             var message = ex.Message ?? string.Empty;
             var innerMessage = ex.InnerException?.Message ?? string.Empty;
             var fullMessage = message + " " + innerMessage;

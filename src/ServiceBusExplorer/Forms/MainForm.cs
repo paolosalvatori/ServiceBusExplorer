@@ -575,18 +575,25 @@ namespace ServiceBusExplorer.Forms
 
         private async void SavedConnectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
-            serviceBusHelper.Connect(serviceBusNamespace);
-            ResetEventGridConnection();
-            SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-
-            foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+            try
             {
-                userControl.Dispose();
+                var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
+                serviceBusHelper.Connect(serviceBusNamespace);
+                ResetEventGridConnection();
+                SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+
+                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                {
+                    userControl.Dispose();
+                }
+                panelMain.Controls.Clear();
+                SetEmptyMainPanelBackground(panelMain);
+                await ShowEntities(EntityType.All);
             }
-            panelMain.Controls.Clear();
-            SetEmptyMainPanelBackground(panelMain);
-            await ShowEntities(EntityType.All);
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         /// <summary>
@@ -629,15 +636,8 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
                     UpdateSavedConnectionsMenu();
+                    var serviceBusNamespace = connectForm.ConnectToNamespace();
                     SelectedEntities = connectForm.SelectedEntities;
-                    ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
-
-                    var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
-                        ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
-                            connectForm.ConnectionString, StaticWriteToLog);
-
-                    serviceBusHelper.Connect(serviceBusNamespace);
                     ResetEventGridConnection();
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -4795,7 +4795,7 @@ namespace ServiceBusExplorer.Forms
                                         var singleHub = await serviceBusHelper.NamespaceManager.GetEventHubAsync(serviceBusHelper.EntityPath);
                                         eventHubs = singleHub != null ? new[] { singleHub } : Enumerable.Empty<EventHubDescription>();
                                     }
-                                    catch (MessagingException ex)
+                                    catch (MessagingException ex) when (!EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                                     {
                                         WriteToLog(string.Format(CultureInfo.CurrentCulture,
                                             "No event hub found matching EntityPath '{0}': {1}",
@@ -5057,6 +5057,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     ex = ((AggregateException)ex).InnerExceptions.First();
                 }
+                if (EntraCredentialFactory.IsTokenAcquisitionFailure(ex)) return false;
                 return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
             }
         }

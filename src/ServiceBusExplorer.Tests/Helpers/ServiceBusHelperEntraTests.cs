@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -341,7 +342,189 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        static void CacheCredential(string fieldName, string tenant, InteractiveBrowserCredential credential)
+        [Theory]
+        [InlineData(false, MsalError.AuthenticationCanceledError, false)]
+        [InlineData(true, MsalError.AuthenticationCanceledError, false)]
+        [InlineData(false, "access_denied", false)]
+        [InlineData(true, MsalError.UnknownBrokerError, false)]
+        [InlineData(false, null, false)]
+        [InlineData(true, "unexpected", false)]
+        [InlineData(false, MsalError.AuthenticationCanceledError, true)]
+        public void Connect_InteractiveFailureStopsAtFirstPrompt(bool browserOnly, string errorCode, bool eventHubs)
+        {
+            const string tenant = "cancel-connect";
+            var helper = new ServiceBusHelper((m, a) => { });
+            var previous = new ServiceBusNamespace();
+            SetPrivateField(helper, "serviceBusNamespaceInstance", previous);
+            SetPrivateField(helper, "connectionString", "previous connection");
+            Exception cause = errorCode switch
+            {
+                null => new OperationCanceledException("Sign-in was canceled."),
+                "unexpected" => new InvalidOperationException("Unexpected credential failure"),
+                _ => new MsalClientException(errorCode, "Synthetic sign-in result")
+            };
+            var failureFromCredential = cause is MsalException
+                ? new AuthenticationFailedException("Synthetic authentication failure", cause) : cause;
+            var credential = new StubInteractiveCredential((_, ct) => throw failureFromCredential);
+            var unexpected = new StubInteractiveCredential((_, ct) => throw new InvalidOperationException("Unexpected prompt"));
+            var previousMode = EntraCredentialFactory.UseSystemBrowserOnly;
+            var retries = RetryHelper.RetryCount;
+            try
+            {
+                RetryHelper.RetryCount = 1;
+                EntraCredentialFactory.UseSystemBrowserOnly = browserOnly;
+                CacheCredential("interactiveBrowserCredentials", tenant, browserOnly ? unexpected : credential);
+                CacheCredential("systemBrowserCredentials", tenant, browserOnly ? credential : unexpected);
+                var target = new ServiceBusNamespace("sb://localhost/", "local", tenant, TransportType.Amqp);
+
+                if (eventHubs)
+                {
+                    RejectServiceBusAudience(tenant);
+                }
+
+                var failure = Record.Exception(() => helper.Connect(target));
+                credential.Calls.Should().Be(1);
+                unexpected.Calls.Should().Be(0);
+                failure.Should().NotBeNull();
+                failure.GetBaseException().Should().BeSameAs(cause);
+                if (errorCode != null && errorCode != MsalError.AuthenticationCanceledError)
+                {
+                    for (var inner = failure; inner != null; inner = inner.InnerException)
+                    {
+                        inner.Should().NotBeAssignableTo<OperationCanceledException>();
+                    }
+                }
+                GetPrivateField<ServiceBusNamespace>(helper, "serviceBusNamespaceInstance").Should().BeSameAs(previous);
+                helper.ConnectionString.Should().Be("previous connection");
+                helper.NamespaceManager.Should().BeNull();
+                helper.IsEventHubNamespace.Should().BeFalse();
+            }
+            finally
+            {
+                RetryHelper.RetryCount = retries;
+                EntraCredentialFactory.UseSystemBrowserOnly = previousMode;
+                EntraCredentialFactory.ClearCache();
+            }
+        }
+
+        [Fact]
+        public async Task Connect_EventHubsAudienceReusesSuccessfulSignInForManagement()
+        {
+            const string tenant = "event-hubs-connect";
+            var endpoint = new Uri("sb://localhost/");
+            var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+                audience: EntraCredentialFactory.EventHubsAudience, expires: DateTime.UtcNow.AddHours(1)));
+            var credential = new StubInteractiveCredential((_, ct) =>
+                new ValueTask<AccessToken>(new AccessToken(token, DateTimeOffset.UtcNow.AddHours(1))));
+            try
+            {
+                RejectServiceBusAudience(tenant);
+                CacheCredential("interactiveBrowserCredentials", tenant, credential);
+                CacheCredential("systemBrowserCredentials", tenant, credential);
+                var target = new ServiceBusNamespace(endpoint.AbsoluteUri, "local", tenant, TransportType.Amqp);
+                var helper = new ServiceBusHelper((message, asynchronous) => { });
+
+                helper.Connect(target).Should().BeTrue();
+                helper.IsEventHubNamespace.Should().BeTrue();
+                var provider = helper.NamespaceManager.Settings.TokenProvider;
+                var header = await provider.GetWebTokenAsync("https://localhost/hub", "Manage", false, TimeSpan.FromSeconds(2));
+                header.Should().Contain(token);
+                credential.Calls.Should().Be(1);
+            }
+            finally
+            {
+                EntraCredentialFactory.ClearCache();
+            }
+        }
+
+        static void RejectServiceBusAudience(string tenant)
+        {
+            // Feed the legacy probe a service-side audience error without a network request.
+            var rejectedAudience = TokenProvider.CreateAzureActiveDirectoryTokenProvider(
+                (authority, resource, state) => throw new UnauthorizedAccessException("40104 InvalidAudience"),
+                new Uri(EntraCredentialFactory.GetAuthority(tenant)), EntraCredentialFactory.ServiceBusAudience, null);
+            var field = typeof(EntraCredentialFactory).GetField("tokenProviders", BindingFlags.NonPublic | BindingFlags.Static);
+            var providers = (ConcurrentDictionary<string, TokenProvider>)field.GetValue(null);
+            providers[tenant + "|" + EntraCredentialFactory.ServiceBusAudience] = rejectedAudience;
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public async Task QueuedSdkRequestHonorsSignInOutcomeAcrossAudiences(bool browserOnly, bool callerCanceled)
+        {
+            const string tenant = "queued-connect";
+            var pending = new TaskCompletionSource<AccessToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var credential = new StubInteractiveCredential((_, ct) => new ValueTask<AccessToken>(pending.Task));
+            var other = new RecordingCredential("unexpected fallback");
+            var recovery = new RecordingCredential("new token");
+            var chosen = browserOnly ? "systemBrowserCredentials" : "interactiveBrowserCredentials";
+            var previousMode = EntraCredentialFactory.UseSystemBrowserOnly;
+            try
+            {
+                EntraCredentialFactory.UseSystemBrowserOnly = browserOnly;
+                CacheCredential(chosen, tenant, credential);
+                CacheCredential(browserOnly ? "interactiveBrowserCredentials" : "systemBrowserCredentials", tenant, other);
+                var modern = EntraCredentialFactory.CreateNewSdkTokenCredential(tenant);
+                var legacy = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenant, EntraCredentialFactory.EventHubsAudience);
+                var context = new TokenRequestContext(new[] { EntraCredentialFactory.ServiceBusAudience + "/.default" });
+                using (var cancellation = new CancellationTokenSource())
+                {
+                    var first = modern.GetTokenAsync(context, cancellation.Token).AsTask();
+                    var queued = legacy(null, null, null);
+                    queued.IsCompleted.Should().BeFalse();
+                    credential.Calls.Should().Be(1);
+                    CacheCredential(chosen, tenant, recovery);
+                    if (callerCanceled)
+                    {
+                        cancellation.Cancel();
+                        pending.SetCanceled();
+                        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => first);
+                        (await queued).Should().Be("new token");
+                        recovery.Calls.Should().Be(1);
+                    }
+                    else
+                    {
+                        var canceled = new AuthenticationFailedException("Sign-in closed",
+                            new MsalClientException(MsalError.AuthenticationCanceledError, "User canceled"));
+                        pending.SetException(canceled);
+                        (await Record.ExceptionAsync(() => first)).Should().BeSameAs(canceled);
+                        (await Record.ExceptionAsync(() => queued)).Should().BeSameAs(canceled);
+                        recovery.Calls.Should().Be(0);
+                        (await legacy(null, null, null)).Should().Be("new token");
+                        recovery.Calls.Should().Be(1);
+                    }
+                    other.Calls.Should().Be(0);
+                }
+            }
+            finally
+            {
+                pending.TrySetCanceled();
+                EntraCredentialFactory.UseSystemBrowserOnly = previousMode;
+                EntraCredentialFactory.ClearCache();
+            }
+        }
+
+        internal sealed class StubInteractiveCredential : InteractiveBrowserCredential
+        {
+            readonly Func<TokenRequestContext, CancellationToken, ValueTask<AccessToken>> acquire;
+            public int Calls { get; private set; }
+
+            public StubInteractiveCredential(Func<TokenRequestContext, CancellationToken, ValueTask<AccessToken>> acquire)
+            {
+                this.acquire = acquire;
+            }
+
+            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext context, CancellationToken cancellationToken)
+            {
+                Calls++;
+                if (Calls > 1) throw new InvalidOperationException("A second interactive request started.");
+                return acquire(context, cancellationToken);
+            }
+        }
+
+        internal static void CacheCredential(string fieldName, string tenant, InteractiveBrowserCredential credential)
         {
             var field = typeof(EntraCredentialFactory).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
             var cache = (ConcurrentDictionary<string, InteractiveBrowserCredential>)field.GetValue(null);

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using Azure.Identity;
+using Microsoft.Identity.Client;
+using ServiceBusExplorer.Tests.Helpers;
 using FluentAssertions;
 using ServiceBusExplorer.Common.Helpers;
 using Microsoft.ServiceBus.Messaging;
@@ -115,6 +118,69 @@ namespace ServiceBusExplorer.Tests.Forms
                         endpoint.Text = "myns.servicebus.windows.net";
                         okButton.Enabled.Should().BeTrue();
                     }
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ConnectButton_DismissedSignInPreservesActiveSettings(bool browserOnly)
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string tenant = "connect-dialog-test";
+                var previousChoice = EntraCredentialFactory.UseSystemBrowserOnly;
+                var previousMode = ServiceBusHelper.ConnectivityMode;
+                var previousWebSockets = ServiceBusHelper.UseAmqpWebSockets;
+                var previousFilter = FilterExpressionHelper.QueueFilterExpression;
+                var cause = new MsalClientException(MsalError.AuthenticationCanceledError, "Sign-in closed");
+                var credential = new ServiceBusHelperEntraTests.StubInteractiveCredential((context, token) =>
+                    throw new AuthenticationFailedException("Synthetic cancellation", cause));
+                var unexpected = new ServiceBusHelperEntraTests.StubInteractiveCredential((context, token) =>
+                    throw new InvalidOperationException("Unexpected sign-in"));
+                var helper = new ServiceBusHelper((message, asynchronous) => { });
+                try
+                {
+                    EntraCredentialFactory.UseSystemBrowserOnly = browserOnly;
+                    ServiceBusHelperEntraTests.CacheCredential("interactiveBrowserCredentials", tenant, browserOnly ? unexpected : credential);
+                    ServiceBusHelperEntraTests.CacheCredential("systemBrowserCredentials", tenant, browserOnly ? credential : unexpected);
+                    using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                    {
+                        form.Show();
+                        GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                        GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                        GetTextBox(form, ControlNameUri).Text = "localhost";
+                        GetComboBox(form, ControlNameTenantIds).Text = tenant;
+                        GetTextBox(form, "txtQueueFilterExpression").Text = "submitted filter";
+                        GetComboBox(form, "cboConnectivityMode").SelectedItem = previousMode == Microsoft.ServiceBus.ConnectivityMode.Http
+                            ? Microsoft.ServiceBus.ConnectivityMode.Tcp : Microsoft.ServiceBus.ConnectivityMode.Http;
+                        FindControl<CheckBox>(form, "useAmqpWebSocketsCheckBox").Checked = !previousWebSockets;
+
+                        FindControl<Button>(form, "btnOk").PerformClick();
+                        form.DialogResult.Should().Be(DialogResult.OK);
+                        form.ServiceBusNamespaceInstance.TenantId.Should().Be(tenant);
+                        new Uri(form.ServiceBusNamespaceInstance.Uri).IsLoopback.Should().BeTrue();
+                        var failure = Record.Exception(() => form.ConnectToNamespace());
+                        failure.Should().NotBeNull();
+                        failure.GetBaseException().Should().BeSameAs(cause);
+                        credential.Calls.Should().Be(1);
+                        unexpected.Calls.Should().Be(0);
+                        helper.NamespaceManager.Should().BeNull();
+                        ServiceBusHelper.ConnectivityMode.Should().Be(previousMode);
+                        ServiceBusHelper.UseAmqpWebSockets.Should().Be(previousWebSockets);
+                        FilterExpressionHelper.QueueFilterExpression.Should().Be(previousFilter);
+                    }
+                }
+                finally
+                {
+                    ServiceBusHelper.ConnectivityMode = previousMode;
+                    ServiceBusHelper.UseAmqpWebSockets = previousWebSockets;
+                    FilterExpressionHelper.QueueFilterExpression = previousFilter;
+                    EntraCredentialFactory.UseSystemBrowserOnly = previousChoice;
+                    EntraCredentialFactory.ClearCache();
+                    ResetManualConnectionState();
                 }
             });
         }
