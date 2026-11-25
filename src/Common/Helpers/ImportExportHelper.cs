@@ -142,6 +142,8 @@ namespace ServiceBusExplorer.Helpers
             GetProperties(typeof(SubscriptionDescription), true, true);
             GetProperties(typeof(RuleDescription), true, true);
             GetProperties(typeof(SqlFilter), true, true);
+            GetProperties(typeof(TrueFilter), true, true);
+            GetProperties(typeof(FalseFilter), true, true);
             GetProperties(typeof(CorrelationFilter), true, true);
             GetProperties(typeof(SqlRuleAction), true, true);
             GetProperties(typeof(Filter), true, true);
@@ -308,8 +310,11 @@ namespace ServiceBusExplorer.Helpers
                     if (serviceBusHelper.IsEmulator && root.Descendants().Any(element =>
                         new[] { RelayEntity, EventHubEntity, NotificationHubEntity }.Contains(element.Name.LocalName)))
                         throw new NotSupportedException("Emulator import supports queues and topics only; no entities were changed.");
-                    if (root.Descendants().Any(element => element.Name.LocalName == RuleEntity))
-                        throw new NotSupportedException("XML rule import is unavailable because legacy filter/action serialization cannot preserve all rule types and typed parameters. No entities were changed; configure rules explicitly instead.");
+                    var ruleElements = root.Descendants().Where(element => element.Name.LocalName == RuleEntity).ToArray();
+                    foreach (var rule in ruleElements) ValidateRuleXml(rule);
+                    // Parsing and SDK mapping must also succeed before the first mutation.
+                    foreach (var rule in CreateRules(ruleElements))
+                        ServiceBusManagementMapper.ToCreateOptions(rule);
                     CreateQueues(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, QueueEntity)));
                     CreateTopics(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, TopicEntity)));
                     CreateRelays(serviceBusHelper, root.Descendants(string.Format(NodeNameFormat, Namespace, RelayEntity)));
@@ -321,6 +326,61 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Methods
+        private void ValidateRuleXml(XElement rule)
+        {
+            void Reject() => throw new NotSupportedException("Unsupported or lossy XML rule shape. No entities were changed.");
+            if (rule.Name != XName.Get(RuleEntity, Namespace) || rule.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)) Reject();
+            if (string.IsNullOrWhiteSpace(rule.Element(XName.Get(Name, Namespace))?.Value)) Reject();
+            if (rule.Elements().Any(child => child.Name.NamespaceName != Namespace ||
+                !new[] { Name, FilterEntity, ActionEntity }.Contains(child.Name.LocalName))) Reject();
+            if (rule.Elements().GroupBy(child => child.Name).Any(group => group.Count() > 1)) Reject();
+            foreach (var wrapper in rule.Elements().Where(child => child.Name.LocalName != Name))
+            {
+                if (wrapper.Elements().Count() > 1 || (!wrapper.HasElements && !string.IsNullOrWhiteSpace(wrapper.Value))) Reject();
+                var value = wrapper.Elements().SingleOrDefault();
+                // Legacy default rules were serialized with empty Filter/Action wrappers.
+                if (value == null) continue;
+                var typeName = value.Name.LocalName;
+                Type type = null;
+                if (wrapper.Name.LocalName == FilterEntity)
+                {
+                    if (typeName == "TrueFilter") type = typeof(TrueFilter);
+                    if (typeName == "FalseFilter") type = typeof(FalseFilter);
+                    if (typeName == SqlFilterEntity) type = typeof(SqlFilter);
+                    if (typeName == CorrelationFilterEntity) type = typeof(CorrelationFilter);
+                }
+                else if (typeName == SqlRuleActionEntity) type = typeof(SqlRuleAction);
+                else if (typeName == "EmptyRuleAction" && !value.HasElements && string.IsNullOrWhiteSpace(value.Value)) continue;
+                if (type == null || value.Name.NamespaceName != Namespace || value.HasAttributes) Reject();
+                var known = propertyCache[type.FullName];
+                foreach (var property in value.Elements())
+                {
+                    if (property.Name.NamespaceName != Namespace || property.HasAttributes) Reject();
+                    if (property.Name.LocalName == "Parameters")
+                    {
+                        if (property.HasElements || !string.IsNullOrWhiteSpace(property.Value)) Reject();
+                        continue;
+                    }
+                    if (!known.ContainsKey(property.Name.LocalName)) Reject();
+                    if (property.Name.LocalName == CorrelationFilterProperties)
+                    {
+                        if (type != typeof(CorrelationFilter)) Reject();
+                        foreach (var entry in property.Elements())
+                        {
+                            // Historical Property text is a string pair. Typed/nested extensions
+                            // cannot be reconstructed safely by that format.
+                            if (entry.Name != XName.Get("Property", Namespace) || entry.HasAttributes ||
+                                entry.HasElements || entry.Value.IndexOf(':') <= 0) Reject();
+                        }
+                    }
+                    else if (property.HasElements) Reject();
+                }
+                if (value.Elements().GroupBy(child => child.Name).Any(group => group.Count() > 1)) Reject();
+                if ((type == typeof(SqlFilter) || type == typeof(SqlRuleAction)) &&
+                    string.IsNullOrWhiteSpace(value.Element(XName.Get(SqlExpression, Namespace))?.Value)) Reject();
+            }
+        }
+
         /// <summary>
         /// Gets the collection of properties.
         /// </summary>
@@ -445,10 +505,10 @@ namespace ServiceBusExplorer.Helpers
                 bool bOk = xmlReader.ReadToDescendant("Property");
                 while (bOk)
                 {
-                    var tRead = xmlReader.ReadElementContentAsString().Split(':');
+                    var tRead = xmlReader.ReadElementContentAsString().Split(new[] { ':' }, 2);
                     var tProp = new Property();
                     tProp.Name = tRead[0];
-                    tProp.Value = tRead[1];
+                    tProp.Value = tRead[1].StartsWith(" ", StringComparison.Ordinal) ? tRead[1].Substring(1) : tRead[1];
                     if (!propertyValue.ContainsKey(name))
                         propertyValue[name] = new List<Property>();
                     var tProps = propertyValue[name] as List<Property>;
@@ -1378,6 +1438,8 @@ namespace ServiceBusExplorer.Helpers
             {
                 return null;
             }
+            if (filter.Name == XName.Get("TrueFilter", Namespace)) return new TrueFilter();
+            if (filter.Name == XName.Get("FalseFilter", Namespace)) return new FalseFilter();
             string fullName = null;
             if (filter.Name == string.Format(NodeNameFormat, Namespace, SqlFilterEntity))
             {
@@ -1410,7 +1472,7 @@ namespace ServiceBusExplorer.Helpers
             }
             if (filter.Name == string.Format(NodeNameFormat, Namespace, CorrelationFilterEntity))
             {
-                ruleFilter = new CorrelationFilter(propertyValue[CorrelationId] as string);
+                ruleFilter = new CorrelationFilter();
 
                 // We check if there is a Key with Properties
                 // If Yes, we must create the properties of the CorrelationFilter

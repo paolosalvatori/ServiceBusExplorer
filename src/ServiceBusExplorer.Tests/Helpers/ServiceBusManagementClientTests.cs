@@ -66,8 +66,61 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var sdk = new FakeAdministrationClient();
             var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Topics><Topic><Path>events</Path><Subscriptions><Subscription><Name>sub</Name><Rules><Rule><Name>filter</Name><Filter><" + filter + "><Properties><Property>key:typed-value</Property></Properties></" + filter + "></Filter><Action><SqlRuleAction/></Action></Rule></Rules></Subscription></Subscriptions></Topic></Topics></Entities>";
-            ((Action)(() => NewHelper(sdk).ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*rule import*No entities were changed*");
+            ((Action)(() => NewHelper(sdk).ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*XML rule shape*No entities were changed*");
             sdk.CreatedRule.Should().BeNull();
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("<TrueFilter />")]
+        [InlineData("<FalseFilter />")]
+        [InlineData("<SqlFilter><SqlExpression>priority &gt; 4</SqlExpression></SqlFilter>")]
+        [InlineData("<CorrelationFilter><CorrelationId>correlation</CorrelationId><Properties><Property>key: value:with:colons</Property></Properties></CorrelationFilter>")]
+        public void LegacyNestedRuleFixturesImportWithoutChangingMeaning(string filter)
+        {
+            var sdk = new FakeAdministrationClient();
+            var logs = new List<string>();
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Topics><Topic><Path>events</Path><Subscriptions><Subscription><TopicPath>events</TopicPath><Name>sub</Name><Rules><Rule><Name>$Default</Name><Filter>" + filter + "</Filter><Action><SqlRuleAction><SqlExpression>SET selected = true</SqlExpression></SqlRuleAction></Action></Rule></Rules></Subscription></Subscriptions></Topic></Topics></Entities>";
+            new ImportExportHelper((message, _) => logs.Add(message)).DeserializeAndCreate(NewHelper(sdk), xml);
+            logs.Should().BeEmpty();
+            sdk.CreatedRule.Name.Should().Be("$Default");
+            sdk.CreatedRule.Action.Should().BeOfType<SqlRuleAction>().Which.SqlExpression.Should().Be("SET selected = true");
+            if (filter.Contains("FalseFilter")) sdk.CreatedRule.Filter.Should().BeOfType<FalseRuleFilter>();
+            else if (filter.Contains("SqlFilter")) sdk.CreatedRule.Filter.Should().BeOfType<SqlRuleFilter>().Which.SqlExpression.Should().Be("priority > 4");
+            else if (filter.Contains("CorrelationFilter"))
+            {
+                var correlation = sdk.CreatedRule.Filter.Should().BeOfType<CorrelationRuleFilter>().Subject;
+                correlation.CorrelationId.Should().Be("correlation");
+                correlation.ApplicationProperties["key"].Should().Be("value:with:colons");
+            }
+            else sdk.CreatedRule.Filter.Should().BeOfType<TrueRuleFilter>();
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ExportedBooleanRulesRoundTripThroughNestedImport(bool accepts)
+        {
+            var sdk = new FakeAdministrationClient { ExportedFilter = accepts ? (RuleFilter)new TrueRuleFilter() : new FalseRuleFilter() };
+            var helper = NewHelper(sdk);
+            var logs = new List<string>();
+            var exporter = new ImportExportHelper((message, _) => logs.Add(message));
+            var xml = await exporter.ReadAndSerialize(helper, new List<IExtensibleDataObject> { NewClient(sdk).GetTopic("events") });
+            exporter.DeserializeAndCreate(helper, xml);
+            logs.Should().BeEmpty();
+            if (accepts) sdk.CreatedRule.Filter.Should().BeOfType<TrueRuleFilter>();
+            else sdk.CreatedRule.Filter.Should().BeOfType<FalseRuleFilter>();
+        }
+
+        [Theory]
+        [InlineData("<SqlFilter><SqlExpression>value = @p</SqlExpression><Parameters><Parameter name='p' type='int'>1</Parameter></Parameters></SqlFilter>")]
+        [InlineData("<CorrelationFilter><Properties><Property type='int'>key: 1</Property></Properties></CorrelationFilter>")]
+        public void TypedRuleShapesFailBeforeEarlierQueueMutation(string filter)
+        {
+            var sdk = new FakeAdministrationClient();
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Queues><Queue><Path>must-not-create</Path></Queue></Queues><Rule><Name>typed</Name><Filter>" + filter + "</Filter></Rule></Entities>";
+            ((Action)(() => NewHelper(sdk).ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*No entities were changed*");
+            sdk.CreatedQueue.Should().BeNull();
         }
 
         [Fact]
@@ -357,6 +410,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             public string DeletedRule { get; private set; }
             public Exception QueueFailure { get; set; }
             public bool RuntimeUnavailable { get; set; }
+            public RuleFilter ExportedFilter { get; set; } = new TrueRuleFilter();
             private readonly Dictionary<string, QueueProperties> queues = new Dictionary<string, QueueProperties>();
 
             private static QueueProperties Queue(string name) => ServiceBusModelFactory.QueueProperties(name,
@@ -412,6 +466,11 @@ namespace ServiceBusExplorer.Tests.Helpers
                 CreatedSubscription = options;
                 return GetSubscriptionAsync(options.TopicName, options.SubscriptionName, cancellationToken);
             }
+            public override Task<Response<SubscriptionProperties>> CreateSubscriptionAsync(CreateSubscriptionOptions options, CreateRuleOptions rule, CancellationToken cancellationToken = default)
+            {
+                CreatedRule = rule;
+                return CreateSubscriptionAsync(options, cancellationToken);
+            }
             public override Task<Response<TopicProperties>> UpdateTopicAsync(TopicProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<SubscriptionProperties>> UpdateSubscriptionAsync(SubscriptionProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken cancellationToken = default) =>
@@ -436,7 +495,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 return Result(ServiceBusModelFactory.RuleProperties(options.Name, options.Filter, options.Action));
             }
             public override AsyncPageable<RuleProperties> GetRulesAsync(string topic, string subscription, CancellationToken cancellationToken = default) =>
-                Pages(ServiceBusModelFactory.RuleProperties("filtered", new TrueRuleFilter(), null));
+                Pages(ServiceBusModelFactory.RuleProperties("filtered", ExportedFilter, null));
             public override Task<Response> DeleteRuleAsync(string topic, string subscription, string rule, CancellationToken cancellationToken = default)
             {
                 DeletedRule = topic + "/" + subscription + "/" + rule;
