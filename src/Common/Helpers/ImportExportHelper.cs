@@ -332,9 +332,13 @@ namespace ServiceBusExplorer.Helpers
             if (rule.Name != XName.Get(RuleEntity, Namespace) || rule.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)) Reject();
             if (string.IsNullOrWhiteSpace(rule.Element(XName.Get(Name, Namespace))?.Value)) Reject();
             if (rule.Elements().Any(child => child.Name.NamespaceName != Namespace ||
-                !new[] { Name, FilterEntity, ActionEntity }.Contains(child.Name.LocalName))) Reject();
+                !new[] { Name, FilterEntity, ActionEntity, "Tag", "IsReadOnly" }.Contains(child.Name.LocalName))) Reject();
             if (rule.Elements().GroupBy(child => child.Name).Any(group => group.Count() > 1)) Reject();
-            foreach (var wrapper in rule.Elements().Where(child => child.Name.LocalName != Name))
+            var tag = rule.Element(XName.Get("Tag", Namespace));
+            if (tag != null && (tag.HasElements || !string.IsNullOrEmpty(tag.Value))) Reject();
+            var readOnly = rule.Element(XName.Get("IsReadOnly", Namespace));
+            if (readOnly != null && (readOnly.HasElements || !bool.TryParse(readOnly.Value, out _))) Reject();
+            foreach (var wrapper in rule.Elements().Where(child => child.Name.LocalName == FilterEntity || child.Name.LocalName == ActionEntity))
             {
                 if (wrapper.Elements().Count() > 1 || (!wrapper.HasElements && !string.IsNullOrWhiteSpace(wrapper.Value))) Reject();
                 var value = wrapper.Elements().SingleOrDefault();
