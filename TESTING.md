@@ -119,3 +119,12 @@ Synthetic tests cover the saved ConnectForm selection/build path, padded fields,
 ### Independent review follow-up: connection stage (#910)
 
 The raw transport dropdown updates only TransportType and RuntimePort assignments, preserving matching text in endpoints, entity paths and credentials. The Connect entry path publishes entity selection only on success and restores prior WebSockets/connectivity settings on false returns or exceptions. Synthetic tests exercise the real dropdown and the settings-publication method used by Connect. No live connection, credentials or configuration were used; adapter preparation/rollback is handled in the following management stage.
+
+### Connection profile and filter publication follow-up
+
+Saved raw profile loading uses the same trimmed, case-insensitive keys as explicit transport
+editing. Programmatic transport selection does not rewrite the raw profile. Regression tests
+exercise the saved-profile dropdown with padded transport/runtime keys and unchanged credentials.
+The dialog stages queue/topic/subscription filters; MainForm publishes them only after connection
+success. Tests cover actual dialog acceptance plus successful, rejected and throwing attempts.
+All fixtures are synthetic; no live connection or broker mutation is used.

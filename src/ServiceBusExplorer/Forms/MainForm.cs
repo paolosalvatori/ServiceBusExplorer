@@ -610,7 +610,8 @@ namespace ServiceBusExplorer.Forms
         }
 
         internal bool ConnectWithSettings(Func<bool> connect, Microsoft.ServiceBus.ConnectivityMode connectivity,
-            bool webSockets, List<string> selectedEntities)
+            bool webSockets, List<string> selectedEntities,
+            string queueFilter = null, string topicFilter = null, string subscriptionFilter = null)
         {
             var previousConnectivity = ServiceBusHelper.ConnectivityMode;
             var previousWebSockets = ServiceBusHelper.UseAmqpWebSockets;
@@ -620,7 +621,13 @@ namespace ServiceBusExplorer.Forms
                 ServiceBusHelper.ConnectivityMode = connectivity;
                 ServiceBusHelper.UseAmqpWebSockets = webSockets;
                 connected = connect();
-                if (connected) SelectedEntities = new List<string>(selectedEntities);
+                if (connected)
+                {
+                    SelectedEntities = new List<string>(selectedEntities);
+                    FilterExpressionHelper.QueueFilterExpression = queueFilter;
+                    FilterExpressionHelper.TopicFilterExpression = topicFilter;
+                    FilterExpressionHelper.SubscriptionFilterExpression = subscriptionFilter;
+                }
                 return connected;
             }
             finally
@@ -651,7 +658,8 @@ namespace ServiceBusExplorer.Forms
                             connectForm.ConnectionString, StaticWriteToLog);
 
                     if (!ConnectWithSettings(() => serviceBusHelper.Connect(serviceBusNamespace),
-                        connectForm.ConnectivityMode, connectForm.UseAmqpWebSockets, connectForm.SelectedEntities)) return;
+                        connectForm.ConnectivityMode, connectForm.UseAmqpWebSockets, connectForm.SelectedEntities,
+                        connectForm.QueueFilterExpression, connectForm.TopicFilterExpression, connectForm.SubscriptionFilterExpression)) return;
                     ResetEventGridConnection();
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
