@@ -92,6 +92,33 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData("Value", false)]
+        [InlineData("Value", true)]
+        [InlineData("Sequence", false)]
+        [InlineData("Sequence", true)]
+        public void StructuredAmqpEditorPreservesOriginalUntilTextEdited(string kind, bool newId)
+        {
+            RunSta(() =>
+            {
+                var received = Helpers.ServiceBusAmqpBodyTests.Message(kind);
+                using var source = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(received);
+                using var editor = new MessageForm(source, new ServiceBusHelper((_, __) => { }), (_, __) => { });
+                ((CheckBox)editor.Controls.Find("chkNewMessageId", true).Single()).Checked = newId;
+                using var unchanged = editor.BuildMessageForResubmission(source);
+                var outbound = ServiceBusMessageAdapter.ToServiceBusMessage(unchanged);
+                Helpers.ServiceBusAmqpBodyTests.AssertBody(received.GetRawAmqpMessage().Body, outbound.GetRawAmqpMessage().Body);
+                Assert.Equal(!newId, outbound.MessageId == kind);
+                editor.Controls.Find("txtMessageText", true).Single().Text = "edited text";
+                using var edited = editor.BuildMessageForResubmission(source);
+                var data = ServiceBusMessageAdapter.ToServiceBusMessage(edited);
+                Assert.Equal(Azure.Core.Amqp.AmqpMessageBodyType.Data, data.GetRawAmqpMessage().Body.BodyType);
+                Assert.Equal("edited text", data.Body.ToString());
+                Helpers.ServiceBusAmqpBodyTests.AssertBody(received.GetRawAmqpMessage().Body,
+                    ServiceBusMessageAdapter.ToServiceBusMessage(source).GetRawAmqpMessage().Body);
+            });
+        }
+
         private static void RunSta(Action action)
         {
             Exception failure = null;

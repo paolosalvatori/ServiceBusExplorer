@@ -424,7 +424,7 @@ namespace ServiceBusExplorer.Controls
                                     {
                                         using (var scope = new TransactionScope())
                                         {
-                                            controlHelper.ServiceBusHelper.ReceiveMessages(messageReceiver,
+                                            var succeeded = controlHelper.ServiceBusHelper.ReceiveMessages(messageReceiver,
                                                                              taskId,
                                                                              receiveTimeout,
                                                                              filter,
@@ -443,7 +443,7 @@ namespace ServiceBusExplorer.Controls
                                                                              receiverCancellationTokenSource,
                                                                              out traceMessage);
                                             var builder = new StringBuilder(traceMessage);
-                                            if (checkBoxReceiverCommitTransaction.Checked)
+                                            if (succeeded && checkBoxReceiverCommitTransaction.Checked && !receiverCancellationTokenSource.IsCancellationRequested)
                                             {
                                                 scope.Complete();
                                                 builder.AppendLine(TransactionCommitted);

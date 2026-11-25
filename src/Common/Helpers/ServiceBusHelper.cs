@@ -750,7 +750,6 @@ namespace ServiceBusExplorer
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
             var isEntra = serviceBusNamespace?.IsEntra == true;
-
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
@@ -760,6 +759,69 @@ namespace ServiceBusExplorer
             {
                 throw new Exception("Could not resolve the Service Bus endpoint host.");
             }
+
+            return RetryHelper.RetryFunc(() =>
+            {
+                var replacement = PrepareConnection(serviceBusNamespace);
+                // Preparation succeeds as a complete unit before the active profile changes.
+                PublishConnection(replacement);
+                return true;
+            }, writeToLog);
+        }
+
+        private ServiceBusHelper PrepareConnection(ServiceBusNamespace profile)
+        {
+            var replacement = new ServiceBusHelper((message, async) => WriteToLogIf(traceEnabled, message, async))
+            {
+                scheme = scheme
+            };
+            replacement.OnCreate += args => OnCreate?.Invoke(args);
+            replacement.OnDelete += args => OnDelete?.Invoke(args);
+            try
+            {
+                if (!replacement.InitializeConnection(profile)) throw new InvalidOperationException("Connection preparation failed.");
+                return replacement;
+            }
+            catch
+            {
+                // Administration/token wrappers do not own disposable connections. The legacy
+                // messaging factory is the provisional resource that can require closing.
+                try { replacement.messagingFactory?.Close(); }
+                catch (Exception ex) { try { WriteToLog("Provisional connection cleanup failed: " + ex.Message); } catch { } }
+                throw;
+            }
+        }
+
+        private void PublishConnection(ServiceBusHelper replacement)
+        {
+            serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
+            connectionString = replacement.connectionString;
+            currentSharedAccessKey = replacement.currentSharedAccessKey;
+            currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
+            namespaceUri = replacement.namespaceUri;
+            connectionStringType = replacement.connectionStringType;
+            ns = replacement.ns;
+            IsEventHubNamespace = replacement.IsEventHubNamespace;
+            namespaceManager = replacement.namespaceManager;
+            notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
+            notificationHubTokenProvider = replacement.notificationHubTokenProvider;
+            entraTokenProvider = replacement.entraTokenProvider;
+            managementClient = replacement.managementClient;
+            messagingFactory = replacement.messagingFactory;
+            serviceBusQueue = replacement.serviceBusQueue;
+            serviceBusTopic = replacement.serviceBusTopic;
+            serviceBusSubscription = replacement.serviceBusSubscription;
+            serviceBusRule = replacement.serviceBusRule;
+            serviceBusRelay = replacement.serviceBusRelay;
+            serviceBusNotificationHub = replacement.serviceBusNotificationHub;
+            serviceBusEventHub = replacement.serviceBusEventHub;
+            serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
+            serviceBusPartition = replacement.serviceBusPartition;
+        }
+
+        private bool InitializeConnection(ServiceBusNamespace serviceBusNamespace)
+        {
+            var isEntra = serviceBusNamespace?.IsEntra == true;
 
             // Reconnect must not leave adapters pointing at a previous namespace.
             serviceBusNamespaceInstance = serviceBusNamespace;
@@ -902,7 +964,7 @@ namespace ServiceBusExplorer
                     : MessageFactorySuccessfullyCreated);
                 return true;
             });
-            return RetryHelper.RetryFunc(func, writeToLog);
+            return func();
         }
 
         /// <summary>
@@ -2278,7 +2340,7 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentNullException(BrokeredMessageCannotBeNull);
             }
-            var outboundMessage = messageTemplate.Clone();
+            var outboundMessage = ServiceBusReceivedMessageAdapter.CloneForResubmission(messageTemplate);
             if (bodyType == BodyType.String)
             {
                 using (var reader = new StreamReader(outboundMessage.GetBody<Stream>()))
@@ -2543,42 +2605,35 @@ namespace ServiceBusExplorer
 
                     if (outboundMessages.Count > 0)
                     {
-                        var stopwatch = Stopwatch.StartNew();
+                        var acknowledged = 0;
+                        Action<int, long> record = (count, elapsed) =>
+                        {
+                            messagesSent += count;
+                            totalElapsedTime += elapsed;
+                            minimumSendTime = Math.Min(minimumSendTime, elapsed);
+                            maximumSendTime = Math.Max(maximumSendTime, elapsed);
+                            if (statistics)
+                                PublishConfirmedProgress(() => updateStatistics(count, elapsed, DirectionType.Send));
+                            if (logging && System.Transactions.Transaction.Current == null)
+                                foreach (var outbound in outboundMessages.Skip(acknowledged).Take(count))
+                                    LogServiceBusMessageSent(outbound, taskId, isBinary, bodyType == BodyType.Wcf, verbose);
+                            acknowledged += count;
+                        };
                         try
                         {
                             if (outboundMessages.Count == 1)
                             {
                                 var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0]);
+                                var stopwatch = Stopwatch.StartNew();
                                 messageSender.SendMessageAsync(sdkMessage, cancellationTokenSource.Token)
                                     .GetAwaiter().GetResult();
+                                record(1, stopwatch.ElapsedMilliseconds);
                             }
                             else
-                            {
-                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token);
-                            }
-
-                            stopwatch.Stop();
-                            var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-                            messagesSent += outboundMessages.Count;
-                            totalElapsedTime += elapsedMilliseconds;
-                            minimumSendTime = Math.Min(minimumSendTime, elapsedMilliseconds);
-                            maximumSendTime = Math.Max(maximumSendTime, elapsedMilliseconds);
-                            if (statistics)
-                            {
-                                updateStatistics(outboundMessages.Count, elapsedMilliseconds, DirectionType.Send);
-                            }
-
-                            if (logging)
-                            {
-                                foreach (var outbound in outboundMessages)
-                                {
-                                    LogServiceBusMessageSent(outbound, taskId, isBinary, bodyType == BodyType.Wcf, verbose);
-                                }
-                            }
+                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token, record);
                         }
                         finally
                         {
-                            stopwatch.Stop();
                             foreach (var outbound in outboundMessages)
                             {
                                 outbound.Dispose();
@@ -2607,6 +2662,8 @@ namespace ServiceBusExplorer
             {
                 builder.AppendLine(exceptionMessage);
             }
+            if (System.Transactions.Transaction.Current != null)
+                builder.AppendLine("Provisional transaction work below; no sends are confirmed until commit succeeds.");
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsLine1,
                 messagesSent, messagesPerSecond, totalElapsedTime));
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsLine2,
@@ -2615,7 +2672,7 @@ namespace ServiceBusExplorer
             return ok;
         }
 
-        private static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken)
+        public static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged)
         {
             ServiceBusMessageBatch batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
             try
@@ -2633,7 +2690,7 @@ namespace ServiceBusExplorer
                         throw new InvalidOperationException("A message exceeds the maximum Service Bus batch size.");
                     }
 
-                    sender.SendMessagesAsync(batch, cancellationToken).GetAwaiter().GetResult();
+                    SendConfirmedBatch(sender, batch, cancellationToken, acknowledged);
                     batch.Dispose();
                     batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
                     if (!batch.TryAddMessage(message))
@@ -2643,13 +2700,22 @@ namespace ServiceBusExplorer
                 }
                 if (batch.Count > 0)
                 {
-                    sender.SendMessagesAsync(batch, cancellationToken).GetAwaiter().GetResult();
+                    SendConfirmedBatch(sender, batch, cancellationToken, acknowledged);
                 }
             }
             finally
             {
                 batch.Dispose();
             }
+        }
+
+        private static void SendConfirmedBatch(ServiceBusSender sender, ServiceBusMessageBatch batch,
+            CancellationToken cancellationToken, Action<int, long> acknowledged)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var stopwatch = Stopwatch.StartNew();
+            sender.SendMessagesAsync(batch, cancellationToken).GetAwaiter().GetResult();
+            acknowledged(batch.Count, stopwatch.ElapsedMilliseconds);
         }
 
         private void LogServiceBusMessageSent(BrokeredMessage message, int taskId, bool isBinary, bool useWcf, bool verbose)
@@ -2700,6 +2766,7 @@ namespace ServiceBusExplorer
                                  CancellationTokenSource cancellationTokenSource,
                                  out string traceMessage)
         {
+            if (System.Transactions.Transaction.Current != null) logging = false;
             if (messageSender == null)
             {
                 throw new ArgumentNullException(MessageSenderCannotBeNull);
@@ -2806,7 +2873,7 @@ namespace ServiceBusExplorer
                             totalElapsedTime += elapsedMilliseconds;
                             if (statistics)
                             {
-                                updateStatistics(messageList.Count, elapsedMilliseconds, DirectionType.Send);
+                                PublishConfirmedProgress(updateStatistics, messageList.Count, elapsedMilliseconds, DirectionType.Send);
                             }
                         }
                         if (senderThinkTime)
@@ -2869,7 +2936,7 @@ namespace ServiceBusExplorer
                         totalElapsedTime += elapsedMilliseconds;
                         if (statistics)
                         {
-                            updateStatistics(1, elapsedMilliseconds, DirectionType.Send);
+                            PublishConfirmedProgress(updateStatistics, 1, elapsedMilliseconds, DirectionType.Send);
                         }
                         if (senderThinkTime)
                         {
@@ -2943,7 +3010,8 @@ namespace ServiceBusExplorer
                                              averageSendTime,
                                              minimumSendTime == long.MaxValue ? 0 : minimumSendTime,
                                              maximumSendTime));
-            traceMessage = builder.ToString();
+            traceMessage = (System.Transactions.Transaction.Current == null ? "" :
+                "Provisional transaction work below; operations are not confirmed until commit succeeds.\n") + builder;
             return ok;
         }
 
@@ -3269,9 +3337,13 @@ namespace ServiceBusExplorer
                     totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
                     minimumReceiveTime = Math.Min(minimumReceiveTime, stopwatch.ElapsedMilliseconds);
                     maximumReceiveTime = Math.Max(maximumReceiveTime, stopwatch.ElapsedMilliseconds);
-                    if (statistics)
+                    if (receiveMode == ServiceBusReceiveMode.ReceiveAndDelete)
                     {
-                        updateStatistics(messages.Count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                        // The entire SDK batch is already removed even if a later inspector fails.
+                        messagesReceived += messages.Count;
+                        var count = messages.Count;
+                        var elapsed = stopwatch.ElapsedMilliseconds;
+                        if (statistics) PublishConfirmedProgress(() => updateStatistics(count, elapsed, DirectionType.Receive));
                     }
 
                     var logBuilder = new StringBuilder();
@@ -3315,9 +3387,11 @@ namespace ServiceBusExplorer
                                         .GetAwaiter().GetResult();
                                 }
                             }
-                            else
+                            if (receiveMode == ServiceBusReceiveMode.PeekLock &&
+                                (movedToDeadLetterQueue || (!deferredMessage && completeReceive)) && statistics)
                             {
-                                messagesReceived++;
+                                var elapsed = stopwatch.ElapsedMilliseconds / messages.Count;
+                                PublishConfirmedProgress(() => updateStatistics(1, elapsed, DirectionType.Receive));
                             }
                             if (receiveMode != ServiceBusReceiveMode.PeekLock ||
                                 deferredMessage ||
@@ -3332,7 +3406,7 @@ namespace ServiceBusExplorer
                             minimumCompleteTime = Math.Min(minimumCompleteTime, settlementStopwatch.ElapsedMilliseconds);
                             maximumCompleteTime = Math.Max(maximumCompleteTime, settlementStopwatch.ElapsedMilliseconds);
 
-                            if (logging)
+                            if (logging && System.Transactions.Transaction.Current == null)
                             {
                                 if (receiveMode == ServiceBusReceiveMode.PeekLock && !completeReceive &&
                                     !deferredMessage && !movedToDeadLetterQueue)
@@ -3416,6 +3490,8 @@ namespace ServiceBusExplorer
             }
 
             var builder = new StringBuilder();
+            if (System.Transactions.Transaction.Current != null)
+                builder.AppendLine("Provisional transaction work below; no settlements are confirmed until commit succeeds.");
             builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsHeader, taskId));
             if (!string.IsNullOrWhiteSpace(exceptionMessage))
             {
@@ -3466,6 +3542,7 @@ namespace ServiceBusExplorer
                                     CancellationTokenSource cancellationTokenSource,
                                     out string traceMessage)
         {
+            if (System.Transactions.Transaction.Current != null) logging = false;
             if (messageReceiver == null)
             {
                 throw new ArgumentNullException(MessageReceiverCannotBeNull);
@@ -3574,7 +3651,7 @@ namespace ServiceBusExplorer
                                     {
                                         if (fetchedMessages > 0)
                                         {
-                                            updateStatistics(fetchedMessages,
+                                            PublishConfirmedProgress(updateStatistics, fetchedMessages,
                                                              prefetchElapsedTime,
                                                              DirectionType.Receive);
                                             fetchedMessages = messageList.Count;
@@ -3588,7 +3665,7 @@ namespace ServiceBusExplorer
                                 }
                                 else
                                 {
-                                    updateStatistics(messageList.Count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                    PublishConfirmedProgress(updateStatistics, messageList.Count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
                                 }
                             }
                             builder = new StringBuilder();
@@ -3763,7 +3840,7 @@ namespace ServiceBusExplorer
                                     {
                                         if (fetchedMessages > 0)
                                         {
-                                            updateStatistics(fetchedMessages,
+                                            PublishConfirmedProgress(updateStatistics, fetchedMessages,
                                                              prefetchElapsedTime,
                                                              DirectionType.Receive);
                                             fetchedMessages = 1;
@@ -3777,7 +3854,7 @@ namespace ServiceBusExplorer
                                 }
                                 else
                                 {
-                                    updateStatistics(1, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                    PublishConfirmedProgress(updateStatistics, 1, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
                                 }
                             }
                             builder = new StringBuilder();
@@ -3945,7 +4022,7 @@ namespace ServiceBusExplorer
 
                 if (messageReceiver.PrefetchCount > 0 && fetchedMessages > 0 && prefetchElapsedTime > 0)
                 {
-                    updateStatistics(fetchedMessages, prefetchElapsedTime, DirectionType.Receive);
+                    PublishConfirmedProgress(updateStatistics, fetchedMessages, prefetchElapsedTime, DirectionType.Receive);
                 }
             }
             catch (Exception ex)
@@ -4000,7 +4077,8 @@ namespace ServiceBusExplorer
                                              minimumCompleteTime == long.MaxValue ? 0 : minimumCompleteTime,
                                              maximumCompleteTime));
             }
-            traceMessage = builder.ToString();
+            traceMessage = (System.Transactions.Transaction.Current == null ? "" :
+                "Provisional transaction work below; operations are not confirmed until commit succeeds.\n") + builder;
             return ok;
         }
 
@@ -4501,9 +4579,38 @@ namespace ServiceBusExplorer
                 address;
         }
 
+        // Statistics describe confirmed operations, not provisional transactional work.
+        private static void PublishConfirmedProgress(UpdateStatisticsDelegate updateStatistics,
+            long count, long elapsed, DirectionType direction) =>
+            PublishConfirmedProgress(() => updateStatistics(count, elapsed, direction));
+
+        public static void PublishConfirmedProgress(Action publish)
+        {
+            var transaction = System.Transactions.Transaction.Current;
+            if (transaction == null) { publish(); return; }
+            transaction.TransactionCompleted += (_, args) =>
+            {
+                if (args.Transaction.TransactionInformation.Status == System.Transactions.TransactionStatus.Committed)
+                    publish();
+            };
+        }
+
+        public static bool ExecuteReceiveTransaction(Func<bool> receive, bool commit, CancellationToken cancellationToken)
+        {
+            using (var scope = new System.Transactions.TransactionScope())
+            {
+                var succeeded = receive();
+                if (!succeeded || !commit || cancellationToken.IsCancellationRequested) return false;
+                scope.Complete();
+                return true;
+            }
+        }
+
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
+            serviceBusHelper2.ProfileEntityPath = serviceBusNamespaceInstance?.EntityPath;
+
             serviceBusHelper2.ConnectionString = serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra
                 ? GetDataPlaneConnectionString(serviceBusNamespaceInstance) : ConnectionString;
             if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)

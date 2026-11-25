@@ -141,3 +141,29 @@ Receive All drains in bounded batches until an empty receive; Peek All retains t
 Moves from partitioned sources or transfer dead-letter queues are explicitly unsupported before client creation; no atomic cross-partition guarantee is claimed. Dead-letter failures report confirmed IDs and warn that unconfirmed outcomes need broker verification. Cleanup attempts every held lock and client independently. Synthetic receiver/sender tests cover a later failure after one successful operation and simultaneous abandonment/disposal errors.
 
 Release cross-build and exact-head Windows CI cover these regressions. Live Azure/emulator transactions, interactive bulk actions, partition routing and lock-expiry behavior are not verified; no live data was accessed and screenshots remain deferred.
+### Independent review follow-up: connection stage (#910)
+
+The raw transport dropdown updates only TransportType and RuntimePort assignments, preserving matching text in endpoints, entity paths and credentials. The Connect entry path publishes entity selection only on success and restores prior WebSockets/connectivity settings on false returns or exceptions. Synthetic tests exercise the real dropdown and the settings-publication method used by Connect. No live connection, credentials or configuration were used; adapter preparation/rollback is handled in the following management stage.
+
+### Independent review follow-up: management stage (#911)
+
+Compact legacy correlation XML preserves every adjacent string property, including embedded colons. Unsupported Filter/Action wrapper attributes or text and unsupported empty-action metadata are rejected during whole-document preflight before earlier entities can be created. Connection preparation uses a separate replacement helper; active profile/adapters publish only after successful preparation. Failed candidates close their provisional legacy messaging factory. A synthetic localhost profile whose unknown setting fails SDK construction verifies preservation after DNS succeeds, without broker I/O. Existing emulator/cloud isolation, management-only boundaries and legacy supported rule fixtures remain covered. Live reconnect/authentication, broker resource cleanup and interactive import remain manual checks.
+
+### Independent review follow-up: resubmission stage (#912)
+
+Secondary helpers retain original profile EntityPath metadata separately from normalized SDK connection strings. Queue and topic editor scope checks use this metadata, and IsPremiumNamespace itself returns the existing conservative non-premium default without constructing an administration client for entity-scoped SAS access. Audited callers: HandleQueueControl and HandleTopicControl are the only scope-check callers; direct ServiceBusHelper2 callers retain connection-string fallback. Synthetic helper/copy and throwing probe-double tests cover queue/topic scope preservation and no namespace SKU probe. Live entity-scoped SAS UI access remains a manual check; no namespace/network request is used by these tests.
+
+### Stage 4 AMQP bodies and transaction progress
+
+- `ServiceBusAmqpBodyTests` covers a mixed Data/Value/Sequence destructive receive batch,
+  unchanged resend, detached nested AMQP values and both adapter paths on SDK 7.20.1.
+- `MessageFormResubmissionTests.StructuredAmqpEditorPreservesOriginalUntilTextEdited`
+  exercises the actual editor preparation with original/new IDs. Structured bodies have a
+  preview; changing its text explicitly produces UTF-8 Data, as stated in the editor title.
+- `ServiceBusTransactionProgressTests` uses fake senders/receivers and local transactions:
+  a later batch failure retains acknowledged nontransactional progress; failed/cancelled
+  transactions publish no committed progress. Receive-and-delete reports the already
+  removed batch even when a later inspector fails. No broker is contacted.
+- Live broker transaction enlistment/settlement, network failure ambiguity and interactive
+  Azure/emulator workflows still require manual verification. Linux cross-build does not
+  execute these .NET Framework/WinForms tests; Windows CI runs them.

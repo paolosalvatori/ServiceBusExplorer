@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Text;
+using Azure.Core.Amqp;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -11,10 +14,52 @@ namespace ServiceBusExplorer.Helpers
 {
     public static class ServiceBusReceivedMessageAdapter
     {
-        private static readonly ConditionalWeakTable<BrokeredMessage, ServiceBusReceivedMessage> received = new ConditionalWeakTable<BrokeredMessage, ServiceBusReceivedMessage>();
+        private static readonly ConditionalWeakTable<BrokeredMessage, ReceivedBody> received = new ConditionalWeakTable<BrokeredMessage, ReceivedBody>();
 
         public static ServiceBusReceivedMessage GetReceivedMetadata(BrokeredMessage message) =>
-            received.TryGetValue(message, out var original) ? original : null;
+            received.TryGetValue(message, out var original) ? original.Message : null;
+
+        private sealed class ReceivedBody
+        {
+            public ServiceBusReceivedMessage Message;
+            public byte[] Preview;
+        }
+
+        public static bool HasStructuredBody(BrokeredMessage message) =>
+            received.TryGetValue(message, out var original) &&
+            original.Message.GetRawAmqpMessage().Body.BodyType != AmqpMessageBodyType.Data;
+
+        public static BrokeredMessage CloneForResubmission(BrokeredMessage message)
+        {
+            var clone = message.Clone();
+            if (received.TryGetValue(message, out var original)) received.Add(clone, original);
+            return clone;
+        }
+
+        internal static ServiceBusMessage CreatePreservedMessage(BrokeredMessage message, byte[] body)
+        {
+            if (!received.TryGetValue(message, out var original) || !body.SequenceEqual(original.Preview)) return null;
+            return ServiceBusMessageAdapter.ToServiceBusMessageFromReceivedMessage(original.Message);
+        }
+
+        private static byte[] Preview(ServiceBusReceivedMessage message)
+        {
+            var body = message.GetRawAmqpMessage().Body;
+            if (body.BodyType == AmqpMessageBodyType.Data) return message.Body.ToArray();
+            // The preview is deliberately distinct from the retained AMQP payload. Display
+            // serialization must never prevent delivery of another message in a received batch.
+            try
+            {
+                object value = null;
+                if (body.TryGetValue(out var scalar)) value = scalar;
+                else if (body.TryGetSequence(out var sequence)) value = sequence;
+                return Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(value));
+            }
+            catch (Exception)
+            {
+                return Encoding.UTF8.GetBytes("[AMQP " + body.BodyType + " body; original payload retained]");
+            }
+        }
 
         public static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message)
         {
@@ -23,7 +68,8 @@ namespace ServiceBusExplorer.Helpers
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var brokeredMessage = new BrokeredMessage(new MemoryStream(message.Body.ToArray()), true);
+            var preview = Preview(message);
+            var brokeredMessage = new BrokeredMessage(new MemoryStream(preview), true);
             if (!string.IsNullOrEmpty(message.MessageId))
             {
                 brokeredMessage.MessageId = message.MessageId;
@@ -58,7 +104,7 @@ namespace ServiceBusExplorer.Helpers
             SetReceivedProperty(brokeredMessage, "LockToken", Guid.Parse(message.LockToken));
             SetReceivedProperty(brokeredMessage, "DeadLetterSource", message.DeadLetterSource);
             brokeredMessage.ViaPartitionKey = message.TransactionPartitionKey;
-            received.Add(brokeredMessage, message);
+            received.Add(brokeredMessage, new ReceivedBody { Message = message, Preview = preview });
 
             return brokeredMessage;
         }

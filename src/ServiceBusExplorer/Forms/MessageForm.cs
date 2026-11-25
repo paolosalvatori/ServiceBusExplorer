@@ -374,7 +374,7 @@ namespace ServiceBusExplorer.Forms
         {
             // Display decoding/auto-indentation is not an edit. Preserve original bytes and
             // broker identity/routing properties unless the user actually changes the text.
-            var outbound = source.Clone();
+            var outbound = ServiceBusReceivedMessageAdapter.CloneForResubmission(source);
             if (brokeredMessage != null)
             {
                 if (!string.Equals(txtMessageText.Text, initialMessageText, StringComparison.Ordinal))
@@ -745,6 +745,8 @@ namespace ServiceBusExplorer.Forms
                 txtMessageText.Text = messageText;
             }
             initialMessageText = txtMessageText.Text;
+            if (ServiceBusReceivedMessageAdapter.HasStructuredBody(message))
+                grouperMessageText.GroupTitle = "AMQP preview (editing sends UTF-8 Data)";
         }
 
         #endregion

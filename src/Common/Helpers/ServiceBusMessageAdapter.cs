@@ -2,6 +2,7 @@ using System;
 using System.IO;
 
 using Azure;
+using Azure.Core.Amqp;
 using Azure.Messaging.ServiceBus;
 
 using Microsoft.ServiceBus.Messaging;
@@ -17,26 +18,14 @@ namespace ServiceBusExplorer.Helpers
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var serviceBusMessage = new ServiceBusMessage(message.Body)
-            {
-                MessageId = message.MessageId,
-                SessionId = message.SessionId,
-                CorrelationId = message.CorrelationId,
-                ContentType = message.ContentType,
-                Subject = message.Subject,
-                PartitionKey = message.PartitionKey,
-                To = message.To,
-                ReplyTo = message.ReplyTo,
-                ReplyToSessionId = message.ReplyToSessionId,
-                TransactionPartitionKey = message.TransactionPartitionKey,
-                TimeToLive = message.TimeToLive,
-                ScheduledEnqueueTime = message.ScheduledEnqueueTime
-            };
-
+            // The SDK received-message constructor preserves Data, Value and Sequence,
+            // stripping delivery-only annotations. Detach nested AMQP values as well.
+            var copy = new ServiceBusMessage(message);
+            var serviceBusMessage = new ServiceBusMessage(
+                AmqpAnnotatedMessage.FromBytes(copy.GetRawAmqpMessage().ToBytes()));
+            serviceBusMessage.ApplicationProperties.Clear();
             foreach (var property in message.ApplicationProperties)
-            {
                 serviceBusMessage.ApplicationProperties.Add(property.Key, property.Value);
-            }
 
             return serviceBusMessage;
         }
@@ -60,22 +49,22 @@ namespace ServiceBusExplorer.Helpers
                 body = buffer.ToArray();
             }
 
-            var serviceBusMessage = new ServiceBusMessage(new BinaryData(body))
-            {
-                MessageId = message.MessageId,
-                SessionId = message.SessionId,
-                CorrelationId = message.CorrelationId,
-                ContentType = message.ContentType,
-                Subject = message.Label,
-                PartitionKey = message.PartitionKey,
-                TransactionPartitionKey = message.ViaPartitionKey,
-                To = message.To,
-                ReplyTo = message.ReplyTo,
-                ReplyToSessionId = message.ReplyToSessionId,
-                TimeToLive = message.TimeToLive,
-                ScheduledEnqueueTime = new DateTimeOffset(
-                    DateTime.SpecifyKind(message.ScheduledEnqueueTimeUtc, DateTimeKind.Utc))
-            };
+            var serviceBusMessage = ServiceBusReceivedMessageAdapter.CreatePreservedMessage(message, body) ??
+                new ServiceBusMessage(new BinaryData(body));
+            serviceBusMessage.ApplicationProperties.Clear();
+            serviceBusMessage.MessageId = message.MessageId;
+            serviceBusMessage.SessionId = message.SessionId;
+            serviceBusMessage.CorrelationId = message.CorrelationId;
+            serviceBusMessage.ContentType = message.ContentType;
+            serviceBusMessage.Subject = message.Label;
+            serviceBusMessage.PartitionKey = message.PartitionKey;
+            serviceBusMessage.TransactionPartitionKey = message.ViaPartitionKey;
+            serviceBusMessage.To = message.To;
+            serviceBusMessage.ReplyTo = message.ReplyTo;
+            serviceBusMessage.ReplyToSessionId = message.ReplyToSessionId;
+            serviceBusMessage.TimeToLive = message.TimeToLive;
+            serviceBusMessage.ScheduledEnqueueTime = new DateTimeOffset(
+                    DateTime.SpecifyKind(message.ScheduledEnqueueTimeUtc, DateTimeKind.Utc));
 
             foreach (var property in message.Properties)
             {

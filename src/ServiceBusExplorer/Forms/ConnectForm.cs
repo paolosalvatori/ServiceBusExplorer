@@ -60,7 +60,6 @@ namespace ServiceBusExplorer.Forms
         private const string SubscriptionEntity = "Subscription";
         private const string ConnectionStringTransportType = "transporttype";
         private const string ConnectionStringRuntimePort = "runtimeport";
-        private const string ConnectionStringTransportTypeFormat = ";TransportType={0}";
         private const string DefaultNetMessagingRuntimePort = "9354";
         private const string DefaultAmqpRuntimePort = "5671";
         private const string AuthenticationModeLabel = "Authentication:";
@@ -759,6 +758,21 @@ namespace ServiceBusExplorer.Forms
             validation_TextChanged(sender, e);
         }
 
+        internal static string ReplaceConnectionStringSetting(string connection, string name, string value, bool append)
+        {
+            var parts = connection.Split(';');
+            var found = false;
+            for (var i = 0; i < parts.Length; i++)
+            {
+                var separator = parts[i].IndexOf('=');
+                if (separator < 0 || !string.Equals(parts[i].Substring(0, separator).Trim(), name, StringComparison.OrdinalIgnoreCase)) continue;
+                parts[i] = parts[i].Substring(0, separator + 1) + value;
+                found = true;
+            }
+            var updated = string.Join(";", parts);
+            return found || !append ? updated : updated.TrimEnd(';') + ";" + name + "=" + value;
+        }
+
         private void cboTransportType_SelectedIndexChanged(object sender, EventArgs e)
         {
             GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
@@ -770,30 +784,10 @@ namespace ServiceBusExplorer.Forms
                 {
                     return;
                 }
-                var cn = txtUri.Text;
-                if (cn[cn.Length - 1] == ';')
-                {
-                    cn = cn.Substring(0, cn.Length - 1);
-                }
-                var parameters =
-                    cn.Split(';').Where(p => p.Contains('='))
-                        .ToDictionary(s => s.Substring(0, s.IndexOf('=')).ToLower(),
-                            s => s.Substring(s.IndexOf('=') + 1));
-                var value = parameters.ContainsKey(ConnectionStringTransportType)
-                    ? cn.Replace(parameters[ConnectionStringTransportType], cboTransportType.SelectedItem.ToString())
-                    : cn + string.Format(ConnectionStringTransportTypeFormat, cboTransportType.SelectedItem);
-                if (parameters.ContainsKey(ConnectionStringRuntimePort))
-                {
-                    if (!(cboTransportType.SelectedItem is TransportType))
-                    {
-                        return;
-                    }
-                    var transportType = (TransportType)cboTransportType.SelectedItem;
-                    value = value.Replace(parameters[ConnectionStringRuntimePort],
-                        transportType == TransportType.Amqp
-                            ? DefaultAmqpRuntimePort
-                            : DefaultNetMessagingRuntimePort);
-                }
+                if (!(cboTransportType.SelectedItem is TransportType transportType)) return;
+                var value = ReplaceConnectionStringSetting(txtUri.Text, ConnectionStringTransportType, transportType.ToString(), true);
+                value = ReplaceConnectionStringSetting(value, ConnectionStringRuntimePort,
+                    transportType == TransportType.Amqp ? DefaultAmqpRuntimePort : DefaultNetMessagingRuntimePort, false);
                 txtUri.Text = value;
             }
             else
