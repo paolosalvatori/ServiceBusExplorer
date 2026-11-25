@@ -22,7 +22,7 @@ namespace ServiceBusExplorer.Tests.Controls
         {
             RunSta(() =>
             {
-                var confirmed = new NotificationHubDescription("hub") { UserMetadata = metadata, RegistrationTtl = null };
+                var confirmed = new NotificationHubDescription("hub") { UserMetadata = metadata };
                 var logs = new List<string>();
                 using var editor = Create(confirmed, logs);
                 Edit(editor);
@@ -72,7 +72,7 @@ namespace ServiceBusExplorer.Tests.Controls
                 };
                 var logs = new List<string>();
                 using var editor = Create(old, logs);
-                editor.RefreshData(new NotificationHubDescription("hub") { RegistrationTtl = null });
+                editor.RefreshData(new NotificationHubDescription("hub"));
                 AssertCleared(editor, "");
                 Assert.Empty(logs);
             });
@@ -83,7 +83,7 @@ namespace ServiceBusExplorer.Tests.Controls
         {
             RunSta(() =>
             {
-                var confirmed = new NotificationHubDescription("hub") { RegistrationTtl = null };
+                var confirmed = new NotificationHubDescription("hub");
                 var logs = new List<string>();
                 // No connection or management adapter: Update and reload fail locally, without Azure traffic.
                 using var editor = Create(confirmed, logs);
