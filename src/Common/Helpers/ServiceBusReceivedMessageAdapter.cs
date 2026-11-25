@@ -39,21 +39,11 @@ namespace ServiceBusExplorer.Helpers
         public static BrokeredMessage Inspect(BrokeredMessage source, Func<BrokeredMessage, BrokeredMessage> inspect)
         {
             var result = inspect(source) ?? throw new InvalidOperationException("The message inspector returned no message.");
-            if (!ReferenceEquals(source, result) && received.TryGetValue(source, out var original) &&
-                ReadBody(source).SequenceEqual(ReadBody(result)))
+            // Source identity survives an inspector replacement independently of payload edits.
+            // CreatePreservedMessage separately checks bytes against the immutable baseline.
+            if (!ReferenceEquals(source, result) && received.TryGetValue(source, out var original))
                 received.GetValue(result, _ => original);
             return result;
-        }
-
-        private static byte[] ReadBody(BrokeredMessage message)
-        {
-            using (var clone = message.Clone())
-            using (var stream = clone.GetBody<Stream>())
-            using (var buffer = new MemoryStream())
-            {
-                stream?.CopyTo(buffer);
-                return buffer.ToArray();
-            }
         }
 
         internal static ServiceBusMessage CreatePreservedMessage(BrokeredMessage message, byte[] body)
@@ -124,7 +114,7 @@ namespace ServiceBusExplorer.Helpers
             SetReceivedProperty(brokeredMessage, "LockToken", Guid.Parse(message.LockToken));
             SetReceivedProperty(brokeredMessage, "DeadLetterSource", message.DeadLetterSource);
             brokeredMessage.ViaPartitionKey = message.TransactionPartitionKey;
-            received.Add(brokeredMessage, new ReceivedBody { Message = message, Preview = preview });
+            received.Add(brokeredMessage, new ReceivedBody { Message = message, Preview = (byte[])preview.Clone() });
 
             return brokeredMessage;
         }

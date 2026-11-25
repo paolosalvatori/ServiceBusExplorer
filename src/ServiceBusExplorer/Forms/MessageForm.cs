@@ -391,6 +391,11 @@ namespace ServiceBusExplorer.Forms
             return outbound;
         }
 
+        internal long? GetSourceSequenceForRemoval(BrokeredMessage source) =>
+            chkRemove.Checked
+                ? ServiceBusReceivedMessageAdapter.GetReceivedMetadata(source)?.SequenceNumber ?? source.SequenceNumber
+                : (long?)null;
+
         private async void btnSubmit_Click(object sender, EventArgs e)
         {
             try
@@ -440,8 +445,6 @@ namespace ServiceBusExplorer.Forms
                             outboundMessage = BuildMessageForResubmission(message);
                         }
 
-                        sequenceNumbers.Add(message.SequenceNumber);
-
                         var warningCollection = new ConcurrentBag<string>();
                         foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
                         {
@@ -476,6 +479,8 @@ namespace ServiceBusExplorer.Forms
                         }
                         if (warningCollection.Count <= 0)
                         {
+                            var sequence = GetSourceSequenceForRemoval(message);
+                            if (sequence.HasValue) sequenceNumbers.Add(sequence.Value);
                             outboundMessages.Add(outboundMessage);
                             continue;
                         }

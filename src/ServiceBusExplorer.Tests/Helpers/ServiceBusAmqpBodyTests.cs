@@ -108,6 +108,34 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
+        [Theory]
+        [InlineData("Value")]
+        [InlineData("Sequence")]
+        public void InPlaceInspectorEditsDoNotChangeThePreservedPreviewBaseline(string kind)
+        {
+            var receiver = new MixedReceiver { Messages = new[] { Message(kind) } };
+            var inspector = new InPlaceInspector();
+            using var received = Assert.Single(ServiceBusHelper.ReadMessagesFromModernReceiver(receiver, false, 1, null, TimeSpan.Zero, inspector));
+            using var outgoing = new ServiceBusHelper((_, __) => { }).CreateMessageForApiReceiver(received, 0, false, false, BodyType.Stream, null);
+            var modern = ServiceBusMessageAdapter.ToServiceBusMessage(outgoing);
+            Assert.Equal(AmqpMessageBodyType.Data, modern.GetRawAmqpMessage().Body.BodyType);
+            Assert.Equal((byte)'!', modern.Body.ToArray()[0]);
+            Assert.Same(receiver.Messages[0], ServiceBusReceivedMessageAdapter.GetReceivedMetadata(received));
+        }
+
+        private sealed class InPlaceInspector : IBrokeredMessageInspector
+        {
+            public Microsoft.ServiceBus.Messaging.BrokeredMessage BeforeSendMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message) => message;
+            public Microsoft.ServiceBus.Messaging.BrokeredMessage AfterReceiveMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message)
+            {
+                var stream = message.GetBody<Stream>();
+                stream.Position = 0;
+                stream.WriteByte((byte)'!');
+                stream.Position = 0;
+                return message;
+            }
+        }
+
         private sealed class CloningInspector : IBrokeredMessageInspector
         {
             private readonly bool edit;

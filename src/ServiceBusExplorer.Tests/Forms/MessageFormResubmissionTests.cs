@@ -119,6 +119,36 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void SubmitPreparationUsesSourceIdentityIndependentlyOfInspectorPayloadChanges(bool remove, bool edit)
+        {
+            RunSta(() =>
+            {
+                var received = Azure.Messaging.ServiceBus.ServiceBusModelFactory.ServiceBusReceivedMessage(
+                    body: new BinaryData("original"), messageId: "id", sequenceNumber: 123);
+                using var source = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(received);
+                using var replacement = ServiceBusReceivedMessageAdapter.Inspect(source, message =>
+                {
+                    var clone = message.Clone();
+                    if (edit) clone.SetBodyStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("edited")));
+                    return clone;
+                });
+                using var editor = new MessageForm(replacement, new ServiceBusHelper((_, __) => { }), (_, __) => { });
+                ((CheckBox)editor.Controls.Find("chkRemove", true).Single()).Checked = remove;
+                using var outbound = editor.BuildMessageForResubmission(replacement);
+                Assert.Equal(remove ? (long?)123 : null, editor.GetSourceSequenceForRemoval(replacement));
+                Assert.Equal(edit ? "edited" : "original", ServiceBusMessageAdapter.ToServiceBusMessage(outbound).Body.ToString());
+                // An outbound-only message has no received SequenceNumber; sending must not ask for one.
+                ((CheckBox)editor.Controls.Find("chkRemove", true).Single()).Checked = false;
+                using var outboundOnly = new BrokeredMessage(new MemoryStream(new byte[] { 1 }));
+                Assert.Null(editor.GetSourceSequenceForRemoval(outboundOnly));
+            });
+        }
+
         [Fact]
         public void QueueTestEntryRejectsTransactionalReceiveAndDeleteBeforeStarting()
         {

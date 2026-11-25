@@ -15,6 +15,42 @@ namespace ServiceBusExplorer.Tests.Helpers
     public class ServiceBusTransactionProgressTests
     {
         [Theory]
+        [InlineData(1, 0, ReceiveMode.ReceiveAndDelete)]
+        [InlineData(3, 0, ReceiveMode.ReceiveAndDelete)]
+        [InlineData(3, 1, ReceiveMode.ReceiveAndDelete)]
+        [InlineData(3, 1, ReceiveMode.PeekLock)]
+        public void LegacyReceiveAccountsEntireConsumedBatchBeforeInspectorFailure(int count, int failAt, ReceiveMode mode)
+        {
+            var messages = new List<BrokeredMessage>();
+            for (var i = 0; i < count; i++) messages.Add(new BrokeredMessage(new MemoryStream(new byte[] { 1 })));
+            var published = 0;
+            var expected = mode == ReceiveMode.ReceiveAndDelete ? count : 0;
+            var inspector = new FailingBatchInspector(failAt, () => Assert.Equal(expected, published));
+            try
+            {
+                Assert.Throws<InvalidOperationException>(() => ServiceBusHelper.InspectReceivedMessages(messages, mode, inspector, n => published += n));
+                Assert.Equal(expected, published);
+                Assert.Equal(failAt + 1, inspector.Calls);
+            }
+            finally { messages.ForEach(message => message.Dispose()); }
+        }
+
+        private sealed class FailingBatchInspector : IBrokeredMessageInspector
+        {
+            private readonly int failAt;
+            private readonly Action check;
+            public int Calls;
+            public FailingBatchInspector(int failAt, Action check) { this.failAt = failAt; this.check = check; }
+            public BrokeredMessage BeforeSendMessage(BrokeredMessage message) => message;
+            public BrokeredMessage AfterReceiveMessage(BrokeredMessage message)
+            {
+                check();
+                if (Calls++ == failAt) throw new InvalidOperationException("synthetic inspector failure");
+                return message;
+            }
+        }
+
+        [Theory]
         [InlineData(true, true, false, true)]
         [InlineData(false, true, false, false)]
         [InlineData(true, false, false, false)]
