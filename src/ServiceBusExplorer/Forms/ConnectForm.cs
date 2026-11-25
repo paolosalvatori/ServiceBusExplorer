@@ -312,7 +312,8 @@ namespace ServiceBusExplorer.Forms
 
         private bool UsesRawConnectionStringEditor(ServiceBusNamespaceType connectionStringType, bool containsStsEndpoint)
         {
-            return connectionStringType == ServiceBusNamespaceType.OnPremises ||
+            return (serviceBusHelper.ServiceBusNamespaces.TryGetValue(cboServiceBusNamespace.Text, out var saved) && saved.UseDevelopmentEmulator) ||
+                   connectionStringType == ServiceBusNamespaceType.OnPremises ||
                    containsStsEndpoint ||
                    (cboServiceBusNamespace.Text == EnterConnectionString &&
                     SelectedAuthMode == ServiceBusAuthMode.Sas);
@@ -957,25 +958,33 @@ namespace ServiceBusExplorer.Forms
                 }
                 else
                 {
-                    ServiceBusConnectionStringBuilder serviceBusConnectionStringBuilder;
-                    try
+                    var parsed = ServiceBusNamespace.GetServiceBusNamespace(key, ConnectionString, (message, asynchronous) => { });
+                    if (parsed?.UseDevelopmentEmulator == true)
                     {
-                        serviceBusConnectionStringBuilder = new ServiceBusConnectionStringBuilder(ConnectionString);
+                        host = parsed.FullyQualifiedNamespace;
                     }
-                    catch (Exception)
+                    else
                     {
-                        MainForm.StaticWriteToLog("The format of the connection string is invalid.");
-                        return;
-                    }
+                        ServiceBusConnectionStringBuilder serviceBusConnectionStringBuilder;
+                        try
+                        {
+                            serviceBusConnectionStringBuilder = new ServiceBusConnectionStringBuilder(ConnectionString);
+                        }
+                        catch (Exception)
+                        {
+                            MainForm.StaticWriteToLog("The format of the connection string is invalid.");
+                            return;
+                        }
 
-                    if (serviceBusConnectionStringBuilder.Endpoints == null ||
-                        serviceBusConnectionStringBuilder.Endpoints.Count == 0)
-                    {
-                        MainForm.StaticWriteToLog("The connection string does not contain any endpoint.");
-                        return;
-                    }
+                        if (serviceBusConnectionStringBuilder.Endpoints == null ||
+                            serviceBusConnectionStringBuilder.Endpoints.Count == 0)
+                        {
+                            MainForm.StaticWriteToLog("The connection string does not contain any endpoint.");
+                            return;
+                        }
 
-                    host = serviceBusConnectionStringBuilder.Endpoints.ToArray()[0].Host;
+                        host = serviceBusConnectionStringBuilder.Endpoints.ToArray()[0].Host;
+                    }
                 }
 
                 var index = host.IndexOf(".", StringComparison.Ordinal);

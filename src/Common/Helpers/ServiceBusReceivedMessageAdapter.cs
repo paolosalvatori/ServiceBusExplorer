@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 using Azure.Messaging.ServiceBus;
 
@@ -9,6 +11,11 @@ namespace ServiceBusExplorer.Helpers
 {
     public static class ServiceBusReceivedMessageAdapter
     {
+        private static readonly ConditionalWeakTable<BrokeredMessage, ServiceBusReceivedMessage> received = new ConditionalWeakTable<BrokeredMessage, ServiceBusReceivedMessage>();
+
+        public static ServiceBusReceivedMessage GetReceivedMetadata(BrokeredMessage message) =>
+            received.TryGetValue(message, out var original) ? original : null;
+
         public static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message)
         {
             if (message == null)
@@ -41,32 +48,22 @@ namespace ServiceBusExplorer.Helpers
                 brokeredMessage.Properties.Add(property.Key, property.Value);
             }
 
-            AddSystemProperty(brokeredMessage, "SequenceNumber", message.SequenceNumber);
-            AddSystemProperty(brokeredMessage, "EnqueuedSequenceNumber", message.EnqueuedSequenceNumber);
-            AddSystemProperty(brokeredMessage, "PartitionKey", message.PartitionKey);
-            AddSystemProperty(brokeredMessage, "DeliveryCount", message.DeliveryCount);
-            AddSystemProperty(brokeredMessage, "EnqueuedTime", message.EnqueuedTime);
-            AddSystemProperty(brokeredMessage, "ExpiresAt", message.ExpiresAt);
-            AddSystemProperty(brokeredMessage, "LockedUntil", message.LockedUntil);
-            AddSystemProperty(brokeredMessage, "LockToken", message.LockToken);
-            AddSystemProperty(brokeredMessage, "DeadLetterSource", message.DeadLetterSource);
-            AddSystemProperty(brokeredMessage, "DeadLetterReason", message.DeadLetterReason);
-            AddSystemProperty(brokeredMessage, "DeadLetterErrorDescription", message.DeadLetterErrorDescription);
-            AddSystemProperty(brokeredMessage, "TransactionPartitionKey", message.TransactionPartitionKey);
-            AddSystemProperty(brokeredMessage, "State", message.State);
+            // Keep broker identity out of the editable application-property bag. The pinned
+            // legacy SDK exposes internal setters for its received-only display properties.
+            SetReceivedProperty(brokeredMessage, "SequenceNumber", message.SequenceNumber);
+            SetReceivedProperty(brokeredMessage, "EnqueuedSequenceNumber", message.EnqueuedSequenceNumber);
+            SetReceivedProperty(brokeredMessage, "DeliveryCount", message.DeliveryCount);
+            SetReceivedProperty(brokeredMessage, "EnqueuedTimeUtc", message.EnqueuedTime.UtcDateTime);
+            SetReceivedProperty(brokeredMessage, "LockedUntilUtc", message.LockedUntil.UtcDateTime);
+            SetReceivedProperty(brokeredMessage, "LockToken", Guid.Parse(message.LockToken));
+            SetReceivedProperty(brokeredMessage, "DeadLetterSource", message.DeadLetterSource);
+            brokeredMessage.ViaPartitionKey = message.TransactionPartitionKey;
+            received.Add(brokeredMessage, message);
 
             return brokeredMessage;
         }
 
-        private static void AddSystemProperty(BrokeredMessage target, string name, object value)
-        {
-            var key = $"ServiceBusExplorer.SystemProperties.{name}";
-            if (target.Properties.ContainsKey(key))
-            {
-                throw new InvalidOperationException(
-                    $"The application property '{key}' conflicts with received Service Bus system metadata.");
-            }
-            target.Properties.Add(key, value);
-        }
+        private static void SetReceivedProperty(BrokeredMessage target, string name, object value) =>
+            typeof(BrokeredMessage).GetProperty(name, BindingFlags.Public | BindingFlags.Instance).SetValue(target, value);
     }
 }

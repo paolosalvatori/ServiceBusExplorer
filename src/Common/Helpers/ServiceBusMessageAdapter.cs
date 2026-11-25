@@ -68,10 +68,10 @@ namespace ServiceBusExplorer.Helpers
                 ContentType = message.ContentType,
                 Subject = message.Label,
                 PartitionKey = message.PartitionKey,
+                TransactionPartitionKey = message.ViaPartitionKey,
                 To = message.To,
                 ReplyTo = message.ReplyTo,
                 ReplyToSessionId = message.ReplyToSessionId,
-                TransactionPartitionKey = message.ViaPartitionKey,
                 TimeToLive = message.TimeToLive,
                 ScheduledEnqueueTime = new DateTimeOffset(
                     DateTime.SpecifyKind(message.ScheduledEnqueueTimeUtc, DateTimeKind.Utc))

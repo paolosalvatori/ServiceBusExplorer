@@ -435,16 +435,16 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private void HandleException(Exception ex)
+        private void HandleException(Exception ex, bool async = true)
         {
             if (ex == null || string.IsNullOrWhiteSpace(ex.Message))
             {
                 return;
             }
-            writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message));
+            writeToLog(string.Format(CultureInfo.CurrentCulture, ExceptionFormat, ex.Message), async);
             if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
             {
-                writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message));
+                writeToLog(string.Format(CultureInfo.CurrentCulture, InnerExceptionFormat, ex.InnerException.Message), async);
             }
         }
 
@@ -1069,7 +1069,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                HandleException(ex, false);
                 StopFailedListener(cancellationToken);
             }
             finally
@@ -1082,7 +1082,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 catch (Exception ex)
                 {
-                    HandleException(ex);
+                    HandleException(ex, false);
                     StopFailedListener(cancellationToken);
                 }
             }

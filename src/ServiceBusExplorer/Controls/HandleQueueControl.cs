@@ -1340,7 +1340,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         SubQueue.None,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -1577,7 +1577,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         SubQueue.DeadLetter,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -1728,7 +1728,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         SubQueue.TransferDeadLetter,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);

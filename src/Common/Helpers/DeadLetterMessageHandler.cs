@@ -40,15 +40,17 @@ namespace ServiceBusExplorer.Helpers
     public class DeletedDlqMessagesResult
     {
         #region Public constructor
-        public DeletedDlqMessagesResult(bool timedOut, List<long> deletedSequenceNumbers)
+        public DeletedDlqMessagesResult(bool timedOut, List<long> deletedSequenceNumbers, string failure = null)
         {
             TimedOut = timedOut;
+            Failure = failure;
             DeletedSequenceNumbers = deletedSequenceNumbers;
         }
         #endregion
 
         #region Public instance properties
         public bool TimedOut { get; }
+        public string Failure { get; }
         public List<long> DeletedSequenceNumbers { get; }
         #endregion
     }
@@ -94,6 +96,11 @@ namespace ServiceBusExplorer.Helpers
         public async Task<DeletedDlqMessagesResult> DeleteMessages(List<long?> sequenceNumbers,
             bool TransferDLQ)
         {
+            if (sequenceNumbers == null || sequenceNumbers.Count == 0)
+                return new DeletedDlqMessagesResult(false, new List<long>());
+            if (sequenceNumbers.Any(number => !number.HasValue))
+                throw new ArgumentException("Every selected message must have a broker sequence number.", nameof(sequenceNumbers));
+            sequenceNumbers = sequenceNumbers.Distinct().ToList();
             var sequenceNumbersToDeleteList = new List<long?>();
             foreach (var number in sequenceNumbers)
             {
@@ -106,22 +113,17 @@ namespace ServiceBusExplorer.Helpers
                 throw new LockDurationTooLowException();
             }
 
+            string failure = null;
             var timedOut = false;
             var done = false;
             var lockedMessages = new Dictionary<long, ServiceBusReceivedMessage>(1000);
             var deletedSequenceNumbers = new List<long>();
             var stopwatch = Stopwatch.StartNew();
-            var helper2 = serviceBusHelper.GetServiceBusHelper2();
-            if (!helper2.IsEntra)
-            {
-                helper2.ConnectionString = ServiceBusHelper.GetDataPlaneConnectionString(
-                    serviceBusHelper.ConnectionString,
-                    serviceBusHelper.IsEmulator);
-            }
-            var client = helper2.CreateServiceBusClient();
-            var messageReceiver = CreateReceiver(client, TransferDLQ);
+            var client = CreateClient(false);
+            ServiceBusReceiver messageReceiver = null;
             try
             {
+                messageReceiver = CreateReceiver(client, TransferDLQ);
                 do
                 {
                     var message = await messageReceiver.ReceiveMessageAsync(
@@ -160,18 +162,19 @@ namespace ServiceBusExplorer.Helpers
                 WriteToLog($"Got a message lock loss after {stopwatch.ElapsedMilliseconds / 1000} seconds.");
                 timedOut = true;
             }
+            catch (Exception exception) { failure = exception.Message; }
             finally
             {
                 foreach (var message in lockedMessages.Values)
                 {
-                    await messageReceiver.AbandonMessageAsync(message).ConfigureAwait(false);
+                    await CleanupAsync(() => messageReceiver.AbandonMessageAsync(message)).ConfigureAwait(false);
                 }
-                await messageReceiver.DisposeAsync().ConfigureAwait(false);
-                await client.DisposeAsync().ConfigureAwait(false);
+                await CleanupAsync(() => messageReceiver == null ? Task.CompletedTask : messageReceiver.DisposeAsync().AsTask()).ConfigureAwait(false);
+                await CleanupAsync(() => client.DisposeAsync().AsTask()).ConfigureAwait(false);
                 stopwatch.Stop();
             }
 
-            return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers);
+            return new DeletedDlqMessagesResult(timedOut, deletedSequenceNumbers, failure);
         }
 
     
@@ -179,6 +182,15 @@ namespace ServiceBusExplorer.Helpers
         public async Task<DeletedDlqMessagesResult> MoveMessages(string targetEntityPath,
             List<long> sequenceNumbers, bool transferDLQ, List<BrokeredMessage> messagesToSend = null)
         {
+            if (transferDLQ || sourceQueueDescription?.EnablePartitioning == true ||
+                sourceSubscriptionWrapper?.TopicDescription?.EnablePartitioning == true)
+                throw new NotSupportedException("Moving transfer dead-letter or partitioned-source messages is not supported safely by this stage. No messages were changed.");
+            if (sequenceNumbers == null || sequenceNumbers.Count == 0)
+                return new DeletedDlqMessagesResult(false, new List<long>());
+
+            if (sequenceNumbers.Distinct().Count() != sequenceNumbers.Count)
+                throw new ArgumentException("Select each broker sequence number only once.", nameof(sequenceNumbers));
+
             if (messagesToSend != null)
             {
                 if (sequenceNumbers.Count != messagesToSend.Count)
@@ -188,6 +200,7 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
+            string failure = null;
             var timedOut = false;
             var done = false;
             var lockedMessages = new List<ServiceBusReceivedMessage>(1000);
@@ -200,19 +213,14 @@ namespace ServiceBusExplorer.Helpers
             }
 
             var stopwatch = Stopwatch.StartNew();
-            var helper2 = serviceBusHelper.GetServiceBusHelper2();
-            if (!helper2.IsEntra)
-            {
-                helper2.ConnectionString = ServiceBusHelper.GetDataPlaneConnectionString(
-                    serviceBusHelper.ConnectionString,
-                    serviceBusHelper.IsEmulator);
-            }
-            var client = helper2.CreateServiceBusClient(enableCrossEntityTransactions: true);
-            var messageReceiver = CreateReceiver(client, transferDLQ);
-            var messageSender = client.CreateSender(targetEntityPath);
+            var client = CreateClient(true);
+            ServiceBusReceiver messageReceiver = null;
+            ServiceBusSender messageSender = null;
 
             try
             {
+                messageReceiver = CreateReceiver(client, transferDLQ);
+                messageSender = client.CreateSender(targetEntityPath);
                 do
                 {
                     var message = await messageReceiver.ReceiveMessageAsync(
@@ -283,20 +291,21 @@ namespace ServiceBusExplorer.Helpers
                 WriteToLog($"Got a message lock loss after {stopwatch.ElapsedMilliseconds / 1000} seconds.");
                 timedOut = true;
             }
+            catch (Exception exception) { failure = exception.Message; }
             finally
             {
                 foreach (var message in lockedMessages)
                 {
-                    await messageReceiver.AbandonMessageAsync(message).ConfigureAwait(false);
+                    await CleanupAsync(() => messageReceiver.AbandonMessageAsync(message)).ConfigureAwait(false);
                 }
 
-                await messageSender.DisposeAsync().ConfigureAwait(false);
-                await messageReceiver.DisposeAsync().ConfigureAwait(false);
-                await client.DisposeAsync().ConfigureAwait(false);
+                await CleanupAsync(() => messageSender == null ? Task.CompletedTask : messageSender.DisposeAsync().AsTask()).ConfigureAwait(false);
+                await CleanupAsync(() => messageReceiver == null ? Task.CompletedTask : messageReceiver.DisposeAsync().AsTask()).ConfigureAwait(false);
+                await CleanupAsync(() => client.DisposeAsync().AsTask()).ConfigureAwait(false);
                 stopwatch.Stop();
             }
 
-            return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers);
+            return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers, failure);
         }
 
         public string GetFailureExplanation(DeletedDlqMessagesResult result, int targetMessageCount, bool delete)
@@ -313,6 +322,8 @@ namespace ServiceBusExplorer.Helpers
             {
                 messageText = $"Not all the selected messages were {verb}.";
             }
+
+            if (result.Failure != null) return $"Only {result.DeletedSequenceNumbers.Count} of {targetMessageCount} messages were confirmed {verb}. The operation failed: {result.Failure}. Check broker state before retrying unconfirmed messages.";
 
             if (result.TimedOut)
             {
@@ -384,6 +395,20 @@ namespace ServiceBusExplorer.Helpers
                 sourceSubscriptionWrapper.SubscriptionDescription.TopicPath,
                 sourceSubscriptionWrapper.SubscriptionDescription.Name,
                 options);
+        }
+
+        protected virtual ServiceBusClient CreateClient(bool crossEntityTransactions) =>
+            serviceBusHelper.CreateServiceBusClient(crossEntityTransactions);
+
+        private async Task CleanupAsync(Func<Task> cleanup)
+        {
+            try { await cleanup().ConfigureAwait(false); }
+            catch (Exception exception)
+            {
+                // A disposed UI logger must not prevent the remaining resources being released.
+                try { WriteToLog("Dead-letter cleanup failed: " + exception.Message); }
+                catch { }
+            }
         }
 
         void WriteToLog(string message)

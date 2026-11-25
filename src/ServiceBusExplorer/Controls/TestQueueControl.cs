@@ -1268,16 +1268,14 @@ namespace ServiceBusExplorer.Controls
                             }
                             for (var i = 0; i < receiverTaskCount; i++)
                             {
-                                MessagingFactory factory;
+                                MessagingFactory factory = null;
                                 ServiceBusClient client = null;
-                                if (checkBoxReceiveNewFactory.Checked)
+                                if (queueDescription.RequiresSession)
                                 {
-                                    factory = controlHelper.ServiceBusHelper.CreateMessagingFactory();
-                                    receiverFactories.Add(factory);
-                                }
-                                else
-                                {
-                                    factory = controlHelper.ServiceBusHelper.MessagingFactory;
+                                    factory = checkBoxReceiveNewFactory.Checked
+                                        ? controlHelper.ServiceBusHelper.CreateMessagingFactory()
+                                        : controlHelper.ServiceBusHelper.MessagingFactory;
+                                    if (checkBoxReceiveNewFactory.Checked) receiverFactories.Add(factory);
                                 }
                                 if (!queueDescription.RequiresSession)
                                 {

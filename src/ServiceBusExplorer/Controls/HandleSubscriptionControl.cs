@@ -876,7 +876,7 @@ namespace ServiceBusExplorer.Controls
                         subscriptionWrapper.SubscriptionDescription.Name,
                         SubQueue.None,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -1141,7 +1141,7 @@ namespace ServiceBusExplorer.Controls
                         subscriptionWrapper.SubscriptionDescription.Name,
                         SubQueue.DeadLetter,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
