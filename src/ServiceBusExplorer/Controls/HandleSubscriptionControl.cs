@@ -297,28 +297,7 @@ namespace ServiceBusExplorer.Controls
 
         public void GetTransferDeadletterMessages()
         {
-            using (var receiveModeForm = new ReceiveModeForm(RetrieveMessagesFromDeadletterQueue, MainForm.SingletonMainForm.TopCount, serviceBusHelper.BrokeredMessageInspectors.Keys))
-            {
-                if (receiveModeForm.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-                txtDeadletterText.Text = string.Empty;
-                deadletterCustomPropertyGrid.SelectedObject = null;
-                deadletterPropertyGrid.SelectedObject = null;
-                var messageInspector = !string.IsNullOrEmpty(receiveModeForm.Inspector) &&
-                                       serviceBusHelper.BrokeredMessageInspectors.ContainsKey(receiveModeForm.Inspector) ?
-                    Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[receiveModeForm.Inspector]) as IBrokeredMessageInspector :
-                    null;
-                if (subscriptionWrapper.TopicDescription.EnablePartitioning)
-                {
-                    ReadDeadletterMessagesOneAtTheTime(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
-                }
-                else
-                {
-                    GetDeadletterMessages(receiveModeForm.Peek, receiveModeForm.All, receiveModeForm.Count, messageInspector, receiveModeForm.FromSequenceNumber);
-                }
-            }
+            writeToLog("Transfer dead-letter browsing for subscriptions is not supported by this view. No messages were read.");
         }
 
         public void GetMessageSessions()
@@ -963,11 +942,7 @@ namespace ServiceBusExplorer.Controls
                 tabPageDeadletter.SuspendLayout();
 
                 Cursor.Current = Cursors.WaitCursor;
-                var brokeredMessages = new List<BrokeredMessage>();
-
-                if (!subscriptionWrapper.SubscriptionDescription.RequiresSession)
-                {
-                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                var brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
                         subscriptionWrapper.SubscriptionDescription.TopicPath,
                         subscriptionWrapper.SubscriptionDescription.Name,
                         SubQueue.DeadLetter,
@@ -976,71 +951,8 @@ namespace ServiceBusExplorer.Controls
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
-                    writeToLog(string.Format(peek ? MessagesPeekedFromTheDeadletterQueue : MessagesReceivedFromTheDeadletterQueue,
+                writeToLog(string.Format(peek ? MessagesPeekedFromTheDeadletterQueue : MessagesReceivedFromTheDeadletterQueue,
                         brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else if (peek)
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                              ReceiveMode.PeekLock);
-                    var totalRetrieved = 0;
-                    var retrieved = 0;
-
-                    do
-                    {
-                        IEnumerable<BrokeredMessage> messages;
-
-                        if (retrieved == 0 && fromSequenceNumber.HasValue)
-                        {
-                            messages = messageReceiver.PeekBatch(fromSequenceNumber.Value, all ?
-                                MainForm.SingletonMainForm.TopCount :
-                                count - totalRetrieved);
-                        }
-                        else
-                        {
-                            messages = messageReceiver.PeekBatch(all ?
-                                MainForm.SingletonMainForm.TopCount :
-                                count - totalRetrieved);
-                        }
-
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-                        retrieved = enumerable.Count();
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                              ReceiveMode.ReceiveAndDelete);
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var messages = messageReceiver.ReceiveBatch(all ?
-                                                                    MainForm.SingletonMainForm.TopCount :
-                                                                    count - totalRetrieved,
-                                                                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        var enumerable = messages as BrokeredMessage[] ?? messages.ToArray();
-                        retrieved = enumerable.Count();
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.AddRange(messageInspector != null ? enumerable.Select(b => messageInspector.AfterReceiveMessage(b)) : enumerable);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
 
                 deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
                 {
@@ -1078,10 +990,6 @@ namespace ServiceBusExplorer.Controls
                 writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue,
                                          MainForm.SingletonMainForm.ReceiveTimeout,
                                          subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (NotSupportedException) when (subscriptionWrapper.SubscriptionDescription.RequiresSession)
-            {
-                ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
             catch (Exception ex)
             {
@@ -1099,105 +1007,8 @@ namespace ServiceBusExplorer.Controls
 
         private void ReadDeadletterMessagesOneAtTheTime(bool peek, bool all, int count, IBrokeredMessageInspector messageInspector, long? fromSequenceNumber)
         {
-            try
-            {
-                var brokeredMessages = new List<BrokeredMessage>();
-
-                if (peek)
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.PeekLock);
-
-                    for (var i = 0; i < count; i++)
-                    {
-                        BrokeredMessage message;
-
-                        if (i == 0 && fromSequenceNumber.HasValue)
-                        {
-                            message = messageReceiver.Peek(fromSequenceNumber.Value);
-                        }
-                        else
-                        {
-                            message = messageReceiver.Peek();
-                        }
-
-                        if (message != null)
-                        {
-                            if (messageInspector != null)
-                            {
-                                message = messageInspector.AfterReceiveMessage(message);
-                            }
-                            brokeredMessages.Add(message);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    writeToLog(string.Format(MessagesPeekedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                else
-                {
-                    var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(subscriptionWrapper.SubscriptionDescription.TopicPath,
-                                                                                                                              subscriptionWrapper.SubscriptionDescription.Name),
-                                                                                                  ReceiveMode.ReceiveAndDelete);
-                    var totalRetrieved = 0;
-                    int retrieved;
-                    do
-                    {
-                        var message = messageReceiver.Receive(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout));
-                        retrieved = message != null ? 1 : 0;
-                        if (retrieved == 0)
-                        {
-                            continue;
-                        }
-                        totalRetrieved += retrieved;
-                        brokeredMessages.Add(messageInspector != null ? messageInspector.AfterReceiveMessage(message) : message);
-                    }
-                    while (retrieved > 0 && (all || count > totalRetrieved));
-                    writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
-                }
-                deadletterBindingList = new SortableBindingList<BrokeredMessage>(brokeredMessages)
-                {
-                    AllowEdit = false,
-                    AllowNew = false,
-                    AllowRemove = true
-                };
-                deadletterBindingSource.DataSource = deadletterBindingList;
-                deadletterDataGridView.DataSource = deadletterBindingSource;
-
-                deadletterSplitContainer.SplitterDistance = deadletterSplitContainer.Width -
-                                                          GrouperMessagePropertiesWith -
-                                                          deadletterSplitContainer.SplitterWidth;
-                deadletterMainSplitContainer.SplitterDistance = deadletterMainSplitContainer.Size.Height / 2 - 8;
-
-                if (!peek)
-                {
-                    if (OnRefresh != null)
-                    {
-                        OnRefresh();
-                    }
-                }
-                if (mainTabControl.TabPages[DeadletterTabPage] == null)
-                {
-                    EnablePage(DeadletterTabPage);
-                }
-                if (mainTabControl.TabPages[DeadletterTabPage] != null)
-                {
-                    mainTabControl.SelectTab(DeadletterTabPage);
-                }
-            }
-            catch (TimeoutException)
-            {
-                writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue,
-                                         MainForm.SingletonMainForm.ReceiveTimeout,
-                                         subscriptionWrapper.SubscriptionDescription.Name));
-            }
-            catch (Exception e)
-            {
-                HandleException(e);
-            }
+            // Modern receivers support DLQ reads independently of the entity's session requirement.
+            GetDeadletterMessages(peek, all, count, messageInspector, fromSequenceNumber);
         }
 
         private async void btnCreateDelete_Click(object sender, EventArgs e)

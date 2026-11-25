@@ -610,28 +610,12 @@ namespace ServiceBusExplorer.Controls
                         chart.Series.ToList().ForEach(s => s.Points.Clear());
                     }
                     managerResetEvent = new ManualResetEventSlim(false);
-                    Action<CancellationTokenSource> managerAction = cts =>
-                    {
-                        if (cts == null)
+                    Func<CancellationTokenSource, Task> managerAction = cts =>
+                        WorkerOperationDrain.RunManagerAsync(this, managerResetEvent, cts.Token, async () =>
                         {
-                            return;
-                        }
-                        try
-                        {
-                            managerResetEvent.Wait(cts.Token);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                        }
-                        if (!cts.IsCancellationRequested)
-                        {
-                            Invoke((MethodInvoker)async delegate
-                           {
-                               btnStart.Text = StartCaption;
-                               await MainForm.SingletonMainForm.RefreshSelectedEntity();
-                           });
-                        }
-                    };
+                            btnStart.Text = StartCaption;
+                            await MainForm.SingletonMainForm.RefreshSelectedEntity();
+                        });
 
                     Action updateGraphAction = () =>
                     {
@@ -1002,7 +986,7 @@ namespace ServiceBusExplorer.Controls
                                                                                senderCancellationTokenSource,
                                                                                out traceMessage);
                                             var builder = new StringBuilder(traceMessage);
-                                            if (checkBoxSenderCommitTransaction.Checked)
+                                            if (ok && checkBoxSenderCommitTransaction.Checked && !senderCancellationTokenSource.IsCancellationRequested)
                                             {
                                                 scope.Complete();
                                                 builder.AppendLine(TransactionCommitted);
@@ -1143,9 +1127,9 @@ namespace ServiceBusExplorer.Controls
                                                 });
                                         }
                                         string traceMessage = null;
-                                        Func<bool> receive = () =>
-                                        {
-                                            return controlHelper.ServiceBusHelper.ReceiveMessages(sdkReceiver,
+                                        var useTransaction = checkBoxReceiverUseTransaction.Checked;
+                                        var succeeded = ServiceBusHelper.ExecuteManualReceive(() =>
+                                            controlHelper.ServiceBusHelper.ReceiveMessages(sdkReceiver,
                                                 receiveMode,
                                                 currentReadFromDeadLetterQueue,
                                                 taskId,
@@ -1164,25 +1148,15 @@ namespace ServiceBusExplorer.Controls
                                                 receiverBrokeredMessageInspector,
                                                 UpdateStatistics,
                                                 receiverCancellationTokenSource,
-                                                out traceMessage);
-                                        };
-                                        if (checkBoxReceiverUseTransaction.Checked)
-                                        {
-                                            var committed = ServiceBusHelper.ExecuteReceiveTransaction(receive,
-                                                checkBoxReceiverCommitTransaction.Checked, receiverCancellationTokenSource.Token);
-                                            var builder = new StringBuilder(traceMessage);
-                                            builder.AppendLine(committed ? TransactionCommitted : TransactionAborted);
-                                            traceMessage = builder.ToString();
-                                        }
-                                        else
-                                        {
-                                            receive();
-                                        }
+                                                out traceMessage), useTransaction,
+                                            checkBoxReceiverCommitTransaction.Checked, receiverCancellationTokenSource.Token, out var committed);
+                                        if (useTransaction)
+                                            traceMessage += committed ? TransactionCommitted : TransactionAborted;
                                         if (!string.IsNullOrWhiteSpace(traceMessage))
                                         {
                                             controlHelper.WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
                                         }
-                                        allSessionsAccepted = !requiresSessionReceiver;
+                                        allSessionsAccepted = !requiresSessionReceiver || !succeeded;
                                     }
                                     catch (TimeoutException ex)
                                     {
@@ -1266,7 +1240,7 @@ namespace ServiceBusExplorer.Controls
                     if (actionCount > 0)
                     {
                         managerCancellationTokenSource = new CancellationTokenSource();
-                        managerAction.BeginInvoke(managerCancellationTokenSource, null, null);
+                        pendingOperations.Add(managerAction(managerCancellationTokenSource));
                         graphCancellationTokenSource = new CancellationTokenSource();
                         Interlocked.Increment(ref actionCount);
                         pendingOperations.Add(WorkerOperationDrain.Start(callback => updateGraphAction.BeginInvoke(callback, updateGraphAction), updateGraphCallback));

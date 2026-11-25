@@ -162,6 +162,14 @@ namespace ServiceBusExplorer.Controls
         private Control parentForm;
         private ContainerForm containerForm;
         private bool autoComplete;
+        private bool runAutoComplete;
+        private ReceiveMode runReceiveMode = ReceiveMode.PeekLock;
+
+        internal void CaptureSettlementPolicy()
+        {
+            runAutoComplete = autoComplete;
+            runReceiveMode = receiveMode;
+        }
         private bool stopping;
         private bool shuttingDown;
         private bool disposalStarted;
@@ -928,6 +936,7 @@ namespace ServiceBusExplorer.Controls
                     try
                     {
                         receiveMode = cboReceivedMode.SelectedIndex == 1 ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete;
+                        CaptureSettlementPolicy();
 
                         serviceBusClient = serviceBusHelper.CreateServiceBusClient();
                         var serviceBusReceiveMode = receiveMode == ReceiveMode.PeekLock
@@ -1013,7 +1022,7 @@ namespace ServiceBusExplorer.Controls
         {
             return new ServiceBusProcessorOptions
             {
-                AutoCompleteMessages = autoComplete,
+                AutoCompleteMessages = runAutoComplete,
                 MaxConcurrentCalls = txtMaxConcurrentCalls.IntegerValue,
                 MaxAutoLockRenewalDuration = TimeSpan.FromMinutes(1),
                 PrefetchCount = txtPrefetchCount.IntegerValue,
@@ -1025,7 +1034,7 @@ namespace ServiceBusExplorer.Controls
         {
             return new ServiceBusSessionProcessorOptions
             {
-                AutoCompleteMessages = autoComplete,
+                AutoCompleteMessages = runAutoComplete,
                 MaxConcurrentSessions = txtMaxConcurrentCalls.IntegerValue,
                 MaxConcurrentCallsPerSession = 1,
                 MaxAutoLockRenewalDuration = TimeSpan.FromSeconds(30),
@@ -1226,7 +1235,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 UpdateStatistics(1, GetElapsedTime(), message.Size);
                 cancellationToken.ThrowIfCancellationRequested();
-                if (receiveMode == ReceiveMode.PeekLock && !autoComplete)
+                if (runReceiveMode == ReceiveMode.PeekLock && !runAutoComplete)
                 {
                     await completeMessage().ConfigureAwait(false);
                 }
@@ -1275,7 +1284,7 @@ namespace ServiceBusExplorer.Controls
 
         private Task TrackMessageAsync(BrokeredMessage message)
         {
-            var clone = message.Clone();
+            var clone = ServiceBusReceivedMessageAdapter.CloneForResubmission(message);
             var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             Action add = () =>
             {

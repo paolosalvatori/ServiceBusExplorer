@@ -131,6 +131,88 @@ namespace ServiceBusExplorer.Tests.Helpers
             });
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void RunningProcessorKeepsOriginalSettlementPolicyWhenCheckboxChanges(bool automatic)
+        {
+            RunUi(async (form, listener) =>
+            {
+                Set(listener, "autoComplete", automatic);
+                Set(listener, "receiveMode", ReceiveMode.PeekLock);
+                var checkbox = (CheckBox)typeof(ListenerControl).GetField("checkBoxAutoComplete", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listener);
+                checkbox.Checked = automatic;
+                listener.CaptureSettlementPolicy();
+                checkbox.Checked = !automatic;
+                Set(listener, "receiveMode", ReceiveMode.ReceiveAndDelete);
+                var completed = false;
+                await listener.ProcessReceivedMessageAsync(Message(), () => { completed = true; return Task.CompletedTask; }, CancellationToken.None, true);
+                Assert.Equal(!automatic, completed);
+                var options = (ServiceBusSessionProcessorOptions)typeof(ListenerControl)
+                    .GetMethod("GetSessionProcessorOptions", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Invoke(listener, new object[] { ServiceBusReceiveMode.PeekLock });
+                Assert.Equal(automatic, options.AutoCompleteMessages);
+            });
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void QueueCloseWaitsForManagersFinalUiWorkEvenAfterCancellation(bool fail)
+        {
+            RunUi(async (form, listener) =>
+            {
+                var main = (ServiceBusExplorer.Forms.MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(ServiceBusExplorer.Forms.MainForm));
+                using var control = new TestQueueControl(main, (_, __) => { }, () => Task.CompletedTask,
+                    () => { }, new ServiceBusHelper((_, __) => { }), new QueueInfo("synthetic"));
+                form.Controls.Add(control);
+                var handle = control.Handle;
+                using var completed = new ManualResetEventSlim(true);
+                using var cancellation = new CancellationTokenSource();
+                var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var events = new List<string>();
+                var uiThread = Thread.CurrentThread.ManagedThreadId;
+                var manager = ServiceBusExplorer.UIHelpers.WorkerOperationDrain.RunManagerAsync(control, completed, cancellation.Token, async () =>
+                {
+                    Assert.Equal(uiThread, Thread.CurrentThread.ManagedThreadId);
+                    entered.SetResult(true);
+                    await release.Task;
+                    events.Add("ui");
+                    if (fail) throw new InvalidOperationException("synthetic refresh failure");
+                });
+                var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                typeof(TestQueueControl).GetField("managerCancellationTokenSource", flags).SetValue(control, cancellation);
+                ((List<Task>)typeof(TestQueueControl).GetField("pendingOperations", flags).GetValue(control)).Add(manager);
+                ((List<ServiceBusClient>)typeof(TestQueueControl).GetField("receiverClients", flags).GetValue(control)).Add(new Client(events));
+                await entered.Task;
+                var close = control.CancelActions();
+                Assert.False(close.IsCompleted);
+                Assert.Same(close, control.CancelActions());
+                Assert.Empty(events);
+                release.SetResult(true);
+                await close;
+                Assert.Equal(new[] { "ui", "client" }, events);
+                Assert.Equal(fail, manager.IsFaulted);
+            });
+        }
+
+        [Fact]
+        public void CancelledManagerDoesNotQueueFinalRefresh()
+        {
+            RunUi(async (form, listener) =>
+            {
+                using var completed = new ManualResetEventSlim(false);
+                using var cancellation = new CancellationTokenSource();
+                var invoked = false;
+                var manager = ServiceBusExplorer.UIHelpers.WorkerOperationDrain.RunManagerAsync(form, completed, cancellation.Token,
+                    () => { invoked = true; return Task.CompletedTask; });
+                cancellation.Cancel();
+                await manager;
+                Assert.False(invoked);
+            });
+        }
+
         private static ServiceBusReceivedMessage Message() => ServiceBusModelFactory.ServiceBusReceivedMessage(body: new BinaryData("body"), messageId: "id", sessionId: "session", sequenceNumber: 7);
         private class FailedInspector : IBrokeredMessageInspector
         {

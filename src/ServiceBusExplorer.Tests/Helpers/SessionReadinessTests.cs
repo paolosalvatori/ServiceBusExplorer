@@ -74,6 +74,88 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.False(receiver.Completed);
             Assert.True(receiver.Abandoned);
         }
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void FailedManualProcessingEndsSessionWorkerRegardlessOfCommitSetting(bool transaction, bool commit)
+        {
+            using var cancellation = new CancellationTokenSource();
+            var receiver = new FailedSession();
+            var helper = new ServiceBusHelper((_, __) => { });
+            var succeeded = ServiceBusHelper.ExecuteManualReceive(() => helper.ReceiveMessages(receiver,
+                ServiceBusReceiveMode.PeekLock, false, 0, 1, null, false, true, false,
+                false, false, false, false, 1, false, 0, new FailedInspector(), null, cancellation, out _),
+                transaction, commit, cancellation.Token, out var committed);
+            Assert.False(succeeded);
+            Assert.False(committed);
+            Assert.False(receiver.Completed);
+            Assert.True(receiver.Abandoned);
+        }
+
+        [Fact]
+        public void SuccessfulRequestedRollbackIsDistinctFromProcessingFailure()
+        {
+            Assert.True(ServiceBusHelper.ExecuteManualReceive(() => true, true, false, CancellationToken.None, out var committed));
+            Assert.False(committed);
+        }
+
+        [Theory]
+        [InlineData(false, false, SubQueue.DeadLetter)]
+        [InlineData(false, true, SubQueue.DeadLetter)]
+        [InlineData(true, false, SubQueue.DeadLetter)]
+        [InlineData(true, true, SubQueue.DeadLetter)]
+        [InlineData(false, false, SubQueue.TransferDeadLetter)]
+        [InlineData(false, true, SubQueue.TransferDeadLetter)]
+        public void DeadLetterBrowseUsesOrdinaryModernReceiverWithoutAcceptingSessions(bool subscription, bool peek, SubQueue subQueue)
+        {
+            var client = new DeadLetterClient();
+            var helper = new Helper(client);
+            var messages = helper.GetMessagesFromModernDataPlane("entity", subscription ? "subscription" : null,
+                subQueue, peek, 1, 10, TimeSpan.Zero, null);
+            try { Assert.Single(messages); }
+            finally { messages.ForEach(m => m.Dispose()); }
+            Assert.Equal(subscription, client.Subscription);
+            Assert.Equal(subQueue, client.Options.SubQueue);
+            Assert.Equal(peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete, client.Options.ReceiveMode);
+            Assert.True(client.Disposed);
+            Assert.True(client.Receiver.Disposed);
+        }
+
+        [Fact]
+        public void EmulatorTransferDeadLetterRejectsBeforeCreatingAnyClient()
+        {
+            var client = new DeadLetterClient();
+            var helper = new Helper(client);
+            var profile = ServiceBusNamespace.GetServiceBusNamespace("synthetic", "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic;UseDevelopmentEmulator=true", (_, __) => { });
+            typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(helper, profile);
+            Assert.Throws<NotSupportedException>(() => helper.GetMessagesFromModernDataPlane("queue", null,
+                SubQueue.TransferDeadLetter, true, 1, null, TimeSpan.Zero, null));
+            Assert.Null(client.Options);
+        }
+
+        private class DeadLetterClient : ServiceBusClient
+        {
+            public ServiceBusReceiverOptions Options;
+            public bool Subscription, Disposed;
+            public DeadLetterReceiver Receiver = new DeadLetterReceiver();
+            public override ServiceBusReceiver CreateReceiver(string queueName, ServiceBusReceiverOptions options = null)
+            { Options = options; return Receiver; }
+            public override ServiceBusReceiver CreateReceiver(string topicName, string subscriptionName, ServiceBusReceiverOptions options = null)
+            { Subscription = true; Options = options; return Receiver; }
+            public override ValueTask DisposeAsync() { Disposed = true; return default; }
+        }
+        private class DeadLetterReceiver : ServiceBusReceiver
+        {
+            public bool Disposed;
+            public override Task<IReadOnlyList<ServiceBusReceivedMessage>> PeekMessagesAsync(int maxMessages, long? fromSequenceNumber = null, CancellationToken cancellationToken = default) =>
+                Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] { Message(10) });
+            public override Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default) =>
+                Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] { Message(10) });
+            public override ValueTask DisposeAsync() { Disposed = true; return default; }
+        }
+
         private class FailedInspector : IBrokeredMessageInspector
         {
             public Microsoft.ServiceBus.Messaging.BrokeredMessage BeforeSendMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message) => message;

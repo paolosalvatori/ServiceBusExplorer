@@ -340,10 +340,13 @@ namespace ServiceBusExplorer.Helpers
             if (readOnly != null && (readOnly.HasElements || !bool.TryParse(readOnly.Value, out _))) Reject();
             foreach (var wrapper in rule.Elements().Where(child => child.Name.LocalName == FilterEntity || child.Name.LocalName == ActionEntity))
             {
+                if (wrapper.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration) ||
+                    wrapper.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) Reject();
                 if (wrapper.Elements().Count() > 1 || (!wrapper.HasElements && !string.IsNullOrWhiteSpace(wrapper.Value))) Reject();
                 var value = wrapper.Elements().SingleOrDefault();
                 // Legacy default rules were serialized with empty Filter/Action wrappers.
                 if (value == null) continue;
+                if (value.Name.NamespaceName != Namespace || value.Attributes().Any(attribute => !attribute.IsNamespaceDeclaration)) Reject();
                 var typeName = value.Name.LocalName;
                 Type type = null;
                 if (wrapper.Name.LocalName == FilterEntity)
@@ -506,19 +509,18 @@ namespace ServiceBusExplorer.Helpers
             // Here we fill in the Property of the Filter CorrelationId Properties by looping through the Property Sibling
             if (property.MemberType == MemberTypes.Property && property.PropertyType.Name == "IDictionary`2")
             {
-                bool bOk = xmlReader.ReadToDescendant("Property");
-                while (bOk)
+                // ReadElementContentAsString already advances to the next sibling. A second
+                // ReadToNextSibling used to skip every adjacent property in compact XML.
+                XElement properties;
+                using (var subtree = xmlReader.ReadSubtree()) properties = XElement.Load(subtree);
+                var values = new List<Property>();
+                foreach (var entry in properties.Elements(XName.Get("Property", Namespace)))
                 {
-                    var tRead = xmlReader.ReadElementContentAsString().Split(new[] { ':' }, 2);
-                    var tProp = new Property();
-                    tProp.Name = tRead[0];
-                    tProp.Value = tRead[1].StartsWith(" ", StringComparison.Ordinal) ? tRead[1].Substring(1) : tRead[1];
-                    if (!propertyValue.ContainsKey(name))
-                        propertyValue[name] = new List<Property>();
-                    var tProps = propertyValue[name] as List<Property>;
-                    tProps.Add(tProp);
-                    bOk = xmlReader.ReadToNextSibling("Property");
+                    var pair = entry.Value.Split(new[] { ':' }, 2);
+                    if (pair.Length != 2) throw new FormatException("Invalid correlation property.");
+                    values.Add(new Property { Name = pair[0], Value = pair[1].StartsWith(" ", StringComparison.Ordinal) ? pair[1].Substring(1) : pair[1] });
                 }
+                propertyValue[name] = values;
             }
         }
 

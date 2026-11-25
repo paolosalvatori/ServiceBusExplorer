@@ -614,6 +614,30 @@ namespace ServiceBusExplorer.Forms
             ShowQueue(queueWrappper, queueWrappper.Path, true);
         }
 
+        internal bool ConnectWithSettings(Func<bool> connect, Microsoft.ServiceBus.ConnectivityMode connectivity,
+            bool webSockets, List<string> selectedEntities)
+        {
+            var previousConnectivity = ServiceBusHelper.ConnectivityMode;
+            var previousWebSockets = ServiceBusHelper.UseAmqpWebSockets;
+            var connected = false;
+            try
+            {
+                ServiceBusHelper.ConnectivityMode = connectivity;
+                ServiceBusHelper.UseAmqpWebSockets = webSockets;
+                connected = connect();
+                if (connected) SelectedEntities = new List<string>(selectedEntities);
+                return connected;
+            }
+            finally
+            {
+                if (!connected)
+                {
+                    ServiceBusHelper.ConnectivityMode = previousConnectivity;
+                    ServiceBusHelper.UseAmqpWebSockets = previousWebSockets;
+                }
+            }
+        }
+
         async void connectUsingSASToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -626,15 +650,13 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
                     UpdateSavedConnectionsMenu();
-                    SelectedEntities = connectForm.SelectedEntities;
-                    ServiceBusHelper.ConnectivityMode = connectForm.ConnectivityMode;
-                    ServiceBusHelper.UseAmqpWebSockets = connectForm.UseAmqpWebSockets;
 
                     var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
                         ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
                             connectForm.ConnectionString, StaticWriteToLog);
 
-                    serviceBusHelper.Connect(serviceBusNamespace);
+                    if (!ConnectWithSettings(() => serviceBusHelper.Connect(serviceBusNamespace),
+                        connectForm.ConnectivityMode, connectForm.UseAmqpWebSockets, connectForm.SelectedEntities)) return;
                     ResetEventGridConnection();
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
