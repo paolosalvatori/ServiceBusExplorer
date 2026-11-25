@@ -13,8 +13,6 @@
         private const string Milliseconds = "Milliseconds";
         private const string FieldMustBeANumber = "The {0} value of the {1} field must be a number.";
 
-        private TimeSpan? _value;
-
         public TimeSpanControl()
         {
             InitializeComponent();
@@ -75,15 +73,12 @@
             }
             set 
             {
-                if (value != _value)
-                {
-                    _value = value;
-                    txtDays.Text = value?.Days.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-                    txtHours.Text = value?.Hours.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-                    txtMinutes.Text = value?.Minutes.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-                    txtSeconds.Text = value?.Seconds.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-                    txtMilliseconds.Text = value?.Milliseconds.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-                }
+                // The text can have changed since the last assignment; always restore the supplied value.
+                txtDays.Text = value?.Days.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+                txtHours.Text = value?.Hours.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+                txtMinutes.Text = value?.Minutes.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+                txtSeconds.Text = value?.Seconds.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+                txtMilliseconds.Text = value?.Milliseconds.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
             }
         }
     }
