@@ -25,6 +25,8 @@ namespace ServiceBusExplorer.Tests.Forms
                 var client = new ServiceBusManagementClient(new FakeClient(), new Uri("sb://synthetic.invalid/"));
                 Set(helper, "managementClient", modern ? client : null);
                 Set(main, "serviceBusHelper", helper);
+                Set(main, "eventClickFieldInfo", typeof(ToolStripItem).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static));
+                Set(main, "eventsPropertyInfo", typeof(System.ComponentModel.Component).GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance));
                 using (var queue = new ToolStripMenuItem("Rename Queue") { Name = "renameQueueMenuItem" })
                 using (var topic = new ToolStripMenuItem("Rename Topic") { Name = "renameTopicMenuItem" })
                 using (var context = new ContextMenuStrip())
@@ -61,6 +63,8 @@ namespace ServiceBusExplorer.Tests.Forms
                 var helper = new ServiceBusHelper((_, __) => { });
                 Set(helper, "managementClient", new ServiceBusManagementClient(new FakeClient(), new Uri("sb://synthetic.invalid/")));
                 Set(main, "serviceBusHelper", helper);
+                Set(main, "eventClickFieldInfo", typeof(ToolStripItem).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static));
+                Set(main, "eventsPropertyInfo", typeof(System.ComponentModel.Component).GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance));
                 typeof(MainForm).GetMethod("renameEntity_Click", BindingFlags.Instance | BindingFlags.NonPublic)
                     .Invoke(main, new object[] { null, EventArgs.Empty });
             });
