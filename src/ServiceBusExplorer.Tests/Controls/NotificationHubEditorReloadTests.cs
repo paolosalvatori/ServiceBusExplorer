@@ -29,7 +29,7 @@ namespace ServiceBusExplorer.Tests.Controls
 
                 editor.RefreshData(confirmed);
 
-                AssertCleared(editor, metadata ?? "");
+                AssertCleared(editor, confirmed);
                 Assert.Empty(logs);
                 Assert.False(Field<NotificationHubSettingsRecovery>(editor, "settingsRecovery").NeedsRefresh);
             });
@@ -72,8 +72,9 @@ namespace ServiceBusExplorer.Tests.Controls
                 };
                 var logs = new List<string>();
                 using var editor = Create(old, logs);
-                editor.RefreshData(new NotificationHubDescription("hub"));
-                AssertCleared(editor, "");
+                var confirmed = new NotificationHubDescription("hub");
+                editor.RefreshData(confirmed);
+                AssertCleared(editor, confirmed);
                 Assert.Empty(logs);
             });
         }
@@ -92,13 +93,26 @@ namespace ServiceBusExplorer.Tests.Controls
                     .Invoke(editor, new object[] { Field<Button>(editor, "btnCancelUpdate"), EventArgs.Empty });
 
                 Assert.Contains(logs, message => message.Contains("Refresh before retrying"));
-                AssertCleared(editor, "");
+                AssertCleared(editor, confirmed);
                 Assert.True(Field<NotificationHubSettingsRecovery>(editor, "settingsRecovery").NeedsRefresh);
                 logs.Clear();
                 editor.RefreshData(confirmed);
-                AssertCleared(editor, "");
+                AssertCleared(editor, confirmed);
                 Assert.False(Field<NotificationHubSettingsRecovery>(editor, "settingsRecovery").NeedsRefresh);
                 Assert.Empty(logs);
+            });
+        }
+
+        [Fact]
+        public void AssigningNullTtlAgainDiscardsTypedText()
+        {
+            RunSta(() =>
+            {
+                using var ttl = new TimeSpanControl { TimeSpanValue = null };
+                ttl.Controls.Find("txtDays", true).Single().Text = "9";
+                ttl.TimeSpanValue = null;
+                Assert.Null(ttl.TimeSpanValue);
+                Assert.False(ttl.IsFilled);
             });
         }
 
@@ -120,12 +134,13 @@ namespace ServiceBusExplorer.Tests.Controls
             Field<TextBox>(editor, "txtClientSecret").Text = "unsaved";
         }
 
-        private static void AssertCleared(HandleNotificationHubControl editor, string metadata)
+        private static void AssertCleared(HandleNotificationHubControl editor, NotificationHubDescription confirmed)
         {
-            Assert.Equal(metadata, Field<TextBox>(editor, "txtUserMetadata").Text);
+            Assert.Equal(confirmed.UserMetadata ?? "", Field<TextBox>(editor, "txtUserMetadata").Text);
             var ttl = Field<TimeSpanControl>(editor, "tsRegistrationTimeToLive");
-            Assert.Null(ttl.TimeSpanValue);
-            Assert.False(ttl.IsFilled);
+            // The SDK maps an omitted TTL to MaxValue; the editor displays millisecond precision.
+            var expected = confirmed.RegistrationTtl.Value;
+            Assert.Equal(new TimeSpan(expected.Days, expected.Hours, expected.Minutes, expected.Seconds, expected.Milliseconds), ttl.TimeSpanValue);
             Assert.False(Field<CheckBox>(editor, "checkBoxEnableUnauthenticatedMpns").Checked);
             foreach (var name in new[] { "txtApnsEndpoint", "txtApnsCredentialCertificateThumbprint",
                 "txtMpnsCredentialCertificateThumbprint", "txtPackageSid", "txtClientSecret" })
