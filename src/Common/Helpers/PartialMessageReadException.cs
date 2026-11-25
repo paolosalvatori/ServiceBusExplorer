@@ -8,7 +8,7 @@ namespace ServiceBusExplorer.Helpers
     {
         public IReadOnlyList<BrokeredMessage> Messages { get; }
         public PartialMessageReadException(List<BrokeredMessage> messages, Exception failure)
-            : base($"Session read stopped after {messages.Count} messages. Already received rows are retained. {failure.Message}", failure)
+            : base($"Message read stopped after {messages.Count} messages. Already received rows are retained. {failure.Message}", failure)
         { Messages = messages.AsReadOnly(); }
     }
 }

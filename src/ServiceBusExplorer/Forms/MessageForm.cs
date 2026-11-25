@@ -95,6 +95,7 @@ namespace ServiceBusExplorer.Forms
         readonly WriteToLogDelegate writeToLog;
         readonly BindingSource bindingSource = new BindingSource();
         private string initialMessageText;
+        private BodyType originalBodyType;
         readonly QueueDescription queueDescription; // Might be null
         readonly SubscriptionWrapper subscriptionWrapper; // Might be null
         #endregion
@@ -378,7 +379,20 @@ namespace ServiceBusExplorer.Forms
             if (brokeredMessage != null)
             {
                 if (!string.Equals(txtMessageText.Text, initialMessageText, StringComparison.Ordinal))
-                    outbound.SetBodyStream(new MemoryStream(Encoding.UTF8.GetBytes(txtMessageText.Text)));
+                {
+                    var stream = new MemoryStream();
+                    if (originalBodyType == BodyType.String)
+                        new CustomDataContractBinarySerializer(typeof(string)).WriteObject(stream, txtMessageText.Text);
+                    else if (originalBodyType == BodyType.ByteArray)
+                        new CustomDataContractBinarySerializer(typeof(byte[])).WriteObject(stream, Encoding.UTF8.GetBytes(txtMessageText.Text));
+                    else
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(txtMessageText.Text);
+                        stream.Write(bytes, 0, bytes.Length);
+                    }
+                    stream.Position = 0;
+                    outbound.SetBodyStream(stream);
+                }
                 outbound.Properties.Clear(); // The editable grid is applied by the submit handler.
             }
             if (chkNewMessageId.Checked) outbound.MessageId = Guid.NewGuid().ToString();
@@ -732,7 +746,7 @@ namespace ServiceBusExplorer.Forms
         void InitializeMessageTextControl(BrokeredMessage message)
         {
             var messageText = this.serviceBusHelper.GetMessageText(message,
-                 MainForm.SingletonMainForm?.UseAscii ?? false, out _);
+                 MainForm.SingletonMainForm?.UseAscii ?? false, out originalBodyType);
 
             if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
             {

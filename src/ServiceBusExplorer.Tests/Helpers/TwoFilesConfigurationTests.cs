@@ -28,6 +28,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         Lobster
     }
 
+    [Collection("Configuration file access")]
     public class TwoFilesConfigurationTests
     {
         #region Constants

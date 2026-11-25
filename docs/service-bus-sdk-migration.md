@@ -137,8 +137,8 @@ remain out of scope. Event Hubs and Notification Hubs are unchanged.
 
 ### Compatibility decisions for review
 
-- **Rename:** the new SDK has no rename operation. Rename reports an explicit
-  unsupported error and leaves the source untouched. It is not approximated
+- **Rename:** the new SDK has no rename operation. Rename is disabled in the context and Actions menus on this path; direct API
+  calls report an explicit unsupported error and leave the source untouched. It is not approximated
   with create/delete, which could lose messages, subscriptions or permissions.
   Review whether a separately approved transfer workflow is desirable.
 - **Filters:** administration no longer accepts server-side OData filters.
@@ -219,3 +219,43 @@ text edits are sent as UTF-8. The new-ID option changes MessageId only.
 ViaPartitionKey maps to TransactionPartitionKey, but transactional send-via and
 atomic dead-letter moves are not implemented by this resubmission stage.
 The management-stage XML compatibility preflight remains in place.
+### Management review follow-up (#911)
+
+The unused Notification Hubs token-provider field and its assignments are removed;
+this avoids dangling assignments when combined with #908 without including its SDK
+upgrade in this branch. Re-run integrated CI after either migration lands.
+
+Topic message counts in this migration are **subscription aggregates**, not unique
+published messages: active, dead-letter and transfer counts sum the subscription
+snapshots; scheduled count comes from the topic snapshot. A message copied to two
+subscriptions can contribute twice. Runtime snapshots are not atomic. Listing uses
+paged topic runtime reads, safe path filtering and at most four concurrent
+subscription-runtime reads. It can still exhaust the configured timeout in a large
+namespace. Laziness is deferred: skipping those reads currently supplies zero values
+to counter filters, node-color thresholds and the selected-topic view. A follow-up
+must represent unloaded counts explicitly and load them asynchronously without
+changing those behaviors. This change does not claim that large-namespace latency
+has been eliminated.
+
+Live acceptance remains outstanding: **Validate management against live Azure and
+the emulator**. Offline builds and synthetic tests do not replace that validation.
+
+### Edited legacy message bodies (#912)
+
+The resend editor preserves the original serialized String or ByteArray format
+when editing a body detected as either legacy DataContract format. Unchanged bodies
+retain their original bytes; Stream bodies edited as text remain UTF-8 streams.
+The body-type selector does not silently reinterpret an existing message. This
+preserves legacy GetBody<string>() / GetBody<byte[]>() consumers while retaining
+IDs/routing unless Generate new MessageId is explicitly selected.
+
+### Destructive non-session read failures (#913)
+
+ReceiveAndDelete rows are already removed from the broker when a batch arrives.
+If inspection fails, queue/subscription and dead-letter views retain previously
+consumed rows and every unmodified original in the failing batch, including rows
+not yet inspected. The error is logged alongside the displayed partial result;
+no retry or acknowledgment is attempted. Receiver/client cleanup failures also
+retain the result. Callers without a reporting callback receive a
+`PartialMessageReadException` carrying those rows and own their disposal. Peek
+continues to fail without publishing a partial destructive result.
