@@ -258,6 +258,7 @@ namespace ServiceBusExplorer.Controls
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
+            var registering = false;
             try
             {
                 if (closeRequested || IsDisposed) return;
@@ -283,7 +284,8 @@ namespace ServiceBusExplorer.Controls
                     //*****************************************************************************************************
                     //                                   Initialize Statistics and Manager Action
                     //*****************************************************************************************************
-                    actionCount = 0;
+                    BeginWorkerRegistration();
+                    registering = true;
                     cancelActionsTask = null;
                     pendingOperations.Clear();
                     receiverMessageNumber = 0;
@@ -511,7 +513,7 @@ namespace ServiceBusExplorer.Controls
                         // Start Receiver Actions
                         for (var i = 0; i < receiverTaskCount; i++)
                         {
-                            Interlocked.Increment(ref actionCount);
+                            RegisterWorker();
                             pendingOperations.Add(WorkerOperationDrain.Start(callback => receiverAction.BeginInvoke(i, callback, receiverAction), receiverCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                         }
                     }
@@ -524,7 +526,7 @@ namespace ServiceBusExplorer.Controls
                         managerCancellationTokenSource = new CancellationTokenSource();
                         pendingOperations.Add(managerAction(managerCancellationTokenSource));
                         graphCancellationTokenSource = new CancellationTokenSource();
-                        Interlocked.Increment(ref actionCount);
+                        RegisterWorker();
                         pendingOperations.Add(WorkerOperationDrain.Start(callback => updateGraphAction.BeginInvoke(callback, updateGraphAction), updateGraphCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                         btnStart.Text = StopCaption;
                     }
@@ -536,6 +538,7 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
+                if (registering) EndWorkerRegistration();
                 btnStart.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
@@ -667,6 +670,12 @@ namespace ServiceBusExplorer.Controls
             await CancelActions();
             return !closeRequested && !IsDisposed;
         }
+
+        // Reserve one count for registration itself. No worker can signal completion
+        // while the UI is still adding later workers or the graph/manager operations.
+        internal void BeginWorkerRegistration() => actionCount = 1;
+        internal void RegisterWorker() => Interlocked.Increment(ref actionCount);
+        internal void EndWorkerRegistration() => WorkerFinished();
 
         private void WorkerFinished()
         {

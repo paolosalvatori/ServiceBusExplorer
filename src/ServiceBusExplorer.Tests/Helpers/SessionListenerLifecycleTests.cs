@@ -272,6 +272,34 @@ namespace ServiceBusExplorer.Tests.Helpers
             });
         }
 
+        [Theory]
+        [InlineData("queue")]
+        [InlineData("topic")]
+        [InlineData("subscription")]
+        public void EarlyWorkerCompletionCannotFinishRunWhileRegistrationIsOpen(string kind)
+        {
+            RunUi(async (form, listener) =>
+            {
+                using var control = CreateManualControl(kind);
+                var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                var type = control.GetType();
+                using var completed = new ManualResetEventSlim(false);
+                type.GetField("managerResetEvent", flags).SetValue(control, completed);
+                Action<string> invoke = name => type.GetMethod(name, flags).Invoke(control, null);
+                invoke("BeginWorkerRegistration");
+                invoke("RegisterWorker");
+                invoke("WorkerFinished"); // first worker completes before later workers start
+                Assert.False(completed.IsSet);
+                invoke("RegisterWorker");
+                invoke("EndWorkerRegistration");
+                Assert.False(completed.IsSet);
+                invoke("WorkerFinished");
+                Assert.True(completed.IsSet);
+                Assert.Equal(0, type.GetField("actionCount", flags).GetValue(control));
+                await Task.CompletedTask;
+            });
+        }
+
         private static Control CreateManualControl(string kind)
         {
             var main = (ServiceBusExplorer.Forms.MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(ServiceBusExplorer.Forms.MainForm));

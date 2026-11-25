@@ -158,6 +158,47 @@ namespace ServiceBusExplorer.Tests.Helpers
             finally { messages.ForEach(m => m.Dispose()); }
         }
 
+        [Fact]
+        public void SessionInspectorFailureOnSecondOfThreeRetainsEveryOriginalConsumedRow()
+        {
+            Exception reported = null;
+            var inspector = new SecondRowInspector();
+            var messages = new Helper(new BatchClient()).GetMessagesFromModernSessionDataPlane("queue", null, null,
+                false, int.MaxValue, null, TimeSpan.FromSeconds(1), inspector, error => reported = error);
+            try
+            {
+                Assert.IsType<PartialMessageReadException>(reported);
+                Assert.Equal(2, inspector.Calls);
+                Assert.Equal(new long[] { 1, 2, 3 }, messages.Select(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber));
+                Assert.All(messages, message => Assert.Equal("body", ServiceBusMessageAdapter.ToServiceBusMessage(message).Body.ToString()));
+            }
+            finally { messages.ForEach(message => message.Dispose()); }
+        }
+        private class SecondRowInspector : IBrokeredMessageInspector
+        {
+            public int Calls;
+            public Microsoft.ServiceBus.Messaging.BrokeredMessage BeforeSendMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message) => message;
+            public Microsoft.ServiceBus.Messaging.BrokeredMessage AfterReceiveMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message)
+            {
+                var stream = message.GetBody<System.IO.Stream>();
+                stream.Position = 0;
+                stream.WriteByte((byte)'!');
+                stream.Position = 0;
+                if (++Calls == 2) throw new InvalidOperationException("second row failed");
+                return message;
+            }
+        }
+        private class BatchClient : ServiceBusClient
+        {
+            public override Task<ServiceBusSessionReceiver> AcceptNextSessionAsync(string queueName, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default) => Task.FromResult<ServiceBusSessionReceiver>(new BatchSession());
+            public override ValueTask DisposeAsync() => default;
+        }
+        private class BatchSession : ServiceBusSessionReceiver
+        {
+            public override Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] { Message(1), Message(2), Message(3) });
+            public override ValueTask DisposeAsync() => default;
+        }
+
         private class PartialClient : ServiceBusClient
         {
             private readonly string failure;

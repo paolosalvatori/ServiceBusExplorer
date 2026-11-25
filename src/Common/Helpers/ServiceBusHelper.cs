@@ -3616,7 +3616,7 @@ namespace ServiceBusExplorer
                                 if (completeReceive)
                                 {
                                     stopwatch = Stopwatch.StartNew();
-                                    messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
+                                    messageReceiver.CompleteBatch(messageList.Select(ServiceBusReceivedMessageAdapter.GetSourceLockToken));
                                     stopwatch.Stop();
 
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
@@ -3727,7 +3727,7 @@ namespace ServiceBusExplorer
                                 try
                                 {
                                     var stopwatch = Stopwatch.StartNew();
-                                    messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
+                                    messageReceiver.CompleteBatch(messageList.Select(ServiceBusReceivedMessageAdapter.GetSourceLockToken));
                                     stopwatch.Stop();
 
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
@@ -3842,7 +3842,7 @@ namespace ServiceBusExplorer
                                 filter.Match(inboundMessage))
                             {
                                 inboundMessage.Defer();
-                                messageDeferProvider.Enqueue(inboundMessage.SequenceNumber);
+                                messageDeferProvider.Enqueue(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber(inboundMessage));
                                 deferredMessage = true;
                             }
 
@@ -4907,6 +4907,52 @@ namespace ServiceBusExplorer
                     if (messages == null || messages.Count == 0)
                     {
                         break;
+                    }
+
+                    if (!peek && received != null)
+                    {
+                        // The broker already consumed the full batch. Inspect disposable
+                        // copies, keeping every original until the whole batch succeeds.
+                        var originals = messages.Select(ServiceBusReceivedMessageAdapter.ToBrokeredMessage).ToList();
+                        if (messageInspector == null)
+                        {
+                            foreach (var original in originals) { brokeredMessages.Add(original); received(original); }
+                            continue;
+                        }
+                        var inspectedBatch = new List<BrokeredMessage>();
+                        try
+                        {
+                            foreach (var original in originals)
+                            {
+                                var candidate = ServiceBusReceivedMessageAdapter.CloneForResubmission(original);
+                                try
+                                {
+                                    // BrokeredMessage.Clone may share the writable body buffer.
+                                    // Isolate it before any inspector can mutate bytes in place.
+                                    using (var bodyCopy = original.Clone())
+                                    using (var stream = bodyCopy.GetBody<Stream>())
+                                    using (var buffer = new MemoryStream())
+                                    {
+                                        stream.CopyTo(buffer);
+                                        candidate.SetBodyStream(new MemoryStream(buffer.ToArray()));
+                                    }
+                                    var inspected = messageInspector == null ? candidate :
+                                        ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
+                                    inspectedBatch.Add(inspected);
+                                    if (!ReferenceEquals(candidate, inspected)) candidate.Dispose();
+                                }
+                                catch { candidate.Dispose(); throw; }
+                            }
+                        }
+                        catch
+                        {
+                            foreach (var inspected in inspectedBatch) inspected.Dispose();
+                            foreach (var original in originals) { brokeredMessages.Add(original); received(original); }
+                            throw;
+                        }
+                        foreach (var original in originals) original.Dispose();
+                        foreach (var inspected in inspectedBatch) { brokeredMessages.Add(inspected); received(inspected); }
+                        continue;
                     }
 
                     foreach (var message in messages)
