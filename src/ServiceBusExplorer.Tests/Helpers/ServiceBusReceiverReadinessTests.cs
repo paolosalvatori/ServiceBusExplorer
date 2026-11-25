@@ -53,8 +53,8 @@ namespace ServiceBusExplorer.Tests.Helpers
             var result = move
                 ? await handler.MoveMessages("target", new List<long> { 1, 2 }, false)
                 : await handler.DeleteMessages(new List<long?> { 1, 2 }, false);
-            Assert.Equal(new long[] { 1 }, result.DeletedSequenceNumbers);
             Assert.Equal("receive failed", result.Failure);
+            Assert.Equal(new long[] { 1 }, result.DeletedSequenceNumbers);
             Assert.True(receiver.Abandoned);
             Assert.True(receiver.Disposed);
             Assert.True(client.Disposed);
@@ -76,7 +76,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         private static ServiceBusReceivedMessage Message(long sequence) => ServiceBusModelFactory.ServiceBusReceivedMessage(
-            body: new BinaryData(new byte[] { 0, 255 }), sequenceNumber: sequence);
+            body: new BinaryData(new byte[] { 0, 255 }), messageId: "message-" + sequence, sequenceNumber: sequence);
 
         private class Reader : ServiceBusReceiver
         {
