@@ -130,7 +130,27 @@ namespace ServiceBusExplorer.Helpers
             } while (numRetries-- > 0);
         }
 
-        public static async Task RetryActionAsync(Func<Task> action, WriteToLogDelegate writeToLog)
+        public static async Task RetryEventHubActionAsync(Func<Task> action, WriteToLogDelegate writeToLog, CancellationToken cancellationToken)
+        {
+            for (var attempt = 0; ; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try { await action(); return; }
+                catch (Exception ex) when ((ex is Azure.Messaging.EventHubs.EventHubsException sdk && sdk.IsTransient) || ex is TimeoutException)
+                {
+                    if (attempt >= RetryCount) throw;
+                    writeToLog(string.Format("Event Hubs transient send failure: {0}. Retry {1}/{2}.", ex.Message, attempt + 1, RetryCount));
+                    await Task.Delay(RetryTimeout, cancellationToken);
+                }
+            }
+        }
+
+        public static Task RetryActionAsync(Func<Task> action, WriteToLogDelegate writeToLog)
+        {
+            return RetryActionAsync(action, writeToLog, CancellationToken.None);
+        }
+
+        public static async Task RetryActionAsync(Func<Task> action, WriteToLogDelegate writeToLog, CancellationToken cancellationToken)
         {
             var numRetries = retryCount;
 
@@ -140,6 +160,7 @@ namespace ServiceBusExplorer.Helpers
             }
             do
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
                     await action();
@@ -161,6 +182,11 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
+                catch (Azure.Messaging.EventHubs.EventHubsException ex) when (!ex.IsTransient)
+                {
+                    // SDK 5.12.2 reports permanent errors via IsTransient, not the legacy MessagingException.
+                    throw;
+                }
                 catch (MessagingException ex)
                 {
                     if (numRetries == 0 || (!ex.IsTransient))
@@ -173,7 +199,7 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount - numRetries + 1,
                                                  retryCount));
                     
-                    await Task.Delay(retryTimeout);
+                    await Task.Delay(retryTimeout, cancellationToken);
                 }
                 catch (TimeoutException ex)
                 {
@@ -187,7 +213,7 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount - numRetries + 1,
                                                  retryCount));
                     
-                    await Task.Delay(retryTimeout);
+                    await Task.Delay(retryTimeout, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -202,7 +228,7 @@ namespace ServiceBusExplorer.Helpers
                                                  retryCount));
                     writeToLog(string.Format(CaughtGenericException, ex.GetType()));
                     
-                    await Task.Delay(retryTimeout);
+                    await Task.Delay(retryTimeout, cancellationToken);
                 }
             } while (numRetries-- > 0);
         }

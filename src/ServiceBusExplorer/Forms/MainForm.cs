@@ -245,6 +245,7 @@ namespace ServiceBusExplorer.Forms
         private bool saveMessageToFile = true;
         private bool savePropertiesToFile = true;
         private bool saveCheckpointsToFile = true;
+        private bool closeInProgress;
         private readonly List<Tuple<string, string>> fileNames = new List<Tuple<string, string>>();
         private readonly string argumentName;
         private readonly string argumentValue;
@@ -7044,23 +7045,65 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            cancellationTokenSource.Cancel(false);
-            eventGridRefresh?.Cancel();
+            if (e.CloseReason == System.Windows.Forms.CloseReason.WindowsShutDown || e.CloseReason == System.Windows.Forms.CloseReason.TaskManagerClosing)
+            {
+                CancelOperationsOnClose();
+                ListenerShutdownCoordinator.Shared.StopForSystemShutdown(PersistOnClose, ReportCloseFailure);
+                return;
+            }
+            if (ListenerShutdownCoordinator.Shared.CanClose) return;
+            // Cancel this close synchronously; an async-void handler alone cannot delay FormClosing.
+            e.Cancel = true;
+            if (closeInProgress) return;
+            closeInProgress = true;
+            Enabled = false;
+            try
+            {
+                CancelOperationsOnClose();
+                await ListenerShutdownCoordinator.Shared.StopAndPersistAsync(PersistOnClose, ReportCloseFailure);
+                // Post the second close even when all awaits completed synchronously, avoiding reentrancy.
+                if (!IsDisposed) BeginInvoke(new Action(Close));
+            }
+            catch (Exception ex)
+            {
+                ReportCloseFailure(ex);
+                if (!IsDisposed) Enabled = true;
+            }
+            finally { closeInProgress = false; }
+        }
+
+        private void CancelOperationsOnClose()
+        {
             eventGridSubscriptionLoads.Reset();
+            eventGridRefresh?.Cancel();
+            cancellationTokenSource.Cancel(false);
+        }
+
+        private void PersistOnClose()
+        {
             if (saveMessageToFile)
             {
-                MessageAndPropertiesHelper.WriteMessage(MessageText);
+                try { MessageAndPropertiesHelper.WriteMessage(MessageText); }
+                catch (Exception ex) { ReportCloseFailure(ex); }
             }
             if (savePropertiesToFile)
             {
-                MessageAndPropertiesHelper.WriteProperties();
+                try { MessageAndPropertiesHelper.WriteProperties(); }
+                catch (Exception ex) { ReportCloseFailure(ex); }
             }
             if (saveCheckpointsToFile)
             {
-                EventProcessorCheckpointHelper.WriteCheckpoints();
+                try { EventProcessorCheckpointHelper.WriteCheckpoints(); }
+                catch (Exception ex) { ReportCloseFailure(ex); }
             }
+        }
+
+        private void ReportCloseFailure(Exception ex)
+        {
+            // The asynchronous log pump is already stopping; write this final diagnostic directly.
+            WriteToLog("Close: " + ex.Message, false);
         }
 
         private async void filterEntity_Click(object sender, EventArgs e)
@@ -7373,9 +7416,9 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                using (var parameterForm = new ParameterForm("Enter IoT Hub Connection String and Consumer Group",
-                                                             new List<string> { "IoT Hub Connection String", "Endpoint", "Consumer Group" },
-                                                             new List<string> { null, "messages/events", "$Default" },
+                using (var parameterForm = new ParameterForm("IoT Hub: use the Event Hubs-compatible endpoint from Built-in endpoints",
+                                                             new List<string> { "Event Hubs-compatible connection string", "Event Hub-compatible name", "Consumer Group" },
+                                                             new List<string> { null, null, "$Default" },
                                                              new List<bool> { false, false, false }))
                 {
                     if (parameterForm.ShowDialog() != DialogResult.OK)
@@ -7384,12 +7427,12 @@ namespace ServiceBusExplorer.Forms
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[0]))
                     {
-                        WriteToLog("The IoT Hub Connection string parameter cannot be null.");
+                        WriteToLog("Copy the Event Hubs-compatible connection string from IoT Hub > Built-in endpoints.");
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[1]))
                     {
-                        WriteToLog("The Endpoint parameter cannot be null.");
+                        WriteToLog("Enter the Event Hub-compatible name from IoT Hub > Built-in endpoints (not messages/events).");
                         return;
                     }
                     if (string.IsNullOrWhiteSpace(parameterForm.ParameterValues[2]))
@@ -7397,6 +7440,8 @@ namespace ServiceBusExplorer.Forms
                         WriteToLog("The Consumer Group parameter cannot be null.");
                         return;
                     }
+                    EventHubConnectionValidation.ValidateIoTHubEndpoint(
+                        parameterForm.ParameterValues[0], parameterForm.ParameterValues[1]);
                     var form = new ContainerForm(this,
                                                  parameterForm.ParameterValues[0],
                                                  parameterForm.ParameterValues[1],
