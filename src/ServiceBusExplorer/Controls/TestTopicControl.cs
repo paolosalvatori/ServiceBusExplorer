@@ -444,6 +444,9 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+
+                if (receiverEnabledCheckBox.Checked)
+                    ServiceBusHelper.ValidateReceiveTransaction(cboReceivedMode.Text != PeekLock, checkBoxReceiverUseTransaction.Checked);
                 if (string.IsNullOrWhiteSpace(txtReceiveTimeout.Text) ||
                     !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)

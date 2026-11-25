@@ -74,6 +74,41 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Equal(receiveAndDelete ? 0 : 1, receiver.Completed);
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TransactionalDestructiveReceiveRejectsBeforeSingleOrBatchRead(bool batch)
+        {
+            var receiver = new FailingReceiver();
+            using var scope = new TransactionScope();
+            using var cancellation = new CancellationTokenSource();
+            var helper = new ServiceBusHelper((_, __) => { });
+            Assert.Throws<NotSupportedException>(() => helper.ReceiveMessages(receiver, ServiceBusReceiveMode.ReceiveAndDelete,
+                false, 0, 1, null, false, false, false, false, false, false, batch, 2, false, 0, null, null, cancellation, out _));
+            Assert.Equal(0, receiver.Reads);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void LegacySettlementBoundaryPublishesOnlyAfterSuccessfulAcknowledgment(bool fail)
+        {
+            long count = 0;
+            Action settle = () => { Assert.Equal(0, count); if (fail) throw new InvalidOperationException("synthetic settlement failure"); };
+            Action run = () => ServiceBusHelper.SettleAndPublishReceive(settle, (number, elapsed, direction) => count += number, 1);
+            if (fail) Assert.Throws<InvalidOperationException>(run);
+            else run();
+            Assert.Equal(fail ? 0 : 1, count);
+        }
+
+        [Fact]
+        public void RequestedTransactionRejectsDestructiveModeEvenWithoutAmbientScope()
+        {
+            Assert.Throws<NotSupportedException>(() => ServiceBusHelper.ValidateReceiveTransaction(true, true));
+            ServiceBusHelper.ValidateReceiveTransaction(false, true);
+            ServiceBusHelper.ValidateReceiveTransaction(true, false);
+        }
+
         private sealed class FailingSender : ServiceBusSender, IDisposable
         {
             public int Sends;
@@ -92,12 +127,19 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
         private sealed class FailingReceiver : ServiceBusReceiver
         {
-            public int Completed;
+            public int Completed, Reads;
+            public override Task<ServiceBusReceivedMessage> ReceiveMessageAsync(TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default)
+            { Reads++; return Task.FromResult(ServiceBusModelFactory.ServiceBusReceivedMessage(messageId: "single")); }
             public override Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages,
                 TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default) =>
-                Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] {
+                ReadBatch();
+            private Task<IReadOnlyList<ServiceBusReceivedMessage>> ReadBatch()
+            {
+                Reads++;
+                return Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] {
                     ServiceBusModelFactory.ServiceBusReceivedMessage(messageId: "first"),
                     ServiceBusModelFactory.ServiceBusReceivedMessage(messageId: "fail") });
+            }
             public override Task CompleteMessageAsync(ServiceBusReceivedMessage message, CancellationToken cancellationToken = default)
             { Completed++; return Task.CompletedTask; }
             public override Task AbandonMessageAsync(ServiceBusReceivedMessage message,

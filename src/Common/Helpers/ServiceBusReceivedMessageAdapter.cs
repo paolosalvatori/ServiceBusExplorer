@@ -36,6 +36,26 @@ namespace ServiceBusExplorer.Helpers
             return clone;
         }
 
+        public static BrokeredMessage Inspect(BrokeredMessage source, Func<BrokeredMessage, BrokeredMessage> inspect)
+        {
+            var result = inspect(source) ?? throw new InvalidOperationException("The message inspector returned no message.");
+            if (!ReferenceEquals(source, result) && received.TryGetValue(source, out var original) &&
+                ReadBody(source).SequenceEqual(ReadBody(result)))
+                received.GetValue(result, _ => original);
+            return result;
+        }
+
+        private static byte[] ReadBody(BrokeredMessage message)
+        {
+            using (var clone = message.Clone())
+            using (var stream = clone.GetBody<Stream>())
+            using (var buffer = new MemoryStream())
+            {
+                stream?.CopyTo(buffer);
+                return buffer.ToArray();
+            }
+        }
+
         internal static ServiceBusMessage CreatePreservedMessage(BrokeredMessage message, byte[] body)
         {
             if (!received.TryGetValue(message, out var original) || !body.SequenceEqual(original.Preview)) return null;

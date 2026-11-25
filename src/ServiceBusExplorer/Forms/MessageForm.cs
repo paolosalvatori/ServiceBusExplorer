@@ -385,7 +385,7 @@ namespace ServiceBusExplorer.Forms
             if (cboSenderInspector.SelectedIndex > 0)
             {
                 var inspector = Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector;
-                outbound = inspector.BeforeSendMessage(outbound) ??
+                outbound = ServiceBusReceivedMessageAdapter.Inspect(outbound, inspector.BeforeSendMessage) ??
                     throw new InvalidOperationException("The message inspector returned null.");
             }
             return outbound;

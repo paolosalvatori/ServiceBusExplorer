@@ -73,6 +73,55 @@ namespace ServiceBusExplorer.Tests.Helpers
             finally { messages.ForEach(m => m.Dispose()); }
         }
 
+        [Theory]
+        [InlineData("Value", false, false)]
+        [InlineData("Value", false, true)]
+        [InlineData("Value", true, false)]
+        [InlineData("Value", true, true)]
+        [InlineData("Sequence", false, false)]
+        [InlineData("Sequence", false, true)]
+        [InlineData("Sequence", true, false)]
+        [InlineData("Sequence", true, true)]
+        public void InspectorCloneBoundariesPreserveUnchangedBodiesAndKeepEdits(string kind, bool send, bool edit)
+        {
+            var receiver = new MixedReceiver { Messages = new[] { Message(kind) } };
+            var inspector = new CloningInspector(edit);
+            Microsoft.ServiceBus.Messaging.BrokeredMessage outbound;
+            if (send)
+            {
+                using var source = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(receiver.Messages[0]);
+                outbound = new ServiceBusHelper((_, __) => { }).CreateMessageForApiReceiver(source, 0, false, false, BodyType.Stream, inspector);
+            }
+            else
+            {
+                outbound = Assert.Single(ServiceBusHelper.ReadMessagesFromModernReceiver(receiver, false, 1, null, TimeSpan.Zero, inspector));
+            }
+            using (outbound)
+            {
+                var converted = ServiceBusMessageAdapter.ToServiceBusMessage(outbound);
+                if (edit)
+                {
+                    Assert.Equal(AmqpMessageBodyType.Data, converted.GetRawAmqpMessage().Body.BodyType);
+                    Assert.Equal("intentional edit", converted.Body.ToString());
+                }
+                else AssertBody(receiver.Messages[0].GetRawAmqpMessage().Body, converted.GetRawAmqpMessage().Body);
+            }
+        }
+
+        private sealed class CloningInspector : IBrokeredMessageInspector
+        {
+            private readonly bool edit;
+            public CloningInspector(bool edit) { this.edit = edit; }
+            public Microsoft.ServiceBus.Messaging.BrokeredMessage BeforeSendMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message) => Clone(message);
+            public Microsoft.ServiceBus.Messaging.BrokeredMessage AfterReceiveMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message) => Clone(message);
+            private Microsoft.ServiceBus.Messaging.BrokeredMessage Clone(Microsoft.ServiceBus.Messaging.BrokeredMessage message)
+            {
+                var clone = message.Clone();
+                if (edit) clone.SetBodyStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("intentional edit")));
+                return clone;
+            }
+        }
+
         private sealed class MixedReceiver : ServiceBusReceiver
         {
             public ServiceBusReceivedMessage[] Messages = { Message("Data"), Message("Value"), Message("Sequence") };

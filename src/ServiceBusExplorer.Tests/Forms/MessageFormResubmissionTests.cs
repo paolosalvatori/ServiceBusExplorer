@@ -119,6 +119,25 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Fact]
+        public void QueueTestEntryRejectsTransactionalReceiveAndDeleteBeforeStarting()
+        {
+            RunSta(() =>
+            {
+                var main = (MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(MainForm));
+                var logs = new System.Collections.Generic.List<string>();
+                using var control = new ServiceBusExplorer.Controls.TestQueueControl(main, (message, _) => logs.Add(message),
+                    () => System.Threading.Tasks.Task.CompletedTask, () => { }, new ServiceBusHelper((_, __) => { }), new QueueInfo("synthetic"));
+                ((CheckBox)control.Controls.Find("receiverEnabledCheckBox", true).Single()).Checked = true;
+                ((CheckBox)control.Controls.Find("checkBoxReceiverUseTransaction", true).Single()).Checked = true;
+                ((ComboBox)control.Controls.Find("cboReceivedMode", true).Single()).SelectedItem = "ReceiveDelete";
+                var valid = (bool)typeof(ServiceBusExplorer.Controls.TestQueueControl).GetMethod("ValidateParameters",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(control, null);
+                Assert.False(valid);
+                Assert.Contains(logs, message => message.Contains("cannot be rolled back"));
+            });
+        }
+
         private static void RunSta(Action action)
         {
             Exception failure = null;
