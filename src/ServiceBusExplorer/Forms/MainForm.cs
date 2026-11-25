@@ -279,13 +279,6 @@ namespace ServiceBusExplorer.Forms
         };
         #endregion
 
-        internal static void RegisterEntraOwner(Form owner)
-        {
-            owner.HandleCreated += (s, e) => EntraCredentialFactory.SetOwnerWindowHandle(owner.Handle);
-            owner.HandleDestroyed += (s, e) => EntraCredentialFactory.SetOwnerWindowHandle(IntPtr.Zero);
-            if (owner.IsHandleCreated) EntraCredentialFactory.SetOwnerWindowHandle(owner.Handle);
-        }
-
         #region Public Constructor
         /// <summary>
         /// Initializes a new instance of the MainForm class.
@@ -293,7 +286,7 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
-            RegisterEntraOwner(this);
+            EntraWindowOwners.Register(this, mainWindow: true);
             eventGridRootContextMenuStrip = new ContextMenuStrip(components);
             eventGridRootContextMenuStrip.Items.Add("Refresh Event Grid Topics", null, async (sender, args) => await ShowEventGridEntities());
             ThemeManager.SetHeaderBrandLogo(logoPictureBox);

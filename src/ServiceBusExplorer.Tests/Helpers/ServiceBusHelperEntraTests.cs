@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using Microsoft.Identity.Client;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.ServiceBus.Helpers;
 using Xunit;
 
@@ -526,8 +529,17 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         internal static void CacheCredential(string fieldName, string tenant, InteractiveBrowserCredential credential)
         {
-            var field = typeof(EntraCredentialFactory).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
-            var cache = (ConcurrentDictionary<string, InteractiveBrowserCredential>)field.GetValue(null);
+            object value;
+            if (fieldName == "interactiveBrowserCredentials")
+            {
+                var owner = InvokePrivateStatic<object>(typeof(EntraCredentialFactory), "CurrentBrokerWindow");
+                value = owner.GetType().GetField("Credentials").GetValue(owner);
+            }
+            else
+            {
+                value = typeof(EntraCredentialFactory).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            }
+            var cache = (ConcurrentDictionary<string, InteractiveBrowserCredential>)value;
             cache[tenant] = credential;
         }
 
@@ -550,7 +562,6 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public async Task AcquireTokenWithFallback_BrokerUnavailable_UsesFallbackAndRetriesBrokerNextTime()
         {
-            const string tenantId = "broker-fallback-tenant";
             EntraCredentialFactory.ClearCache();
             var brokerCalls = 0;
             var fallbackCalls = 0;
@@ -566,8 +577,8 @@ namespace ServiceBusExplorer.Tests.Helpers
                 return new ValueTask<AccessToken>(new AccessToken("fallback-token", DateTimeOffset.UtcNow.AddMinutes(5)));
             };
 
-            var first = await AcquireWithFallback(tenantId, broker, fallback);
-            var second = await AcquireWithFallback(tenantId, broker, fallback);
+            var first = await AcquireWithFallback(broker, fallback);
+            var second = await AcquireWithFallback(broker, fallback);
 
             first.Token.Should().Be("fallback-token");
             second.Token.Should().Be("broker-token");
@@ -579,12 +590,10 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public async Task AcquireTokenWithFallback_WrappedMsalServiceBrokerError_UsesFallback()
         {
-            const string tenantId = "broker-service-error-tenant";
             EntraCredentialFactory.ClearCache();
             var fallbackCalls = 0;
 
             var token = await AcquireWithFallback(
-                tenantId,
                 ct => throw new AuthenticationFailedException(
                     "Broker failed.",
                     new MsalServiceException(MsalError.CannotInvokeBroker, "Broker unavailable.")),
@@ -602,12 +611,10 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public async Task AcquireTokenWithFallback_BrokerSucceeds_DoesNotUseFallback()
         {
-            const string tenantId = "broker-success-tenant";
             EntraCredentialFactory.ClearCache();
             var fallbackCalls = 0;
 
             var token = await AcquireWithFallback(
-                tenantId,
                 ct => new ValueTask<AccessToken>(new AccessToken("broker-token", DateTimeOffset.UtcNow.AddMinutes(5))),
                 ct =>
                 {
@@ -622,12 +629,10 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Fact]
         public async Task AcquireTokenWithFallback_UserCancelled_PropagatesWithoutFallback()
         {
-            const string tenantId = "broker-cancel-tenant";
             EntraCredentialFactory.ClearCache();
             var fallbackCalls = 0;
 
             Func<Task> act = () => AcquireWithFallback(
-                tenantId,
                 ct => throw new MsalClientException(MsalError.AuthenticationCanceledError, "Cancelled."),
                 ct =>
                 {
@@ -637,6 +642,136 @@ namespace ServiceBusExplorer.Tests.Helpers
 
             await act.Should().ThrowAsync<MsalClientException>();
             fallbackCalls.Should().Be(0);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task QueuedBrokerRequestUsesItsInitiatingWindowWhileItsHandleIsAlive(bool destroyWindow)
+        {
+            const string tenant = "queued-window-test";
+            var main = new IntPtr(110);
+            var tool = new IntPtr(120);
+            var pending = new TaskCompletionSource<AccessToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var modern = EntraCredentialFactory.CreateNewSdkTokenCredential(tenant);
+            var legacy = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenant);
+            var previousMode = EntraCredentialFactory.UseSystemBrowserOnly;
+            try
+            {
+                EntraCredentialFactory.UseSystemBrowserOnly = false;
+                EntraCredentialFactory.SetOwnerWindowHandle(main);
+                CacheCredential("interactiveBrowserCredentials", tenant, new StubInteractiveCredential(
+                    (context, token) => new ValueTask<AccessToken>(pending.Task)));
+                var first = modern.GetTokenAsync(new TokenRequestContext(new[] { "scope" }), CancellationToken.None).AsTask();
+
+                EntraCredentialFactory.SetOwnerWindowHandle(tool);
+                CacheCredential("interactiveBrowserCredentials", tenant, new RecordingCredential("tool"));
+                var queued = legacy(null, null, null);
+                queued.IsCompleted.Should().BeFalse();
+                EntraCredentialFactory.SetOwnerWindowHandle(main);
+                CacheCredential("interactiveBrowserCredentials", tenant, new RecordingCredential("main"));
+                if (destroyWindow)
+                {
+                    EntraCredentialFactory.ReleaseOwnerWindowHandle(tool, main);
+                    // Windows can reuse the numeric HWND for a different window.
+                    EntraCredentialFactory.SetOwnerWindowHandle(tool);
+                    CacheCredential("interactiveBrowserCredentials", tenant, new RecordingCredential("reused"));
+                    EntraCredentialFactory.SetOwnerWindowHandle(main);
+                }
+
+                pending.SetResult(new AccessToken("first", DateTimeOffset.UtcNow.AddMinutes(5)));
+                (await first).Token.Should().Be("first");
+                (await queued).Should().Be(destroyWindow ? "main" : "tool");
+            }
+            finally
+            {
+                pending.TrySetCanceled();
+                EntraCredentialFactory.ReleaseOwnerWindowHandle(tool, main);
+                EntraCredentialFactory.ReleaseOwnerWindowHandle(main, IntPtr.Zero);
+                EntraCredentialFactory.UseSystemBrowserOnly = previousMode;
+                EntraCredentialFactory.ClearCache();
+            }
+        }
+
+        [Fact]
+        public void QueueListenerWindowOwnsWorkerSignInAndRestoresMainOnClose()
+        {
+            Exception failure = null;
+            var thread = new Thread(() =>
+            {
+                const string tenant = "listener-window-test";
+                var previousMode = EntraCredentialFactory.UseSystemBrowserOnly;
+                var previousCrossThreadCheck = System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls;
+                var endpoint = new Uri("sb://localhost/");
+                var provider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenant);
+                var factory = MessagingFactory.Create(endpoint, provider);
+                try
+                {
+                    EntraCredentialFactory.UseSystemBrowserOnly = false;
+                    System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = true;
+                    using (var main = new RecreatingOwnerForm())
+                    {
+                        EntraWindowOwners.Register(main, mainWindow: true);
+                        main.Show();
+                        var mainCredential = EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant);
+                        var helper = new ServiceBusHelper((message, asynchronous) => { }) { NamespaceUri = endpoint, MessagingFactory = factory };
+                        using (var listener = new ContainerForm(helper, null, Enums.FormTypeEnum.Listener, new QueueDescription("test-queue")))
+                        {
+                            try
+                            {
+                                // Same constructor and Show() used by the queue's Create Listener command.
+                                listener.Show();
+                                listener.Activate();
+                                GetStaticOwner().Should().Be(listener.Handle);
+                                EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant).Should().NotBeSameAs(mainCredential);
+                                using (var inactive = new RecreatingOwnerForm())
+                                {
+                                    EntraWindowOwners.Register(inactive);
+                                    var unusedHandle = inactive.Handle;
+                                    inactive.Recreate();
+                                }
+                                GetStaticOwner().Should().Be(listener.Handle);
+                                var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+                                    audience: EntraCredentialFactory.ServiceBusAudience, expires: DateTime.UtcNow.AddHours(1)));
+                                var recording = new RecordingCredential(token);
+                                CacheCredential("interactiveBrowserCredentials", tenant, recording);
+                                using (var unrelated = new System.Windows.Forms.Form())
+                                {
+                                    unrelated.Show();
+                                    unrelated.Activate();
+                                    GetStaticOwner().Should().Be(listener.Handle);
+                                    var panel = GetPrivateField<System.Windows.Forms.Panel>(listener, "panelMain");
+                                    var control = panel.Controls.OfType<ListenerControl>().Single();
+                                    var listenerHelper = GetPrivateField<ServiceBusHelper>(control, "serviceBusHelper");
+                                    var listenerProvider = listenerHelper.MessagingFactory.GetSettings().TokenProvider;
+                                    Task.Run(() => listenerProvider.GetWebTokenAsync(endpoint.AbsoluteUri, "Listen", false, TimeSpan.FromSeconds(2)))
+                                        .GetAwaiter().GetResult().Should().Contain(token);
+                                    recording.Calls.Should().Be(1);
+                                }
+                            }
+                            finally
+                            {
+                                listener.Close();
+                            }
+                        }
+                        GetStaticOwner().Should().Be(main.Handle);
+                        EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant).Should().BeSameAs(mainCredential);
+                    }
+                    GetStaticOwner().Should().Be(IntPtr.Zero);
+                }
+                catch (Exception ex) { failure = ex; }
+                finally
+                {
+                    factory.Abort();
+                    System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = previousCrossThreadCheck;
+                    EntraCredentialFactory.UseSystemBrowserOnly = previousMode;
+                    EntraCredentialFactory.ClearCache();
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+            if (failure != null) throw new Exception("Queue listener owner regression", failure);
         }
 
         [Fact]
@@ -649,8 +784,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 {
                     using (var form = new RecreatingOwnerForm())
                     {
-                        typeof(ServiceBusExplorer.Forms.MainForm).GetMethod("RegisterEntraOwner", BindingFlags.Static | BindingFlags.NonPublic)
-                            .Invoke(null, new object[] { form });
+                        EntraWindowOwners.Register(form, mainWindow: true);
                         var handle = form.Handle;
                         var first = EntraCredentialFactory.CreateInteractiveBrowserCredential("window-test");
                         form.Recreate();
@@ -700,7 +834,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         public async Task AuthenticationFailuresNeverFallBack(string code)
         {
             var fallbackCalls = 0;
-            Func<Task> action = () => AcquireWithFallback("denied", ct => throw new MsalServiceException(code, "Synthetic denial"), ct =>
+            Func<Task> action = () => AcquireWithFallback(ct => throw new MsalServiceException(code, "Synthetic denial"), ct =>
             {
                 fallbackCalls++;
                 return new ValueTask<AccessToken>(new AccessToken());
@@ -716,7 +850,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 var fallbackCalls = 0;
                 Func<Task> action = () => InvokePrivateStatic<Task<AccessToken>>(
-                    typeof(EntraCredentialFactory), "AcquireTokenWithFallbackAsync", "cancelled",
+                    typeof(EntraCredentialFactory), "AcquireTokenWithFallbackAsync", new Action(() => { }),
                     new Func<CancellationToken, ValueTask<AccessToken>>(ct =>
                     {
                         cancellation.Cancel();
@@ -742,14 +876,13 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         static Task<AccessToken> AcquireWithFallback(
-            string tenantId,
             Func<CancellationToken, ValueTask<AccessToken>> broker,
             Func<CancellationToken, ValueTask<AccessToken>> fallback)
         {
             return InvokePrivateStatic<Task<AccessToken>>(
                 typeof(EntraCredentialFactory),
                 "AcquireTokenWithFallbackAsync",
-                tenantId,
+                new Action(() => { }),
                 broker,
                 fallback,
                 CancellationToken.None);

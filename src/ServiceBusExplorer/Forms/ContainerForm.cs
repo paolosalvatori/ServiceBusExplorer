@@ -111,8 +111,13 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         #endregion
 
+        private ContainerForm()
+        {
+            EntraWindowOwners.Register(this);
+        }
+
         #region Public Constructors
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, QueueDescription queueDescription)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, QueueDescription queueDescription) : this()
         {
             try
             {
@@ -200,7 +205,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, TopicDescription topicDescription, List<SubscriptionDescription> subscriptionList)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, TopicDescription topicDescription, List<SubscriptionDescription> subscriptionList) : this()
         {
             try
             {
@@ -264,7 +269,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, SubscriptionWrapper subscriptionWrapper)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, SubscriptionWrapper subscriptionWrapper) : this()
         {
             try
             {
@@ -331,7 +336,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription, PartitionDescription partitionDescription = null)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription, PartitionDescription partitionDescription = null) : this()
         {
             try
             {
@@ -384,7 +389,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, ConsumerGroupDescription consumerGroupDescription, IEnumerable<PartitionDescription> partitionDescriptions)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, ConsumerGroupDescription consumerGroupDescription, IEnumerable<PartitionDescription> partitionDescriptions) : this()
         {
             try
             {
@@ -436,7 +441,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(MainForm mainForm, string connectionString, string hubName, string consumerGroup, bool iotHub)
+        public ContainerForm(MainForm mainForm, string connectionString, string hubName, string consumerGroup, bool iotHub) : this()
         {
             try
             {
@@ -489,7 +494,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, RelayDescription relayDescription)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, RelayDescription relayDescription) : this()
         {
             try
             {

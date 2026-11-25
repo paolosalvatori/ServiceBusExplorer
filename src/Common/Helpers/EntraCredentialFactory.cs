@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -53,8 +54,7 @@ namespace ServiceBusExplorer.Helpers
         const string DefaultTenantId = "organizations";
         public const string ServiceBusAudience = "https://servicebus.azure.net";
         public const string EventHubsAudience = "https://eventhubs.azure.net";
-        static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> interactiveBrowserCredentials =
-            new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
+        static readonly Dictionary<IntPtr, BrokerWindow> brokerWindows = new Dictionary<IntPtr, BrokerWindow>();
         static readonly ConcurrentDictionary<string, InteractiveBrowserCredential> systemBrowserCredentials =
             new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
         static readonly object credentialCacheLock = new object();
@@ -84,16 +84,46 @@ namespace ServiceBusExplorer.Helpers
         }
 
         /// <summary>
-        /// Sets the main window handle used to parent the Windows broker (WAM) sign-in UI.
+        /// Selects the Explorer window that owns new broker requests.
         /// </summary>
         public static void SetOwnerWindowHandle(IntPtr handle)
         {
+            lock (credentialCacheLock) ownerWindowHandle = handle;
+        }
+
+        /// <summary>Retires a destroyed HWND, including cached credentials for every tenant.</summary>
+        public static void ReleaseOwnerWindowHandle(IntPtr destroyed, IntPtr fallback)
+        {
             lock (credentialCacheLock)
             {
-                if (ownerWindowHandle == handle) return;
-                ownerWindowHandle = handle;
-                interactiveBrowserCredentials.Clear();
+                if (brokerWindows.TryGetValue(destroyed, out var window))
+                {
+                    window.Retired = true;
+                    brokerWindows.Remove(destroyed);
+                }
+                ownerWindowHandle = fallback;
             }
+        }
+
+        // Access the window registry only under credentialCacheLock.
+        static BrokerWindow CurrentBrokerWindow()
+        {
+            if (!brokerWindows.TryGetValue(ownerWindowHandle, out var window))
+            {
+                window = new BrokerWindow(ownerWindowHandle);
+                brokerWindows.Add(ownerWindowHandle, window);
+            }
+            return window;
+        }
+
+        sealed class BrokerWindow
+        {
+            public readonly IntPtr Handle;
+            public readonly ConcurrentDictionary<string, InteractiveBrowserCredential> Credentials =
+                new ConcurrentDictionary<string, InteractiveBrowserCredential>(StringComparer.OrdinalIgnoreCase);
+            public bool Retired;
+
+            public BrokerWindow(IntPtr handle) => Handle = handle;
         }
 
         /// <summary>
@@ -115,29 +145,18 @@ namespace ServiceBusExplorer.Helpers
         public static InteractiveBrowserCredential CreateInteractiveBrowserCredential(string tenantId = null)
         {
             var normalizedTenantId = NormalizeTenantId(tenantId);
-            return UseSystemBrowserOnly
-                ? CreateSystemBrowserCredential(normalizedTenantId)
-                : CreateBrokerCredential(normalizedTenantId);
+            if (UseSystemBrowserOnly) return CreateSystemBrowserCredential(normalizedTenantId);
+            lock (credentialCacheLock) return CreateBrokerCredential(normalizedTenantId, CurrentBrokerWindow());
         }
 
-        static InteractiveBrowserCredential CreateBrokerCredential(string normalizedTenantId)
+        static InteractiveBrowserCredential CreateBrokerCredential(string normalizedTenantId, BrokerWindow owner)
         {
-            lock (credentialCacheLock)
+            return owner.Credentials.GetOrAdd(normalizedTenantId, _ =>
             {
-                return interactiveBrowserCredentials.GetOrAdd(normalizedTenantId, _ =>
-                {
-                    // Deliberately in-memory only. Cross-process silent sign-in would additionally require
-                    // persisting an AuthenticationRecord, which this tool does not do, so a persisted cache
-                    // would store refresh tokens on disk for no benefit and would leave ClearCache unable to
-                    // log the user out.
-                    var options = new InteractiveBrowserCredentialBrokerOptions(ownerWindowHandle)
-                    {
-                        TenantId = normalizedTenantId
-                    };
-
-                    return new InteractiveBrowserCredential(options);
-                });
-            }
+                // Keep only an in-memory MSAL cache so ClearCache can discard it.
+                var options = new InteractiveBrowserCredentialBrokerOptions(owner.Handle) { TenantId = normalizedTenantId };
+                return new InteractiveBrowserCredential(options);
+            });
         }
 
         /// <summary>
@@ -239,7 +258,10 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         public static void ClearCache()
         {
-            lock (credentialCacheLock) interactiveBrowserCredentials.Clear();
+            lock (credentialCacheLock)
+            {
+                foreach (var window in brokerWindows.Values) window.Credentials.Clear();
+            }
             systemBrowserCredentials.Clear();
             authenticationCallbacks.Clear();
             tokenCredentials.Clear();
@@ -259,6 +281,8 @@ namespace ServiceBusExplorer.Helpers
 
         static async Task<AccessToken> GetAccessTokenAsync(string tenantId, TokenRequestContext requestContext, CancellationToken cancellationToken)
         {
+            BrokerWindow owner;
+            lock (credentialCacheLock) owner = CurrentBrokerWindow();
             var gate = interactiveLoginGates.GetOrAdd(tenantId, _ => new InteractiveLoginGate());
             var attempt = gate.CurrentAttempt;
             await gate.Mutex.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -270,12 +294,7 @@ namespace ServiceBusExplorer.Helpers
                 attempt.Failure?.Throw();
                 try
                 {
-                    return await AcquireTokenWithFallbackAsync(
-                            tenantId,
-                            ct => CreateBrokerCredential(tenantId).GetTokenAsync(requestContext, ct),
-                            ct => CreateSystemBrowserCredential(tenantId).GetTokenAsync(requestContext, ct),
-                            cancellationToken)
-                        .ConfigureAwait(false);
+                    return await AcquireForWindowAsync(owner, tenantId, requestContext, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
                 {
@@ -331,8 +350,37 @@ namespace ServiceBusExplorer.Helpers
             return false;
         }
 
+        static Task<AccessToken> AcquireForWindowAsync(BrokerWindow owner, string tenantId,
+            TokenRequestContext context, CancellationToken cancellationToken)
+        {
+            InteractiveBrowserCredential broker = null;
+
+            ValueTask<AccessToken> AcquireBroker(CancellationToken token)
+            {
+                lock (credentialCacheLock)
+                {
+                    // The request may have waited for another sign-in while its window closed.
+                    if (owner.Retired || owner.Handle == IntPtr.Zero) owner = CurrentBrokerWindow();
+                    broker = CreateBrokerCredential(tenantId, owner);
+                }
+                return broker.GetTokenAsync(context, token);
+            }
+
+            void InvalidateBroker()
+            {
+                lock (credentialCacheLock)
+                {
+                    if (owner.Credentials.TryGetValue(tenantId, out var cached) && cached == broker)
+                        owner.Credentials.TryRemove(tenantId, out _);
+                }
+            }
+
+            return AcquireTokenWithFallbackAsync(InvalidateBroker, AcquireBroker,
+                token => CreateSystemBrowserCredential(tenantId).GetTokenAsync(context, token), cancellationToken);
+        }
+
         static async Task<AccessToken> AcquireTokenWithFallbackAsync(
-            string tenantId,
+            Action invalidateBroker,
             Func<CancellationToken, ValueTask<AccessToken>> brokerAcquire,
             Func<CancellationToken, ValueTask<AccessToken>> browserAcquire,
             CancellationToken cancellationToken)
@@ -350,7 +398,7 @@ namespace ServiceBusExplorer.Helpers
             catch (Exception ex) when (!cancellationToken.IsCancellationRequested && IsBrokerUnavailable(ex))
             {
                 // Only this acquisition falls back. A later request rebuilds and retries WAM.
-                lock (credentialCacheLock) interactiveBrowserCredentials.TryRemove(tenantId, out _);
+                invalidateBroker();
                 Trace.TraceWarning("Windows broker unavailable; using browser sign-in for this request. The next request will retry the broker.");
             }
 
