@@ -1154,34 +1154,15 @@ namespace ServiceBusExplorer.Controls
                 txtPath.Text = notificationHubDescription.Path;
             }
 
-            // UserMetadata
-            if (!string.IsNullOrWhiteSpace(notificationHubDescription.UserMetadata))
-            {
-                txtUserMetadata.Text = notificationHubDescription.UserMetadata;
-            }
-
-            // RegistrationTtl
-            if (notificationHubDescription.RegistrationTtl != null)
-            {
-                tsRegistrationTimeToLive.TimeSpanValue = notificationHubDescription.RegistrationTtl;
-            }
-
-            if (notificationHubDescription.WnsCredential != null)
-            {
-                if (!string.IsNullOrWhiteSpace(notificationHubDescription.WnsCredential.PackageSid))
-                {
-                    txtPackageSid.Text = notificationHubDescription.WnsCredential.PackageSid;
-                }
-                if (!string.IsNullOrWhiteSpace(notificationHubDescription.WnsCredential.SecretKey))
-                {
-                    txtClientSecret.Text = notificationHubDescription.WnsCredential.SecretKey;
-                }
-            }
-            else
-            {
-                txtPackageSid.Text = string.Empty;
-                txtClientSecret.Text = string.Empty;
-            }
+            // A confirmed reload replaces unsaved edits, including empty and absent server values.
+            txtUserMetadata.Text = notificationHubDescription.UserMetadata ?? string.Empty;
+            tsRegistrationTimeToLive.TimeSpanValue = notificationHubDescription.RegistrationTtl;
+            txtPackageSid.Text = notificationHubDescription.WnsCredential?.PackageSid ?? string.Empty;
+            txtClientSecret.Text = notificationHubDescription.WnsCredential?.SecretKey ?? string.Empty;
+            checkBoxEnableUnauthenticatedMpns.Checked = false;
+            txtMpnsCredentialCertificateThumbprint.Text = string.Empty;
+            txtApnsCredentialCertificateThumbprint.Text = string.Empty;
+            txtApnsEndpoint.Text = notificationHubDescription.ApnsCredential?.Endpoint ?? string.Empty;
 
             // Never render stored private keys. The endpoint is read-only and always belongs to FCM v1.
             pendingFcmV1Credential = null;
