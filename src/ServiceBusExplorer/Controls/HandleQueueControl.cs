@@ -1888,7 +1888,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (messageInspector != null)
                         {
-                            message = messageInspector.AfterReceiveMessage(message);
+                            message = ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector);
                         }
                         brokeredMessages.Add(message);
                     }
@@ -1911,7 +1911,7 @@ namespace ServiceBusExplorer.Controls
                         if (message != null)
                         {
                             brokeredMessages.Add(messageInspector != null
-                            ? messageInspector.AfterReceiveMessage(message)
+                            ? ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector)
                             : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
@@ -1984,7 +1984,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (messageInspector != null)
                         {
-                            message = messageInspector.AfterReceiveMessage(message);
+                            message = ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector);
                         }
                         brokeredMessages.Add(message);
                     }
@@ -2007,7 +2007,7 @@ namespace ServiceBusExplorer.Controls
                         if (message != null)
                         {
                             brokeredMessages.Add(messageInspector != null
-                                ? messageInspector.AfterReceiveMessage(message)
+                                ? ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector)
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));

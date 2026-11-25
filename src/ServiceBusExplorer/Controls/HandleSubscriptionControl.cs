@@ -1295,7 +1295,7 @@ namespace ServiceBusExplorer.Controls
                         {
                             if (messageInspector != null)
                             {
-                                message = messageInspector.AfterReceiveMessage(message);
+                                message = ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector);
                             }
                             brokeredMessages.Add(message);
                         }
@@ -1322,7 +1322,7 @@ namespace ServiceBusExplorer.Controls
                             continue;
                         }
                         totalRetrieved += retrieved;
-                        brokeredMessages.Add(messageInspector != null ? messageInspector.AfterReceiveMessage(message) : message);
+                        brokeredMessages.Add(messageInspector != null ? ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector) : message);
                     }
                     while (retrieved > 0 && (all || count > totalRetrieved));
                     writeToLog(string.Format(MessagesReceivedFromTheDeadletterQueue, brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));

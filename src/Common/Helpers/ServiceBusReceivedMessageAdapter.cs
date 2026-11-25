@@ -64,6 +64,9 @@ namespace ServiceBusExplorer.Helpers
             return clone;
         }
 
+        public static BrokeredMessage InspectReceivedRow(BrokeredMessage source, IBrokeredMessageInspector inspector) =>
+            inspector == null ? source : Inspect(source, inspector.AfterReceiveMessage);
+
         public static BrokeredMessage Inspect(BrokeredMessage source, Func<BrokeredMessage, BrokeredMessage> inspect)
         {
             var identity = CaptureIdentity(source);

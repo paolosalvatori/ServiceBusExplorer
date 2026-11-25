@@ -184,6 +184,28 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Fact]
+        public void PartitionedDlqReaderInspectionKeepsCloneIdentityForDeletePreparation()
+        {
+            RunSta(() =>
+            {
+                var received = Azure.Messaging.ServiceBus.ServiceBusModelFactory.ServiceBusReceivedMessage(
+                    body: new BinaryData("body"), sequenceNumber: 47);
+                using var original = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(received);
+                using var row = ServiceBusReceivedMessageAdapter.InspectReceivedRow(original, new DlqCloneInspector());
+                Assert.NotSame(original, row);
+                Assert.Equal(new long?[] { 47 }, ServiceBusExplorer.UIHelpers.DataGridViewHelper.GetSourceSequenceNumbers(new[] { row }));
+                using var editor = new MessageForm(row, new ServiceBusHelper((_, __) => { }), (_, __) => { });
+                ((CheckBox)editor.Controls.Find("chkRemove", true).Single()).Checked = true;
+                Assert.Equal(47, editor.GetSourceSequenceForRemoval(row));
+            });
+        }
+        private class DlqCloneInspector : IBrokeredMessageInspector
+        {
+            public BrokeredMessage BeforeSendMessage(BrokeredMessage message) => message;
+            public BrokeredMessage AfterReceiveMessage(BrokeredMessage message) => message.Clone();
+        }
+
+        [Fact]
         public void QueueTestEntryRejectsTransactionalReceiveAndDeleteBeforeStarting()
         {
             RunSta(() =>
