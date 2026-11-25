@@ -115,7 +115,9 @@ namespace ServiceBusExplorer.Tests.Helpers
             public override AsyncPageable<TopicProperties> GetTopicsAsync(CancellationToken cancellationToken = default)
             {
                 TopicLists++;
-                return Pages(Enumerable.Range(0, 9).Select(i => ServiceBusModelFactory.TopicProperties("topic" + i)));
+                return Pages(Enumerable.Range(0, 9).Select(i => ServiceBusModelFactory.TopicProperties("topic" + i, maxSizeInMegabytes: 1024,
+                    defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue,
+                    duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), status: EntityStatus.Active)));
             }
             public override AsyncPageable<TopicRuntimeProperties> GetTopicsRuntimePropertiesAsync(CancellationToken cancellationToken = default)
             {
@@ -129,7 +131,9 @@ namespace ServiceBusExplorer.Tests.Helpers
                 return Task.FromResult(Response.FromValue(ServiceBusModelFactory.TopicRuntimeProperties(name), (Response)null));
             }
             public override AsyncPageable<SubscriptionProperties> GetSubscriptionsAsync(string topic, CancellationToken cancellationToken = default) =>
-                Pages(Enumerable.Range(0, 100).Select(i => ServiceBusModelFactory.SubscriptionProperties(topic, "sub" + i)));
+                Pages(Enumerable.Range(0, 100).Select(i => ServiceBusModelFactory.SubscriptionProperties(topic, "sub" + i, lockDuration: TimeSpan.FromMinutes(1),
+                    defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue,
+                    maxDeliveryCount: 10, status: EntityStatus.Active, userMetadata: "")));
             public override Task<Response<SubscriptionRuntimeProperties>> GetSubscriptionRuntimePropertiesAsync(string topic, string name, CancellationToken cancellationToken = default)
             {
                 SubscriptionPointReads++;
