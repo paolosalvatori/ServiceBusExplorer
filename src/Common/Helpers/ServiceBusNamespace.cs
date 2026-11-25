@@ -292,10 +292,10 @@ namespace ServiceBusExplorer.Helpers
 
             var parameters = connectionString.Split([';'], StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => s.IndexOf('=') > 0)
-                .GroupBy(s => s.Substring(0, s.IndexOf('=')).ToLower())
+                .GroupBy(s => s.Substring(0, s.IndexOf('=')).Trim().ToLowerInvariant())
                 .ToDictionary(
                     g => g.Key, 
-                    g => g.Last().Substring(g.Last().IndexOf('=') + 1));
+                    g => g.Last().Substring(g.Last().IndexOf('=') + 1).Trim());
 
 
             if (toLower.Contains(ConnectionStringEndpoint) &&
@@ -641,6 +641,13 @@ namespace ServiceBusExplorer.Helpers
                               parameters[ConnectionStringStsEndpoint] :
                               null;
 
+            if (!System.Uri.TryCreate(endpoint, UriKind.Absolute, out var endpointUri) ||
+                string.IsNullOrEmpty(endpointUri.Host) || endpointUri.Port == 0)
+            {
+                staticWriteToLog("The Service Bus endpoint or port is invalid.");
+                return null;
+            }
+
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);           
 
             if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || 
@@ -680,7 +687,8 @@ namespace ServiceBusExplorer.Helpers
                 sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
                 entityPath, isUserCreated)
             {
-                UseDevelopmentEmulator = useDevelopmentEmulator
+                UseDevelopmentEmulator = useDevelopmentEmulator,
+                Namespace = useDevelopmentEmulator ? endpointUri.Host : ns
             };
         }
 

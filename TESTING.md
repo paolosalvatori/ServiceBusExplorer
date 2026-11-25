@@ -103,3 +103,15 @@ Manual Windows/live Azure checks still required: close the app with partial chec
 - Added coverage for safe identity normalization, exclusive/empty checkpoint positions, bounded retry exhaustion, unexpected permanent errors, nonblocking system shutdown, and close-after-persistence-error behavior. Updated disable/flush regression expectations.
 
 Not run locally: Windows GUI shutdown/read-only-directory workflows, IoT live endpoint migration/credential rotation, and live Azure outage/cancel checks. Linux Release build is available; net472 test execution requires Windows CI because Mono is absent.
+
+### November 25 review: legacy checkpoint consolidation and failure logging
+
+- `EventHubCheckpointPersistenceTests` uses only temporary synthetic files through `ReadCheckpoints`, `GetLease`, and `WriteCheckpoints`. Duplicate normalized Endpoint/HostName identities retain every partition and the highest sequence; equal sequences choose the ordinal serialized lease representation, independently of input order. Unmappable identities are persisted as `[]` after a successful load. Failed/unattempted reads cannot authorize an overwrite; a missing file still permits new checkpoints.
+- `PartitionListenerFailureLogTests` runs a real WinForms message loop and listener reader/stop path with a synthetic failing consumer. It checks that the failure is synchronously visible before logging stops and that asynchronous reader shutdown completes without blocking the UI. Existing inspector replay and final-checkpoint batch tests remain applicable.
+- No real checkpoint file, credential, or Azure service is used. Live inspector replay and interactive desktop evidence still require Windows/manual verification; the Linux executor cannot run the net472 WinForms application.
+
+### Connection-stage readiness follow-up (#910)
+
+Saved emulator profiles use the raw connection editor so their development flag, endpoint/port, and credentials survive a save/connect round trip. Saving an emulator profile validates its parsed endpoint without passing development-only fields to the legacy SDK. Parsed field names/values are trimmed; invalid endpoint ports are rejected and emulator display names retain the complete host. At this connection-only stage, emulator Connect still rejects before changing any active helper state or creating clients.
+
+Synthetic tests cover the saved ConnectForm selection/build path, padded fields, full IP/DNS display names, invalid ports, and unchanged helper fields after a rejected emulator Connect. Actual emulator connectivity and Windows save-to-configuration interaction remain unverified; no live service is used.

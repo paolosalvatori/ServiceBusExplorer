@@ -737,8 +737,6 @@ namespace ServiceBusExplorer
         /// <returns>True if the operation succeeds, false otherwise.</returns>
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
-            this.serviceBusNamespaceInstance = serviceBusNamespace;
-
             var isEntra = serviceBusNamespace?.IsEntra == true;
 
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
@@ -750,6 +748,8 @@ namespace ServiceBusExplorer
             {
                 throw new NotSupportedException(ServiceBusEmulatorNotYetSupported);
             }
+
+            this.serviceBusNamespaceInstance = serviceBusNamespace;
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
