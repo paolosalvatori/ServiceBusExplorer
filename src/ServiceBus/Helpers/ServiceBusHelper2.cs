@@ -38,6 +38,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public string ConnectionString { get; set; }
         public string AdministrationConnectionString { get; set; }
+        // Original profile scope survives removal of EntityPath from SDK connection strings.
+        public string ProfileEntityPath { get; set; }
         public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
@@ -78,6 +80,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public bool ConnectionStringContainsEntityPath()
         {
             if (IsEntra) return false;
+            if (ProfileEntityPath != null) return !string.IsNullOrWhiteSpace(ProfileEntityPath);
 
             var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
 
@@ -113,7 +116,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// Creates a <see cref="ServiceBusAdministrationClient"/> using Entra credentials or
         /// a connection string depending on the current authentication mode.
         /// </summary>
-        public ServiceBusAdministrationClient CreateAdministrationClient()
+        public virtual ServiceBusAdministrationClient CreateAdministrationClient()
         {
             return IsEntra
                 ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
@@ -122,6 +125,8 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public async Task<bool> IsPremiumNamespace()
         {
+            // Entity-only SAS access cannot query namespace SKU. Match the editor's conservative default.
+            if (ConnectionStringContainsEntityPath()) return false;
             var administrationClient = CreateAdministrationClient();
             NamespaceProperties namespaceProperties = await administrationClient.GetNamespacePropertiesAsync().ConfigureAwait(false);
 

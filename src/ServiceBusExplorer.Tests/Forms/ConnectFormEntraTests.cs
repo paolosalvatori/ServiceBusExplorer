@@ -52,6 +52,28 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Fact]
+        public void TransportDropdownDoesNotRewriteOtherConnectionValues()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string value = "Endpoint=sb://NetMessaging9354:5672;SharedAccessKeyName=name;SharedAccessKey=NetMessaging9354==;UseDevelopmentEmulator=true;TransportType=NetMessaging;RuntimePort=9354;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                helper.ServiceBusNamespaces["Saved emulator"] = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", value, (_, __) => { });
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Saved emulator";
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
+                    var updated = GetTextBox(form, ControlNameUri).Text;
+                    updated.Should().Contain("Endpoint=sb://NetMessaging9354:5672");
+                    updated.Should().Contain("SharedAccessKey=NetMessaging9354==");
+                    updated.Should().Contain("TransportType=Amqp");
+                    updated.Should().Contain("RuntimePort=5671");
+                }
+            });
+        }
+
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
