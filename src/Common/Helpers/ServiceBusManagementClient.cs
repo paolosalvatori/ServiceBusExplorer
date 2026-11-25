@@ -41,6 +41,19 @@ namespace ServiceBusExplorer.Helpers
             return result;
         }
 
+        private static async Task<List<T>> ReadAllAsync<T>(AsyncPageable<T> values, CancellationToken token) where T : notnull
+        {
+            var result = new List<T>();
+            var pages = values.AsPages().GetAsyncEnumerator(token);
+            try
+            {
+                while (await pages.MoveNextAsync().ConfigureAwait(false))
+                    result.AddRange(pages.Current.Values);
+            }
+            finally { await pages.DisposeAsync().ConfigureAwait(false); }
+            return result;
+        }
+
         public QueueInfo GetQueue(string path) => ReadQueue(path, CancellationToken.None);
         public TopicInfo GetTopic(string path) => ReadTopic(path, CancellationToken.None);
         public SubscriptionInfo GetSubscription(string topic, string name) =>
@@ -55,10 +68,13 @@ namespace ServiceBusExplorer.Helpers
             return ReadTopic(properties, Wait(Client.GetTopicRuntimePropertiesAsync(path, cancellationToken)).Value, cancellationToken);
         }
 
-        private TopicInfo ReadTopic(TopicProperties properties, TopicRuntimeProperties runtime, CancellationToken cancellationToken)
+        private TopicInfo ReadTopic(TopicProperties properties, TopicRuntimeProperties runtime, CancellationToken cancellationToken) =>
+            Wait(ReadTopicAsync(properties, runtime, cancellationToken));
+
+        private async Task<TopicInfo> ReadTopicAsync(TopicProperties properties, TopicRuntimeProperties runtime, CancellationToken token)
         {
             var counts = new EntityMessageCounts { ScheduledMessageCount = runtime.ScheduledMessageCount };
-            foreach (var subscription in ReadAll(Client.GetSubscriptionsRuntimePropertiesAsync(properties.Name, cancellationToken)))
+            foreach (var subscription in await ReadAllAsync(Client.GetSubscriptionsRuntimePropertiesAsync(properties.Name, token), token).ConfigureAwait(false))
             {
                 counts.ActiveMessageCount += subscription.ActiveMessageCount;
                 counts.DeadLetterMessageCount += subscription.DeadLetterMessageCount;
@@ -84,12 +100,37 @@ namespace ServiceBusExplorer.Helpers
         public IEnumerable<TopicInfo> GetTopics(string filter, int timeoutInSeconds)
         {
             var predicate = ServiceBusManagementFilter.Parse(filter);
-            return WithTimeout(timeoutInSeconds, token => ReadAll(Client.GetTopicsAsync(token))
-                .Select(properties => ReadTopic(properties, Wait(Client.GetTopicRuntimePropertiesAsync(properties.Name, token)).Value, token))
-                .Where(item => predicate(item.Path,
-                    item.MessageCountDetails.ActiveMessageCount + item.MessageCountDetails.DeadLetterMessageCount +
-                    item.MessageCountDetails.ScheduledMessageCount + item.MessageCountDetails.TransferMessageCount +
-                    item.MessageCountDetails.TransferDeadLetterMessageCount, item.CreatedAt, item.UpdatedAt, item.AccessedAt)).ToList());
+            var pathCondition = ServiceBusManagementFilter.ParsePathCondition(filter);
+            return WithTimeout(timeoutInSeconds, token => Wait(ReadTopicsAsync(predicate, pathCondition, token)));
+        }
+
+        private async Task<List<TopicInfo>> ReadTopicsAsync(ServiceBusManagementFilter.Predicate predicate,
+            Func<string, bool> pathCondition, CancellationToken token)
+        {
+            var properties = (await ReadAllAsync(Client.GetTopicsAsync(token), token).ConfigureAwait(false))
+                .Where(item => pathCondition(item.Name)).ToList();
+            if (properties.Count == 0) return new List<TopicInfo>();
+            var runtimes = (await ReadAllAsync(Client.GetTopicsRuntimePropertiesAsync(token), token).ConfigureAwait(false))
+                .ToDictionary(item => item.Name, StringComparer.OrdinalIgnoreCase);
+            var result = new List<TopicInfo>();
+            // Bound requests and task allocation; await every started operation before returning
+            // or disposing the shared timeout, even when a peer fails.
+            const int concurrency = 4;
+            for (var offset = 0; offset < properties.Count; offset += concurrency)
+            {
+                token.ThrowIfCancellationRequested();
+                var batch = properties.Skip(offset).Take(concurrency).Select(async item =>
+                {
+                    if (!runtimes.TryGetValue(item.Name, out var runtime))
+                        runtime = (await Client.GetTopicRuntimePropertiesAsync(item.Name, token).ConfigureAwait(false)).Value;
+                    return await ReadTopicAsync(item, runtime, token).ConfigureAwait(false);
+                });
+                result.AddRange(await Task.WhenAll(batch).ConfigureAwait(false));
+            }
+            return result.Where(item => predicate(item.Path,
+                item.MessageCountDetails.ActiveMessageCount + item.MessageCountDetails.DeadLetterMessageCount +
+                item.MessageCountDetails.ScheduledMessageCount + item.MessageCountDetails.TransferMessageCount +
+                item.MessageCountDetails.TransferDeadLetterMessageCount, item.CreatedAt, item.UpdatedAt, item.AccessedAt)).ToList();
         }
 
         public QueueInfo GetQueue(string path, int timeoutInSeconds) => WithTimeout(timeoutInSeconds, token => ReadQueue(path, token));
@@ -114,8 +155,11 @@ namespace ServiceBusExplorer.Helpers
         public IEnumerable<SubscriptionInfo> GetSubscriptions(string topic, string filter = null)
         {
             var predicate = ServiceBusManagementFilter.Parse(filter);
+            var runtimes = ReadAll(Client.GetSubscriptionsRuntimePropertiesAsync(topic))
+                .ToDictionary(item => item.SubscriptionName, StringComparer.OrdinalIgnoreCase);
             return ReadAll(Client.GetSubscriptionsAsync(topic)).Select(properties =>
-                new SubscriptionInfo(properties, Wait(Client.GetSubscriptionRuntimePropertiesAsync(topic, properties.SubscriptionName)).Value))
+                new SubscriptionInfo(properties, runtimes.TryGetValue(properties.SubscriptionName, out var runtime)
+                    ? runtime : Wait(Client.GetSubscriptionRuntimePropertiesAsync(topic, properties.SubscriptionName)).Value))
                 .Where(item => predicate(item.Name, item.MessageCount, item.CreatedAt, item.UpdatedAt, item.AccessedAt)).ToList();
         }
 

@@ -19,15 +19,26 @@ namespace ServiceBusExplorer.Helpers
                 return (path, count, created, updated, accessed) => true;
             }
 
-            var alternatives = Split(filter, "or").Select(part => Split(part, "and").Select(ParseClause).ToArray()).ToArray();
+            var alternatives = Split(filter, "or").Select(part => Split(part, "and").Select(clause => ParseClause(clause)).ToArray()).ToArray();
             return (path, count, created, updated, accessed) => alternatives.Any(clauses =>
                 clauses.All(clause => clause(path, count, created, updated, accessed)));
+        }
+
+        // Necessary path condition only: runtime clauses remain unknown (true), including
+        // inside OR alternatives. Full parsing still rejects unsupported filters up front.
+        public static Func<string, bool> ParsePathCondition(string filter)
+        {
+            Parse(filter);
+            if (string.IsNullOrWhiteSpace(filter)) return path => true;
+            var alternatives = Split(filter, "or").Select(part => Split(part, "and")
+                .Select(clause => ParseClause(clause, true)).ToArray()).ToArray();
+            return path => alternatives.Any(clauses => clauses.All(clause => clause(path, 0, default, default, default)));
         }
 
         private static string[] Split(string filter, string logicalOperator) =>
             Regex.Split(filter, @"\s+" + logicalOperator + @"\s+(?=(?:[^']*'[^']*')*[^']*$)", Options);
 
-        private static Predicate ParseClause(string clause)
+        private static Predicate ParseClause(string clause, bool pathOnly = false)
         {
             var prefix = Regex.Match(clause, @"^\s*startswith\(\s*(path|name)\s*,\s*" + QuotedString + @"\s*\)\s+eq\s+true\s*$", Options);
             if (prefix.Success)
@@ -43,6 +54,8 @@ namespace ServiceBusExplorer.Helpers
                 var op = pathComparison.Groups["op"].Value.ToLowerInvariant();
                 return (path, count, created, updated, accessed) => Compare(string.Compare(path, value, StringComparison.OrdinalIgnoreCase), op);
             }
+
+            if (pathOnly) return (path, count, created, updated, accessed) => true;
 
             var countComparison = Regex.Match(clause, @"^\s*messagecount\s+" + Operator + @"\s+(?<value>\d+)\s*$", Options);
             if (countComparison.Success)
