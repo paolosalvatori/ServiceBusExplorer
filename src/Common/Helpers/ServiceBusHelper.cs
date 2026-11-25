@@ -749,7 +749,6 @@ namespace ServiceBusExplorer
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
             var isEntra = serviceBusNamespace?.IsEntra == true;
-
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
@@ -759,6 +758,69 @@ namespace ServiceBusExplorer
             {
                 throw new Exception("Could not resolve the Service Bus endpoint host.");
             }
+
+            return RetryHelper.RetryFunc(() =>
+            {
+                var replacement = PrepareConnection(serviceBusNamespace);
+                // Preparation succeeds as a complete unit before the active profile changes.
+                PublishConnection(replacement);
+                return true;
+            }, writeToLog);
+        }
+
+        private ServiceBusHelper PrepareConnection(ServiceBusNamespace profile)
+        {
+            var replacement = new ServiceBusHelper((message, async) => WriteToLogIf(traceEnabled, message, async))
+            {
+                scheme = scheme
+            };
+            replacement.OnCreate += args => OnCreate?.Invoke(args);
+            replacement.OnDelete += args => OnDelete?.Invoke(args);
+            try
+            {
+                if (!replacement.InitializeConnection(profile)) throw new InvalidOperationException("Connection preparation failed.");
+                return replacement;
+            }
+            catch
+            {
+                // Administration/token wrappers do not own disposable connections. The legacy
+                // messaging factory is the provisional resource that can require closing.
+                try { replacement.messagingFactory?.Close(); }
+                catch (Exception ex) { try { WriteToLog("Provisional connection cleanup failed: " + ex.Message); } catch { } }
+                throw;
+            }
+        }
+
+        private void PublishConnection(ServiceBusHelper replacement)
+        {
+            serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
+            connectionString = replacement.connectionString;
+            currentSharedAccessKey = replacement.currentSharedAccessKey;
+            currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
+            namespaceUri = replacement.namespaceUri;
+            connectionStringType = replacement.connectionStringType;
+            ns = replacement.ns;
+            IsEventHubNamespace = replacement.IsEventHubNamespace;
+            namespaceManager = replacement.namespaceManager;
+            notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
+            notificationHubTokenProvider = replacement.notificationHubTokenProvider;
+            entraTokenProvider = replacement.entraTokenProvider;
+            managementClient = replacement.managementClient;
+            messagingFactory = replacement.messagingFactory;
+            serviceBusQueue = replacement.serviceBusQueue;
+            serviceBusTopic = replacement.serviceBusTopic;
+            serviceBusSubscription = replacement.serviceBusSubscription;
+            serviceBusRule = replacement.serviceBusRule;
+            serviceBusRelay = replacement.serviceBusRelay;
+            serviceBusNotificationHub = replacement.serviceBusNotificationHub;
+            serviceBusEventHub = replacement.serviceBusEventHub;
+            serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
+            serviceBusPartition = replacement.serviceBusPartition;
+        }
+
+        private bool InitializeConnection(ServiceBusNamespace serviceBusNamespace)
+        {
+            var isEntra = serviceBusNamespace?.IsEntra == true;
 
             // Reconnect must not leave adapters pointing at a previous namespace.
             serviceBusNamespaceInstance = serviceBusNamespace;
@@ -901,7 +963,7 @@ namespace ServiceBusExplorer
                     : MessageFactorySuccessfullyCreated);
                 return true;
             });
-            return RetryHelper.RetryFunc(func, writeToLog);
+            return func();
         }
 
         /// <summary>

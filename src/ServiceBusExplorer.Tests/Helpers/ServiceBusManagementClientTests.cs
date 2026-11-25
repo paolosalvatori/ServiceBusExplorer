@@ -23,6 +23,33 @@ namespace ServiceBusExplorer.Tests.Helpers
         private const string EmulatorConnection = "Endpoint=sb://localhost:5672;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;UseDevelopmentEmulator=true;TransportType=Amqp;EntityPath=orders";
 
         [Fact]
+        public void AdjacentCorrelationPropertiesAllSurviveCompactXml()
+        {
+            var sdk = new FakeAdministrationClient();
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Topics><Topic><Path>events</Path><Subscriptions><Subscription><TopicPath>events</TopicPath><Name>sub</Name><Rules><Rule><Name>test</Name><Filter><CorrelationFilter><Properties><Property>one: first</Property><Property>two: second:colon</Property><Property>three: third</Property></Properties></CorrelationFilter></Filter></Rule></Rules></Subscription></Subscriptions></Topic></Topics></Entities>";
+            NewHelper(sdk).ImportEntities(xml);
+            var filter = sdk.CreatedRule.Filter.Should().BeOfType<CorrelationRuleFilter>().Subject;
+            filter.ApplicationProperties.Should().HaveCount(3);
+            filter.ApplicationProperties["one"].Should().Be("first");
+            filter.ApplicationProperties["two"].Should().Be("second:colon");
+            filter.ApplicationProperties["three"].Should().Be("third");
+        }
+
+        [Theory]
+        [InlineData("<Filter unsupported='value'><TrueFilter /></Filter>")]
+        [InlineData("<Filter unsupported='value' />")]
+        [InlineData("<Filter>ignored<TrueFilter /></Filter>")]
+        [InlineData("<Action><EmptyRuleAction unsupported='value'/></Action>")]
+        public void UnsupportedWrapperMetadataRejectsBeforeAnyWrite(string wrapper)
+        {
+            var sdk = new FakeAdministrationClient();
+            var xml = "<Entities xmlns='http://schemas.microsoft.com/servicebusexplorer'><Queues><Queue><Path>must-not-create</Path></Queue></Queues><Rule><Name>test</Name>" + wrapper + "</Rule></Entities>";
+            ((Action)(() => NewHelper(sdk).ImportEntities(xml))).Should().Throw<NotSupportedException>().WithMessage("*No entities were changed*");
+            sdk.CreatedQueue.Should().BeNull();
+            sdk.CreatedRule.Should().BeNull();
+        }
+
+        [Fact]
         public void EmulatorReconnectClearsCloudAdaptersAndGuardsSecondaryDataPlane()
         {
             var helper = new ServiceBusHelper((_, __) => { });
