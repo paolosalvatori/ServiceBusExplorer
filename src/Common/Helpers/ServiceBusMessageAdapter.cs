@@ -37,6 +37,7 @@ namespace ServiceBusExplorer.Helpers
                 ContentType = message.ContentType,
                 Subject = message.Label,
                 PartitionKey = message.PartitionKey,
+                TransactionPartitionKey = message.ViaPartitionKey,
                 To = message.To,
                 ReplyTo = message.ReplyTo,
                 ReplyToSessionId = message.ReplyToSessionId,

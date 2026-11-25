@@ -161,3 +161,13 @@ adapter and the separate emulator administration/data-plane ports.
   AMQP over TCP or WebSockets remains the transport choice.
 - Live emulator acceptance still needs to verify administration capabilities
   and the separate AMQP endpoint during stage 3.
+
+### Stage 3 readiness correction
+
+The modern helper retains distinct administration and data endpoints. Emulator
+resubmission uses AMQP TCP regardless of the WebSockets preference. Unedited
+messages retain their original raw body and sendable identity/routing fields;
+text edits are sent as UTF-8. The new-ID option changes MessageId only.
+ViaPartitionKey maps to TransactionPartitionKey, but transactional send-via and
+atomic dead-letter moves are not implemented by this resubmission stage.
+The management-stage XML compatibility preflight remains in place.

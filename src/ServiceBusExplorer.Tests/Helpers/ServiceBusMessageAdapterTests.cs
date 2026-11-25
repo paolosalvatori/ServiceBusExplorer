@@ -26,6 +26,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 ContentType = "application/octet-stream",
                 Label = "subject",
                 PartitionKey = "partition",
+                ViaPartitionKey = "transaction-partition",
                 To = "destination",
                 ReplyTo = "reply",
                 ReplyToSessionId = "reply-session",
@@ -43,6 +44,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 message.ContentType.Should().Be("application/octet-stream");
                 message.Subject.Should().Be("subject");
                 message.PartitionKey.Should().Be("partition");
+                message.TransactionPartitionKey.Should().Be("transaction-partition");
                 message.To.Should().Be("destination");
                 message.ReplyTo.Should().Be("reply");
                 message.ReplyToSessionId.Should().Be("reply-session");

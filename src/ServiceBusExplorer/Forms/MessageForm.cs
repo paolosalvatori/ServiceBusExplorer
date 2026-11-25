@@ -94,6 +94,7 @@ namespace ServiceBusExplorer.Forms
         readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
         readonly BindingSource bindingSource = new BindingSource();
+        private string initialMessageText;
         readonly QueueDescription queueDescription; // Might be null
         readonly SubscriptionWrapper subscriptionWrapper; // Might be null
         #endregion
@@ -147,7 +148,7 @@ namespace ServiceBusExplorer.Forms
             this.writeToLog = writeToLog;
             InitializeComponent();
 
-            cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
+            cboBodyType.SelectedIndex = (int)(MainForm.SingletonMainForm?.MessageBodyType ?? BodyType.Stream);
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
             InitializeMessageTextControl(brokeredMessage);
@@ -262,7 +263,7 @@ namespace ServiceBusExplorer.Forms
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             FormBorderStyle = FormBorderStyle.FixedDialog;
 
-            cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
+            cboBodyType.SelectedIndex = (int)(MainForm.SingletonMainForm?.MessageBodyType ?? BodyType.Stream);
 
             // Get Brokered Message Inspector classes
             cboSenderInspector.Items.Add(SelectBrokeredMessageInspector);
@@ -369,6 +370,27 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        internal BrokeredMessage BuildMessageForResubmission(BrokeredMessage source)
+        {
+            // Display decoding/auto-indentation is not an edit. Preserve original bytes and
+            // broker identity/routing properties unless the user actually changes the text.
+            var outbound = source.Clone();
+            if (brokeredMessage != null)
+            {
+                if (!string.Equals(txtMessageText.Text, initialMessageText, StringComparison.Ordinal))
+                    outbound.SetBodyStream(new MemoryStream(Encoding.UTF8.GetBytes(txtMessageText.Text)));
+                outbound.Properties.Clear(); // The editable grid is applied by the submit handler.
+            }
+            if (chkNewMessageId.Checked) outbound.MessageId = Guid.NewGuid().ToString();
+            if (cboSenderInspector.SelectedIndex > 0)
+            {
+                var inspector = Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector;
+                outbound = inspector.BeforeSendMessage(outbound) ??
+                    throw new InvalidOperationException("The message inspector returned null.");
+            }
+            return outbound;
+        }
+
         private async void btnSubmit_Click(object sender, EventArgs e)
         {
             try
@@ -415,46 +437,7 @@ namespace ServiceBusExplorer.Forms
                         }
                         else
                         {
-                            if (brokeredMessage != null)
-                            {
-                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                outboundMessage = bodyType == BodyType.ByteArray ?
-                                                  brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text, messagesSplitContainer.Visible) :
-                                                  brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
-                            }
-                            else
-                            {
-                                var messageText = serviceBusHelper.GetMessageText(message,
-                                    MainForm.SingletonMainForm.UseAscii, out bodyType);
-
-                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                switch (bodyType)
-                                {
-                                    case BodyType.ByteArray:
-                                        outboundMessage = message.CloneWithByteArrayBodyType(messageText,
-                                                                        messagesSplitContainer.Visible);
-                                        break;
-
-                                    case BodyType.String:
-                                        outboundMessage = message.Clone(message.GetBody<string>(),
-                                                                        messagesSplitContainer.Visible);
-                                        break;
-
-                                    default:
-                                        outboundMessage = message.Clone(message.GetBody<Stream>(),
-                                                                        messagesSplitContainer.Visible);
-                                        break;
-                                }
-                            }
-
-                            outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
-                                                                                           0,
-                                                                                           chkNewMessageId.Checked,
-                                                                                           false,
-                                                                                           bodyType,
-                                                                                           cboSenderInspector.SelectedIndex > 0 ?
-                                                                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
-                                                                                           null);
+                            outboundMessage = BuildMessageForResubmission(message);
                         }
 
                         sequenceNumbers.Add(message.SequenceNumber);
@@ -745,7 +728,7 @@ namespace ServiceBusExplorer.Forms
         void InitializeMessageTextControl(BrokeredMessage message)
         {
             var messageText = this.serviceBusHelper.GetMessageText(message,
-                 MainForm.SingletonMainForm.UseAscii, out _);
+                 MainForm.SingletonMainForm?.UseAscii ?? false, out _);
 
             if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
             {
@@ -762,6 +745,7 @@ namespace ServiceBusExplorer.Forms
                 txtMessageText.Language = Language.Custom;
                 txtMessageText.Text = messageText;
             }
+            initialMessageText = txtMessageText.Text;
         }
 
         #endregion

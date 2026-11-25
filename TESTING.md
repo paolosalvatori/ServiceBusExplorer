@@ -103,3 +103,31 @@ Manual Windows/live Azure checks still required: close the app with partial chec
 - Added coverage for safe identity normalization, exclusive/empty checkpoint positions, bounded retry exhaustion, unexpected permanent errors, nonblocking system shutdown, and close-after-persistence-error behavior. Updated disable/flush regression expectations.
 
 Not run locally: Windows GUI shutdown/read-only-directory workflows, IoT live endpoint migration/credential rotation, and live Azure outage/cancel checks. Linux Release build is available; net472 test execution requires Windows CI because Mono is absent.
+
+### November 25 review: legacy checkpoint consolidation and failure logging
+
+- `EventHubCheckpointPersistenceTests` uses only temporary synthetic files through `ReadCheckpoints`, `GetLease`, and `WriteCheckpoints`. Duplicate normalized Endpoint/HostName identities retain every partition and the highest sequence; equal sequences choose the ordinal serialized lease representation, independently of input order. Unmappable identities are persisted as `[]` after a successful load. Failed/unattempted reads cannot authorize an overwrite; a missing file still permits new checkpoints.
+- `PartitionListenerFailureLogTests` runs a real WinForms message loop and listener reader/stop path with a synthetic failing consumer. It checks that the failure is synchronously visible before logging stops and that asynchronous reader shutdown completes without blocking the UI. Existing inspector replay and final-checkpoint batch tests remain applicable.
+- No real checkpoint file, credential, or Azure service is used. Live inspector replay and interactive desktop evidence still require Windows/manual verification; the Linux executor cannot run the net472 WinForms application.
+
+### Connection-stage readiness follow-up (#910)
+
+Saved emulator profiles use the raw connection editor so their development flag, endpoint/port, and credentials survive a save/connect round trip. Saving an emulator profile validates its parsed endpoint without passing development-only fields to the legacy SDK. Parsed field names/values are trimmed; invalid endpoint ports are rejected and emulator display names retain the complete host. At this connection-only stage, emulator Connect still rejects before changing any active helper state or creating clients.
+
+Synthetic tests cover the saved ConnectForm selection/build path, padded fields, full IP/DNS display names, invalid ports, and unchanged helper fields after a rejected emulator Connect. Actual emulator connectivity and Windows save-to-configuration interaction remain unverified; no live service is used.
+
+### Management-stage readiness follow-up (#911)
+
+- Reconnect clears old namespace-scoped adapters before constructing the new set; emulator management cannot retain Relay/Event Hubs/Notification Hubs adapters from a previous cloud connection. Secondary/UI helpers receive a separate management connection string using the emulator HTTP management port. Their data-plane factory explicitly rejects emulator purge/send/receive at this management-only stage.
+- Import preflights the complete XML before dispatch. Emulator documents containing Relay, EventHub, or NotificationHub entities are rejected as a unit. Rule import accepts legacy default/true/false filters, plain SQL filters/actions, and string correlation fields/properties. Typed/nested dictionary extensions, nonempty SQL parameters, unknown rule types and malformed shapes are rejected before any entity mutation; configure those rules explicitly instead. Legacy correlation values preserve embedded colons. Ordinary nested topic/subscription XML remains supported, including false boolean settings.
+- Create/update returns the authoritative mutation response without a subsequent runtime-count query. RuntimeProperties is absent until an explicit refresh; placeholder counts are not a fresh broker measurement. This prevents runtime-query failures from causing retries of successful mutations.
+- Synthetic tests cover reconnect adapter isolation, secondary administration construction and data-plane refusal, mixed/nested import preflight, ordinary nested import and all queue/topic/subscription create/update paths with runtime queries unavailable. Live emulator connectivity, interactive Windows probes/import dialogs and live Azure operations remain unverified.
+
+Rule compatibility follow-up: baseline nested `$Default`, true, false, plain SQL/action and string correlation fixtures exercise the import entry point. Typed correlation and parameterized SQL fixtures verify whole-document rejection before an earlier queue can be created.
+
+### Resubmission-stage readiness follow-up (#912)
+
+- Secondary helpers keep separate administration (emulator HTTP management port) and data-plane (AMQP port 5672) connection strings. Emulator data-plane clients force AMQP TCP even when the global WebSockets preference is enabled; cloud transport selection remains configurable. The management-only data-plane guard remains in the preceding #911 stage, while #912 enables modern client construction for resubmission.
+- The actual MessageForm preparation path preserves the original raw body when the displayed text is unchanged, including binary bytes that cannot round-trip through display decoding. Editing text replaces the body with UTF-8 bytes; WCF conversion remains its separate path. Stream/String/ByteArray display choices do not reserialize an unchanged body. Generating a new MessageId changes only that ID; session, partition, transaction partition, correlation and reply routing are retained.
+- Windows regressions instantiate the real MessageForm and invoke the preparation method used by Submit, then check the modern outbound message. Tests cover binary bytes, Generate new MessageId off/on, routing, UTF-8 edits and source immutability. Adapter coverage includes ViaPartitionKey to TransactionPartitionKey. Preserving this field does not introduce transactional send-via or atomic moves.
+- The corrected #911 XML preflight/legacy-rule compatibility tests are inherited unchanged. Live emulator/Azure delivery, interactive target selection and DLQ move behavior are not claimed; screenshots remain deferred.

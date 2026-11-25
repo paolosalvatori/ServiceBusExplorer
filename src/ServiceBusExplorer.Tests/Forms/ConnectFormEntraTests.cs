@@ -30,6 +30,28 @@ namespace ServiceBusExplorer.Tests.Forms
         private const string ConnectionStringPartTenantId = "TenantId=";
         private const string ConnectionStringPartEntityPath = "EntityPath=";
 
+        [Fact]
+        public void SavedEmulatorRoundTripPreservesFlagEndpointAndCredentials()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string value = "Endpoint=sb://127.0.0.1:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic;UseDevelopmentEmulator=true;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                helper.ServiceBusNamespaces["Saved emulator"] = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", value, (_, __) => { });
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Saved emulator";
+                    GetTextBox(form, ControlNameUri).Text.Should().Be(value);
+                    InvokePrivateMethod(form, "BuildCurrentConnectionString");
+                    form.ConnectionString.Should().Be(value);
+                    var restored = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", form.ConnectionString, (_, __) => { });
+                    restored.UseDevelopmentEmulator.Should().BeTrue();
+                    restored.Namespace.Should().Be("127.0.0.1");
+                }
+            });
+        }
+
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
