@@ -131,3 +131,21 @@ The raw transport dropdown updates only TransportType and RuntimePort assignment
 ### Independent review follow-up: management stage (#911)
 
 Compact legacy correlation XML preserves every adjacent string property, including embedded colons. Unsupported Filter/Action wrapper attributes or text and unsupported empty-action metadata are rejected during whole-document preflight before earlier entities can be created. Connection preparation uses a separate replacement helper; active profile/adapters publish only after successful preparation. Failed candidates close their provisional legacy messaging factory. A synthetic localhost profile whose unknown setting fails SDK construction verifies preservation after DNS succeeds, without broker I/O. Existing emulator/cloud isolation, management-only boundaries and legacy supported rule fixtures remain covered. Live reconnect/authentication, broker resource cleanup and interactive import remain manual checks.
+### Connection profile and filter publication follow-up
+
+Saved raw profile loading uses the same trimmed, case-insensitive keys as explicit transport
+editing. Programmatic transport selection does not rewrite the raw profile. Regression tests
+exercise the saved-profile dropdown with padded transport/runtime keys and unchanged credentials.
+The dialog stages queue/topic/subscription filters; MainForm publishes them only after connection
+success. Tests cover actual dialog acceptance plus successful, rejected and throwing attempts.
+All fixtures are synthetic; no live connection or broker mutation is used.
+
+### Atomic XML export and supported correlation values
+
+The existing XML rule format represents string correlation values only. Export rejects typed
+values, ambiguous property names and parameterized SQL rules instead of silently converting or
+omitting them. A serialization failure aborts the whole in-memory export before destination
+selection or writing. Completed exports replace files atomically. String correlation round-trip
+tests cover adjacent properties, Unicode, leading spaces, colons in values and CR/LF; rejection
+tests exercise the broker model through the real prepare/save boundary and preserve an existing
+backup. All management clients are test doubles; no broker writes occur.

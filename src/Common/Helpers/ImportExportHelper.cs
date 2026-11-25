@@ -181,10 +181,11 @@ namespace ServiceBusExplorer.Helpers
             
             using (var memoryStream = new MemoryStream())
             {
-                using (var stringWriter = new StreamWriter(memoryStream, Encoding.ASCII))
+                using (var stringWriter = new StreamWriter(memoryStream, new UTF8Encoding(false)))
                 {
                     var xmlWriterSettings = new System.Xml.XmlWriterSettings();
                     xmlWriterSettings.Indent = true;
+                    xmlWriterSettings.NewLineHandling = NewLineHandling.Entitize;
                     using (var xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings))
                     {
                         var queueList = entityList.Where(e => e is QueueInfo || e is QueueDescription);
@@ -208,7 +209,7 @@ namespace ServiceBusExplorer.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    HandleException(ex);
+                                    throw new InvalidOperationException("Export failed; no complete backup was produced.", ex);
                                 }
                             }
                             xmlWriter.WriteEndElement();
@@ -225,7 +226,7 @@ namespace ServiceBusExplorer.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    HandleException(ex);
+                                    throw new InvalidOperationException("Export failed; no complete backup was produced.", ex);
                                 }
                             }
                             xmlWriter.WriteEndElement();
@@ -242,7 +243,7 @@ namespace ServiceBusExplorer.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    HandleException(ex);
+                                    throw new InvalidOperationException("Export failed; no complete backup was produced.", ex);
                                 }
                             }
                             xmlWriter.WriteEndElement();
@@ -259,7 +260,7 @@ namespace ServiceBusExplorer.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    HandleException(ex);
+                                    throw new InvalidOperationException("Export failed; no complete backup was produced.", ex);
                                 }
                             }
                             xmlWriter.WriteEndElement();
@@ -276,7 +277,7 @@ namespace ServiceBusExplorer.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    HandleException(ex);
+                                    throw new InvalidOperationException("Export failed; no complete backup was produced.", ex);
                                 }
                             }
                             xmlWriter.WriteEndElement();
@@ -597,6 +598,12 @@ namespace ServiceBusExplorer.Helpers
             if (entity is TopicInfo topicInfo) { entity = topicInfo.Description; maxMessageSize = topicInfo.MaxMessageSizeInKilobytes; }
             if (entity is SubscriptionInfo subscriptionInfo) entity = subscriptionInfo.Description;
             if (entity is RuleInfo ruleInfo) entity = ruleInfo.Description;
+            if (entity is CorrelationFilter correlation && correlation.Properties.Any(property =>
+                !(property.Value is string) || string.IsNullOrEmpty(property.Key) || property.Key.Contains(":")))
+                throw new NotSupportedException("This XML format supports only string correlation properties with nonempty names without colons. Export was cancelled rather than changing rule types or names.");
+            if ((entity is SqlFilter sqlFilter && sqlFilter.Parameters.Count > 0) ||
+                (entity is SqlRuleAction sqlAction && sqlAction.Parameters.Count > 0))
+                throw new NotSupportedException("Parameterized SQL rules cannot be represented by this XML format. Export was cancelled.");
             var type = entity.GetType();
             var typeName = type.Name;
             if (!propertyCache.ContainsKey(type.FullName))
