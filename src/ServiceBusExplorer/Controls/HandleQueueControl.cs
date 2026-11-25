@@ -1325,7 +1325,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         SubQueue.None,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -1339,7 +1339,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         fromSession,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -1399,7 +1399,7 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                var targetCount = all ? MainForm.SingletonMainForm.TopCount : count;
+                var targetCount = ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount);
                 var brokeredMessages = queueDescription.RequiresSession
                     ? serviceBusHelper.GetMessagesFromModernSessionDataPlane(
                         queueDescription.Path,
@@ -1480,7 +1480,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         SubQueue.DeadLetter,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -1631,7 +1631,7 @@ namespace ServiceBusExplorer.Controls
                         null,
                         SubQueue.TransferDeadLetter,
                         peek,
-                        all ? MainForm.SingletonMainForm.TopCount : count,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
                         messageInspector);
@@ -2868,8 +2868,12 @@ namespace ServiceBusExplorer.Controls
         {
         }
 
+        private int sessionStateRequest;
+
         private async void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
+            var request = ++sessionStateRequest;
+            txtSessionState.Text = string.Empty;
             var bindingList = sessionsBindingSource.DataSource as BindingList<MessageSession>;
             if (bindingList == null || e.RowIndex < 0 || e.RowIndex >= bindingList.Count)
             {
@@ -2889,7 +2893,7 @@ namespace ServiceBusExplorer.Controls
                         messageSession.SessionId,
                         cancellationTokenSource.Token);
                 }
-                if (ReferenceEquals(sessionsDataGridView.CurrentRow?.DataBoundItem, messageSession))
+                if (!IsDisposed && request == sessionStateRequest)
                 {
                     using (var stream = sessionState == null
                         ? null
@@ -2911,7 +2915,7 @@ namespace ServiceBusExplorer.Controls
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                if (!IsDisposed && request == sessionStateRequest) HandleException(ex);
             }
         }
 

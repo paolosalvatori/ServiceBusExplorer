@@ -749,8 +749,6 @@ namespace ServiceBusExplorer
         /// <returns>True if the operation succeeds, false otherwise.</returns>
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
-            this.serviceBusNamespaceInstance = serviceBusNamespace;
-
             var isEntra = serviceBusNamespace?.IsEntra == true;
 
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
@@ -760,9 +758,26 @@ namespace ServiceBusExplorer
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
-                throw new Exception($"Could not contact host in connection string: { endpoint }.");
+                throw new Exception("Could not resolve the Service Bus endpoint host.");
             }
+
+            // Reconnect must not leave adapters pointing at a previous namespace.
+            serviceBusNamespaceInstance = serviceBusNamespace;
+            namespaceManager = null;
+            notificationHubNamespaceManager = null;
+            notificationHubTokenProvider = null;
+            entraTokenProvider = null;
+            managementClient = null;
+            messagingFactory = null;
+            serviceBusQueue = null;
+            serviceBusTopic = null;
+            serviceBusSubscription = null;
+            serviceBusRule = null;
+            serviceBusRelay = null;
+            serviceBusNotificationHub = null;
+            serviceBusEventHub = null;
+            serviceBusConsumerGroup = null;
+            serviceBusPartition = null;
 
             var func = (() =>
             {
@@ -867,7 +882,7 @@ namespace ServiceBusExplorer
                 namespaceUri = managementClient.Address;
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
-                ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
+                ns = IsEmulator ? namespaceUri.Host : IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
                 // Event Hubs data-plane clients are created through Azure.Messaging.EventHubs.
                 if (IsEventHubNamespace || IsEmulator)
@@ -4486,13 +4501,25 @@ namespace ServiceBusExplorer
                 address;
         }
 
+        public static bool ExecuteReceiveTransaction(Func<bool> receive, bool commit, CancellationToken cancellationToken)
+        {
+            using (var scope = new System.Transactions.TransactionScope())
+            {
+                var succeeded = receive();
+                if (!succeeded || !commit || cancellationToken.IsCancellationRequested) return false;
+                scope.Complete();
+                return true;
+            }
+        }
+
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
-            serviceBusHelper2.ConnectionString = IsEmulator
-                ? GetDataPlaneConnectionString(serviceBusNamespaceInstance)
-                : ConnectionString;
-            serviceBusHelper2.TransportType = UseAmqpWebSockets
+            serviceBusHelper2.ConnectionString = serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra
+                ? GetDataPlaneConnectionString(serviceBusNamespaceInstance) : ConnectionString;
+            if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)
+                serviceBusHelper2.AdministrationConnectionString = GetAdministrationConnectionString(serviceBusNamespaceInstance);
+            serviceBusHelper2.TransportType = !IsEmulator && UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
 
@@ -4506,7 +4533,7 @@ namespace ServiceBusExplorer
             return serviceBusHelper2;
         }
 
-        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
         {
             var serviceBusHelper2 = GetServiceBusHelper2();
             if (!serviceBusHelper2.IsEntra)
@@ -4518,7 +4545,7 @@ namespace ServiceBusExplorer
             return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
         }
 
-        public async Task<byte[]> GetSessionStateFromModernDataPlane(
+        public virtual async Task<byte[]> GetSessionStateFromModernDataPlane(
             string entityPath,
             string subscriptionName,
             string sessionId,
@@ -4639,102 +4666,54 @@ namespace ServiceBusExplorer
                 return new List<BrokeredMessage>();
             }
 
-            var brokeredMessages = new List<BrokeredMessage>(count);
+            if (peek && string.IsNullOrWhiteSpace(sessionId))
+                return GetMessagesFromModernDataPlane(entityPath, subscriptionName, SubQueue.None,
+                    true, count, fromSequenceNumber, receiveTimeout, messageInspector);
+
+            var messages = new List<BrokeredMessage>();
             var client = CreateServiceBusClient();
-            ServiceBusSessionReceiver receiver = null;
             try
             {
-                var options = new ServiceBusSessionReceiverOptions
+                do
                 {
-                    ReceiveMode = peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete
-                };
-                using (var acceptCancellationTokenSource = new CancellationTokenSource(receiveTimeout))
-                {
+                    ServiceBusSessionReceiver receiver = null;
                     try
                     {
-                        var cancellationToken = acceptCancellationTokenSource.Token;
-                        receiver = string.IsNullOrWhiteSpace(sessionId)
-                            ? (string.IsNullOrWhiteSpace(subscriptionName)
-                                ? client.AcceptNextSessionAsync(entityPath, options, cancellationToken)
-                                : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, cancellationToken))
-                                .GetAwaiter().GetResult()
-                            : (string.IsNullOrWhiteSpace(subscriptionName)
-                                ? client.AcceptSessionAsync(entityPath, sessionId, options, cancellationToken)
-                                : client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, cancellationToken))
-                                .GetAwaiter().GetResult();
-                    }
-                    catch (OperationCanceledException ex) when (acceptCancellationTokenSource.IsCancellationRequested)
-                    {
-                        throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
-                    }
-                    catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
-                    {
-                        throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
-                    }
-                }
-
-                long? nextSequenceNumber = fromSequenceNumber;
-                while (brokeredMessages.Count < count)
-                {
-                    var batchSize = count - brokeredMessages.Count;
-                    IReadOnlyList<ServiceBusReceivedMessage> messages = peek
-                        ? receiver.PeekMessagesAsync(batchSize, nextSequenceNumber).GetAwaiter().GetResult()
-                        : receiver.ReceiveMessagesAsync(batchSize, receiveTimeout).GetAwaiter().GetResult();
-                    if (messages == null || messages.Count == 0)
-                    {
-                        break;
-                    }
-
-                    foreach (var message in messages)
-                    {
-                        var compatibilityMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
-                        try
+                        var options = new ServiceBusSessionReceiverOptions
                         {
-                            brokeredMessages.Add(messageInspector == null
-                                ? compatibilityMessage
-                                : messageInspector.AfterReceiveMessage(compatibilityMessage));
-                        }
-                        catch
+                            ReceiveMode = peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete
+                        };
+                        using (var acceptCancellation = new CancellationTokenSource(receiveTimeout))
                         {
-                            compatibilityMessage.Dispose();
-                            throw;
+                            try
+                            {
+                                receiver = string.IsNullOrWhiteSpace(sessionId)
+                                    ? (string.IsNullOrWhiteSpace(subscriptionName)
+                                        ? client.AcceptNextSessionAsync(entityPath, options, acceptCancellation.Token)
+                                        : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, acceptCancellation.Token)).GetAwaiter().GetResult()
+                                    : (string.IsNullOrWhiteSpace(subscriptionName)
+                                        ? client.AcceptSessionAsync(entityPath, sessionId, options, acceptCancellation.Token)
+                                        : client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, acceptCancellation.Token)).GetAwaiter().GetResult();
+                            }
+                            catch (OperationCanceledException) when (acceptCancellation.IsCancellationRequested) { break; }
+                            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout) { break; }
                         }
+                        var batch = ReadMessagesFromModernReceiver(receiver, peek, count - messages.Count,
+                            fromSequenceNumber, receiveTimeout, messageInspector);
+                        messages.AddRange(batch);
+                        // A selected session is read once; avoid repeatedly accepting an empty session.
+                        if (!string.IsNullOrWhiteSpace(sessionId) || peek || batch.Count == 0) break;
                     }
-
-                    if (peek)
-                    {
-                        var lastSequenceNumber = messages[messages.Count - 1].SequenceNumber;
-                        if (lastSequenceNumber == long.MaxValue)
-                        {
-                            break;
-                        }
-                        nextSequenceNumber = lastSequenceNumber + 1;
-                    }
-                }
-                return brokeredMessages;
+                    finally { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                } while (messages.Count < count);
+                return messages;
             }
             catch
             {
-                foreach (var message in brokeredMessages)
-                {
-                    message.Dispose();
-                }
+                foreach (var message in messages) message?.Dispose();
                 throw;
             }
-            finally
-            {
-                try
-                {
-                    if (receiver != null)
-                    {
-                        receiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
-                    }
-                }
-                finally
-                {
-                    client.DisposeAsync().AsTask().GetAwaiter().GetResult();
-                }
-            }
+            finally { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
         }
 
         public List<BrokeredMessage> GetMessagesFromModernDataPlane(
@@ -4752,8 +4731,6 @@ namespace ServiceBusExplorer
                 throw new ArgumentException("An entity path is required.", nameof(entityPath));
             }
 
-            var targetCount = count;
-            var brokeredMessages = new List<BrokeredMessage>(targetCount);
             var client = CreateServiceBusClient();
             ServiceBusReceiver receiver = null;
             try
@@ -4767,10 +4744,29 @@ namespace ServiceBusExplorer
                     ? client.CreateReceiver(entityPath, options)
                     : client.CreateReceiver(entityPath, subscriptionName, options);
 
+                return ReadMessagesFromModernReceiver(receiver, peek, count, fromSequenceNumber, receiveTimeout, messageInspector);
+            }
+            finally
+            {
+                try { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                finally { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+            }
+        }
+
+        public static int ResolveModernReadCount(bool peek, bool all, int count, int topCount) =>
+            all && !peek ? int.MaxValue : all ? topCount : count;
+
+        public static List<BrokeredMessage> ReadMessagesFromModernReceiver(ServiceBusReceiver receiver,
+            bool peek, int count, long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector)
+        {
+            var targetCount = count;
+            var brokeredMessages = new List<BrokeredMessage>(Math.Min(Math.Max(count, 0), 100));
+            try
+            {
                 var nextSequenceNumber = fromSequenceNumber;
                 while (brokeredMessages.Count < targetCount)
                 {
-                    var batchSize = targetCount - brokeredMessages.Count;
+                    var batchSize = Math.Min(100, targetCount - brokeredMessages.Count);
                     IReadOnlyList<ServiceBusReceivedMessage> messages;
                     if (peek)
                     {
@@ -4824,14 +4820,6 @@ namespace ServiceBusExplorer
                 }
                 throw;
             }
-            finally
-            {
-                if (receiver != null)
-                {
-                    receiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
-                }
-                client.DisposeAsync().AsTask().GetAwaiter().GetResult();
-            }
         }
 
         public static string GetDataPlaneConnectionString(ServiceBusNamespace serviceBusNamespace)
@@ -4881,7 +4869,7 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    retained.Add(part.Trim());
+                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
                 }
             }
 
@@ -5260,7 +5248,7 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    retained.Add(part.Trim());
+                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
                 }
             }
             return string.Join(";", retained);

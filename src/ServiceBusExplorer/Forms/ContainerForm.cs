@@ -743,18 +743,32 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
+        private bool listenerCloseReady;
+        private bool listenerClosePending;
+
+        private async void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            var listeners = panelMain.Controls.OfType<ListenerControl>().ToArray();
+            if (!listenerCloseReady && listeners.Length > 0 &&
+                e.CloseReason != System.Windows.Forms.CloseReason.WindowsShutDown && e.CloseReason != System.Windows.Forms.CloseReason.TaskManagerClosing)
+            {
+                e.Cancel = true;
+                if (listenerClosePending) return;
+                listenerClosePending = true;
+                try { await Task.WhenAll(listeners.Select(listener => listener.ShutdownAsync())); }
+                catch (Exception ex) { HandleException(ex); }
+                finally
+                {
+                    listenerCloseReady = true;
+                    listenerClosePending = false;
+                    if (!IsDisposed) BeginInvoke(new Action(Close));
+                }
+                return;
+            }
             cancellationTokenSource.Cancel(false);
-            foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-            {
-                userControl.Dispose();
-            }
-            if (logTraceListener != null &&
-                Trace.Listeners.Contains(logTraceListener))
-            {
+            foreach (var userControl in panelMain.Controls.OfType<UserControl>()) userControl.Dispose();
+            if (logTraceListener != null && Trace.Listeners.Contains(logTraceListener))
                 Trace.Listeners.Remove(logTraceListener);
-            }
         }
 
         private void HandleException(Exception ex)

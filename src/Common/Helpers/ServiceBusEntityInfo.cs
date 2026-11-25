@@ -33,11 +33,11 @@ namespace ServiceBusExplorer.Helpers
             MaxMessageSizeInKilobytes = properties.MaxMessageSizeInKilobytes;
             MessageCountDetails = new EntityMessageCounts
             {
-                ActiveMessageCount = runtime.ActiveMessageCount,
-                DeadLetterMessageCount = runtime.DeadLetterMessageCount,
-                ScheduledMessageCount = runtime.ScheduledMessageCount,
-                TransferMessageCount = runtime.TransferMessageCount,
-                TransferDeadLetterMessageCount = runtime.TransferDeadLetterMessageCount
+                ActiveMessageCount = runtime?.ActiveMessageCount ?? 0,
+                DeadLetterMessageCount = runtime?.DeadLetterMessageCount ?? 0,
+                ScheduledMessageCount = runtime?.ScheduledMessageCount ?? 0,
+                TransferMessageCount = runtime?.TransferMessageCount ?? 0,
+                TransferDeadLetterMessageCount = runtime?.TransferDeadLetterMessageCount ?? 0
             };
         }
 
@@ -84,7 +84,7 @@ namespace ServiceBusExplorer.Helpers
             Properties = properties;
             RuntimeProperties = runtime;
             MaxMessageSizeInKilobytes = properties.MaxMessageSizeInKilobytes;
-            MessageCountDetails = counts ?? throw new ArgumentNullException(nameof(counts));
+            MessageCountDetails = counts ?? new EntityMessageCounts();
         }
 
         public TopicDescription Description { get; }
@@ -126,10 +126,10 @@ namespace ServiceBusExplorer.Helpers
             RuntimeProperties = runtime;
             MessageCountDetails = new EntityMessageCounts
             {
-                ActiveMessageCount = runtime.ActiveMessageCount,
-                DeadLetterMessageCount = runtime.DeadLetterMessageCount,
-                TransferMessageCount = runtime.TransferMessageCount,
-                TransferDeadLetterMessageCount = runtime.TransferDeadLetterMessageCount
+                ActiveMessageCount = runtime?.ActiveMessageCount ?? 0,
+                DeadLetterMessageCount = runtime?.DeadLetterMessageCount ?? 0,
+                TransferMessageCount = runtime?.TransferMessageCount ?? 0,
+                TransferDeadLetterMessageCount = runtime?.TransferDeadLetterMessageCount ?? 0
             };
         }
 

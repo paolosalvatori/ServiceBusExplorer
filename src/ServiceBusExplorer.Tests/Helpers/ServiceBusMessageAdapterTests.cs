@@ -30,7 +30,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 ContentType = "application/octet-stream",
                 Label = "subject",
                 PartitionKey = "partition",
-                ViaPartitionKey = "via-partition",
+                ViaPartitionKey = "transaction-partition",
                 To = "destination",
                 ReplyTo = "reply",
                 ReplyToSessionId = "reply-session",
@@ -48,7 +48,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 message.ContentType.Should().Be("application/octet-stream");
                 message.Subject.Should().Be("subject");
                 message.PartitionKey.Should().Be("partition");
-                message.TransactionPartitionKey.Should().Be("via-partition");
+                message.TransactionPartitionKey.Should().Be("transaction-partition");
                 message.To.Should().Be("destination");
                 message.ReplyTo.Should().Be("reply");
                 message.ReplyToSessionId.Should().Be("reply-session");
@@ -123,19 +123,21 @@ namespace ServiceBusExplorer.Tests.Helpers
                 brokeredMessage.SessionId.Should().Be("session");
                 brokeredMessage.Label.Should().Be("subject");
                 brokeredMessage.Properties["application"].Should().Be(42);
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.SequenceNumber"].Should().Be(101L);
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.EnqueuedSequenceNumber"].Should().Be(99L);
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.DeliveryCount"].Should().Be(3);
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.EnqueuedTime"].Should().Be(enqueuedTime);
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.LockedUntil"].Should().Be(lockedUntil);
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.LockToken"].Should().Be(lockToken.ToString());
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.DeadLetterSource"].Should().Be("source-queue");
-                brokeredMessage.Properties["ServiceBusExplorer.SystemProperties.TransactionPartitionKey"].Should().Be("via-partition");
+                brokeredMessage.SequenceNumber.Should().Be(101L);
+                brokeredMessage.EnqueuedSequenceNumber.Should().Be(99L);
+                brokeredMessage.DeliveryCount.Should().Be(3);
+                brokeredMessage.EnqueuedTimeUtc.Should().Be(enqueuedTime.UtcDateTime);
+                brokeredMessage.LockedUntilUtc.Should().Be(lockedUntil.UtcDateTime);
+                brokeredMessage.LockToken.Should().Be(lockToken);
+                brokeredMessage.DeadLetterSource.Should().Be("source-queue");
+                brokeredMessage.ViaPartitionKey.Should().Be("via-partition");
+                brokeredMessage.Properties.Should().ContainSingle();
+                ServiceBusReceivedMessageAdapter.GetReceivedMetadata(brokeredMessage).Should().BeSameAs(message);
             }
         }
 
         [Fact]
-        public void ToBrokeredMessage_ConflictingApplicationProperty_ThrowsInsteadOfDroppingMetadata()
+        public void ToBrokeredMessage_ApplicationNamesCannotReplaceBrokerIdentity()
         {
             var message = ServiceBusModelFactory.ServiceBusReceivedMessage(
                 body: new BinaryData(Array.Empty<byte>()),
@@ -146,10 +148,12 @@ namespace ServiceBusExplorer.Tests.Helpers
                 },
                 sequenceNumber: 1);
 
-            Action act = () => ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
-
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("*conflicts with received Service Bus system metadata*");
+            using var converted = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
+            converted.SequenceNumber.Should().Be(1);
+            converted.Properties["ServiceBusExplorer.SystemProperties.SequenceNumber"].Should().Be("application-value");
+            var outbound = ServiceBusMessageAdapter.ToServiceBusMessage(converted);
+            outbound.ApplicationProperties.Should().ContainSingle();
+            outbound.ApplicationProperties["ServiceBusExplorer.SystemProperties.SequenceNumber"].Should().Be("application-value");
         }
 
         [Fact]

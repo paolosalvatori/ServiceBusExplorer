@@ -435,12 +435,11 @@ namespace ServiceBusExplorer.Controls
                                                 });
                                         }
 
-                                        string traceMessage;
+                                        string traceMessage = null;
                                         if (checkBoxReceiverUseTransaction.Checked)
                                         {
-                                            using (var scope = new TransactionScope())
-                                            {
-                                                controlHelper.ServiceBusHelper.ReceiveMessages(receiver,
+                                            var committed = ServiceBusHelper.ExecuteReceiveTransaction(() =>
+                                                    controlHelper.ServiceBusHelper.ReceiveMessages(receiver,
                                                     receiveMode,
                                                     currentReadFromDeadLetterQueue,
                                                     taskId,
@@ -459,19 +458,11 @@ namespace ServiceBusExplorer.Controls
                                                     receiverBrokeredMessageInspector,
                                                     UpdateStatistics,
                                                     receiverCancellationTokenSource,
-                                                    out traceMessage);
+                                                    out traceMessage),
+                                                    checkBoxReceiverCommitTransaction.Checked, receiverCancellationTokenSource.Token);
                                                 var builder = new StringBuilder(traceMessage);
-                                                if (checkBoxReceiverCommitTransaction.Checked)
-                                                {
-                                                    scope.Complete();
-                                                    builder.AppendLine(TransactionCommitted);
-                                                }
-                                                else
-                                                {
-                                                    builder.AppendLine(TransactionAborted);
-                                                }
+                                                builder.AppendLine(committed ? TransactionCommitted : TransactionAborted);
                                                 traceMessage = builder.ToString();
-                                            }
                                         }
                                         else
                                         {

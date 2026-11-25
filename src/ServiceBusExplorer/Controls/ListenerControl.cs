@@ -163,7 +163,12 @@ namespace ServiceBusExplorer.Controls
         private ContainerForm containerForm;
         private bool autoComplete;
         private bool stopping;
-        private bool logStopped;
+        private bool shuttingDown;
+        private bool disposalStarted;
+        private bool disposalReady;
+        private Task stopListenerTask;
+        private Task graphTask = Task.CompletedTask;
+
         private bool logging;
         private bool verbose;
         private bool tracking;
@@ -183,14 +188,6 @@ namespace ServiceBusExplorer.Controls
                                ServiceBusHelper serviceBusHelper, 
                                ServiceBusEntityInfo entityDescription)
         {
-            this.logStopped = false;
-            Task.Factory.StartNew(AsyncTrackMessage).ContinueWith(t =>
-            {
-                if (t.IsFaulted && t.Exception != null)
-                {
-                    writeToLog(t.Exception.Message);
-                }
-            });
             this.writeToLog = writeToLog;
             this.stopLog = stopLog;
             this.startLog = startLog;
@@ -201,7 +198,7 @@ namespace ServiceBusExplorer.Controls
             encoder = encoderFactory.Encoder;
             InitializeComponent();
             InitializeControls();
-            Disposed += ListenerControl_Disposed;
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
             if (entityDescription is SubscriptionDescription)
             {
                 grouperEntityInformation.GroupTitle = "Subscription Information";
@@ -210,11 +207,6 @@ namespace ServiceBusExplorer.Controls
         #endregion
 
         #region Private Methods
-        void ListenerControl_Disposed(object sender, EventArgs e)
-        {
-            StopListener().Wait();
-        }
-
         private bool RequiresSession()
         {
             var description = entityDescription as QueueDescription;
@@ -901,108 +893,115 @@ namespace ServiceBusExplorer.Controls
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            if (string.Compare(btnStart.Text, Start, StringComparison.OrdinalIgnoreCase) == 0)
+            if (shuttingDown || stopListenerTask != null && !stopListenerTask.IsCompleted) return;
+            btnStart.Enabled = false;
+            try
             {
-                receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
-                                           ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
-                                           : null;
+                if (string.Compare(btnStart.Text, Start, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
+                                               ? Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
+                                               : null;
 
-                cancellationTokenSource = new CancellationTokenSource();
-                btnStart.Text = Stop;
-                blockingCollection = new BlockingCollection<Tuple<long, long, long>>();
-                timer = new System.Timers.Timer
-                {
-                    AutoReset = true,
-                    Enabled = true,
-                    Interval = 1000 * txtRefreshInformation.IntegerValue
-                };
-                if (startLog != null && checkBoxLogging.Checked)
-                {
-                    startLog();
-                }
-                timer.Elapsed += timer_Elapsed;
-                autoComplete = checkBoxAutoComplete.Checked;
-                logging = checkBoxLogging.Checked;
-                verbose = checkBoxVerbose.Checked;
-                tracking = checkBoxTrackMessages.Checked;
-                try
-                {
-                    receiveMode = cboReceivedMode.SelectedIndex == 1 ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete;
+                    cancellationTokenSource?.Dispose();
+                    cancellationTokenSource = new CancellationTokenSource();
+                    sessionMessageCounts.Clear();
+                    stopListenerTask = null;
+                    btnStart.Text = Stop;
+                    blockingCollection = new BlockingCollection<Tuple<long, long, long>>();
+                    timer = new System.Timers.Timer
+                    {
+                        AutoReset = true,
+                        Enabled = true,
+                        Interval = 1000 * txtRefreshInformation.IntegerValue
+                    };
+                    if (startLog != null && checkBoxLogging.Checked)
+                    {
+                        startLog();
+                    }
+                    timer.Elapsed += timer_Elapsed;
+                    autoComplete = checkBoxAutoComplete.Checked;
+                    logging = checkBoxLogging.Checked;
+                    verbose = checkBoxVerbose.Checked;
+                    tracking = checkBoxTrackMessages.Checked;
+                    try
+                    {
+                        receiveMode = cboReceivedMode.SelectedIndex == 1 ? ReceiveMode.PeekLock : ReceiveMode.ReceiveAndDelete;
 
-                    serviceBusClient = serviceBusHelper.CreateServiceBusClient();
-                    var serviceBusReceiveMode = receiveMode == ReceiveMode.PeekLock
-                        ? ServiceBusReceiveMode.PeekLock
-                        : ServiceBusReceiveMode.ReceiveAndDelete;
-                    if (entityDescription is QueueDescription currentQueue)
-                    {
-                        if (currentQueue.RequiresSession)
+                        serviceBusClient = serviceBusHelper.CreateServiceBusClient();
+                        var serviceBusReceiveMode = receiveMode == ReceiveMode.PeekLock
+                            ? ServiceBusReceiveMode.PeekLock
+                            : ServiceBusReceiveMode.ReceiveAndDelete;
+                        if (entityDescription is QueueDescription currentQueue)
                         {
-                            sessionProcessor = serviceBusClient.CreateSessionProcessor(
-                                currentQueue.Path,
-                                GetSessionProcessorOptions(serviceBusReceiveMode));
-                            sessionProcessor.ProcessMessageAsync += OnSessionMessageAsync;
-                            sessionProcessor.ProcessErrorAsync += OnProcessorErrorAsync;
-                            sessionProcessor.SessionClosingAsync += OnSessionClosingAsync;
-                            await sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                            if (currentQueue.RequiresSession)
+                            {
+                                sessionProcessor = serviceBusClient.CreateSessionProcessor(
+                                    currentQueue.Path,
+                                    GetSessionProcessorOptions(serviceBusReceiveMode));
+                                sessionProcessor.ProcessMessageAsync += OnSessionMessageAsync;
+                                sessionProcessor.ProcessErrorAsync += OnProcessorErrorAsync;
+                                sessionProcessor.SessionClosingAsync += OnSessionClosingAsync;
+                                await sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                            }
+                            else
+                            {
+                                processor = serviceBusClient.CreateProcessor(
+                                    currentQueue.Path,
+                                    GetProcessorOptions(serviceBusReceiveMode));
+                                processor.ProcessMessageAsync += OnMessageAsync;
+                                processor.ProcessErrorAsync += OnProcessorErrorAsync;
+                                await processor.StartProcessingAsync(cancellationTokenSource.Token);
+                            }
                         }
-                        else
+                        else if (entityDescription is SubscriptionDescription currentSubscription)
                         {
-                            processor = serviceBusClient.CreateProcessor(
-                                currentQueue.Path,
-                                GetProcessorOptions(serviceBusReceiveMode));
-                            processor.ProcessMessageAsync += OnMessageAsync;
-                            processor.ProcessErrorAsync += OnProcessorErrorAsync;
-                            await processor.StartProcessingAsync(cancellationTokenSource.Token);
+                            if (currentSubscription.RequiresSession)
+                            {
+                                sessionProcessor = serviceBusClient.CreateSessionProcessor(
+                                    currentSubscription.TopicPath,
+                                    currentSubscription.Name,
+                                    GetSessionProcessorOptions(serviceBusReceiveMode));
+                                sessionProcessor.ProcessMessageAsync += OnSessionMessageAsync;
+                                sessionProcessor.ProcessErrorAsync += OnProcessorErrorAsync;
+                                sessionProcessor.SessionClosingAsync += OnSessionClosingAsync;
+                                await sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                            }
+                            else
+                            {
+                                processor = serviceBusClient.CreateProcessor(
+                                    currentSubscription.TopicPath,
+                                    currentSubscription.Name,
+                                    GetProcessorOptions(serviceBusReceiveMode));
+                                processor.ProcessMessageAsync += OnMessageAsync;
+                                processor.ProcessErrorAsync += OnProcessorErrorAsync;
+                                await processor.StartProcessingAsync(cancellationTokenSource.Token);
+                            }
                         }
+                        graphTask = Task.Run(new Action(RefreshGraph));
+                        GetElapsedTime();
                     }
-                    else if (entityDescription is SubscriptionDescription currentSubscription)
+                    catch (Exception ex)
                     {
-                        if (currentSubscription.RequiresSession)
-                        {
-                            sessionProcessor = serviceBusClient.CreateSessionProcessor(
-                                currentSubscription.TopicPath,
-                                currentSubscription.Name,
-                                GetSessionProcessorOptions(serviceBusReceiveMode));
-                            sessionProcessor.ProcessMessageAsync += OnSessionMessageAsync;
-                            sessionProcessor.ProcessErrorAsync += OnProcessorErrorAsync;
-                            sessionProcessor.SessionClosingAsync += OnSessionClosingAsync;
-                            await sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
-                        }
-                        else
-                        {
-                            processor = serviceBusClient.CreateProcessor(
-                                currentSubscription.TopicPath,
-                                currentSubscription.Name,
-                                GetProcessorOptions(serviceBusReceiveMode));
-                            processor.ProcessMessageAsync += OnMessageAsync;
-                            processor.ProcessErrorAsync += OnProcessorErrorAsync;
-                            await processor.StartProcessingAsync(cancellationTokenSource.Token);
-                        }
+                        HandleException(ex);
+                        await StopListener();
+                        btnStart.Text = Start;
                     }
-                    #pragma warning disable 4014
-                    Task.Run(new Action(RefreshGraph));          
-                    #pragma warning restore 4014
-                    GetElapsedTime();
                 }
-                catch (Exception ex)
+                else
                 {
-                    HandleException(ex);
-                    await StopListener();
-                    btnStart.Text = Start;
+                    try
+                    {
+                        await StopListener();
+                        btnStart.Text = Start;
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex);
+                    }
                 }
             }
-            else
-            {
-                try
-                {
-                    await StopListener();
-                    btnStart.Text = Start;
-                }
-                catch (Exception ex)
-                {
-                    HandleException(ex);
-                }
-            }
+            finally { if (!IsDisposed && !shuttingDown) btnStart.Enabled = true; }
         }
 
         private ServiceBusProcessorOptions GetProcessorOptions(ServiceBusReceiveMode serviceBusReceiveMode)
@@ -1181,7 +1180,7 @@ namespace ServiceBusExplorer.Controls
                 isSessionMessage: true);
         }
 
-        private async Task ProcessReceivedMessageAsync(
+        internal async Task ProcessReceivedMessageAsync(
             ServiceBusReceivedMessage receivedMessage,
             Func<Task> completeMessage,
             CancellationToken cancellationToken,
@@ -1192,6 +1191,7 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             var adaptedMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(receivedMessage);
             BrokeredMessage message = adaptedMessage;
             try
@@ -1200,6 +1200,8 @@ namespace ServiceBusExplorer.Controls
                 {
                     message = receiverBrokeredMessageInspector.AfterReceiveMessage(message);
                 }
+                if (message == null) throw new InvalidOperationException("The message inspector returned no message.");
+                cancellationToken.ThrowIfCancellationRequested();
                 if (logging)
                 {
                     var builder = new StringBuilder(string.Format(MessageSuccessfullyReceived,
@@ -1215,16 +1217,10 @@ namespace ServiceBusExplorer.Controls
                 }
                 if (tracking)
                 {
-                    if (isSessionMessage)
-                    {
-                        Invoke(new Action(() => messageCollection.Add(message.Clone())));
-                    }
-                    else
-                    {
-                        Invoke(new Action(() => messageBindingList.Add(message.Clone())));
-                    }
+                    await TrackMessageAsync(message).ConfigureAwait(false);
                 }
                 UpdateStatistics(1, GetElapsedTime(), message.Size);
+                cancellationToken.ThrowIfCancellationRequested();
                 if (receiveMode == ReceiveMode.PeekLock && !autoComplete)
                 {
                     await completeMessage().ConfigureAwait(false);
@@ -1234,12 +1230,11 @@ namespace ServiceBusExplorer.Controls
                     sessionMessageCounts.AddOrUpdate(message.SessionId, 1, (_, count) => count + 1);
                 }
             }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-            {
-            }
             catch (Exception ex)
             {
-                HandleException(ex);
+                // Returning successfully lets an auto-completing processor acknowledge the message.
+                try { HandleException(ex); } catch { }
+                throw;
             }
             finally
             {
@@ -1273,43 +1268,24 @@ namespace ServiceBusExplorer.Controls
             return Task.CompletedTask;
         }
 
-        private async void AsyncTrackMessage()
+        private Task TrackMessageAsync(BrokeredMessage message)
         {
-            try
+            var clone = message.Clone();
+            var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Action add = () =>
             {
-                while (!cancellationTokenSource.IsCancellationRequested && !logStopped)
+                try
                 {
-                    try
-                    {
-                        var ok = messageCollection.TryTake(out var message, 100);
-                        if (!ok)
-                        {
-                            continue;
-                        }
-                        await Task.Delay(TimeSpan.FromMilliseconds(5));
-                        if (InvokeRequired)
-                        {
-                            Invoke(new Action(() => messageBindingList.Add(message.Clone())));
-                        }
-                        else
-                        {
-                            messageBindingList.Add(message.Clone());
-                        }
-                    }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                    catch 
-                    {
-                    }
-                    
+                    if (IsDisposed || Disposing) throw new ObjectDisposedException(nameof(ListenerControl));
+                    messageBindingList.Add(clone);
+                    completion.SetResult(true);
                 }
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch 
-            {
-            }
-            // ReSharper disable FunctionNeverReturns
+                catch (Exception ex) { clone.Dispose(); completion.SetException(ex); }
+            };
+            try { if (InvokeRequired) BeginInvoke(add); else add(); }
+            catch (Exception ex) { clone.Dispose(); completion.SetException(ex); }
+            return completion.Task;
         }
-        // ReSharper restore FunctionNeverReturns
 
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -1377,78 +1353,77 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private async Task StopListener()
+        internal Task ShutdownAsync()
         {
-            lock (this)
+            shuttingDown = true;
+            if (!IsDisposed) Enabled = false;
+            return StopListener();
+        }
+
+        private Task StopListener()
+        {
+            if (stopListenerTask != null) return stopListenerTask;
+            stopListenerTask = StopListenerCoreAsync();
+            return stopListenerTask;
+        }
+
+        private async Task StopListenerCoreAsync()
+        {
+            try { await DrainListenerCoreAsync(); }
+            catch (Exception ex)
             {
-                stopping = true;
+                // Cleanup has attempted every resource. Keep a failed SDK close visible without
+                // trapping the containing window in a permanently faulted close task.
+                try { HandleException(ex); } catch { }
             }
+        }
+
+        private async Task DrainListenerCoreAsync()
+        {
+            stopping = true;
+            timer?.Stop();
+            timer?.Dispose();
+            timer = null;
+            dateTime = DateTime.MinValue;
+            cancellationTokenSource?.Cancel();
+            var currentSessionProcessor = sessionProcessor;
+            var currentProcessor = processor;
+            var currentClient = serviceBusClient;
+            sessionProcessor = null;
+            processor = null;
+            serviceBusClient = null;
             try
             {
-                try
+                // Stop drains callbacks while the UI remains available for tracking/statistics.
+                if (currentSessionProcessor != null)
                 {
-                    if (stopLog != null)
-                    {
-                        await stopLog();
-                    }
-                }
-                finally
-                {
-                    if (timer != null)
-                    {
-                        timer.Stop();
-                        timer.Dispose();
-                        timer = null;
-                    }
-                    dateTime = DateTime.MinValue;
-                    cancellationTokenSource?.Cancel();
-
-                    try
-                    {
-                        var currentSessionProcessor = sessionProcessor;
-                        sessionProcessor = null;
-                        if (currentSessionProcessor != null)
-                        {
-                            try
-                            {
-                                await currentSessionProcessor.StopProcessingAsync();
-                            }
-                            finally
-                            {
-                                await currentSessionProcessor.DisposeAsync();
-                            }
-                        }
-
-                        var currentProcessor = processor;
-                        processor = null;
-                        if (currentProcessor != null)
-                        {
-                            try
-                            {
-                                await currentProcessor.StopProcessingAsync();
-                            }
-                            finally
-                            {
-                                await currentProcessor.DisposeAsync();
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        var currentClient = serviceBusClient;
-                        serviceBusClient = null;
-                        if (currentClient != null)
-                        {
-                            await currentClient.DisposeAsync();
-                        }
-                    }
+                    try { await currentSessionProcessor.StopProcessingAsync(); }
+                    finally { await currentSessionProcessor.DisposeAsync(); }
                 }
             }
             finally
             {
-                lock (this)
+                try
                 {
-                    stopping = false;
+                    if (currentProcessor != null)
+                    {
+                        try { await currentProcessor.StopProcessingAsync(); }
+                        finally { await currentProcessor.DisposeAsync(); }
+                    }
+                }
+                finally
+                {
+                    try
+                    {
+                        try { if (currentClient != null) await currentClient.DisposeAsync(); }
+                        finally { await graphTask; }
+                    }
+                    finally
+                    {
+                        sessionMessageCounts.Clear();
+                        try { if (stopLog != null) await stopLog(); }
+                        finally { stopping = false; }
+                    }
                 }
             }
         }
@@ -1679,6 +1654,18 @@ namespace ServiceBusExplorer.Controls
                                    cboReceiverInspector.Size.Height + 1);
         }
 
+        private async void DisposeAfterShutdownAsync()
+        {
+            try { await ShutdownAsync(); }
+            catch (Exception ex) { try { HandleException(ex); } catch { } }
+            finally
+            {
+                ListenerShutdownCoordinator.Shared.Unregister(ShutdownAsync);
+                disposalReady = true;
+                Dispose();
+            }
+        }
+
         /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
@@ -1687,9 +1674,14 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
-                if (disposing)
+                if (disposing && !disposalReady)
                 {
-                    StopListener().GetAwaiter().GetResult();
+                    if (!disposalStarted)
+                    {
+                        disposalStarted = true;
+                        DisposeAfterShutdownAsync();
+                    }
+                    return;
                 }
 
                 if (disposing && (components != null))
@@ -1727,7 +1719,6 @@ namespace ServiceBusExplorer.Controls
                 }
 
 
-                this.logStopped = true;
 
                 base.Dispose(disposing);
             }

@@ -292,10 +292,10 @@ namespace ServiceBusExplorer.Helpers
 
             var parameters = connectionString.Split([';'], StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => s.IndexOf('=') > 0)
-                .GroupBy(s => s.Substring(0, s.IndexOf('=')).ToLower())
+                .GroupBy(s => s.Substring(0, s.IndexOf('=')).Trim().ToLowerInvariant())
                 .ToDictionary(
                     g => g.Key, 
-                    g => g.Last().Substring(g.Last().IndexOf('=') + 1));
+                    g => g.Last().Substring(g.Last().IndexOf('=') + 1).Trim());
 
 
             if (toLower.Contains(ConnectionStringEndpoint) &&
@@ -641,6 +641,17 @@ namespace ServiceBusExplorer.Helpers
                               parameters[ConnectionStringStsEndpoint] :
                               null;
 
+            if (!System.Uri.TryCreate(endpoint, UriKind.Absolute, out var endpointUri) ||
+                string.IsNullOrEmpty(endpointUri.Host) ||
+                // The legacy SDK registers an sb URI parser that can hide explicit port zero.
+                // Validate the same authority with the standard HTTP parser as well.
+                !System.Uri.TryCreate("http" + endpoint.Substring(endpoint.IndexOf(':')), UriKind.Absolute, out var portUri) ||
+                portUri.Port == 0)
+            {
+                staticWriteToLog("The Service Bus endpoint or port is invalid.");
+                return null;
+            }
+
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);           
 
             if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || 
@@ -680,7 +691,8 @@ namespace ServiceBusExplorer.Helpers
                 sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
                 entityPath, isUserCreated)
             {
-                UseDevelopmentEmulator = useDevelopmentEmulator
+                UseDevelopmentEmulator = useDevelopmentEmulator,
+                Namespace = useDevelopmentEmulator ? endpointUri.Host : ns
             };
         }
 

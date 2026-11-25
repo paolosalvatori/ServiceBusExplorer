@@ -124,7 +124,7 @@ namespace ServiceBusExplorer.Helpers
             var options = ServiceBusManagementMapper.ToCreateOptions(description.Description);
             options.MaxMessageSizeInKilobytes = description.MaxMessageSizeInKilobytes;
             var properties = Wait(Client.CreateQueueAsync(options)).Value;
-            return new QueueInfo(properties, Wait(Client.GetQueueRuntimePropertiesAsync(properties.Name)).Value);
+            return new QueueInfo(properties, null);
         }
 
         public TopicInfo CreateTopic(TopicInfo description)
@@ -132,7 +132,7 @@ namespace ServiceBusExplorer.Helpers
             var options = ServiceBusManagementMapper.ToCreateOptions(description.Description);
             options.MaxMessageSizeInKilobytes = description.MaxMessageSizeInKilobytes;
             var properties = Wait(Client.CreateTopicAsync(options)).Value;
-            return ReadTopic(properties, Wait(Client.GetTopicRuntimePropertiesAsync(properties.Name)).Value, CancellationToken.None);
+            return new TopicInfo(properties, null, null);
         }
 
         public SubscriptionInfo CreateSubscription(SubscriptionInfo description, RuleDescription rule = null)
@@ -140,30 +140,30 @@ namespace ServiceBusExplorer.Helpers
             var options = ServiceBusManagementMapper.ToCreateOptions(description.Description);
             var properties = rule == null ? Wait(Client.CreateSubscriptionAsync(options)).Value
                 : Wait(Client.CreateSubscriptionAsync(options, ServiceBusManagementMapper.ToCreateOptions(rule.Description))).Value;
-            return new SubscriptionInfo(properties, Wait(Client.GetSubscriptionRuntimePropertiesAsync(properties.TopicName, properties.SubscriptionName)).Value);
+            return new SubscriptionInfo(properties, null);
         }
 
         public QueueInfo UpdateQueue(QueueInfo description)
         {
             var properties = Wait(Client.GetQueueAsync(description.Path)).Value;
             properties.MaxMessageSizeInKilobytes = description.MaxMessageSizeInKilobytes ?? properties.MaxMessageSizeInKilobytes;
-            Wait(Client.UpdateQueueAsync(ServiceBusManagementMapper.Apply(description.Description, properties)));
-            return GetQueue(description.Path);
+            properties = Wait(Client.UpdateQueueAsync(ServiceBusManagementMapper.Apply(description.Description, properties))).Value;
+            return new QueueInfo(properties, null);
         }
 
         public TopicInfo UpdateTopic(TopicInfo description)
         {
             var properties = Wait(Client.GetTopicAsync(description.Path)).Value;
             properties.MaxMessageSizeInKilobytes = description.MaxMessageSizeInKilobytes ?? properties.MaxMessageSizeInKilobytes;
-            Wait(Client.UpdateTopicAsync(ServiceBusManagementMapper.Apply(description.Description, properties)));
-            return GetTopic(description.Path);
+            properties = Wait(Client.UpdateTopicAsync(ServiceBusManagementMapper.Apply(description.Description, properties))).Value;
+            return new TopicInfo(properties, null, null);
         }
 
         public SubscriptionInfo UpdateSubscription(SubscriptionInfo description)
         {
             var properties = Wait(Client.GetSubscriptionAsync(description.TopicPath, description.Name)).Value;
-            Wait(Client.UpdateSubscriptionAsync(ServiceBusManagementMapper.Apply(description.Description, properties)));
-            return GetSubscription(description.TopicPath, description.Name);
+            properties = Wait(Client.UpdateSubscriptionAsync(ServiceBusManagementMapper.Apply(description.Description, properties))).Value;
+            return new SubscriptionInfo(properties, null);
         }
 
         public async Task<QueueInfo> UpdateQueueAsync(QueueInfo description)
@@ -171,7 +171,7 @@ namespace ServiceBusExplorer.Helpers
             var properties = (await Client.GetQueueAsync(description.Path).ConfigureAwait(false)).Value;
             properties.MaxMessageSizeInKilobytes = description.MaxMessageSizeInKilobytes ?? properties.MaxMessageSizeInKilobytes;
             properties = (await Client.UpdateQueueAsync(ServiceBusManagementMapper.Apply(description.Description, properties)).ConfigureAwait(false)).Value;
-            return new QueueInfo(properties, (await Client.GetQueueRuntimePropertiesAsync(description.Path).ConfigureAwait(false)).Value);
+            return new QueueInfo(properties, null);
         }
 
         public async Task<TopicInfo> UpdateTopicAsync(TopicInfo description)
@@ -179,14 +179,14 @@ namespace ServiceBusExplorer.Helpers
             var properties = (await Client.GetTopicAsync(description.Path).ConfigureAwait(false)).Value;
             properties.MaxMessageSizeInKilobytes = description.MaxMessageSizeInKilobytes ?? properties.MaxMessageSizeInKilobytes;
             properties = (await Client.UpdateTopicAsync(ServiceBusManagementMapper.Apply(description.Description, properties)).ConfigureAwait(false)).Value;
-            return ReadTopic(properties, (await Client.GetTopicRuntimePropertiesAsync(description.Path).ConfigureAwait(false)).Value, CancellationToken.None);
+            return new TopicInfo(properties, null, null);
         }
 
         public async Task<SubscriptionInfo> UpdateSubscriptionAsync(SubscriptionInfo description)
         {
             var properties = (await Client.GetSubscriptionAsync(description.TopicPath, description.Name).ConfigureAwait(false)).Value;
             properties = (await Client.UpdateSubscriptionAsync(ServiceBusManagementMapper.Apply(description.Description, properties)).ConfigureAwait(false)).Value;
-            return new SubscriptionInfo(properties, (await Client.GetSubscriptionRuntimePropertiesAsync(description.TopicPath, description.Name).ConfigureAwait(false)).Value);
+            return new SubscriptionInfo(properties, null);
         }
 
         public Task DeleteQueueAsync(string path) => Client.DeleteQueueAsync(path);

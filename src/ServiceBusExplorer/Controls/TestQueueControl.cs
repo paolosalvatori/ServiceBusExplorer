@@ -1134,9 +1134,9 @@ namespace ServiceBusExplorer.Controls
                                                 });
                                         }
                                         string traceMessage = null;
-                                        Action receive = () =>
+                                        Func<bool> receive = () =>
                                         {
-                                            controlHelper.ServiceBusHelper.ReceiveMessages(sdkReceiver,
+                                            return controlHelper.ServiceBusHelper.ReceiveMessages(sdkReceiver,
                                                 receiveMode,
                                                 currentReadFromDeadLetterQueue,
                                                 taskId,
@@ -1159,21 +1159,11 @@ namespace ServiceBusExplorer.Controls
                                         };
                                         if (checkBoxReceiverUseTransaction.Checked)
                                         {
-                                            using (var scope = new TransactionScope())
-                                            {
-                                                receive();
-                                                var builder = new StringBuilder(traceMessage);
-                                                if (checkBoxReceiverCommitTransaction.Checked)
-                                                {
-                                                    scope.Complete();
-                                                    builder.AppendLine(TransactionCommitted);
-                                                }
-                                                else
-                                                {
-                                                    builder.AppendLine(TransactionAborted);
-                                                }
-                                                traceMessage = builder.ToString();
-                                            }
+                                            var committed = ServiceBusHelper.ExecuteReceiveTransaction(receive,
+                                                checkBoxReceiverCommitTransaction.Checked, receiverCancellationTokenSource.Token);
+                                            var builder = new StringBuilder(traceMessage);
+                                            builder.AppendLine(committed ? TransactionCommitted : TransactionAborted);
+                                            traceMessage = builder.ToString();
                                         }
                                         else
                                         {

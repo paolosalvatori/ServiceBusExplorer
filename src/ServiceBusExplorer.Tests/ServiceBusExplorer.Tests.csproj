@@ -23,6 +23,7 @@
 			<HintPath>..\ServiceBusExplorer\Libraries\FastColoredTextBox.dll</HintPath>
 		</Reference>
 		<Reference Include="System.Configuration" />
+		<Reference Include="System.Transactions" />
 		<Reference Include="System.Windows.Forms.DataVisualization" />
 		<Reference Include="System.ServiceModel" />
 		<Reference Include="System.Data.DataSetExtensions" />
