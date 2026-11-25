@@ -748,14 +748,17 @@ namespace ServiceBusExplorer.Forms
 
         private async void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            var listeners = panelMain.Controls.OfType<ListenerControl>().ToArray();
-            if (!listenerCloseReady && listeners.Length > 0 &&
+            var shutdowns = panelMain.Controls.OfType<ListenerControl>().Select(control => new Func<Task>(control.ShutdownAsync))
+                .Concat(panelMain.Controls.OfType<TestQueueControl>().Select(control => new Func<Task>(control.CancelActions)))
+                .Concat(panelMain.Controls.OfType<TestTopicControl>().Select(control => new Func<Task>(control.CancelActions)))
+                .Concat(panelMain.Controls.OfType<TestSubscriptionControl>().Select(control => new Func<Task>(control.CancelActions))).ToArray();
+            if (!listenerCloseReady && shutdowns.Length > 0 &&
                 e.CloseReason != System.Windows.Forms.CloseReason.WindowsShutDown && e.CloseReason != System.Windows.Forms.CloseReason.TaskManagerClosing)
             {
                 e.Cancel = true;
                 if (listenerClosePending) return;
                 listenerClosePending = true;
-                try { await Task.WhenAll(listeners.Select(listener => listener.ShutdownAsync())); }
+                try { await Task.WhenAll(shutdowns.Select(shutdown => shutdown())); }
                 catch (Exception ex) { HandleException(ex); }
                 finally
                 {

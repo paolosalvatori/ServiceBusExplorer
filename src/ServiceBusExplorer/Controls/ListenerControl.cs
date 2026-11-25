@@ -168,6 +168,7 @@ namespace ServiceBusExplorer.Controls
         private bool disposalReady;
         private Task stopListenerTask;
         private Task graphTask = Task.CompletedTask;
+        private Task startProcessorTask = Task.CompletedTask;
 
         private bool logging;
         private bool verbose;
@@ -942,7 +943,8 @@ namespace ServiceBusExplorer.Controls
                                 sessionProcessor.ProcessMessageAsync += OnSessionMessageAsync;
                                 sessionProcessor.ProcessErrorAsync += OnProcessorErrorAsync;
                                 sessionProcessor.SessionClosingAsync += OnSessionClosingAsync;
-                                await sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                                startProcessorTask = sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                                await startProcessorTask;
                             }
                             else
                             {
@@ -951,7 +953,8 @@ namespace ServiceBusExplorer.Controls
                                     GetProcessorOptions(serviceBusReceiveMode));
                                 processor.ProcessMessageAsync += OnMessageAsync;
                                 processor.ProcessErrorAsync += OnProcessorErrorAsync;
-                                await processor.StartProcessingAsync(cancellationTokenSource.Token);
+                                startProcessorTask = processor.StartProcessingAsync(cancellationTokenSource.Token);
+                                await startProcessorTask;
                             }
                         }
                         else if (entityDescription is SubscriptionDescription currentSubscription)
@@ -965,7 +968,8 @@ namespace ServiceBusExplorer.Controls
                                 sessionProcessor.ProcessMessageAsync += OnSessionMessageAsync;
                                 sessionProcessor.ProcessErrorAsync += OnProcessorErrorAsync;
                                 sessionProcessor.SessionClosingAsync += OnSessionClosingAsync;
-                                await sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                                startProcessorTask = sessionProcessor.StartProcessingAsync(cancellationTokenSource.Token);
+                                await startProcessorTask;
                             }
                             else
                             {
@@ -975,7 +979,8 @@ namespace ServiceBusExplorer.Controls
                                     GetProcessorOptions(serviceBusReceiveMode));
                                 processor.ProcessMessageAsync += OnMessageAsync;
                                 processor.ProcessErrorAsync += OnProcessorErrorAsync;
-                                await processor.StartProcessingAsync(cancellationTokenSource.Token);
+                                startProcessorTask = processor.StartProcessingAsync(cancellationTokenSource.Token);
+                                await startProcessorTask;
                             }
                         }
                         graphTask = Task.Run(new Action(RefreshGraph));
@@ -1386,6 +1391,9 @@ namespace ServiceBusExplorer.Controls
             timer = null;
             dateTime = DateTime.MinValue;
             cancellationTokenSource?.Cancel();
+            // Cancellation interrupts startup; finish that operation before closing its processor.
+            try { await startProcessorTask; }
+            catch (Exception ex) { try { HandleException(ex); } catch { } }
             var currentSessionProcessor = sessionProcessor;
             var currentProcessor = processor;
             var currentClient = serviceBusClient;

@@ -180,6 +180,10 @@ namespace ServiceBusExplorer.Controls
         private double receiverAverageTime;
         private double receiverTotalTime;
         private int actionCount;
+        private readonly List<Task> pendingOperations = new List<Task>();
+        private Task cancelActionsTask;
+        private bool disposalStarted;
+        private bool disposalReady;
         private long currentIndex;
         private int senderTaskCount = 1;
         private int receiverTaskCount = 1;
@@ -231,6 +235,7 @@ namespace ServiceBusExplorer.Controls
             this.topic = topic;
             this.subscriptionList = subscriptionList;
             InitializeComponent();
+            ListenerShutdownCoordinator.Shared.Register(CancelActions);
             InitializeControls();
         }
         #endregion
@@ -559,6 +564,8 @@ namespace ServiceBusExplorer.Controls
                     return;
                 }
 
+                btnStart.Enabled = false;
+                await CancelActions();
                 controlHelper.StartLog?.Invoke();
                 btnStart.Enabled = false;
                 Cursor.Current = Cursors.WaitCursor;
@@ -567,6 +574,8 @@ namespace ServiceBusExplorer.Controls
                 //                                   Initialize Statistics and Manager Action
                 //*****************************************************************************************************
                 actionCount = 0;
+                    cancelActionsTask = null;
+                    pendingOperations.Clear();
                 senderMessageNumber = 0;
                 senderMessagesPerSecond = 0;
                 senderMinimumTime = long.MaxValue;
@@ -1037,8 +1046,8 @@ namespace ServiceBusExplorer.Controls
                         // Start Sender Actions
                         for (var i = 0; i < Math.Min(messageCount, senderTaskCount); i++)
                         {
-                            senderAction.BeginInvoke(i, messageTemplateList, messageTextList, senderCallback, senderAction);
                             Interlocked.Increment(ref actionCount);
+                            pendingOperations.Add(WorkerOperationDrain.Start(callback => senderAction.BeginInvoke(i, messageTemplateList, messageTextList, callback, senderAction), senderCallback));
                         }
                     }
                     catch (Exception ex)
@@ -1228,8 +1237,9 @@ namespace ServiceBusExplorer.Controls
                                 receiverClients.Add(client);
                             }
 
-                            receiverAction.BeginInvoke(i, client, receiverCallback, receiverAction);
                             Interlocked.Increment(ref actionCount);
+
+                            pendingOperations.Add(WorkerOperationDrain.Start(callback => receiverAction.BeginInvoke(i, client, callback, receiverAction), receiverCallback));
                         }
                     }
                     catch (Exception ex)
@@ -1242,8 +1252,8 @@ namespace ServiceBusExplorer.Controls
                     managerCancellationTokenSource = new CancellationTokenSource();
                     managerAction.BeginInvoke(managerCancellationTokenSource, null, null);
                     graphCancellationTokenSource = new CancellationTokenSource();
-                    updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
                     Interlocked.Increment(ref actionCount);
+                    pendingOperations.Add(WorkerOperationDrain.Start(callback => updateGraphAction.BeginInvoke(callback, updateGraphAction), updateGraphCallback));
                     btnStart.Text = StopCaption;
                 }
             }
@@ -1383,22 +1393,26 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        internal async Task CancelActions()
+        internal Task CancelActions()
         {
-            if (controlHelper.StopLog != null)
-            {
-                await controlHelper.StopLog();
-            }
+            return cancelActionsTask ?? (cancelActionsTask = CancelActionsCoreAsync());
+        }
+
+        private async Task CancelActionsCoreAsync()
+        {
             managerCancellationTokenSource?.Cancel();
             graphCancellationTokenSource?.Cancel();
             senderCancellationTokenSource?.Cancel();
             receiverCancellationTokenSource?.Cancel();
+            try { await WorkerOperationDrain.DrainAsync(pendingOperations.ToArray()); }
+            catch (Exception ex) { try { HandleException(ex); } catch { } }
+            pendingOperations.Clear();
 
             foreach (var client in senderClients)
             {
                 try
                 {
-                    await client.DisposeAsync().ConfigureAwait(false);
+                    await client.DisposeAsync();
                 }
                 catch (Exception ex)
                 {
@@ -1410,7 +1424,7 @@ namespace ServiceBusExplorer.Controls
             {
                 try
                 {
-                    await client.DisposeAsync().ConfigureAwait(false);
+                    await client.DisposeAsync();
                 }
                 catch (Exception ex)
                 {
@@ -1438,6 +1452,10 @@ namespace ServiceBusExplorer.Controls
                 senderFactories.Clear();
             }
 
+            if (controlHelper.StopLog != null)
+            {
+                await controlHelper.StopLog();
+            }
         }
 
         internal async void btnCancel_Click(object sender, EventArgs e)
@@ -2140,6 +2158,18 @@ namespace ServiceBusExplorer.Controls
             e.Cancel = true;
         }
 
+        private async void DisposeAfterWorkersAsync()
+        {
+            try { await CancelActions(); }
+            catch (Exception ex) { try { HandleException(ex); } catch { } }
+            finally
+            {
+                ListenerShutdownCoordinator.Shared.Unregister(CancelActions);
+                disposalReady = true;
+                Dispose();
+            }
+        }
+
         /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
@@ -2148,6 +2178,11 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+                if (disposing && !disposalReady)
+                {
+                    if (!disposalStarted) { disposalStarted = true; DisposeAfterWorkersAsync(); }
+                    return;
+                }
                 if (disposing)
                 {
                     components?.Dispose();

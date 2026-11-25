@@ -15,6 +15,7 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
+    [Collection("Service Bus connection settings")]
     public class SessionListenerLifecycleTests
     {
         [Theory]
@@ -65,6 +66,66 @@ namespace ServiceBusExplorer.Tests.Helpers
                 Assert.Same(first, listener.ShutdownAsync());
                 var counts = (ConcurrentDictionary<string, int>)Field("sessionMessageCounts").GetValue(listener);
                 Assert.Empty(counts);
+            });
+        }
+
+        [Fact]
+        public void ClosingDuringStartupWaitsBeforeDisposingTheClient()
+        {
+            RunUi(async (form, listener) =>
+            {
+                var startup = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var events = new List<string>();
+                Set(listener, "startProcessorTask", startup.Task);
+                Set(listener, "serviceBusClient", new Client(events));
+                var shutdown = listener.ShutdownAsync();
+                Assert.False(shutdown.IsCompleted);
+                Assert.Empty(events);
+                startup.SetCanceled();
+                await shutdown;
+                Assert.Equal(new[] { "client" }, events);
+            });
+        }
+
+        [Fact]
+        public void ManualWorkerDrainIncludesCallbackAndAllowsUiInvoke()
+        {
+            RunUi(async (form, listener) =>
+            {
+                var callbackFinished = false;
+                var uiUpdated = false;
+                Action work = () => form.Invoke(new Action(() => uiUpdated = true));
+                var operation = ServiceBusExplorer.UIHelpers.WorkerOperationDrain.Start(
+                    callback => work.BeginInvoke(callback, work), result =>
+                    {
+                        work.EndInvoke(result);
+                        callbackFinished = true;
+                    });
+                await ServiceBusExplorer.UIHelpers.WorkerOperationDrain.DrainAsync(new[] { operation });
+                Assert.True(uiUpdated);
+                Assert.True(callbackFinished);
+            });
+        }
+
+        [Fact]
+        public void QueueCancelEntryPointWaitsForWorkersBeforeClosingSharedClient()
+        {
+            RunUi(async (form, listener) =>
+            {
+                using var control = new TestQueueControl(null, (_, __) => { }, () => Task.CompletedTask,
+                    () => { }, new ServiceBusHelper((_, __) => { }), new QueueInfo("synthetic"));
+                var events = new List<string>();
+                var worker = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                ((List<Task>)typeof(TestQueueControl).GetField("pendingOperations", flags).GetValue(control)).Add(worker.Task);
+                ((List<ServiceBusClient>)typeof(TestQueueControl).GetField("receiverClients", flags).GetValue(control)).Add(new Client(events));
+                var cancel = control.CancelActions();
+                Assert.False(cancel.IsCompleted);
+                Assert.Same(cancel, control.CancelActions());
+                Assert.Empty(events);
+                worker.SetResult(true);
+                await cancel;
+                Assert.Equal(new[] { "client" }, events);
             });
         }
 
