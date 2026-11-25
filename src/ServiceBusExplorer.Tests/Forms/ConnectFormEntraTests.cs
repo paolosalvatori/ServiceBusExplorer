@@ -11,6 +11,7 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Forms
 {
+    [Collection("Connection settings publication")]
     public class ConnectFormEntraTests
     {
         private const string ControlNameServiceBusNamespace = "cboServiceBusNamespace";
@@ -48,6 +49,66 @@ namespace ServiceBusExplorer.Tests.Forms
                     var restored = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", form.ConnectionString, (_, __) => { });
                     restored.UseDevelopmentEmulator.Should().BeTrue();
                     restored.Namespace.Should().Be("127.0.0.1");
+                }
+            });
+        }
+
+        [Fact]
+        public void LoadingPaddedTransportDoesNotRewriteSavedProfile()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string value = "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic==;UseDevelopmentEmulator=true; TransportType = Amqp ; RuntimePort =5671;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                var profile = ServiceBusNamespace.GetServiceBusNamespace("Padded", value, (_, __) => { });
+                helper.ServiceBusNamespaces["Padded"] = profile;
+                using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Padded";
+                GetComboBox(form, ControlNameTransportType).SelectedItem.Should().Be(TransportType.Amqp);
+                GetTextBox(form, ControlNameUri).Text.Should().Be(value);
+                profile.ConnectionString.Should().Be(value);
+                GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.NetMessaging;
+                GetTextBox(form, ControlNameUri).Text.Should().Contain(" TransportType =NetMessaging;");
+                GetTextBox(form, ControlNameUri).Text.Should().Contain("SharedAccessKey=synthetic==;");
+                GetTextBox(form, ControlNameUri).Text.Should().Contain(" RuntimePort =9354;");
+                profile.ConnectionString.Should().Be(value);
+            });
+        }
+
+        [Fact]
+        public void AcceptingDialogStagesFiltersWithoutChangingActiveFilters()
+        {
+            RunOnStaThread(() =>
+            {
+                var before = new[] { FilterExpressionHelper.QueueFilterExpression, FilterExpressionHelper.TopicFilterExpression, FilterExpressionHelper.SubscriptionFilterExpression };
+                try
+                {
+                    FilterExpressionHelper.QueueFilterExpression = "old queue";
+                    FilterExpressionHelper.TopicFilterExpression = "old topic";
+                    FilterExpressionHelper.SubscriptionFilterExpression = "old subscription";
+                    ResetManualConnectionState();
+                    var helper = new ServiceBusHelper((_, __) => { });
+                    helper.ServiceBusNamespaces["Synthetic"] = ServiceBusNamespace.GetServiceBusNamespace("Synthetic", "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic;UseDevelopmentEmulator=true", (_, __) => { });
+                    using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Synthetic";
+                    GetTextBox(form, "txtQueueFilterExpression").Text = "new queue";
+                    GetTextBox(form, "txtTopicFilterExpression").Text = "new topic";
+                    GetTextBox(form, "txtSubscriptionFilterExpression").Text = "new subscription";
+                    typeof(ConnectForm).GetMethod("btnOk_Click", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, new object[] { null, EventArgs.Empty });
+                    form.DialogResult.Should().Be(System.Windows.Forms.DialogResult.OK);
+                    form.QueueFilterExpression.Should().Be("new queue");
+                    form.TopicFilterExpression.Should().Be("new topic");
+                    form.SubscriptionFilterExpression.Should().Be("new subscription");
+                    FilterExpressionHelper.QueueFilterExpression.Should().Be("old queue");
+                    FilterExpressionHelper.TopicFilterExpression.Should().Be("old topic");
+                    FilterExpressionHelper.SubscriptionFilterExpression.Should().Be("old subscription");
+                }
+                finally
+                {
+                    FilterExpressionHelper.QueueFilterExpression = before[0];
+                    FilterExpressionHelper.TopicFilterExpression = before[1];
+                    FilterExpressionHelper.SubscriptionFilterExpression = before[2];
                 }
             });
         }

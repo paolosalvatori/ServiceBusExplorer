@@ -231,7 +231,7 @@ namespace ServiceBusExplorer.Controls
             controlHelper = new TestControlHelper(mainForm, writeToLog, stopLog, startLog, serviceBusHelper);
             this.queueDescription = queueDescription;
             InitializeComponent();
-            ListenerShutdownCoordinator.Shared.Register(CancelActions);
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
             InitializeControls();
         }
         #endregion
@@ -444,6 +444,9 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+
+                if (receiverEnabledCheckBox.Checked)
+                    ServiceBusHelper.ValidateReceiveTransaction(cboReceivedMode.Text != PeekLock, checkBoxReceiverUseTransaction.Checked);
                 if (string.IsNullOrWhiteSpace(txtReceiveTimeout.Text) ||
                     !int.TryParse(txtReceiveTimeout.Text, out var temp) ||
                     temp < 0)
@@ -555,6 +558,7 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+                if (closeRequested || IsDisposed) return;
                 if (btnStart.Text == StopCaption)
                 {
                     await CancelActions();
@@ -566,7 +570,7 @@ namespace ServiceBusExplorer.Controls
                     ValidateParameters())
                 {
                     btnStart.Enabled = false;
-                    await CancelActions();
+                    if (!await PrepareStartAsync()) return;
                     controlHelper.StartLog?.Invoke();
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
@@ -686,25 +690,10 @@ namespace ServiceBusExplorer.Controls
                                 }
                             }
                         }
-                        if (Interlocked.Decrement(ref actionCount) == 0)
-                        {
-                            managerResetEvent.Set();
-                        }
                     };
 
-                    AsyncCallback updateGraphCallback = a =>
-                    {
-                        var action = a.AsyncState as Action;
-                        if (action == null)
-                        {
-                            return;
-                        }
-                        action.EndInvoke(a);
-                        if (Interlocked.Decrement(ref actionCount) == 0)
-                        {
-                            managerResetEvent.Set();
-                        }
-                    };
+                    AsyncCallback updateGraphCallback = a => WorkerOperationDrain.Complete(
+                        () => (( Action )a.AsyncState).EndInvoke(a), HandleException, WorkerFinished);
 
                     blockingCollection = new BlockingCollection<Tuple<long, long, DirectionType>>();
 
@@ -1037,24 +1026,14 @@ namespace ServiceBusExplorer.Controls
                             };
 
                             // Define Sender AsyncCallback
-                            AsyncCallback senderCallback = a =>
-                            {
-                                var action = a.AsyncState as Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>>;
-                                if (action != null)
-                                {
-                                    action.EndInvoke(a);
-                                    if (Interlocked.Decrement(ref actionCount) == 0)
-                                    {
-                                        managerResetEvent.Set();
-                                    }
-                                }
-                            };
+                            AsyncCallback senderCallback = a => WorkerOperationDrain.Complete(
+                        () => (( Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>> )a.AsyncState).EndInvoke(a), HandleException, WorkerFinished);
 
                             // Start Sender Actions
                             for (var i = 0; i < Math.Min(messageCount, senderTaskCount); i++)
                             {
                                 Interlocked.Increment(ref actionCount);
-                                pendingOperations.Add(WorkerOperationDrain.Start(callback => senderAction.BeginInvoke(i, messageTemplateList, messageTextList, callback, senderAction), senderCallback));
+                                pendingOperations.Add(WorkerOperationDrain.Start(callback => senderAction.BeginInvoke(i, messageTemplateList, messageTextList, callback, senderAction), senderCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                             }
                         }
                         catch (Exception ex)
@@ -1198,18 +1177,8 @@ namespace ServiceBusExplorer.Controls
                             };
 
                             // Define Receiver AsyncCallback
-                            AsyncCallback receiverCallback = a =>
-                            {
-                                var action = a.AsyncState as Action<int, ServiceBusClient>;
-                                if (action != null)
-                                {
-                                    action.EndInvoke(a);
-                                    if (Interlocked.Decrement(ref actionCount) == 0)
-                                    {
-                                        managerResetEvent.Set();
-                                    }
-                                }
-                            };
+                            AsyncCallback receiverCallback = a => WorkerOperationDrain.Complete(
+                        () => (( Action<int, ServiceBusClient> )a.AsyncState).EndInvoke(a), HandleException, WorkerFinished);
 
                             // Start Receiver Actions
                             ServiceBusClient sharedReceiverClient = null;
@@ -1229,7 +1198,7 @@ namespace ServiceBusExplorer.Controls
 
                                 Interlocked.Increment(ref actionCount);
 
-                                pendingOperations.Add(WorkerOperationDrain.Start(callback => receiverAction.BeginInvoke(i, client, callback, receiverAction), receiverCallback));
+                                pendingOperations.Add(WorkerOperationDrain.Start(callback => receiverAction.BeginInvoke(i, client, callback, receiverAction), receiverCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                             }
                         }
                         catch (Exception ex)
@@ -1243,7 +1212,7 @@ namespace ServiceBusExplorer.Controls
                         pendingOperations.Add(managerAction(managerCancellationTokenSource));
                         graphCancellationTokenSource = new CancellationTokenSource();
                         Interlocked.Increment(ref actionCount);
-                        pendingOperations.Add(WorkerOperationDrain.Start(callback => updateGraphAction.BeginInvoke(callback, updateGraphAction), updateGraphCallback));
+                        pendingOperations.Add(WorkerOperationDrain.Start(callback => updateGraphAction.BeginInvoke(callback, updateGraphAction), updateGraphCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                         btnStart.Text = StopCaption;
                     }
                 }
@@ -1385,6 +1354,26 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private bool closeRequested;
+
+        internal Task ShutdownAsync()
+        {
+            closeRequested = true;
+            return CancelActions();
+        }
+
+        internal async Task<bool> PrepareStartAsync()
+        {
+            if (closeRequested || IsDisposed) return false;
+            await CancelActions();
+            return !closeRequested && !IsDisposed;
+        }
+
+        private void WorkerFinished()
+        {
+            if (Interlocked.Decrement(ref actionCount) == 0) managerResetEvent?.Set();
+        }
+
         internal Task CancelActions()
         {
             return cancelActionsTask ?? (cancelActionsTask = CancelActionsCoreAsync());
@@ -1452,7 +1441,7 @@ namespace ServiceBusExplorer.Controls
 
         internal async void btnCancel_Click(object sender, EventArgs e)
         {
-            await CancelActions();
+            await ShutdownAsync();
             OnCancel?.Invoke();
         }
 
@@ -2138,11 +2127,11 @@ namespace ServiceBusExplorer.Controls
 
         private async void DisposeAfterWorkersAsync()
         {
-            try { await CancelActions(); }
+            try { await ShutdownAsync(); }
             catch (Exception ex) { try { HandleException(ex); } catch { } }
             finally
             {
-                ListenerShutdownCoordinator.Shared.Unregister(CancelActions);
+                ListenerShutdownCoordinator.Shared.Unregister(ShutdownAsync);
                 disposalReady = true;
                 Dispose();
             }

@@ -8,7 +8,7 @@ namespace ServiceBusExplorer.UIHelpers
 {
     internal static class WorkerOperationDrain
     {
-        internal static Task Start(Func<AsyncCallback, IAsyncResult> start, AsyncCallback callback)
+        internal static Task Start(Func<AsyncCallback, IAsyncResult> start, AsyncCallback callback, Action<Exception> startFailure = null)
         {
             var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             try
@@ -19,8 +19,15 @@ namespace ServiceBusExplorer.UIHelpers
                     catch (Exception ex) { completion.TrySetException(ex); }
                 });
             }
-            catch (Exception ex) { completion.TrySetException(ex); }
+            catch (Exception ex) { try { startFailure?.Invoke(ex); } finally { completion.TrySetException(ex); } }
             return completion.Task;
+        }
+
+        internal static void Complete(Action endInvoke, Action<Exception> reportFailure, Action finished)
+        {
+            try { endInvoke(); }
+            catch (Exception ex) { try { reportFailure(ex); } catch { } }
+            finally { finished(); }
         }
 
         internal static async Task RunManagerAsync(Control owner, ManualResetEventSlim completed,

@@ -873,7 +873,7 @@ namespace ServiceBusExplorer.Controls
                         ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
-                        messageInspector);
+                        messageInspector, HandleException);
                     writeToLog(string.Format(peek ? MessagesPeekedFromTheSubscription : MessagesReceivedFromTheSubscription,
                         brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }

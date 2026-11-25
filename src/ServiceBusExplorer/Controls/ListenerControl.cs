@@ -1212,7 +1212,7 @@ namespace ServiceBusExplorer.Controls
             {
                 if (receiverBrokeredMessageInspector != null)
                 {
-                    message = receiverBrokeredMessageInspector.AfterReceiveMessage(message);
+                    message = ServiceBusReceivedMessageAdapter.Inspect(message, receiverBrokeredMessageInspector.AfterReceiveMessage);
                 }
                 if (message == null) throw new InvalidOperationException("The message inspector returned no message.");
                 cancellationToken.ThrowIfCancellationRequested();

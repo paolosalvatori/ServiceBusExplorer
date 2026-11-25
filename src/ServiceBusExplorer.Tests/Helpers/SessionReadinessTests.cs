@@ -135,6 +135,67 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Null(client.Options);
         }
 
+        [Theory]
+        [InlineData("accept")]
+        [InlineData("receive")]
+        [InlineData("receiver-dispose")]
+        [InlineData("client-dispose")]
+        public void SessionBrowseRetainsConsumedRowsAndReportsLaterFailure(string failure)
+        {
+            Exception reported = null;
+            var client = new PartialClient(failure);
+            var messages = new Helper(client).GetMessagesFromModernSessionDataPlane("queue", null, null,
+                false, int.MaxValue, null, TimeSpan.FromSeconds(1), null, error => reported = error);
+            try
+            {
+                Assert.Equal(new long[] { 1 }, messages.Select(m => m.SequenceNumber));
+                var partial = Assert.IsType<PartialMessageReadException>(reported);
+                Assert.Same(messages[0], Assert.Single(partial.Messages));
+                Assert.Equal("body", new System.IO.StreamReader(messages[0].GetBody<System.IO.Stream>()).ReadToEnd());
+                Assert.Contains(failure, partial.ToString());
+                Assert.True(client.Disposed);
+            }
+            finally { messages.ForEach(m => m.Dispose()); }
+        }
+
+        private class PartialClient : ServiceBusClient
+        {
+            private readonly string failure;
+            private int accepts;
+            public bool Disposed;
+            public PartialClient(string failure) { this.failure = failure; }
+            public override Task<ServiceBusSessionReceiver> AcceptNextSessionAsync(string queueName, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default)
+            {
+                if (++accepts == 1) return Task.FromResult<ServiceBusSessionReceiver>(new PartialSession(failure));
+                if (failure == "accept") throw new InvalidOperationException(failure);
+                throw new ServiceBusException("finished", ServiceBusFailureReason.ServiceTimeout);
+            }
+            public override ValueTask DisposeAsync()
+            {
+                Disposed = true;
+                if (failure == "client-dispose") throw new InvalidOperationException(failure);
+                return default;
+            }
+        }
+        private class PartialSession : ServiceBusSessionReceiver
+        {
+            private readonly string failure;
+            private bool read;
+            public PartialSession(string failure) { this.failure = failure; }
+            public override Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default)
+            {
+                if (read && failure == "receive") throw new InvalidOperationException(failure);
+                var result = read ? Array.Empty<ServiceBusReceivedMessage>() : new[] { Message(1) };
+                read = true;
+                return Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(result);
+            }
+            public override ValueTask DisposeAsync()
+            {
+                if (failure == "receiver-dispose") throw new InvalidOperationException(failure);
+                return default;
+            }
+        }
+
         private class DeadLetterClient : ServiceBusClient
         {
             public ServiceBusReceiverOptions Options;

@@ -1342,7 +1342,7 @@ namespace ServiceBusExplorer.Controls
                         ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
-                        messageInspector);
+                        messageInspector, HandleException);
                     writeToLog(string.Format(peek ? MessagesPeekedFromTheQueue : MessagesReceivedFromTheQueue,
                         brokeredMessages.Count, queueDescription.Path));
                 }
@@ -1409,7 +1409,7 @@ namespace ServiceBusExplorer.Controls
                         targetCount,
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
-                        messageInspector)
+                        messageInspector, HandleException)
                     : serviceBusHelper.GetMessagesFromModernDataPlane(
                         queueDescription.Path,
                         null,

@@ -2388,7 +2388,7 @@ namespace ServiceBusExplorer
             }
             if (messageInspector != null)
             {
-                outboundMessage = messageInspector.BeforeSendMessage(outboundMessage);
+                outboundMessage = ServiceBusReceivedMessageAdapter.Inspect(outboundMessage, messageInspector.BeforeSendMessage);
             }
             return outboundMessage;
         }
@@ -3265,6 +3265,8 @@ namespace ServiceBusExplorer
                 throw new ArgumentNullException(nameof(cancellationTokenSource));
             }
 
+            ValidateReceiveTransaction(receiveMode == ServiceBusReceiveMode.ReceiveAndDelete);
+
             var messageDeferProvider = Activator.CreateInstance(messageDeferProviderType) as IMessageDeferProvider;
             var readingDeferredMessages = false;
             var messagesReceived = 0L;
@@ -3354,7 +3356,7 @@ namespace ServiceBusExplorer
                         {
                             if (messageInspector != null)
                             {
-                                compatibilityMessage = messageInspector.AfterReceiveMessage(compatibilityMessage);
+                                compatibilityMessage = ServiceBusReceivedMessageAdapter.Inspect(compatibilityMessage, messageInspector.AfterReceiveMessage);
                             }
 
                             var matched = filter != null && filter.Match(compatibilityMessage);
@@ -3553,6 +3555,8 @@ namespace ServiceBusExplorer
                 throw new ArgumentNullException(CancellationTokenSourceCannotBeNull);
             }
 
+            ValidateReceiveTransaction(messageReceiver.Mode == ReceiveMode.ReceiveAndDelete);
+
             BrokeredMessage inboundMessage = null;
             StringBuilder builder;
             var isCompleted = false;
@@ -3599,7 +3603,7 @@ namespace ServiceBusExplorer
                             messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
                             if (messageInspector != null)
                             {
-                                messageList = messageList.Select(b => messageInspector.AfterReceiveMessage(b)).ToList();
+                                messageList = messageList.Select(b => ServiceBusReceivedMessageAdapter.Inspect(b, messageInspector.AfterReceiveMessage)).ToList();
                             }
                             isCompleted = messageEnumerable == null || !messageList.Any();
                             if (isCompleted)
@@ -3786,7 +3790,7 @@ namespace ServiceBusExplorer
                                 stopwatch.Stop();
                                 if (inboundMessage != null && messageInspector != null)
                                 {
-                                    inboundMessage = messageInspector.AfterReceiveMessage(inboundMessage);
+                                    inboundMessage = ServiceBusReceivedMessageAdapter.Inspect(inboundMessage, messageInspector.AfterReceiveMessage);
                                 }
                                 isCompleted = inboundMessage == null &&
                                               messageDeferProvider.Count == 0;
@@ -3803,7 +3807,7 @@ namespace ServiceBusExplorer
                                         stopwatch.Stop();
                                         if (inboundMessage != null && messageInspector != null)
                                         {
-                                            inboundMessage = messageInspector.AfterReceiveMessage(inboundMessage);
+                                            inboundMessage = ServiceBusReceivedMessageAdapter.Inspect(inboundMessage, messageInspector.AfterReceiveMessage);
                                         }
                                         readDeferredMessage = true;
                                     }
@@ -3828,35 +3832,7 @@ namespace ServiceBusExplorer
                                 minimumReceiveTime = stopwatch.ElapsedMilliseconds;
                             }
                             totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
-                            if (statistics)
-                            {
-                                if (messageReceiver.PrefetchCount > 0)
-                                {
-                                    if (stopwatch.ElapsedMilliseconds == 0)
-                                    {
-                                        fetchedMessages++;
-                                    }
-                                    else
-                                    {
-                                        if (fetchedMessages > 0)
-                                        {
-                                            PublishConfirmedProgress(updateStatistics, fetchedMessages,
-                                                             prefetchElapsedTime,
-                                                             DirectionType.Receive);
-                                            fetchedMessages = 1;
-                                        }
-                                        else
-                                        {
-                                            fetchedMessages++;
-                                        }
-                                        prefetchElapsedTime = stopwatch.ElapsedMilliseconds;
-                                    }
-                                }
-                                else
-                                {
-                                    PublishConfirmedProgress(updateStatistics, 1, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
-                                }
-                            }
+                            var receiveElapsed = stopwatch.ElapsedMilliseconds;
                             builder = new StringBuilder();
 
                             if (defer &&
@@ -3874,7 +3850,7 @@ namespace ServiceBusExplorer
                                 filter != null &&
                                 filter.Match(inboundMessage))
                             {
-                                inboundMessage.DeadLetter();
+                                SettleAndPublishReceive(inboundMessage.DeadLetter, statistics ? updateStatistics : null, receiveElapsed);
                                 movedToDeadLetterQueue = true;
                                 messagesReceived++;
                             }
@@ -3889,7 +3865,7 @@ namespace ServiceBusExplorer
                                     {
                                         stopwatch = new Stopwatch();
                                         stopwatch.Start();
-                                        inboundMessage.Complete();
+                                        SettleAndPublishReceive(inboundMessage.Complete, statistics ? updateStatistics : null, receiveElapsed);
                                         stopwatch.Stop();
                                         if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                         {
@@ -3921,6 +3897,7 @@ namespace ServiceBusExplorer
                                 else
                                 {
                                     messagesReceived++;
+                                    if (statistics) PublishConfirmedProgress(updateStatistics, 1, receiveElapsed, DirectionType.Receive);
                                 }
                             }
 
@@ -4609,6 +4586,18 @@ namespace ServiceBusExplorer
             return succeeded && !cancellationToken.IsCancellationRequested;
         }
 
+        public static void ValidateReceiveTransaction(bool receiveAndDelete, bool requested = false)
+        {
+            if (receiveAndDelete && (requested || System.Transactions.Transaction.Current != null))
+                throw new NotSupportedException("ReceiveAndDelete cannot be rolled back. Select PeekLock for transactional receiving; no messages were read.");
+        }
+
+        public static void SettleAndPublishReceive(Action settle, UpdateStatisticsDelegate updateStatistics, long elapsed)
+        {
+            settle();
+            if (updateStatistics != null) PublishConfirmedProgress(updateStatistics, 1, elapsed, DirectionType.Receive);
+        }
+
         public static bool ExecuteReceiveTransaction(Func<bool> receive, bool commit, CancellationToken cancellationToken)
         {
             using (var scope = new System.Transactions.TransactionScope())
@@ -4761,7 +4750,7 @@ namespace ServiceBusExplorer
             int count,
             long? fromSequenceNumber,
             TimeSpan receiveTimeout,
-            IBrokeredMessageInspector messageInspector)
+            IBrokeredMessageInspector messageInspector, Action<Exception> reportFailure = null)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
             {
@@ -4780,6 +4769,8 @@ namespace ServiceBusExplorer
                 return GetMessagesFromModernDataPlane(entityPath, subscriptionName, SubQueue.None,
                     true, count, fromSequenceNumber, receiveTimeout, messageInspector);
 
+            ValidateReceiveTransaction(!peek);
+            Exception failure = null;
             var messages = new List<BrokeredMessage>();
             var client = CreateServiceBusClient();
             try
@@ -4809,21 +4800,32 @@ namespace ServiceBusExplorer
                             catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout) { break; }
                         }
                         var batch = ReadMessagesFromModernReceiver(receiver, peek, count - messages.Count,
-                            fromSequenceNumber, receiveTimeout, messageInspector);
-                        messages.AddRange(batch);
+                            fromSequenceNumber, receiveTimeout, messageInspector, message => messages.Add(message));
                         // A selected session is read once; avoid repeatedly accepting an empty session.
                         if (!string.IsNullOrWhiteSpace(sessionId) || peek || batch.Count == 0) break;
                     }
-                    finally { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                    catch (Exception ex) { failure = ex; }
+                    finally
+                    {
+                        try { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                        catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+                    }
+                    if (failure != null) break;
                 } while (messages.Count < count);
-                return messages;
             }
-            catch
+            catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+            finally
             {
-                foreach (var message in messages) message?.Dispose();
-                throw;
+                try { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
             }
-            finally { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+            if (failure != null)
+            {
+                var partial = new PartialMessageReadException(messages, failure);
+                if (reportFailure == null) throw partial;
+                reportFailure(partial);
+            }
+            return messages;
         }
 
         public List<BrokeredMessage> GetMessagesFromModernDataPlane(
@@ -4844,6 +4846,7 @@ namespace ServiceBusExplorer
             if (IsEmulator && subQueue == SubQueue.TransferDeadLetter)
                 throw new NotSupportedException("Transfer dead-letter browsing is not supported on the Service Bus emulator.");
 
+            ValidateReceiveTransaction(!peek);
             var client = CreateServiceBusClient();
             ServiceBusReceiver receiver = null;
             try
@@ -4870,8 +4873,10 @@ namespace ServiceBusExplorer
             all && !peek ? int.MaxValue : all ? topCount : count;
 
         public static List<BrokeredMessage> ReadMessagesFromModernReceiver(ServiceBusReceiver receiver,
-            bool peek, int count, long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector)
+            bool peek, int count, long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector, Action<BrokeredMessage> received = null)
         {
+            if (!peek && System.Transactions.Transaction.Current != null)
+                ValidateReceiveTransaction(receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete);
             var targetCount = count;
             var brokeredMessages = new List<BrokeredMessage>(Math.Min(Math.Max(count, 0), 100));
             try
@@ -4902,9 +4907,10 @@ namespace ServiceBusExplorer
                         var brokeredMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
                         try
                         {
-                            brokeredMessages.Add(messageInspector == null
-                                ? brokeredMessage
-                                : messageInspector.AfterReceiveMessage(brokeredMessage));
+                            var inspected = messageInspector == null ? brokeredMessage :
+                                ServiceBusReceivedMessageAdapter.Inspect(brokeredMessage, messageInspector.AfterReceiveMessage);
+                            brokeredMessages.Add(inspected);
+                            received?.Invoke(inspected);
                         }
                         catch
                         {
@@ -4927,7 +4933,7 @@ namespace ServiceBusExplorer
             }
             catch
             {
-                foreach (var message in brokeredMessages)
+                foreach (var message in received == null ? brokeredMessages : Enumerable.Empty<BrokeredMessage>())
                 {
                     message?.Dispose();
                 }

@@ -29,6 +29,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 Set(listener, "autoComplete", autoComplete);
                 Set(listener, "receiveMode", ReceiveMode.PeekLock);
                 Set(listener, "receiverBrokeredMessageInspector", new FailedInspector());
+                listener.CaptureSettlementPolicy();
                 var completed = false;
                 using var cancellation = new CancellationTokenSource();
                 if (cancel) cancellation.Cancel();
@@ -211,6 +212,75 @@ namespace ServiceBusExplorer.Tests.Helpers
                 await manager;
                 Assert.False(invoked);
             });
+        }
+
+        [Theory]
+        [InlineData("queue", false)]
+        [InlineData("queue", true)]
+        [InlineData("topic", false)]
+        [InlineData("topic", true)]
+        [InlineData("subscription", false)]
+        [InlineData("subscription", true)]
+        public void PendingManualStartCannotResumeAfterPermanentClose(string kind, bool close)
+        {
+            RunUi(async (form, listener) =>
+            {
+                using var control = CreateManualControl(kind);
+                var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                var type = control.GetType();
+                var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                ((List<Task>)type.GetField("pendingOperations", flags).GetValue(control)).Add(release.Task);
+                var start = (Task<bool>)type.GetMethod("PrepareStartAsync", flags).Invoke(control, null);
+                Assert.False(start.IsCompleted);
+                var stop = (Task)type.GetMethod(close ? "ShutdownAsync" : "CancelActions", flags).Invoke(control, null);
+                Assert.False(stop.IsCompleted);
+                release.SetResult(true);
+                Assert.Equal(!close, await start);
+                await stop;
+                Assert.Equal(!close, await (Task<bool>)type.GetMethod("PrepareStartAsync", flags).Invoke(control, null));
+            });
+        }
+
+        [Theory]
+        [InlineData("queue", false)]
+        [InlineData("topic", false)]
+        [InlineData("subscription", false)]
+        [InlineData("subscription", true)]
+        public void ManualWorkerStartupFaultAlwaysReleasesAccounting(string kind, bool synchronous)
+        {
+            RunUi(async (form, listener) =>
+            {
+                using var control = CreateManualControl(kind);
+                var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                var type = control.GetType();
+                using var completed = new ManualResetEventSlim(false);
+                type.GetField("managerResetEvent", flags).SetValue(control, completed);
+                type.GetField("actionCount", flags).SetValue(control, 1);
+                Exception reported = null;
+                Action finished = () => type.GetMethod("WorkerFinished", flags).Invoke(control, null);
+                Action<Exception> report = error => { reported = error; throw new InvalidOperationException("log failed"); };
+                Action work = () => throw new InvalidOperationException("synthetic startup fault");
+                var operation = ServiceBusExplorer.UIHelpers.WorkerOperationDrain.Start(
+                    callback => synchronous ? throw new InvalidOperationException("synthetic startup fault") : work.BeginInvoke(callback, work),
+                    result => ServiceBusExplorer.UIHelpers.WorkerOperationDrain.Complete(() => work.EndInvoke(result), report, finished),
+                    error => ServiceBusExplorer.UIHelpers.WorkerOperationDrain.Complete(() => { throw error; }, report, finished));
+                if (synchronous) await Assert.ThrowsAsync<InvalidOperationException>(() => operation);
+                else await operation;
+                Assert.Equal("synthetic startup fault", reported.Message);
+                Assert.True(completed.IsSet);
+                Assert.Equal(0, type.GetField("actionCount", flags).GetValue(control));
+            });
+        }
+
+        private static Control CreateManualControl(string kind)
+        {
+            var main = (ServiceBusExplorer.Forms.MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(ServiceBusExplorer.Forms.MainForm));
+            var helper = new ServiceBusHelper((_, __) => { });
+            if (kind == "queue") return new TestQueueControl(main, (_, __) => { }, () => Task.CompletedTask, () => { }, helper, new QueueInfo("synthetic"));
+            var topic = new TopicDescription("synthetic");
+            var subscription = new SubscriptionDescription("synthetic", "subscription");
+            if (kind == "topic") return new TestTopicControl(main, (_, __) => { }, () => Task.CompletedTask, () => { }, helper, topic, new List<SubscriptionInfo> { subscription });
+            return new TestSubscriptionControl(main, (_, __) => { }, () => Task.CompletedTask, () => { }, helper, new SubscriptionWrapper(subscription, topic));
         }
 
         private static ServiceBusReceivedMessage Message() => ServiceBusModelFactory.ServiceBusReceivedMessage(body: new BinaryData("body"), messageId: "id", sessionId: "session", sequenceNumber: 7);

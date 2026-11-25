@@ -196,3 +196,34 @@ Secondary helpers retain original profile EntityPath metadata separately from no
 - No live Azure/emulator operations or screenshots are part of these tests. Actual broker
   transaction/settlement behavior, live DLQ paging and interactive close under network outages
   still need manual validation; Linux builds do not execute .NET Framework WinForms tests.
+### Connection profile and filter publication follow-up
+
+Saved raw profile loading uses the same trimmed, case-insensitive keys as explicit transport
+editing. Programmatic transport selection does not rewrite the raw profile. Regression tests
+exercise the saved-profile dropdown with padded transport/runtime keys and unchanged credentials.
+The dialog stages queue/topic/subscription filters; MainForm publishes them only after connection
+success. Tests cover actual dialog acceptance plus successful, rejected and throwing attempts.
+All fixtures are synthetic; no live connection or broker mutation is used.
+
+### Atomic XML export and supported correlation values
+
+The existing XML rule format represents string correlation values only. Export rejects typed
+values, ambiguous property names and parameterized SQL rules instead of silently converting or
+omitting them. A serialization failure aborts the whole in-memory export before destination
+selection or writing. Completed exports replace files atomically. String correlation round-trip
+tests cover adjacent properties, Unicode, leading spaces, colons in values and CR/LF; rejection
+tests exercise the broker model through the real prepare/save boundary and preserve an existing
+backup. All management clients are test doubles; no broker writes occur.
+
+### Transactional receive and inspector clone follow-up
+
+ReceiveAndDelete with a requested or ambient transaction is rejected before reads. All three
+manual test controls validate the combination before startup; helpers enforce the same boundary.
+Tests cover the actual queue validation entry and single/batch helper calls with zero fake reads.
+Legacy single PeekLock statistics are published only after Complete/DeadLetter succeeds; the
+settlement boundary tests cover success and failure without a broker.
+Both receive and send inspector boundaries transfer retained AMQP body metadata to unchanged
+clones. Value/Sequence tests cover both directions and deliberate edits, which remain Data edits.
+Live legacy receiver settlement faults and interactive emulator/Azure workflows remain untested.
+
+Session follow-up regressions exercise the modern session browse helper with synthetic accept, receive, receiver-disposal and client-disposal failures, preserving earlier consumed rows and reporting the failure. Pumped WinForms tests exercise the shared Start preparation and permanent Close paths in all three manual controls, plus EndInvoke/start-failure accounting even when error logging throws. Stop remains reversible. Live session broker behavior and manual visual checks remain unverified.

@@ -550,15 +550,15 @@ namespace ServiceBusExplorer.Forms
         {
             if (testQueueControl != null)
             {
-                await testQueueControl.CancelActions();
+                await testQueueControl.ShutdownAsync();
             }
             if (testTopicControl != null)
             {
-                await testTopicControl.CancelActions();
+                await testTopicControl.ShutdownAsync();
             }
             if (testSubscriptionControl != null)
             {
-                await testSubscriptionControl.CancelActions();
+                await testSubscriptionControl.ShutdownAsync();
             }
             if (testEventHubControl != null)
             {
@@ -749,9 +749,9 @@ namespace ServiceBusExplorer.Forms
         private async void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             var shutdowns = panelMain.Controls.OfType<ListenerControl>().Select(control => new Func<Task>(control.ShutdownAsync))
-                .Concat(panelMain.Controls.OfType<TestQueueControl>().Select(control => new Func<Task>(control.CancelActions)))
-                .Concat(panelMain.Controls.OfType<TestTopicControl>().Select(control => new Func<Task>(control.CancelActions)))
-                .Concat(panelMain.Controls.OfType<TestSubscriptionControl>().Select(control => new Func<Task>(control.CancelActions))).ToArray();
+                .Concat(panelMain.Controls.OfType<TestQueueControl>().Select(control => new Func<Task>(control.ShutdownAsync)))
+                .Concat(panelMain.Controls.OfType<TestTopicControl>().Select(control => new Func<Task>(control.ShutdownAsync)))
+                .Concat(panelMain.Controls.OfType<TestSubscriptionControl>().Select(control => new Func<Task>(control.ShutdownAsync))).ToArray();
             if (!listenerCloseReady && shutdowns.Length > 0 &&
                 e.CloseReason != System.Windows.Forms.CloseReason.WindowsShutDown && e.CloseReason != System.Windows.Forms.CloseReason.TaskManagerClosing)
             {
