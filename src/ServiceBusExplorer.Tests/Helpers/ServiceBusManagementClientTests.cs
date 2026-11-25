@@ -162,14 +162,14 @@ namespace ServiceBusExplorer.Tests.Helpers
         [InlineData("bool")]
         [InlineData("double")]
         [InlineData("guid")]
-        [InlineData("bytes")]
+        [InlineData("dateTime")]
         [InlineData("name")]
         [InlineData("sql")]
         public async Task UnrepresentableBrokerRuleAbortsExportAndPreservesExistingDestination(string kind)
         {
             var filter = new CorrelationRuleFilter();
             object value = kind == "int" ? (object)42 : kind == "bool" ? true : kind == "double" ? 1.5 :
-                kind == "guid" ? (object)Guid.Empty : kind == "bytes" ? new byte[] { 1, 2 } : (object)"text";
+                kind == "guid" ? (object)Guid.Empty : kind == "dateTime" ? (object)new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc) : (object)"text";
             filter.ApplicationProperties[kind == "name" ? "key:part" : "key"] = value;
             RuleFilter exported = filter;
             if (kind == "sql")
