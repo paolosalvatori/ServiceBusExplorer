@@ -372,7 +372,8 @@ namespace ServiceBusExplorer.Helpers
                     if (!known.ContainsKey(property.Name.LocalName)) Reject();
                     if (property.Name.LocalName == CorrelationFilterProperties)
                     {
-                        if (type != typeof(CorrelationFilter)) Reject();
+                        if (type != typeof(CorrelationFilter) ||
+                            property.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) Reject();
                         foreach (var entry in property.Elements())
                         {
                             // Historical Property text is a string pair. Typed/nested extensions

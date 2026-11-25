@@ -879,7 +879,7 @@ namespace ServiceBusExplorer.Controls
                         ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
-                        messageInspector);
+                        messageInspector, failure => writeToLog(failure.Message));
                     writeToLog(string.Format(peek ? MessagesPeekedFromTheSubscription : MessagesReceivedFromTheSubscription,
                         brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }
@@ -1144,7 +1144,7 @@ namespace ServiceBusExplorer.Controls
                         ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
                         fromSequenceNumber,
                         TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
-                        messageInspector);
+                        messageInspector, failure => writeToLog(failure.Message));
                     writeToLog(string.Format(peek ? MessagesPeekedFromTheDeadletterQueue : MessagesReceivedFromTheDeadletterQueue,
                         brokeredMessages.Count, subscriptionWrapper.SubscriptionDescription.Name));
                 }

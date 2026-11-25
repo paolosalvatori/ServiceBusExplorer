@@ -148,7 +148,6 @@ namespace ServiceBusExplorer
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
         private string scheme = DefaultScheme;
-        private AzureNotificationHubs.TokenProvider notificationHubTokenProvider;
         private Uri namespaceUri;
         private ServiceBusNamespaceType connectionStringType;
         private string ns;
@@ -211,7 +210,6 @@ namespace ServiceBusExplorer
             EventDataInspectors = serviceBusHelper.EventDataInspectors;
             BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
             EventDataGenerators = serviceBusHelper.EventDataGenerators;
-            notificationHubTokenProvider = serviceBusHelper.notificationHubTokenProvider;
             TraceEnabled = serviceBusHelper.TraceEnabled;
             SharedAccessKey = serviceBusHelper.SharedAccessKey;
             SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
@@ -804,7 +802,6 @@ namespace ServiceBusExplorer
             IsEventHubNamespace = replacement.IsEventHubNamespace;
             namespaceManager = replacement.namespaceManager;
             notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
-            notificationHubTokenProvider = replacement.notificationHubTokenProvider;
             entraTokenProvider = replacement.entraTokenProvider;
             managementClient = replacement.managementClient;
             messagingFactory = replacement.messagingFactory;
@@ -827,7 +824,6 @@ namespace ServiceBusExplorer
             serviceBusNamespaceInstance = serviceBusNamespace;
             namespaceManager = null;
             notificationHubNamespaceManager = null;
-            notificationHubTokenProvider = null;
             entraTokenProvider = null;
             managementClient = null;
             messagingFactory = null;
@@ -4645,7 +4641,7 @@ namespace ServiceBusExplorer
             int count,
             long? fromSequenceNumber,
             TimeSpan receiveTimeout,
-            IBrokeredMessageInspector messageInspector)
+            IBrokeredMessageInspector messageInspector, Action<Exception> reportFailure = null)
         {
             if (string.IsNullOrWhiteSpace(entityPath))
             {
@@ -4653,7 +4649,17 @@ namespace ServiceBusExplorer
             }
 
             ValidateReceiveTransaction(!peek);
-            var client = CreateServiceBusClient();
+            return ReadMessagesFromModernClient(CreateServiceBusClient(), entityPath, subscriptionName,
+                subQueue, peek, count, fromSequenceNumber, receiveTimeout, messageInspector, reportFailure);
+        }
+
+        public static List<BrokeredMessage> ReadMessagesFromModernClient(ServiceBusClient client,
+            string entityPath, string subscriptionName, SubQueue subQueue, bool peek, int count,
+            long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector,
+            Action<Exception> reportFailure = null)
+        {
+            var rows = new List<BrokeredMessage>();
+            Exception failure = null;
             ServiceBusReceiver receiver = null;
             try
             {
@@ -4665,21 +4671,36 @@ namespace ServiceBusExplorer
                 receiver = string.IsNullOrWhiteSpace(subscriptionName)
                     ? client.CreateReceiver(entityPath, options)
                     : client.CreateReceiver(entityPath, subscriptionName, options);
-
-                return ReadMessagesFromModernReceiver(receiver, peek, count, fromSequenceNumber, receiveTimeout, messageInspector);
+                rows = ReadMessagesFromModernReceiver(receiver, peek, count, fromSequenceNumber, receiveTimeout,
+                    messageInspector, peek ? null : new Action<BrokeredMessage>(message => rows.Add(message)));
             }
+            catch (Exception ex) { failure = ex; }
             finally
             {
                 try { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
-                finally { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+                try { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
             }
+            if (failure != null)
+            {
+                if (peek)
+                {
+                    foreach (var row in rows) row.Dispose();
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
+                }
+                var partial = new PartialMessageReadException(rows, failure);
+                if (reportFailure == null) throw partial;
+                reportFailure(partial);
+            }
+            return rows;
         }
 
         public static int ResolveModernReadCount(bool peek, bool all, int count, int topCount) =>
             all && !peek ? int.MaxValue : all ? topCount : count;
 
         public static List<BrokeredMessage> ReadMessagesFromModernReceiver(ServiceBusReceiver receiver,
-            bool peek, int count, long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector)
+            bool peek, int count, long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector, Action<BrokeredMessage> received = null)
         {
             if (!peek && System.Transactions.Transaction.Current != null)
                 ValidateReceiveTransaction(receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete);
@@ -4708,14 +4729,49 @@ namespace ServiceBusExplorer
                         break;
                     }
 
+                    if (!peek && receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete)
+                    {
+                        // Every message in a returned destructive batch is already gone from
+                        // the broker. Keep independent originals until all inspection succeeds.
+                        var originals = messages.Select(ServiceBusReceivedMessageAdapter.ToBrokeredMessage).ToList();
+                        var inspectedBatch = new List<BrokeredMessage>();
+                        try
+                        {
+                            if (messageInspector != null)
+                                foreach (var message in messages)
+                                {
+                                    var candidate = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
+                                    try
+                                    {
+                                        var inspected = ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
+                                        if (!ReferenceEquals(candidate, inspected)) candidate.Dispose();
+                                        inspectedBatch.Add(inspected);
+                                    }
+                                    catch { candidate.Dispose(); throw; }
+                                }
+                        }
+                        catch
+                        {
+                            foreach (var inspected in inspectedBatch) inspected.Dispose();
+                            foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
+                            throw;
+                        }
+                        if (messageInspector != null)
+                            foreach (var original in originals) original.Dispose();
+                        foreach (var row in messageInspector == null ? originals : inspectedBatch)
+                        { brokeredMessages.Add(row); received?.Invoke(row); }
+                        continue;
+                    }
+
                     foreach (var message in messages)
                     {
                         var brokeredMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
                         try
                         {
-                            brokeredMessages.Add(messageInspector == null
-                                ? brokeredMessage
-                                : ServiceBusReceivedMessageAdapter.Inspect(brokeredMessage, messageInspector.AfterReceiveMessage));
+                            var inspected = messageInspector == null ? brokeredMessage :
+                                ServiceBusReceivedMessageAdapter.Inspect(brokeredMessage, messageInspector.AfterReceiveMessage);
+                            brokeredMessages.Add(inspected);
+                            received?.Invoke(inspected);
                         }
                         catch
                         {
@@ -4736,9 +4792,11 @@ namespace ServiceBusExplorer
                 }
                 return brokeredMessages;
             }
-            catch
+            catch (Exception ex)
             {
-                foreach (var message in brokeredMessages)
+                if (!peek && receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete && received == null)
+                    throw new PartialMessageReadException(brokeredMessages, ex);
+                foreach (var message in received == null ? brokeredMessages : Enumerable.Empty<BrokeredMessage>())
                 {
                     message?.Dispose();
                 }

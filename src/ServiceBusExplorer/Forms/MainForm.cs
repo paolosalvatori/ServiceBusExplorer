@@ -291,6 +291,8 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            queueContextMenuStrip.Opening += (_, __) => UpdateRenameAvailability();
+            topicContextMenuStrip.Opening += (_, __) => UpdateRenameAvailability();
             eventGridRootContextMenuStrip = new ContextMenuStrip(components);
             eventGridRootContextMenuStrip.Items.Add("Refresh Event Grid Topics", null, async (sender, args) => await ShowEventGridEntities());
             ThemeManager.SetHeaderBrandLogo(logoPictureBox);
@@ -1991,11 +1993,18 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        internal void UpdateRenameAvailability()
+        {
+            var supported = serviceBusHelper?.ManagementClient == null;
+            renameQueueMenuItem.Enabled = supported;
+            renameTopicMenuItem.Enabled = supported;
+        }
+
         private void renameEntity_Click(object sender, EventArgs e)
         {
             try
             {
-                if (serviceBusHelper == null)
+                if (serviceBusHelper == null || serviceBusHelper.ManagementClient != null)
                 {
                     return;
                 }
@@ -6191,6 +6200,7 @@ namespace ServiceBusExplorer.Forms
 
         private List<ToolStripItem> CloneItems(ToolStripItemCollection collection)
         {
+            UpdateRenameAvailability();
             var list = new List<ToolStripItem>();
             if (collection == null)
             {
@@ -6214,6 +6224,7 @@ namespace ServiceBusExplorer.Forms
                     var item = new ToolStripMenuItem
                     {
                         Name = toolStripMenuItem.Name,
+                        Enabled = toolStripMenuItem.Enabled,
                         Size = toolStripMenuItem.Size,
                         Text = toolStripMenuItem.Text,
                         ToolTipText = toolStripMenuItem.ToolTipText,
