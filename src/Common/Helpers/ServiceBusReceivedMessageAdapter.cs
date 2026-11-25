@@ -104,7 +104,10 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        public static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message)
+        public static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message) =>
+            ToBrokeredMessage(message, message?.SessionId, message?.PartitionKey);
+
+        private static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message, string sessionId, string partitionKey)
         {
             if (message == null)
             {
@@ -117,7 +120,7 @@ namespace ServiceBusExplorer.Helpers
             {
                 brokeredMessage.MessageId = message.MessageId;
             }
-            brokeredMessage.SessionId = message.SessionId;
+            brokeredMessage.SessionId = sessionId;
             brokeredMessage.CorrelationId = message.CorrelationId;
             brokeredMessage.ContentType = message.ContentType;
             brokeredMessage.Label = message.Subject;
@@ -126,10 +129,10 @@ namespace ServiceBusExplorer.Helpers
             brokeredMessage.ReplyToSessionId = message.ReplyToSessionId;
             brokeredMessage.TimeToLive = message.TimeToLive;
             brokeredMessage.ScheduledEnqueueTimeUtc = message.ScheduledEnqueueTime.UtcDateTime;
-            if (string.IsNullOrEmpty(message.SessionId) ||
-                string.Equals(message.SessionId, message.PartitionKey, StringComparison.Ordinal))
+            if ((string.IsNullOrEmpty(sessionId) || string.Equals(sessionId, partitionKey, StringComparison.Ordinal)) &&
+                !string.Equals(brokeredMessage.PartitionKey, partitionKey, StringComparison.Ordinal))
             {
-                brokeredMessage.PartitionKey = message.PartitionKey;
+                brokeredMessage.PartitionKey = partitionKey;
             }
 
             foreach (var property in message.ApplicationProperties)
@@ -156,7 +159,9 @@ namespace ServiceBusExplorer.Helpers
         // only editable content from the inspector. This is a receive row, not a send clone.
         public static BrokeredMessage ToReceivedRow(ServiceBusReceivedMessage original, BrokeredMessage inspected)
         {
-            var row = ToBrokeredMessage(original);
+            // Initialize the desired valid routing once. Clearing PartitionKey on an
+            // already session-bound legacy message is rejected by the pinned SDK.
+            var row = ToBrokeredMessage(original, inspected.SessionId, inspected.PartitionKey);
             try
             {
                 using (var copy = inspected.Clone())
@@ -167,9 +172,6 @@ namespace ServiceBusExplorer.Helpers
                     row.SetBodyStream(new MemoryStream(buffer.ToArray()));
                 }
                 row.MessageId = inspected.MessageId;
-                row.PartitionKey = null;
-                row.SessionId = inspected.SessionId;
-                row.PartitionKey = inspected.PartitionKey;
                 row.ViaPartitionKey = inspected.ViaPartitionKey;
                 row.CorrelationId = inspected.CorrelationId;
                 row.ContentType = inspected.ContentType;

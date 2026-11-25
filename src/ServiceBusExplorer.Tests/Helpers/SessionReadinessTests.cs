@@ -170,15 +170,23 @@ namespace ServiceBusExplorer.Tests.Helpers
                 Assert.IsType<PartialMessageReadException>(reported);
                 Assert.Equal(2, inspector.Calls);
                 Assert.Equal(new long[] { 1, 2, 3 }, messages.Select(message => message.SequenceNumber));
-                Assert.All(messages, message => Assert.Equal("body", ServiceBusMessageAdapter.ToServiceBusMessage(message).Body.ToString()));
+                Assert.All(messages, message =>
+                {
+                    AssertReceivedHeaders(message);
+                    Assert.Equal("session", message.SessionId);
+                    Assert.Equal("session", message.PartitionKey);
+                    Assert.Equal("body", ServiceBusMessageAdapter.ToServiceBusMessage(message).Body.ToString());
+                });
             }
             finally { messages.ForEach(message => message.Dispose()); }
         }
-        [Fact]
-        public void SessionInspectionAndSuccessfulCloneRowsKeepPublicReceiverHeaders()
+        [Theory]
+        [InlineData("session", null)]
+        [InlineData("session", "session")]
+        public void SessionInspectionAndSuccessfulCloneRowsKeepPublicReceiverHeaders(string sessionId, string partitionKey)
         {
-            var inspector = new HeaderCloneInspector();
-            var messages = new Helper(new BatchClient()).GetMessagesFromModernSessionDataPlane("queue", null, "selected",
+            var inspector = new HeaderCloneInspector(sessionId, partitionKey);
+            var messages = new Helper(new BatchClient(sessionId, partitionKey)).GetMessagesFromModernSessionDataPlane("queue", null, sessionId,
                 false, 3, null, TimeSpan.FromSeconds(1), inspector);
             try
             {
@@ -187,6 +195,8 @@ namespace ServiceBusExplorer.Tests.Helpers
                 Assert.All(messages, message =>
                 {
                     AssertReceivedHeaders(message);
+                    Assert.Equal(sessionId, message.SessionId);
+                    Assert.Equal(partitionKey ?? sessionId, message.PartitionKey);
                     Assert.Equal("edited", ServiceBusMessageAdapter.ToServiceBusMessage(message).Body.ToString());
                     Assert.Equal("inspected", message.Label);
                     Assert.Equal("value", message.Properties["inspector"]);
@@ -194,14 +204,34 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
             finally { messages.ForEach(message => message.Dispose()); }
         }
+        [Theory]
+        [InlineData(null)]
+        [InlineData("partition")]
+        public void ReceivedRowSupportsNonSessionRouting(string partitionKey)
+        {
+            var original = Message(1, null, partitionKey);
+            using var envelope = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(original);
+            using var inspected = new HeaderCloneInspector(null, partitionKey).AfterReceiveMessage(envelope);
+            using var row = ServiceBusReceivedMessageAdapter.ToReceivedRow(original, inspected);
+            AssertReceivedHeaders(row);
+            Assert.Null(row.SessionId);
+            Assert.Equal(partitionKey, row.PartitionKey);
+            Assert.Equal("edited", ServiceBusMessageAdapter.ToServiceBusMessage(row).Body.ToString());
+            Assert.Equal("inspected", row.Label);
+        }
+
         private class HeaderCloneInspector : IBrokeredMessageInspector
         {
             public List<long> Sequences = new List<long>();
+            private readonly string sessionId, partitionKey;
+            public HeaderCloneInspector(string sessionId, string partitionKey) { this.sessionId = sessionId; this.partitionKey = partitionKey; }
             public Microsoft.ServiceBus.Messaging.BrokeredMessage BeforeSendMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message) => message;
             public Microsoft.ServiceBus.Messaging.BrokeredMessage AfterReceiveMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message)
             {
                 Sequences.Add(message.SequenceNumber);
                 AssertReceivedHeaders(message);
+                Assert.Equal(sessionId, message.SessionId);
+                Assert.Equal(partitionKey ?? sessionId, message.PartitionKey);
                 var clone = message.Clone();
                 clone.SetBodyStream(new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes("edited")));
                 clone.Label = "inspected";
@@ -217,6 +247,8 @@ namespace ServiceBusExplorer.Tests.Helpers
             public Microsoft.ServiceBus.Messaging.BrokeredMessage AfterReceiveMessage(Microsoft.ServiceBus.Messaging.BrokeredMessage message)
             {
                 Assert.Equal(Calls + 1, message.SequenceNumber);
+                Assert.Equal("session", message.SessionId);
+                Assert.Equal("session", message.PartitionKey);
                 var stream = message.GetBody<System.IO.Stream>();
                 stream.Position = 0;
                 stream.WriteByte((byte)'!');
@@ -227,13 +259,17 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
         private class BatchClient : ServiceBusClient
         {
-            public override Task<ServiceBusSessionReceiver> AcceptNextSessionAsync(string queueName, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default) => Task.FromResult<ServiceBusSessionReceiver>(new BatchSession());
+            private readonly string sessionId, partitionKey;
+            public BatchClient(string sessionId = "session", string partitionKey = "session") { this.sessionId = sessionId; this.partitionKey = partitionKey; }
+            public override Task<ServiceBusSessionReceiver> AcceptNextSessionAsync(string queueName, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default) => Task.FromResult<ServiceBusSessionReceiver>(new BatchSession(sessionId, partitionKey));
             public override Task<ServiceBusSessionReceiver> AcceptSessionAsync(string queueName, string sessionId, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default) => AcceptNextSessionAsync(queueName, options, cancellationToken);
             public override ValueTask DisposeAsync() => default;
         }
         private class BatchSession : ServiceBusSessionReceiver
         {
-            public override Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] { Message(1), Message(2), Message(3) });
+            private readonly string sessionId, partitionKey;
+            public BatchSession(string sessionId, string partitionKey) { this.sessionId = sessionId; this.partitionKey = partitionKey; }
+            public override Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan? maxWaitTime = null, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<ServiceBusReceivedMessage>>(new[] { Message(1, sessionId, partitionKey), Message(2, sessionId, partitionKey), Message(3, sessionId, partitionKey) });
             public override ValueTask DisposeAsync() => default;
         }
 
@@ -324,8 +360,8 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Equal(new DateTime(2020, 1, 1, 0, 5, 0, DateTimeKind.Utc), message.LockedUntilUtc);
             Assert.Equal("original-source", message.DeadLetterSource);
         }
-        private static ServiceBusReceivedMessage Message(long sequence) => ServiceBusModelFactory.ServiceBusReceivedMessage(
-            body: new BinaryData("body"), messageId: "id-"+sequence, sequenceNumber: sequence,
+        private static ServiceBusReceivedMessage Message(long sequence, string sessionId = "session", string partitionKey = "session") => ServiceBusModelFactory.ServiceBusReceivedMessage(
+            body: new BinaryData("body"), messageId: "id-"+sequence, sequenceNumber: sequence, sessionId: sessionId, partitionKey: partitionKey,
             enqueuedSequenceNumber: sequence + 100, deliveryCount: 4,
             lockTokenGuid: new Guid("11111111-1111-1111-1111-111111111111"),
             enqueuedTime: new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero),
