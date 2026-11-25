@@ -2407,7 +2407,7 @@ namespace ServiceBusExplorer.Controls
                 }
             }
 
-            var sequenceNumbersToDelete = messages.Select(s => s?.SequenceNumber).ToList();
+            var sequenceNumbersToDelete = DataGridViewHelper.GetSourceSequenceNumbers(messages);
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, subscriptionWrapper);
 
@@ -3210,32 +3210,8 @@ namespace ServiceBusExplorer.Controls
             await PurgeDeadletterQueueMessagesAsync();
         }
 
-        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove)
-        {
-            var rowsToRemove = new List<DataGridViewRow>(sequenceNumbersToRemove.Count());
-
-            foreach (DataGridViewRow row in deadletterDataGridView.Rows)
-            {
-                var message = (BrokeredMessage)row.DataBoundItem;
-
-                if (sequenceNumbersToRemove.Contains(message.SequenceNumber))
-                {
-                    rowsToRemove.Add(row);
-                    if (rowsToRemove.Count >= sequenceNumbersToRemove.Count())
-                    {
-                        break;
-                    }
-                }
-            }
-
-            for (var rowIndex = rowsToRemove.Count - 1; rowIndex >= 0; --rowIndex)
-            {
-                var row = rowsToRemove[rowIndex];
-                deadletterDataGridView.Rows.Remove(row);
-            }
-
-            deadletterDataGridView.ClearSelection();
-        }
+        void RemoveDeadletterDataGridRows(IEnumerable<long> sequenceNumbersToRemove) =>
+            DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(deadletterDataGridView, sequenceNumbersToRemove);
         #endregion
     }
 }

@@ -3424,7 +3424,7 @@ namespace ServiceBusExplorer.Controls
             var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                 .Select(r => (BrokeredMessage)r.DataBoundItem).Where(m => m != null);
 
-            var sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
+            var sequenceNumbersToCancel = messages.Select(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber).ToList();
 
 
             using var waitCursorScope = new WaitCursorScope(thisForm);
@@ -3498,7 +3498,7 @@ namespace ServiceBusExplorer.Controls
                 }
             }
 
-            var sequenceNumbersToDelete = brokeredMessages.Select(s => s?.SequenceNumber).ToList();
+            var sequenceNumbersToDelete = DataGridViewHelper.GetSourceSequenceNumbers(brokeredMessages);
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
 

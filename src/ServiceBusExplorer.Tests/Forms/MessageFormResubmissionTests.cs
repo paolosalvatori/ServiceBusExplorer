@@ -149,6 +149,40 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void DlqSelectionAndConfirmedRowRemovalUseIdentityBeforeInspectorReplacement(bool edit)
+        {
+            RunSta(() =>
+            {
+                var rows = new System.ComponentModel.BindingList<BrokeredMessage>();
+                var token = Guid.NewGuid();
+                foreach (var sequence in new long[] { 11, 22, 33 })
+                {
+                    var received = Azure.Messaging.ServiceBus.ServiceBusModelFactory.ServiceBusReceivedMessage(
+                        body: new BinaryData("original"), sequenceNumber: sequence, lockTokenGuid: token);
+                    using var original = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(received);
+                    rows.Add(ServiceBusReceivedMessageAdapter.Inspect(original, message =>
+                    {
+                        var clone = message.Clone();
+                        if (edit) clone.SetBodyStream(new MemoryStream(new byte[] { 7 }));
+                        return clone;
+                    }));
+                }
+                using var grid = new DataGridView { AutoGenerateColumns = false, AllowUserToAddRows = false, BindingContext = new BindingContext() };
+                grid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "MessageId" });
+                grid.DataSource = rows;
+                grid.CreateControl();
+                var selected = ServiceBusExplorer.UIHelpers.DataGridViewHelper.GetSourceSequenceNumbers(new[] { rows[0], rows[2] });
+                Assert.Equal(new long?[] { 11, 33 }, selected);
+                Assert.All(rows, row => Assert.Equal(token, ServiceBusReceivedMessageAdapter.GetSourceLockToken(row)));
+                ServiceBusExplorer.UIHelpers.DataGridViewHelper.RemoveDataGridRowsUsingSequenceNumbers(grid, new long[] { 11 });
+                Assert.Equal(new long?[] { 22, 33 }, ServiceBusExplorer.UIHelpers.DataGridViewHelper.GetSourceSequenceNumbers(rows));
+                foreach (var row in rows) row.Dispose();
+            });
+        }
+
         [Fact]
         public void QueueTestEntryRejectsTransactionalReceiveAndDeleteBeforeStarting()
         {

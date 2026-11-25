@@ -393,7 +393,7 @@ namespace ServiceBusExplorer.Forms
 
         internal long? GetSourceSequenceForRemoval(BrokeredMessage source) =>
             chkRemove.Checked
-                ? ServiceBusReceivedMessageAdapter.GetReceivedMetadata(source)?.SequenceNumber ?? source.SequenceNumber
+                ? ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber(source)
                 : (long?)null;
 
         private async void btnSubmit_Click(object sender, EventArgs e)

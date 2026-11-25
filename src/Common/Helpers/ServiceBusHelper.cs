@@ -3616,7 +3616,7 @@ namespace ServiceBusExplorer
                                 if (completeReceive)
                                 {
                                     stopwatch = Stopwatch.StartNew();
-                                    messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
+                                    messageReceiver.CompleteBatch(messageList.Select(ServiceBusReceivedMessageAdapter.GetSourceLockToken));
                                     stopwatch.Stop();
 
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
@@ -3727,7 +3727,7 @@ namespace ServiceBusExplorer
                                 try
                                 {
                                     var stopwatch = Stopwatch.StartNew();
-                                    messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
+                                    messageReceiver.CompleteBatch(messageList.Select(ServiceBusReceivedMessageAdapter.GetSourceLockToken));
                                     stopwatch.Stop();
 
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
@@ -3842,7 +3842,7 @@ namespace ServiceBusExplorer
                                 filter.Match(inboundMessage))
                             {
                                 inboundMessage.Defer();
-                                messageDeferProvider.Enqueue(inboundMessage.SequenceNumber);
+                                messageDeferProvider.Enqueue(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber(inboundMessage));
                                 deferredMessage = true;
                             }
 

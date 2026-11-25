@@ -16,6 +16,32 @@ namespace ServiceBusExplorer.Helpers
     {
         private static readonly ConditionalWeakTable<BrokeredMessage, ReceivedBody> received = new ConditionalWeakTable<BrokeredMessage, ReceivedBody>();
 
+        private sealed class BrokerIdentity
+        {
+            public long? SequenceNumber;
+            public Guid? LockToken;
+        }
+        private static readonly ConditionalWeakTable<BrokeredMessage, BrokerIdentity> identities = new ConditionalWeakTable<BrokeredMessage, BrokerIdentity>();
+
+        public static long GetSourceSequenceNumber(BrokeredMessage message) =>
+            identities.TryGetValue(message, out var identity) && identity.SequenceNumber.HasValue
+                ? identity.SequenceNumber.Value : GetReceivedMetadata(message)?.SequenceNumber ?? message.SequenceNumber;
+
+        public static Guid GetSourceLockToken(BrokeredMessage message) =>
+            identities.TryGetValue(message, out var identity) && identity.LockToken.HasValue
+                ? identity.LockToken.Value : GetReceivedMetadata(message) is ServiceBusReceivedMessage original
+                    ? Guid.Parse(original.LockToken) : message.LockToken;
+
+        private static BrokerIdentity CaptureIdentity(BrokeredMessage message)
+        {
+            if (identities.TryGetValue(message, out var existing)) return existing;
+            var identity = new BrokerIdentity();
+            // Outbound-only messages have no received headers. Inspectors also run on sends.
+            try { identity.SequenceNumber = GetSourceSequenceNumber(message); } catch (InvalidOperationException) { }
+            try { identity.LockToken = GetSourceLockToken(message); } catch (InvalidOperationException) { }
+            return identity;
+        }
+
         public static ServiceBusReceivedMessage GetReceivedMetadata(BrokeredMessage message) =>
             received.TryGetValue(message, out var original) ? original.Message : null;
 
@@ -31,14 +57,18 @@ namespace ServiceBusExplorer.Helpers
 
         public static BrokeredMessage CloneForResubmission(BrokeredMessage message)
         {
+            var identity = CaptureIdentity(message);
             var clone = message.Clone();
+            identities.Add(clone, identity);
             if (received.TryGetValue(message, out var original)) received.Add(clone, original);
             return clone;
         }
 
         public static BrokeredMessage Inspect(BrokeredMessage source, Func<BrokeredMessage, BrokeredMessage> inspect)
         {
+            var identity = CaptureIdentity(source);
             var result = inspect(source) ?? throw new InvalidOperationException("The message inspector returned no message.");
+            if (!ReferenceEquals(source, result)) identities.GetValue(result, _ => identity);
             // Source identity survives an inspector replacement independently of payload edits.
             // CreatePreservedMessage separately checks bytes against the immutable baseline.
             if (!ReferenceEquals(source, result) && received.TryGetValue(source, out var original))
