@@ -144,6 +144,8 @@ namespace ServiceBusExplorer
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
         private ServiceBusManagementClient managementClient;
+        private Func<ServiceBusAdministrationClient, Task> serviceBusAudienceProbe = static client =>
+            client.QueueExistsAsync("$__scope_probe__$");
         private AzureNotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
@@ -771,7 +773,8 @@ namespace ServiceBusExplorer
         {
             var replacement = new ServiceBusHelper((message, async) => WriteToLogIf(traceEnabled, message, async))
             {
-                scheme = scheme
+                scheme = scheme,
+                serviceBusAudienceProbe = serviceBusAudienceProbe
             };
             replacement.OnCreate += args => OnCreate?.Invoke(args);
             replacement.OnDelete += args => OnDelete?.Invoke(args);
@@ -874,7 +877,7 @@ namespace ServiceBusExplorer
                         // Lightweight scope probe — check for a non-existent queue.
                         // This issues a single REST call (no entity enumeration) and
                         // will throw UnauthorizedAccessException if the token audience is wrong.
-                        administrationClient.QueueExistsAsync("$__scope_probe__$").ConfigureAwait(false).GetAwaiter().GetResult();
+                        serviceBusAudienceProbe(administrationClient).ConfigureAwait(false).GetAwaiter().GetResult();
                     }
                     catch (Exception ex) when (IsAudienceMismatchException(ex))
                     {
@@ -883,12 +886,16 @@ namespace ServiceBusExplorer
                         WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
                         entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
                             tenantId, EntraCredentialFactory.EventHubsAudience);
+                        // Complete interactive Event Hubs sign-in before publishing the replacement.
+                        entraTokenProvider.GetWebTokenAsync(endpointUri.AbsoluteUri, "Manage", false, namespaceManager.Settings.OperationTimeout)
+                            .GetAwaiter().GetResult();
                         namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
                         IsEventHubNamespace = true;
                     }
                 }
                 else
                 {
+                    IsEventHubNamespace = false;
                     entraTokenProvider = null;
                     namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
                 }
@@ -906,17 +913,16 @@ namespace ServiceBusExplorer
                 {
                     try
                     {
-                        notificationHubNamespaceManager = AzureNotificationHubs.NamespaceManager.CreateFromConnectionString(serviceBusNamespace.ConnectionStringWithoutTransportType);
-
-                        // Set retry count
-                        if (notificationHubNamespaceManager.Settings.RetryPolicy is AzureNotificationHubs.RetryExponential defaultNotificationHubsRetryExponential)
+                        var notificationHubSettings = new AzureNotificationHubs.NotificationHubSettings
                         {
-                            notificationHubNamespaceManager.Settings.RetryPolicy = new AzureNotificationHubs.RetryExponential(defaultNotificationHubsRetryExponential.MinimalBackoff,
-                                                                                                                            defaultNotificationHubsRetryExponential.MaximumBackoff,
-                                                                                                                            defaultNotificationHubsRetryExponential.DeltaBackoff,
-                                                                                                                            defaultNotificationHubsRetryExponential.TerminationTimeBuffer,
-                                                                                                                            RetryHelper.RetryCount);
-                        }
+                            RetryOptions = new AzureNotificationHubs.NotificationHubRetryOptions
+                            {
+                                // SDK 4.2 uses exponential backoff (1s base, 60s cap).
+                                // Intentionally use its defaults: the old min/max/delta algorithm has no exact mapping.
+                                MaxRetries = Math.Max(0, Math.Min(MaxNotificationHubRetries, RetryHelper.RetryCount))
+                            }
+                        };
+                        notificationHubNamespaceManager = new AzureNotificationHubs.NamespaceManager(NormalizeNotificationHubConnectionString(serviceBusNamespace.ConnectionString), notificationHubSettings);
                     }
                     catch (Exception)
                     {
@@ -5277,6 +5283,10 @@ namespace ServiceBusExplorer
         /// </summary>
         private static bool IsAudienceMismatchException(Exception ex)
         {
+            // The legacy SDK also wraps local credential failures in UnauthorizedAccessException.
+            // Only a response from the namespace can justify switching the audience.
+            if (EntraCredentialFactory.IsTokenAcquisitionFailure(ex)) return false;
+
             var message = ex.Message ?? string.Empty;
             var innerMessage = ex.InnerException?.Message ?? string.Empty;
             var fullMessage = message + " " + innerMessage;
@@ -5335,6 +5345,43 @@ namespace ServiceBusExplorer
             }
 
             return true;
+        }
+
+        private static readonly string[] NotificationHubConnectionStringKeys =
+        {
+            "Endpoint", "SharedAccessKeyName", "SharedAccessKey", "SharedAccessSignature"
+        };
+
+        private const int MaxNotificationHubRetries = 100; // SDK-supported inclusive upper bound.
+
+        /// <summary>
+        /// Keeps only the connection string fields supported by the Notification Hubs SDK, dropping
+        /// Service Bus specific settings such as TransportType that the SDK would fold into the key.
+        /// </summary>
+        public static string NormalizeNotificationHubConnectionString(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return connectionString;
+            }
+
+            var parts = new List<string>();
+            foreach (var segment in connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var separator = segment.IndexOf('=');
+                if (separator <= 0)
+                {
+                    continue;
+                }
+
+                var key = segment.Substring(0, separator).Trim();
+                if (NotificationHubConnectionStringKeys.Any(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase)))
+                {
+                    parts.Add(key + "=" + segment.Substring(separator + 1).Trim());
+                }
+            }
+
+            return string.Join(";", parts);
         }
 
         /// <summary>

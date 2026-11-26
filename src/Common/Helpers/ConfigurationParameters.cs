@@ -69,6 +69,7 @@ namespace ServiceBusExplorer.Helpers
         public const string ProxyUseDefaultCredentials = "Proxy.UseDefaultCredentials";
         public const string ProxyUserName = "Proxy.UserName";
         public const string ProxyPassword = "Proxy.Password";
+        public const string EntraSystemBrowserOnly = "Entra.SystemBrowserOnly";
         public const string EntraTenantIds = "Entra.TenantIds";
         // TwoFilesConfiguration.GetStringValue treats an empty string as "no override" and falls
         // back to the other config file. This sentinel lets an explicitly emptied tenant list be
