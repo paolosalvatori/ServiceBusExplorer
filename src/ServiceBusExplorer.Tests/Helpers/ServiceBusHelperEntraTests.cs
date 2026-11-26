@@ -701,17 +701,16 @@ namespace ServiceBusExplorer.Tests.Helpers
                 var expectedHandle = IntPtr.Zero;
                 var requestedHandle = IntPtr.Zero;
                 var canceled = new StubInteractiveCredential((context, token) =>
-                    throw new AuthenticationFailedException("Synthetic dismissal", new OperationCanceledException()));
-                var callback = EntraCredentialFactory.CreateOldSdkAuthenticationCallback(tenant);
-                var provider = TokenProvider.CreateAzureActiveDirectoryTokenProvider((authority, resource, state) =>
+                    throw new OperationCanceledException("Synthetic dismissal"));
+                var modernCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(tenant);
+                var credential = new ObservingTokenCredential(modernCredential, () =>
                 {
                     requestedHandle = GetStaticOwner();
                     if (requestedHandle != expectedHandle || requestedHandle == IntPtr.Zero)
                         throw new AuthenticationFailedException("Listener requested a token before it owned a window.");
                     CacheCredential("interactiveBrowserCredentials", tenant, canceled);
-                    return callback(authority, resource, state);
-                }, new Uri(EntraCredentialFactory.GetAuthority(tenant)), EntraCredentialFactory.ServiceBusAudience, null);
-                var factory = MessagingFactory.Create(endpoint, provider);
+                });
+                var administration = new ServiceBusAdministrationClient(endpoint.Host, credential);
                 try
                 {
                     EntraCredentialFactory.UseSystemBrowserOnly = false;
@@ -721,8 +720,8 @@ namespace ServiceBusExplorer.Tests.Helpers
                         EntraWindowOwners.Register(main, mainWindow: true);
                         main.Show();
                         var mainCredential = EntraCredentialFactory.CreateInteractiveBrowserCredential(tenant);
-                        var helper = new ServiceBusHelper((message, asynchronous) => { }) { NamespaceUri = endpoint, MessagingFactory = factory };
-                        var manager = new NamespaceManager(endpoint, provider);
+                        var helper = new ServiceBusHelper((message, asynchronous) => { }) { NamespaceUri = endpoint };
+                        var manager = new ServiceBusManagementClient(administration, endpoint);
                         var queueType = typeof(ServiceBusHelper).Assembly.GetType("ServiceBusExplorer.WindowsAzure.ServiceBusQueue", true);
                         var ns = new ServiceBusNamespace(endpoint.AbsoluteUri, "local", tenant, TransportType.Amqp);
                         SetPrivateField(helper, "serviceBusQueue", Activator.CreateInstance(queueType, ns, manager));
@@ -733,7 +732,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                             try
                             {
                                 // Create Queue Listener calls Show(). Its initial GetQueue goes through
-                                // the real legacy SDK and fails at our credential before any network I/O.
+                                // the real modern SDK and fails at our credential before any network I/O.
                                 listener.Show();
                                 System.Windows.Forms.Application.DoEvents();
                                 expectedHandle.Should().NotBe(IntPtr.Zero);
@@ -754,7 +753,6 @@ namespace ServiceBusExplorer.Tests.Helpers
                 catch (Exception ex) { failure = ex; }
                 finally
                 {
-                    factory.Abort();
                     System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = previousCrossThreadCheck;
                     EntraCredentialFactory.UseSystemBrowserOnly = previousMode;
                     EntraCredentialFactory.ClearCache();
@@ -942,6 +940,30 @@ namespace ServiceBusExplorer.Tests.Helpers
             var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             field.Should().NotBeNull();
             field.SetValue(instance, value);
+        }
+
+        sealed class ObservingTokenCredential : TokenCredential
+        {
+            readonly TokenCredential inner;
+            readonly Action beforeToken;
+
+            public ObservingTokenCredential(TokenCredential inner, Action beforeToken)
+            {
+                this.inner = inner;
+                this.beforeToken = beforeToken;
+            }
+
+            public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                beforeToken();
+                return inner.GetToken(requestContext, cancellationToken);
+            }
+
+            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            {
+                beforeToken();
+                return inner.GetTokenAsync(requestContext, cancellationToken);
+            }
         }
 
         sealed class FakeTokenCredential : TokenCredential
