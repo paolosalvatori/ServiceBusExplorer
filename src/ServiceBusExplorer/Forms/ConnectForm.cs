@@ -287,6 +287,15 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        internal bool TryConnectToNamespace(out ServiceBusNamespace candidate)
+        {
+            candidate = ServiceBusNamespaceInstance ?? ServiceBusNamespace.GetServiceBusNamespace(
+                Key ?? "Manual", ConnectionString, MainForm.StaticWriteToLog);
+            var namespaceToConnect = candidate;
+            return MainForm.ConnectAndPublishSettings(() => serviceBusHelper.Connect(namespaceToConnect),
+                ConnectivityMode, UseAmqpWebSockets, QueueFilterExpression, TopicFilterExpression, SubscriptionFilterExpression);
+        }
+
         private ServiceBusAuthMode SelectedAuthMode =>
             cboAuthMode.SelectedIndex == 1
                 ? ServiceBusAuthMode.Entra
