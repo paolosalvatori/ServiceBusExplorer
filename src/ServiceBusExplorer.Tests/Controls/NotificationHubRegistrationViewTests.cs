@@ -20,8 +20,8 @@ namespace ServiceBusExplorer.Tests.Controls
         [Fact]
         public void RefreshedPagesFollowServerOrderAndClearingFilterShowsCurrentPage()
         {
-            var existing = new GcmRegistrationDescription("existing");
-            var created = new GcmRegistrationDescription("created");
+            var existing = new FcmRegistrationDescription("existing");
+            var created = new FcmRegistrationDescription("created");
             var pages = new IEnumerable<RegistrationDescription>[]
             {
                 new[] { existing },
@@ -35,8 +35,8 @@ namespace ServiceBusExplorer.Tests.Controls
         [Fact]
         public void FilterUsesAllLoadedServerPagesWithoutShowingNonmatchingRows()
         {
-            var nonmatching = new GcmRegistrationDescription("nonmatching");
-            var matching = new GcmRegistrationDescription("matching", new[] { "selected-tag" });
+            var nonmatching = new FcmRegistrationDescription("nonmatching");
+            var matching = new FcmRegistrationDescription("matching", new[] { "selected-tag" });
             var pages = new IEnumerable<RegistrationDescription>[]
             {
                 new[] { nonmatching },
