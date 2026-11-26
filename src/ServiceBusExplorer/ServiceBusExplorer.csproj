@@ -6,6 +6,8 @@
 		<ProjectGuid>{32754F39-E353-4607-94FE-B9B9ACFD58EF}</ProjectGuid>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net472</TargetFramework>
+		<!-- Broker native assets must not implicitly change the application to x86 on Windows. -->
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
 		<Version>1.4.2</Version>
 		<AssemblyVersion>1.0.0.1</AssemblyVersion>

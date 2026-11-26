@@ -268,6 +268,7 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = MainSettings.ProxyUserName;
             txtProxyPassword.Text = MainSettings.ProxyPassword;
 
+            systemBrowserOnlyCheckBox.Checked = MainSettings.EntraSystemBrowserOnly;
             SetEntraTenantIdsIntoBindingList(MainSettings.EntraTenantIds);
 
             SetNodesColorsIntoBindingList(MainSettings.NodesColors);
@@ -558,6 +559,11 @@ namespace ServiceBusExplorer.Forms
             MainSettings.NodesColors = NodesColorInfoBindingList.ToList();
         }
 
+        private void systemBrowserOnlyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            MainSettings.EntraSystemBrowserOnly = systemBrowserOnlyCheckBox.Checked;
+        }
+
         private void EntraTenantIdsListChanged(object sender, ListChangedEventArgs e)
         {
             MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
@@ -706,6 +712,9 @@ namespace ServiceBusExplorer.Forms
                 MainSettings.ProxyPassword);
 
 
+            SaveSetting(configuration, readSettings, ConfigurationParameters.EntraSystemBrowserOnly,
+                MainSettings.EntraSystemBrowserOnly);
+
             // Save the list of Entra Tenant IDs as a comma-separated string in the configuration file
             MainSettings.EntraTenantIds = EntraTenantIdBindingList.ToList();
 
@@ -811,6 +820,7 @@ namespace ServiceBusExplorer.Forms
             txtProxyUserName.Text = mainSettings.ProxyUserName;
             txtProxyPassword.Text = mainSettings.ProxyPassword;
 
+            systemBrowserOnlyCheckBox.Checked = mainSettings.EntraSystemBrowserOnly;
             SetEntraTenantIdsIntoBindingList(mainSettings.EntraTenantIds);
 
             SetNodesColorsIntoBindingList(mainSettings.NodesColors);

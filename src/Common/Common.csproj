@@ -23,6 +23,8 @@
 
     <PackageReference Include="Azure.Identity" />
 
+    <PackageReference Include="Azure.Identity.Broker" />
+
     <PackageReference Include="WindowsAzure.ServiceBus" />
   </ItemGroup>
   <ItemGroup>

@@ -52,11 +52,11 @@ their dependencies. Do not place credentials in repository files; use the approv
 credential provider. A machine/user feed alone does not override the repository's
 `clear` and wildcard source mapping.
 
-## Integrating #908 and #929 in either order
+## Integrating package changes from #908 and #929
 
 Git's textual merge is insufficient: a versioned PackageReference fails CPM with
 NU1008, while retaining an old central version may break the incoming source.
-When the second PR lands, perform this reconciliation in that merge candidate:
+The following reconciliation is included now that both PRs are in the base branch:
 
 | Incoming work | Central package version | Project reconciliation |
 |---|---|---|
@@ -65,7 +65,6 @@ When the second PR lands, perform this reconciliation in that merge candidate:
 
 Keep all incoming application changes; do not resolve a project conflict by
 restoring the old SDK. Build the combined solution, inspect `project.assets.json`
-for the versions above and the JWT family, and run exact-head Windows CI. These
-incoming features/versions are intentionally **not** added to #903 itself. Repeat
-this check against the actual heads if either PR changes. Local combination
-builds cannot certify a later merge or replace its Windows/live validation.
+for the versions above and the JWT family, and run exact-head Windows CI. Repeat
+this check when merging additional package changes. Local builds do not replace
+exact-head Windows or live validation.
