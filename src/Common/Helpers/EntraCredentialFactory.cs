@@ -453,12 +453,22 @@ namespace ServiceBusExplorer.Helpers
 
             public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
             {
-                return GetAccessTokenAsync(tenantId, requestContext, cancellationToken).GetAwaiter().GetResult();
+                return GetTokenAsync(requestContext, cancellationToken).GetAwaiter().GetResult();
             }
 
-            public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
+            public override async ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
             {
-                return new ValueTask<AccessToken>(GetAccessTokenAsync(tenantId, requestContext, cancellationToken));
+                try
+                {
+                    return await GetAccessTokenAsync(tenantId, requestContext, cancellationToken).ConfigureAwait(false);
+                }
+                catch (SignInCanceledException ex)
+                {
+                    // Azure.Core treats a cancellation without a canceled request token as
+                    // a transport timeout and retries. A dismissed prompt must not reopen.
+                    cancellationToken.ThrowIfCancellationRequested();
+                    throw new AuthenticationFailedException("Entra sign-in was canceled.", ex);
+                }
             }
         }
     }
