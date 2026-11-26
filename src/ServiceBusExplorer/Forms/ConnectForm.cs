@@ -274,14 +274,34 @@ namespace ServiceBusExplorer.Forms
             DialogResult = DialogResult.OK;
             ConnectivityMode = (ConnectivityMode)cboConnectivityMode.SelectedItem;
             UseAmqpWebSockets = useAmqpWebSocketsCheckBox.Checked;
-            FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
-            FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
-            FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
             connectionStringIndex = cboServiceBusNamespace.SelectedIndex;
             if (cboServiceBusNamespace.Text == EnterConnectionString)
             {
                 connectionString = ConnectionString;
             }
+        }
+
+        internal ServiceBusNamespace ConnectToNamespace()
+        {
+            var candidate = ServiceBusNamespaceInstance ?? ServiceBusNamespace.GetServiceBusNamespace(
+                Key ?? "Manual", ConnectionString, MainForm.StaticWriteToLog);
+            var previousMode = ServiceBusHelper.ConnectivityMode;
+            ServiceBusHelper.ConnectivityMode = ConnectivityMode;
+            try
+            {
+                serviceBusHelper.Connect(candidate);
+            }
+            catch
+            {
+                ServiceBusHelper.ConnectivityMode = previousMode;
+                throw;
+            }
+
+            ServiceBusHelper.UseAmqpWebSockets = UseAmqpWebSockets;
+            FilterExpressionHelper.QueueFilterExpression = txtQueueFilterExpression.Text;
+            FilterExpressionHelper.TopicFilterExpression = txtTopicFilterExpression.Text;
+            FilterExpressionHelper.SubscriptionFilterExpression = txtSubscriptionFilterExpression.Text;
+            return candidate;
         }
 
         private ServiceBusAuthMode SelectedAuthMode =>

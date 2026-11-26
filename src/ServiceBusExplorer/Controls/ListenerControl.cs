@@ -317,9 +317,6 @@ namespace ServiceBusExplorer.Controls
             // Set Grouper width
             grouperMessageCustomPropertiesWidth = grouperMessageCustomProperties.Size.Width;
 
-            // Refresh data
-            timer_Elapsed(null, null);
-
             // Set Tooltips
             toolTip.SetToolTip(txtMaxConcurrentCalls, MaxConcurrentCallsTooltip);
             toolTip.SetToolTip(txtRefreshInformation, RefreshTimeoutTooltip);
@@ -1274,7 +1271,9 @@ namespace ServiceBusExplorer.Controls
         }
         // ReSharper restore FunctionNeverReturns
 
-        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e) => RefreshEntityInformation();
+
+        internal void RefreshEntityInformation()
         {
             // Initialize property grid
             var propertyList = new List<string[]>();

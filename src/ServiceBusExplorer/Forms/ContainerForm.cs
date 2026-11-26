@@ -111,8 +111,13 @@ namespace ServiceBusExplorer.Forms
         private Task logTask;
         #endregion
 
+        private ContainerForm()
+        {
+            EntraWindowOwners.Register(this);
+        }
+
         #region Public Constructors
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, QueueDescription queueDescription)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, QueueDescription queueDescription) : this()
         {
             try
             {
@@ -142,6 +147,7 @@ namespace ServiceBusExplorer.Forms
                                 Size = new Size(panelMain.Size.Width - 3, queueDescription.RequiresSession ? 544 : 520),
                                 Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
                             };
+                            InitializeListenerWhenShown(listenerControl.RefreshEntityInformation);
                             listenerControl.Focus();
 
                             Text = string.Format(QueueListenerFormat, queueDescription.Path);
@@ -200,7 +206,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, TopicDescription topicDescription, List<SubscriptionDescription> subscriptionList)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, TopicDescription topicDescription, List<SubscriptionDescription> subscriptionList) : this()
         {
             try
             {
@@ -264,7 +270,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, SubscriptionWrapper subscriptionWrapper)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, FormTypeEnum formType, SubscriptionWrapper subscriptionWrapper) : this()
         {
             try
             {
@@ -294,6 +300,7 @@ namespace ServiceBusExplorer.Forms
                                 Size = new Size(panelMain.Size.Width - 3, subscriptionWrapper.SubscriptionDescription.RequiresSession ? 544 : 520),
                                 Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
                             };
+                            InitializeListenerWhenShown(listenerControl.RefreshEntityInformation);
                             listenerControl.Focus();
 
                             Text = string.Format(SubscriptionListenerFormat, subscriptionWrapper.SubscriptionDescription.Name);
@@ -331,7 +338,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription, PartitionDescription partitionDescription = null)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, EventHubDescription eventHubDescription, PartitionDescription partitionDescription = null) : this()
         {
             try
             {
@@ -384,7 +391,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, ConsumerGroupDescription consumerGroupDescription, IEnumerable<PartitionDescription> partitionDescriptions)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, ConsumerGroupDescription consumerGroupDescription, IEnumerable<PartitionDescription> partitionDescriptions) : this()
         {
             try
             {
@@ -407,15 +414,20 @@ namespace ServiceBusExplorer.Forms
                 mainSplitterDistance = mainSplitContainer.SplitterDistance;
                 SuspendLayout();
 
-                var partitionListenerControl = ThemeManager.ReplaceHostedContent(
-                    panelMain,
-                    () => new PartitionListenerControl(WriteToLog, StopLog, StartLog, new ServiceBusHelper(WriteToLog, serviceBusHelper), consumerGroupDescription, descriptions),
-                    control =>
-                    {
-                        control.Location = new Point(1, panelMain.HeaderHeight + 1);
-                        control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
-                        control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-                    });
+                var listenerHelper = new ServiceBusHelper(WriteToLog, serviceBusHelper);
+                InitializeListenerWhenShown(() =>
+                {
+                    var partitionListenerControl = ThemeManager.ReplaceHostedContent(
+                        panelMain,
+                        () => new PartitionListenerControl(WriteToLog, StopLog, StartLog, listenerHelper, consumerGroupDescription, descriptions),
+                        control =>
+                        {
+                            control.Location = new Point(1, panelMain.HeaderHeight + 1);
+                            control.Size = new Size(panelMain.Size.Width - 3, panelMain.Size.Height - 26);
+                            control.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                        });
+                    partitionListenerControl.Focus();
+                });
 
                 if (descriptions.Count == 1)
                 {
@@ -427,7 +439,6 @@ namespace ServiceBusExplorer.Forms
                     Text = string.Format(ConsumerGroupListenerFormat, consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
                     panelMain.HeaderText = string.Format(HeaderTextConsumerGroupListenerFormat, consumerGroupDescription.EventHubPath, consumerGroupDescription.Name);
                 }                
-                partitionListenerControl.Focus();
                 SetStyle(ControlStyles.ResizeRedraw, true);
             }
             finally
@@ -436,7 +447,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(MainForm mainForm, string connectionString, string hubName, string consumerGroup, bool iotHub)
+        public ContainerForm(MainForm mainForm, string connectionString, string hubName, string consumerGroup, bool iotHub) : this()
         {
             try
             {
@@ -489,7 +500,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, RelayDescription relayDescription)
+        public ContainerForm(ServiceBusHelper serviceBusHelper, MainForm mainForm, RelayDescription relayDescription) : this()
         {
             try
             {
@@ -543,6 +554,25 @@ namespace ServiceBusExplorer.Forms
         #endregion
 
         #region Private Methods
+        // Listener startup can request an Entra token. Wait until the tool has a visible HWND.
+        private void InitializeListenerWhenShown(Action initialize)
+        {
+            Shown += (sender, args) =>
+            {
+                if (IsDisposed || Disposing) return;
+                try
+                {
+                    initialize();
+                }
+                catch (Exception ex)
+                {
+                    if (mainForm != null) mainForm.HandleException(ex);
+                    else HandleException(ex);
+                    Close();
+                }
+            };
+        }
+
         private async void BtnCancelOnClick(object sender, EventArgs eventArgs)
         {
             if (testQueueControl != null)

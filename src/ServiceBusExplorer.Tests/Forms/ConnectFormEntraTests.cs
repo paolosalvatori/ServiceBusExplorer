@@ -1,8 +1,14 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Windows.Forms;
+using Azure.Identity;
+using Microsoft.Identity.Client;
+using ServiceBusExplorer.Tests.Helpers;
 using FluentAssertions;
+using ServiceBusExplorer.Common.Helpers;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Forms;
@@ -11,6 +17,7 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Forms
 {
+    [Collection("Entra credential cache")]
     public class ConnectFormEntraTests
     {
         private const string ControlNameServiceBusNamespace = "cboServiceBusNamespace";
@@ -29,6 +36,54 @@ namespace ServiceBusExplorer.Tests.Forms
         private const string ConnectionStringPartAuthModeEntra = "AuthMode=AAD";
         private const string ConnectionStringPartTenantId = "TenantId=";
         private const string ConnectionStringPartEntityPath = "EntityPath=";
+
+        [Fact]
+        public void AuthenticationOptions_SaveAndReloadBrowserChoice()
+        {
+            // The real OK button saves application settings. Give this dialog its own config file.
+            var setup = AppDomain.CurrentDomain.SetupInformation;
+            var config = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".config");
+            AppDomain domain = null;
+            try
+            {
+                if (File.Exists(setup.ConfigurationFile)) File.Copy(setup.ConfigurationFile, config);
+                setup.ApplicationBase = Path.GetDirectoryName(new Uri(typeof(ConnectFormEntraTests).Assembly.CodeBase).LocalPath);
+                setup.ConfigurationFile = config;
+                domain = AppDomain.CreateDomain("Entra settings", null, setup);
+                domain.DoCallBack(CheckBrowserChoiceInDialog);
+            }
+            finally
+            {
+                if (domain != null) AppDomain.Unload(domain);
+                File.Delete(config);
+            }
+        }
+
+        static void CheckBrowserChoiceInDialog()
+        {
+            RunOnStaThread(() =>
+            {
+                var defaults = new MainSettings().GetDefault();
+                foreach (var browserOnly in new[] { true, false })
+                {
+                    var settings = ConfigurationHelper.GetMainProperties(ConfigFileUse.ApplicationConfig, defaults, null);
+                    using (var form = new OptionForm(settings, ConfigFileUse.ApplicationConfig))
+                    {
+                        form.Show();
+                        FindControl<TabControl>(form, "tabOptionsControl").SelectedTab =
+                            FindControl<TabPage>(form, "tabPageAuthentication");
+                        var choice = FindControl<CheckBox>(form, "systemBrowserOnlyCheckBox");
+                        choice.Visible.Should().BeTrue();
+                        choice.Checked.Should().Be(!browserOnly);
+                        choice.Checked = browserOnly;
+                        FindControl<Button>(form, "btnOk").PerformClick();
+                        form.DialogResult.Should().Be(DialogResult.OK);
+                    }
+                    ConfigurationHelper.GetMainProperties(ConfigFileUse.ApplicationConfig, defaults, null)
+                        .EntraSystemBrowserOnly.Should().Be(browserOnly);
+                }
+            });
+        }
 
         [Theory]
         [InlineData(false)]
@@ -67,8 +122,71 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ConnectButton_DismissedSignInPreservesActiveSettings(bool browserOnly)
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string tenant = "connect-dialog-test";
+                var previousChoice = EntraCredentialFactory.UseSystemBrowserOnly;
+                var previousMode = ServiceBusHelper.ConnectivityMode;
+                var previousWebSockets = ServiceBusHelper.UseAmqpWebSockets;
+                var previousFilter = FilterExpressionHelper.QueueFilterExpression;
+                var cause = new MsalClientException(MsalError.AuthenticationCanceledError, "Sign-in closed");
+                var credential = new ServiceBusHelperEntraTests.StubInteractiveCredential((context, token) =>
+                    throw new AuthenticationFailedException("Synthetic cancellation", cause));
+                var unexpected = new ServiceBusHelperEntraTests.StubInteractiveCredential((context, token) =>
+                    throw new InvalidOperationException("Unexpected sign-in"));
+                var helper = new ServiceBusHelper((message, asynchronous) => { });
+                try
+                {
+                    EntraCredentialFactory.UseSystemBrowserOnly = browserOnly;
+                    ServiceBusHelperEntraTests.CacheCredential("interactiveBrowserCredentials", tenant, browserOnly ? unexpected : credential);
+                    ServiceBusHelperEntraTests.CacheCredential("systemBrowserCredentials", tenant, browserOnly ? credential : unexpected);
+                    using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                    {
+                        form.Show();
+                        GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                        GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
+                        GetTextBox(form, ControlNameUri).Text = "localhost";
+                        GetComboBox(form, ControlNameTenantIds).Text = tenant;
+                        GetTextBox(form, "txtQueueFilterExpression").Text = "submitted filter";
+                        GetComboBox(form, "cboConnectivityMode").SelectedItem = previousMode == Microsoft.ServiceBus.ConnectivityMode.Http
+                            ? Microsoft.ServiceBus.ConnectivityMode.Tcp : Microsoft.ServiceBus.ConnectivityMode.Http;
+                        FindControl<CheckBox>(form, "useAmqpWebSocketsCheckBox").Checked = !previousWebSockets;
+
+                        FindControl<Button>(form, "btnOk").PerformClick();
+                        form.DialogResult.Should().Be(DialogResult.OK);
+                        form.ServiceBusNamespaceInstance.TenantId.Should().Be(tenant);
+                        new Uri(form.ServiceBusNamespaceInstance.Uri).IsLoopback.Should().BeTrue();
+                        var failure = Record.Exception(() => form.ConnectToNamespace());
+                        failure.Should().NotBeNull();
+                        failure.GetBaseException().Should().BeSameAs(cause);
+                        credential.Calls.Should().Be(1);
+                        unexpected.Calls.Should().Be(0);
+                        helper.NamespaceManager.Should().BeNull();
+                        ServiceBusHelper.ConnectivityMode.Should().Be(previousMode);
+                        ServiceBusHelper.UseAmqpWebSockets.Should().Be(previousWebSockets);
+                        FilterExpressionHelper.QueueFilterExpression.Should().Be(previousFilter);
+                    }
+                }
+                finally
+                {
+                    ServiceBusHelper.ConnectivityMode = previousMode;
+                    ServiceBusHelper.UseAmqpWebSockets = previousWebSockets;
+                    FilterExpressionHelper.QueueFilterExpression = previousFilter;
+                    EntraCredentialFactory.UseSystemBrowserOnly = previousChoice;
+                    EntraCredentialFactory.ClearCache();
+                    ResetManualConnectionState();
+                }
+            });
+        }
+
         [Fact]
-        public void BuildCurrentConnectionString_ManualEntraMode_BuildsStructuredEntraEntry()
+        public void ConnectButton_ManualEntraMode_BuildsStructuredEntraEntry()
         {
             string connectionString = null;
             string endpoint = null;
@@ -84,6 +202,7 @@ namespace ServiceBusExplorer.Tests.Forms
                 using (var form = new ConnectForm(new ServiceBusHelper((message, asynchronous) => { }),
                            ConfigFileUse.ApplicationConfig, null))
                 {
+                    form.Show();
                     GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
                     GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
                     GetTextBox(form, ControlNameUri).Text = "myns.servicebus.windows.net";
@@ -91,7 +210,8 @@ namespace ServiceBusExplorer.Tests.Forms
                     GetTextBox(form, ControlNameEntityPath).Text = "queue-a";
                     GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
 
-                    InvokePrivateMethod(form, "BuildCurrentConnectionString");
+                    FindControl<Button>(form, "btnOk").PerformClick();
+                    form.DialogResult.Should().Be(DialogResult.OK);
 
                     connectionString = form.ConnectionString;
                     endpoint = form.ServiceBusNamespaceInstance?.Uri;
