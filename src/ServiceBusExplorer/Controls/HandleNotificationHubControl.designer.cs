@@ -33,8 +33,10 @@
             this.btnClearGcmNotification = new System.Windows.Forms.Button();
             this.txtGcmEndpoint = new System.Windows.Forms.TextBox();
             this.lblGcmEndpoint = new System.Windows.Forms.Label();
-            this.lblGcmApiKey = new System.Windows.Forms.Label();
-            this.txtGcmApiKey = new System.Windows.Forms.TextBox();
+            this.lblLegacyFcmStatus = new System.Windows.Forms.Label();
+            this.lblFcmV1Status = new System.Windows.Forms.Label();
+            this.btnLoadFcmV1 = new System.Windows.Forms.Button();
+            this.btnRemoveFcmV1 = new System.Windows.Forms.Button();
             this.grouperWindowsPhoneNotificationSettings = new ServiceBusExplorer.Controls.Grouper();
             this.btnClearMpnsNotification = new System.Windows.Forms.Button();
             this.checkBoxEnableUnauthenticatedMpns = new System.Windows.Forms.CheckBox();
@@ -537,13 +539,15 @@
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.btnClearGcmNotification);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.txtGcmEndpoint);
             this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblGcmEndpoint);
-            this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblGcmApiKey);
-            this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.txtGcmApiKey);
+            this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblLegacyFcmStatus);
+            this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.lblFcmV1Status);
+            this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.btnLoadFcmV1);
+            this.grouperGoogleCloudMessaggingSettings.Controls.Add(this.btnRemoveFcmV1);
             this.grouperGoogleCloudMessaggingSettings.CustomGroupBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperGoogleCloudMessaggingSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperGoogleCloudMessaggingSettings.ForeColor = System.Drawing.Color.White;
             this.grouperGoogleCloudMessaggingSettings.GroupImage = null;
-            this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Google Cloud Messagging Settings";
+            this.grouperGoogleCloudMessaggingSettings.GroupTitle = "Firebase Cloud Messaging Settings";
             this.grouperGoogleCloudMessaggingSettings.Location = new System.Drawing.Point(336, 112);
             this.grouperGoogleCloudMessaggingSettings.Name = "grouperGoogleCloudMessaggingSettings";
             this.grouperGoogleCloudMessaggingSettings.Padding = new System.Windows.Forms.Padding(20);
@@ -564,11 +568,11 @@
             this.btnClearGcmNotification.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnClearGcmNotification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearGcmNotification.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnClearGcmNotification.Location = new System.Drawing.Point(216, 124);
+            this.btnClearGcmNotification.Location = new System.Drawing.Point(202, 27);
             this.btnClearGcmNotification.Name = "btnClearGcmNotification";
-            this.btnClearGcmNotification.Size = new System.Drawing.Size(72, 24);
-            this.btnClearGcmNotification.TabIndex = 4;
-            this.btnClearGcmNotification.Text = "Clear";
+            this.btnClearGcmNotification.Size = new System.Drawing.Size(86, 24);
+            this.btnClearGcmNotification.TabIndex = 1;
+            this.btnClearGcmNotification.Text = "Remove legacy";
             this.btnClearGcmNotification.UseVisualStyleBackColor = false;
             this.btnClearGcmNotification.Click += new System.EventHandler(this.btnClearGcmNotification_Click);
             // 
@@ -577,43 +581,67 @@
             this.txtGcmEndpoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGcmEndpoint.BackColor = System.Drawing.SystemColors.Window;
-            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 92);
+            this.txtGcmEndpoint.Location = new System.Drawing.Point(16, 100);
             this.txtGcmEndpoint.Name = "txtGcmEndpoint";
             this.txtGcmEndpoint.ReadOnly = true;
             this.txtGcmEndpoint.Size = new System.Drawing.Size(272, 20);
-            this.txtGcmEndpoint.TabIndex = 3;
+            this.txtGcmEndpoint.TabIndex = 4;
             // 
             // lblGcmEndpoint
             // 
-            this.lblGcmEndpoint.AutoSize = true;
+            this.lblGcmEndpoint.AutoSize = false;
+            this.lblGcmEndpoint.AutoEllipsis = true;
             this.lblGcmEndpoint.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 76);
+            this.lblGcmEndpoint.Location = new System.Drawing.Point(16, 80);
             this.lblGcmEndpoint.Name = "lblGcmEndpoint";
-            this.lblGcmEndpoint.Size = new System.Drawing.Size(79, 13);
-            this.lblGcmEndpoint.TabIndex = 2;
-            this.lblGcmEndpoint.Text = "GCM Endpoint:";
-            // 
-            // lblGcmApiKey
-            // 
-            this.lblGcmApiKey.AutoSize = true;
-            this.lblGcmApiKey.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblGcmApiKey.Location = new System.Drawing.Point(16, 32);
-            this.lblGcmApiKey.Name = "lblGcmApiKey";
-            this.lblGcmApiKey.Size = new System.Drawing.Size(75, 13);
-            this.lblGcmApiKey.TabIndex = 0;
-            this.lblGcmApiKey.Text = "GCM API Key:";
-            // 
-            // txtGcmApiKey
-            // 
-            this.txtGcmApiKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGcmApiKey.BackColor = System.Drawing.SystemColors.Window;
-            this.txtGcmApiKey.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtGcmApiKey.Location = new System.Drawing.Point(16, 48);
-            this.txtGcmApiKey.Name = "txtGcmApiKey";
-            this.txtGcmApiKey.Size = new System.Drawing.Size(272, 20);
-            this.txtGcmApiKey.TabIndex = 1;
-            // 
+            this.lblGcmEndpoint.Size = new System.Drawing.Size(272, 16);
+            this.lblGcmEndpoint.TabIndex = 3;
+            this.lblGcmEndpoint.Text = "Saved FCM v1 endpoint:";
+            //
+            // lblLegacyFcmStatus
+            //
+            this.lblLegacyFcmStatus.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.lblLegacyFcmStatus.AutoEllipsis = true;
+            this.lblLegacyFcmStatus.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblLegacyFcmStatus.Location = new System.Drawing.Point(16, 32);
+            this.lblLegacyFcmStatus.Name = "lblLegacyFcmStatus";
+            this.lblLegacyFcmStatus.Size = new System.Drawing.Size(180, 16);
+            this.lblLegacyFcmStatus.TabIndex = 0;
+            this.lblLegacyFcmStatus.Text = "Legacy FCM (retired): not configured";
+            //
+            // lblFcmV1Status
+            //
+            this.lblFcmV1Status.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.lblFcmV1Status.AutoEllipsis = true;
+            this.lblFcmV1Status.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblFcmV1Status.Location = new System.Drawing.Point(16, 56);
+            this.lblFcmV1Status.Name = "lblFcmV1Status";
+            this.lblFcmV1Status.Size = new System.Drawing.Size(272, 16);
+            this.lblFcmV1Status.TabIndex = 2;
+            this.lblFcmV1Status.Text = "FCM v1: not configured";
+            //
+            // btnLoadFcmV1
+            //
+            this.btnLoadFcmV1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnLoadFcmV1.Location = new System.Drawing.Point(16, 124);
+            this.btnLoadFcmV1.Name = "btnLoadFcmV1";
+            this.btnLoadFcmV1.Size = new System.Drawing.Size(124, 24);
+            this.btnLoadFcmV1.TabIndex = 5;
+            this.btnLoadFcmV1.Text = "Load v1 JSON...";
+            this.btnLoadFcmV1.UseVisualStyleBackColor = true;
+            this.btnLoadFcmV1.Click += new System.EventHandler(this.LoadFcmV1Credential);
+            //
+            // btnRemoveFcmV1
+            //
+            this.btnRemoveFcmV1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnRemoveFcmV1.Location = new System.Drawing.Point(146, 124);
+            this.btnRemoveFcmV1.Name = "btnRemoveFcmV1";
+            this.btnRemoveFcmV1.Size = new System.Drawing.Size(100, 24);
+            this.btnRemoveFcmV1.TabIndex = 6;
+            this.btnRemoveFcmV1.Text = "Remove v1";
+            this.btnRemoveFcmV1.UseVisualStyleBackColor = true;
+            this.btnRemoveFcmV1.Click += new System.EventHandler(this.btnRemoveFcmV1_Click);
+            //
             // grouperWindowsPhoneNotificationSettings
             // 
             this.grouperWindowsPhoneNotificationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -2793,7 +2821,7 @@
             this.tabPageGoogleNativeNotification.Name = "tabPageGoogleNativeNotification";
             this.tabPageGoogleNativeNotification.Size = new System.Drawing.Size(968, 454);
             this.tabPageGoogleNativeNotification.TabIndex = 5;
-            this.tabPageGoogleNativeNotification.Text = "Google";
+            this.tabPageGoogleNativeNotification.Text = "FCM v1";
             // 
             // gcmSplitContainer
             // 
@@ -2829,7 +2857,7 @@
             this.grouper1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouper1.ForeColor = System.Drawing.Color.White;
             this.grouper1.GroupImage = null;
-            this.grouper1.GroupTitle = "Json Payload";
+            this.grouper1.GroupTitle = "FCM v1 JSON Payload";
             this.grouper1.Location = new System.Drawing.Point(0, 0);
             this.grouper1.Name = "grouper1";
             this.grouper1.Padding = new System.Windows.Forms.Padding(20);
@@ -2848,12 +2876,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGcmJsonPayload.BackColor = System.Drawing.SystemColors.Window;
             this.txtGcmJsonPayload.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtGcmJsonPayload.Location = new System.Drawing.Point(16, 32);
+            this.txtGcmJsonPayload.Location = new System.Drawing.Point(16, 60);
             this.txtGcmJsonPayload.MaxLength = 0;
             this.txtGcmJsonPayload.Multiline = true;
             this.txtGcmJsonPayload.Name = "txtGcmJsonPayload";
             this.txtGcmJsonPayload.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtGcmJsonPayload.Size = new System.Drawing.Size(904, 186);
+            this.txtGcmJsonPayload.Size = new System.Drawing.Size(904, 158);
             this.txtGcmJsonPayload.TabIndex = 0;
             this.txtGcmJsonPayload.TextChanged += new System.EventHandler(this.txtGcmJsonPayload_TextChanged);
             // 
@@ -2939,7 +2967,7 @@
             this.txtGcmTagExpression.Multiline = true;
             this.txtGcmTagExpression.Name = "txtGcmTagExpression";
             this.txtGcmTagExpression.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtGcmTagExpression.Size = new System.Drawing.Size(387, 85);
+            this.txtGcmTagExpression.Size = new System.Drawing.Size(387, 55);
             this.txtGcmTagExpression.TabIndex = 0;
             // 
             // tabGcmNotificationTags
@@ -3397,8 +3425,10 @@
         private System.Windows.Forms.Button btnMpnsCredentialUploadCertificate;
         private Grouper grouperAppleNotificationSettings;
         private Grouper grouperGoogleCloudMessaggingSettings;
-        private System.Windows.Forms.Label lblGcmApiKey;
-        private System.Windows.Forms.TextBox txtGcmApiKey;
+        private System.Windows.Forms.Label lblLegacyFcmStatus;
+        private System.Windows.Forms.Label lblFcmV1Status;
+        private System.Windows.Forms.Button btnLoadFcmV1;
+        private System.Windows.Forms.Button btnRemoveFcmV1;
         private System.Windows.Forms.Button btnApnsCredentialUploadCertificate;
         private System.Windows.Forms.Label lblApnsCredentialCertificateThumbprint;
         private System.Windows.Forms.TextBox txtApnsCredentialCertificateThumbprint;
