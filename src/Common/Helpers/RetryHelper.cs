@@ -79,7 +79,7 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex) when (ex is OperationCanceledException || EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                 {
                     throw;
                 }
@@ -186,7 +186,7 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex) when (ex is OperationCanceledException || EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                 {
                     throw;
                 }
@@ -279,7 +279,7 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex) when (ex is OperationCanceledException || EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                 {
                     throw;
                 }
@@ -394,7 +394,7 @@ namespace ServiceBusExplorer.Helpers
                 {
                     throw;
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex) when (ex is OperationCanceledException || EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                 {
                     throw;
                 }

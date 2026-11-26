@@ -150,6 +150,7 @@ namespace ServiceBusExplorer.Forms
             this.txtProxyAddress = new System.Windows.Forms.TextBox();
             this.lblProxyAddress = new System.Windows.Forms.Label();
             this.tabPageAuthentication = new System.Windows.Forms.TabPage();
+            this.systemBrowserOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.btnDeleteTenantId = new System.Windows.Forms.Button();
             this.btnAddTenantId = new System.Windows.Forms.Button();
             this.lbxTenantIds = new System.Windows.Forms.ListBox();
@@ -1370,6 +1371,7 @@ namespace ServiceBusExplorer.Forms
             // tabPageAuthentication
             //
             this.tabPageAuthentication.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
+            this.tabPageAuthentication.Controls.Add(this.systemBrowserOnlyCheckBox);
             this.tabPageAuthentication.Controls.Add(this.btnDeleteTenantId);
             this.tabPageAuthentication.Controls.Add(this.btnAddTenantId);
             this.tabPageAuthentication.Controls.Add(this.lbxTenantIds);
@@ -1381,6 +1383,16 @@ namespace ServiceBusExplorer.Forms
             this.tabPageAuthentication.Size = new System.Drawing.Size(576, 391);
             this.tabPageAuthentication.TabIndex = 6;
             this.tabPageAuthentication.Text = "&Authentication";
+            //
+            // systemBrowserOnlyCheckBox
+            //
+            this.systemBrowserOnlyCheckBox.AutoSize = true;
+            this.systemBrowserOnlyCheckBox.Location = new System.Drawing.Point(24, 9);
+            this.systemBrowserOnlyCheckBox.Name = "systemBrowserOnlyCheckBox";
+            this.systemBrowserOnlyCheckBox.TabIndex = 0;
+            this.systemBrowserOnlyCheckBox.Text = "Use the system &browser for Entra sign-in";
+            this.systemBrowserOnlyCheckBox.UseVisualStyleBackColor = true;
+            this.systemBrowserOnlyCheckBox.CheckedChanged += new System.EventHandler(this.systemBrowserOnlyCheckBox_CheckedChanged);
             //
             // btnDeleteTenantId
             //
@@ -1812,6 +1824,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.TextBox txtNewTenantId;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ListBox lbxTenantIds;
+        private System.Windows.Forms.CheckBox systemBrowserOnlyCheckBox;
         private System.Windows.Forms.Button btnDeleteTenantId;
         private System.Windows.Forms.Button btnAddTenantId;
     }
