@@ -82,6 +82,7 @@ namespace ServiceBusExplorer.Helpers
         public string ProxyUserName { get; set; }
         public string ProxyPassword { get; set; }
 
+        public bool EntraSystemBrowserOnly { get; set; }
         public List<EntraTenantIdItem> EntraTenantIds { get; set; } = new List<EntraTenantIdItem>();
 
         public List<NodeColorInfo> NodesColors { get; set; } = new List<NodeColorInfo>();
@@ -146,6 +147,7 @@ namespace ServiceBusExplorer.Helpers
             ProxyUserName = string.Empty;
             ProxyPassword = string.Empty;
 
+            EntraSystemBrowserOnly = false;
             EntraTenantIds = new List<EntraTenantIdItem>();
 
             NodesColors = new List<NodeColorInfo>();
@@ -196,6 +198,7 @@ namespace ServiceBusExplorer.Helpers
             if (ProxyBypassList != otherProperties.ProxyBypassList) return false;
             if (ProxyUserName != otherProperties.ProxyUserName) return false;
             if (ProxyPassword != otherProperties.ProxyPassword) return false;
+            if (EntraSystemBrowserOnly != otherProperties.EntraSystemBrowserOnly) return false;
             if (!EntraTenantIds.SequenceEqual(otherProperties.EntraTenantIds)) return false;
             // NodeColorInfo has no value equality, so compare the same serialized form used for persistence.
             if (NodeColorInfo.FormatAll(NodesColors) != NodeColorInfo.FormatAll(otherProperties.NodesColors)) return false;
@@ -328,6 +331,9 @@ namespace ServiceBusExplorer.Helpers
 
                 case ConfigurationParameters.ProxyPassword:
                     return ProxyPassword;
+
+                case ConfigurationParameters.EntraSystemBrowserOnly:
+                    return EntraSystemBrowserOnly;
 
                 case ConfigurationParameters.EntraTenantIds:
                     return EntraTenantIds;

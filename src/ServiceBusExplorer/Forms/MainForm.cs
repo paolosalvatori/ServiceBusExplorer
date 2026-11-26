@@ -286,6 +286,7 @@ namespace ServiceBusExplorer.Forms
         public MainForm(string logMessage)
         {
             InitializeComponent();
+            EntraWindowOwners.Register(this, mainWindow: true);
             eventGridRootContextMenuStrip = new ContextMenuStrip(components);
             eventGridRootContextMenuStrip.Items.Add("Refresh Event Grid Topics", null, async (sender, args) => await ShowEventGridEntities());
             ThemeManager.SetHeaderBrandLogo(logoPictureBox);
@@ -567,18 +568,25 @@ namespace ServiceBusExplorer.Forms
 
         private async void SavedConnectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
-            serviceBusHelper.Connect(serviceBusNamespace);
-            ResetEventGridConnection();
-            SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-
-            foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+            try
             {
-                userControl.Dispose();
+                var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
+                if (!serviceBusHelper.Connect(serviceBusNamespace)) return;
+                ResetEventGridConnection();
+                SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+
+                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
+                {
+                    userControl.Dispose();
+                }
+                panelMain.Controls.Clear();
+                SetEmptyMainPanelBackground(panelMain);
+                await ShowEntities(EntityType.All);
             }
-            panelMain.Controls.Clear();
-            SetEmptyMainPanelBackground(panelMain);
-            await ShowEntities(EntityType.All);
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         /// <summary>
@@ -613,6 +621,15 @@ namespace ServiceBusExplorer.Forms
             bool webSockets, List<string> selectedEntities,
             string queueFilter = null, string topicFilter = null, string subscriptionFilter = null)
         {
+            if (!ConnectAndPublishSettings(connect, connectivity, webSockets, queueFilter, topicFilter, subscriptionFilter))
+                return false;
+            SelectedEntities = new List<string>(selectedEntities);
+            return true;
+        }
+
+        internal static bool ConnectAndPublishSettings(Func<bool> connect, Microsoft.ServiceBus.ConnectivityMode connectivity,
+            bool webSockets, string queueFilter, string topicFilter, string subscriptionFilter)
+        {
             var previousConnectivity = ServiceBusHelper.ConnectivityMode;
             var previousWebSockets = ServiceBusHelper.UseAmqpWebSockets;
             var connected = false;
@@ -623,7 +640,6 @@ namespace ServiceBusExplorer.Forms
                 connected = connect();
                 if (connected)
                 {
-                    SelectedEntities = new List<string>(selectedEntities);
                     FilterExpressionHelper.QueueFilterExpression = queueFilter;
                     FilterExpressionHelper.TopicFilterExpression = topicFilter;
                     FilterExpressionHelper.SubscriptionFilterExpression = subscriptionFilter;
@@ -653,13 +669,8 @@ namespace ServiceBusExplorer.Forms
                     }
                     UpdateSavedConnectionsMenu();
 
-                    var serviceBusNamespace = connectForm.ServiceBusNamespaceInstance
-                        ?? ServiceBusNamespace.GetServiceBusNamespace(connectForm.Key ?? "Manual",
-                            connectForm.ConnectionString, StaticWriteToLog);
-
-                    if (!ConnectWithSettings(() => serviceBusHelper.Connect(serviceBusNamespace),
-                        connectForm.ConnectivityMode, connectForm.UseAmqpWebSockets, connectForm.SelectedEntities,
-                        connectForm.QueueFilterExpression, connectForm.TopicFilterExpression, connectForm.SubscriptionFilterExpression)) return;
+                    if (!connectForm.TryConnectToNamespace(out var serviceBusNamespace)) return;
+                    SelectedEntities = new List<string>(connectForm.SelectedEntities);
                     ResetEventGridConnection();
 
                     SetTitle(serviceBusNamespace.Namespace, "Service Bus");
@@ -777,6 +788,7 @@ namespace ServiceBusExplorer.Forms
                 ProxyUserName = ProxyUserName,
                 ProxyPassword = ProxyPassword,
 
+                EntraSystemBrowserOnly = EntraCredentialFactory.UseSystemBrowserOnly,
                 EntraTenantIds = EntraTenantIds,
 
                 NodesColors = NodesColors
@@ -796,6 +808,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
+                EntraCredentialFactory.UseSystemBrowserOnly = optionForm.MainSettings.EntraSystemBrowserOnly;
                 configFileUse = optionForm.ConfigFileUse;
 
                 if (lastConfigFileUse != configFileUse)
@@ -4454,6 +4467,7 @@ namespace ServiceBusExplorer.Forms
 
             SetProxy(readSettings);
 
+            EntraCredentialFactory.UseSystemBrowserOnly = readSettings.EntraSystemBrowserOnly;
             EntraTenantIds = readSettings.EntraTenantIds;
             NodesColors = readSettings.NodesColors;
         }
@@ -4814,7 +4828,7 @@ namespace ServiceBusExplorer.Forms
                                         var singleHub = await serviceBusHelper.NamespaceManager.GetEventHubAsync(serviceBusHelper.EntityPath);
                                         eventHubs = singleHub != null ? new[] { singleHub } : Enumerable.Empty<EventHubDescription>();
                                     }
-                                    catch (MessagingException ex)
+                                    catch (MessagingException ex) when (!EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                                     {
                                         WriteToLog(string.Format(CultureInfo.CurrentCulture,
                                             "No event hub found matching EntityPath '{0}': {1}",
@@ -5076,6 +5090,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     ex = ((AggregateException)ex).InnerExceptions.First();
                 }
+                if (EntraCredentialFactory.IsTokenAcquisitionFailure(ex)) return false;
                 return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
             }
         }
