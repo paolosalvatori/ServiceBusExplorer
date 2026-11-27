@@ -38,6 +38,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public string ConnectionString { get; set; }
         public string AdministrationConnectionString { get; set; }
+        public ServiceBusAdministrationClient AdministrationClient { get; set; }
         public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
@@ -115,6 +116,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// </summary>
         public ServiceBusAdministrationClient CreateAdministrationClient()
         {
+            if (AdministrationClient != null) return AdministrationClient;
             return IsEntra
                 ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
                 : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);

@@ -18,7 +18,7 @@ using Legacy = Microsoft.ServiceBus.Messaging;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
-    public class ServiceBusManagementClientTests
+    public partial class ServiceBusManagementClientTests
     {
         private const string EmulatorConnection = "Endpoint=sb://localhost:5672;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;UseDevelopmentEmulator=true;TransportType=Amqp;EntityPath=orders";
 
@@ -503,11 +503,12 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        private static ServiceBusHelper NewHelper(FakeAdministrationClient client)
+        private static ServiceBusHelper NewHelper(FakeAdministrationClient client, string profile = EmulatorConnection)
         {
             var helper = new ServiceBusHelper((_, __) => { });
-            var ns = ServiceBusNamespace.GetServiceBusNamespace("test", EmulatorConnection, (_, __) => { });
+            var ns = ServiceBusNamespace.GetServiceBusNamespace("test", profile, (_, __) => { });
             var management = NewClient(client);
+            typeof(ServiceBusHelper).GetField("managementClient", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(helper, management);
             foreach (var entity in new[] { "Queue", "Topic", "Subscription", "Rule" })
             {
                 var type = typeof(ServiceBusHelper).Assembly.GetType("ServiceBusExplorer.WindowsAzure.ServiceBus" + entity, true);
@@ -531,11 +532,25 @@ namespace ServiceBusExplorer.Tests.Helpers
             public RuleFilter ExportedFilter { get; set; } = new TrueRuleFilter();
             private readonly Dictionary<string, QueueProperties> queues = new Dictionary<string, QueueProperties>();
 
-            private static QueueProperties Queue(string name) => ServiceBusModelFactory.QueueProperties(name,
-                lockDuration: TimeSpan.FromMinutes(1), maxSizeInMegabytes: 1024,
+            public MessagingSku Sku { get; set; } = MessagingSku.Standard;
+            public bool Partitioned { get; set; }
+            public long BrokerSize { get; set; } = 1024;
+            public EntityStatus QueueStatus { get; set; } = EntityStatus.Active;
+            public int NamespaceReads { get; private set; }
+            public Exception NamespaceFailure { get; set; }
+
+            public override Task<Response<NamespaceProperties>> GetNamespacePropertiesAsync(CancellationToken cancellationToken = default)
+            {
+                NamespaceReads++;
+                if (NamespaceFailure != null) throw NamespaceFailure;
+                return Result(ServiceBusModelFactory.NamespaceProperties("test", default, default, Sku, 0, null));
+            }
+
+            private QueueProperties Queue(string name) => ServiceBusModelFactory.QueueProperties(name,
+                lockDuration: TimeSpan.FromMinutes(1), maxSizeInMegabytes: BrokerSize, enablePartitioning: Partitioned,
                 defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue,
                 duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), maxDeliveryCount: 10,
-                status: EntityStatus.Active, userMetadata: "", maxMessageSizeInKilobytes: 4096);
+                status: name == "orders" ? QueueStatus : EntityStatus.Active, userMetadata: "", maxMessageSizeInKilobytes: 4096);
             private static Task<Response<T>> Result<T>(T value) => Task.FromResult(Response.FromValue(value, null));
             private static AsyncPageable<T> Pages<T>(params T[] values) where T : notnull =>
                 AsyncPageable<T>.FromPages(values.Select((value, index) => Page<T>.FromValues(new[] { value }, index == values.Length - 1 ? null : "next", null)));
@@ -592,7 +607,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             public override Task<Response<TopicProperties>> UpdateTopicAsync(TopicProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<SubscriptionProperties>> UpdateSubscriptionAsync(SubscriptionProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken cancellationToken = default) =>
-                Result(ServiceBusModelFactory.TopicProperties(name, maxSizeInMegabytes: 1024, defaultMessageTimeToLive: TimeSpan.MaxValue,
+                Result(ServiceBusModelFactory.TopicProperties(name, maxSizeInMegabytes: BrokerSize, enablePartitioning: Partitioned, defaultMessageTimeToLive: TimeSpan.MaxValue,
                     autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), status: EntityStatus.Active));
             public override Task<Response<TopicRuntimeProperties>> GetTopicRuntimePropertiesAsync(string name, CancellationToken cancellationToken = default) =>
                 RuntimeUnavailable ? throw new InvalidOperationException("Synthetic runtime refresh unavailable") :

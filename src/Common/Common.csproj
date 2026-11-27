@@ -28,6 +28,7 @@
     <PackageReference Include="WindowsAzure.ServiceBus" Version="7.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="ServiceBusExplorer.Tests" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net" />
