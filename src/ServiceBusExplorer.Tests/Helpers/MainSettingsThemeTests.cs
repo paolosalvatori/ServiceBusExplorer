@@ -14,6 +14,7 @@ using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
 {
+    [Collection("Configuration file access")]
     public class MainSettingsThemeTests
     {
         static readonly MethodInfo getMainSettingsUsingConfigurationMethod =

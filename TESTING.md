@@ -109,3 +109,97 @@ Not run locally: Windows GUI shutdown/read-only-directory workflows, IoT live en
 - `EventHubCheckpointPersistenceTests` uses only temporary synthetic files through `ReadCheckpoints`, `GetLease`, and `WriteCheckpoints`. Duplicate normalized Endpoint/HostName identities retain every partition and the highest sequence; equal sequences choose the ordinal serialized lease representation, independently of input order. Unmappable identities are persisted as `[]` after a successful load. Failed/unattempted reads cannot authorize an overwrite; a missing file still permits new checkpoints.
 - `PartitionListenerFailureLogTests` runs a real WinForms message loop and listener reader/stop path with a synthetic failing consumer. It checks that the failure is synchronously visible before logging stops and that asynchronous reader shutdown completes without blocking the UI. Existing inspector replay and final-checkpoint batch tests remain applicable.
 - No real checkpoint file, credential, or Azure service is used. Live inspector replay and interactive desktop evidence still require Windows/manual verification; the Linux executor cannot run the net472 WinForms application.
+
+### Connection-stage readiness follow-up (#910)
+
+Saved emulator profiles use the raw connection editor so their development flag, endpoint/port, and credentials survive a save/connect round trip. Saving an emulator profile validates its parsed endpoint without passing development-only fields to the legacy SDK. Parsed field names/values are trimmed; invalid endpoint ports are rejected and emulator display names retain the complete host. At this connection-only stage, emulator Connect still rejects before changing any active helper state or creating clients.
+
+Synthetic tests cover the saved ConnectForm selection/build path, padded fields, full IP/DNS display names, invalid ports, and unchanged helper fields after a rejected emulator Connect. Actual emulator connectivity and Windows save-to-configuration interaction remain unverified; no live service is used.
+
+### Management-stage readiness follow-up (#911)
+
+- Reconnect clears old namespace-scoped adapters before constructing the new set; emulator management cannot retain Relay/Event Hubs/Notification Hubs adapters from a previous cloud connection. Secondary/UI helpers receive a separate management connection string using the emulator HTTP management port. Their data-plane factory explicitly rejects emulator purge/send/receive at this management-only stage.
+- Import preflights the complete XML before dispatch. Emulator documents containing Relay, EventHub, or NotificationHub entities are rejected as a unit. Rule import accepts legacy default/true/false filters, plain SQL filters/actions, and string correlation fields/properties. Typed/nested dictionary extensions, nonempty SQL parameters, unknown rule types and malformed shapes are rejected before any entity mutation; configure those rules explicitly instead. Legacy correlation values preserve embedded colons. Ordinary nested topic/subscription XML remains supported, including false boolean settings.
+- Create/update returns the authoritative mutation response without a subsequent runtime-count query. RuntimeProperties is absent until an explicit refresh; placeholder counts are not a fresh broker measurement. This prevents runtime-query failures from causing retries of successful mutations.
+- Synthetic tests cover reconnect adapter isolation, secondary administration construction and data-plane refusal, mixed/nested import preflight, ordinary nested import and all queue/topic/subscription create/update paths with runtime queries unavailable. Live emulator connectivity, interactive Windows probes/import dialogs and live Azure operations remain unverified.
+
+Rule compatibility follow-up: baseline nested `$Default`, true, false, plain SQL/action and string correlation fixtures exercise the import entry point. Typed correlation and parameterized SQL fixtures verify whole-document rejection before an earlier queue can be created.
+
+### Resubmission-stage readiness follow-up (#912)
+
+- Secondary helpers keep separate administration (emulator HTTP management port) and data-plane (AMQP port 5672) connection strings. Emulator data-plane clients force AMQP TCP even when the global WebSockets preference is enabled; cloud transport selection remains configurable. The management-only data-plane guard remains in the preceding #911 stage, while #912 enables modern client construction for resubmission.
+- The actual MessageForm preparation path preserves the original raw body when the displayed text is unchanged, including binary bytes that cannot round-trip through display decoding. Editing text replaces the body with UTF-8 bytes; WCF conversion remains its separate path. Stream/String/ByteArray display choices do not reserialize an unchanged body. Generating a new MessageId changes only that ID; session, partition, transaction partition, correlation and reply routing are retained.
+- Windows regressions instantiate the real MessageForm and invoke the preparation method used by Submit, then check the modern outbound message. Tests cover binary bytes, Generate new MessageId off/on, routing, UTF-8 edits and source immutability. Adapter coverage includes ViaPartitionKey to TransactionPartitionKey. Preserving this field does not introduce transactional send-via or atomic moves.
+- The corrected #911 XML preflight/legacy-rule compatibility tests are inherited unchanged. Live emulator/Azure delivery, interactive target selection and DLQ move behavior are not claimed; screenshots remain deferred.
+
+### Receiver-stage readiness follow-up (#913)
+
+Received broker sequence, lock and delivery metadata populate the legacy SDK's received-only properties rather than editable application properties. The pinned legacy SDK's internal setters are used by the adapter; regressions check these setters and the actual MessageForm preparation entry point. Original modern metadata remains separately associated with the adapted message. Application names that resemble system names retain their values and cannot override broker identity.
+
+Receive All drains in bounded batches until an empty receive; Peek All retains the configured top limit. Non-session queue test receivers construct only modern clients, allowing emulator AMQP TCP without creating a legacy factory. Session test receivers retain their documented legacy boundary at this stage.
+
+Moves from partitioned sources or transfer dead-letter queues are explicitly unsupported before client creation; no atomic cross-partition guarantee is claimed. Dead-letter failures report confirmed IDs and warn that unconfirmed outcomes need broker verification. Cleanup attempts every held lock and client independently. Synthetic receiver/sender tests cover a later failure after one successful operation and simultaneous abandonment/disposal errors.
+
+Release cross-build and exact-head Windows CI cover these regressions. Live Azure/emulator transactions, interactive bulk actions, partition routing and lock-expiry behavior are not verified; no live data was accessed and screenshots remain deferred.
+
+- Use a queue-scoped SAS profile to verify the signed data audience and rejection of a different entity. Verify explicit Azure transport ports and independently remapped emulator administration and AMQP listeners. Management-only custom mappings must block data operations.
+- The wire fixtures decode native AMQP through the pinned legacy receiver. They cover untouched Data and Value, corrected text and binary Values, legacy DataContract bodies, reserved recovery properties and refusal when the receiver lost the body.
+- The editor requires a fresh ID for a destructive replay when duplicate detection is enabled or unknown. The settlement tests cover accepted, failed, cancelled and expired-lock operations. Live delivery, lock expiry, duplicate suppression and interactive cancellation still require broker-backed acceptance.
+
+### Independent review follow-up: connection stage (#910)
+
+The raw transport dropdown updates only TransportType and RuntimePort assignments, preserving matching text in endpoints, entity paths and credentials. The Connect entry path publishes entity selection only on success and restores prior WebSockets/connectivity settings on false returns or exceptions. Synthetic tests exercise the real dropdown and the settings-publication method used by Connect. No live connection, credentials or configuration were used; adapter preparation/rollback is handled in the following management stage.
+
+### Independent review follow-up: management stage (#911)
+
+Compact legacy correlation XML preserves every adjacent string property, including embedded colons. Unsupported Filter/Action wrapper attributes or text and unsupported empty-action metadata are rejected during whole-document preflight before earlier entities can be created. Connection preparation uses a separate replacement helper; active profile/adapters publish only after successful preparation. Failed candidates close their provisional legacy messaging factory. A synthetic localhost profile whose unknown setting fails SDK construction verifies preservation after DNS succeeds, without broker I/O. Existing emulator/cloud isolation, management-only boundaries and legacy supported rule fixtures remain covered. Live reconnect/authentication, broker resource cleanup and interactive import remain manual checks.
+
+### Independent review follow-up: resubmission stage (#912)
+
+Secondary helpers retain original profile EntityPath metadata separately from normalized SDK connection strings. Queue and topic editor scope checks use this metadata, and IsPremiumNamespace itself returns the existing conservative non-premium default without constructing an administration client for entity-scoped SAS access. Audited callers: HandleQueueControl and HandleTopicControl are the only scope-check callers; direct ServiceBusHelper2 callers retain connection-string fallback. Synthetic helper/copy and throwing probe-double tests cover queue/topic scope preservation and no namespace SKU probe. Live entity-scoped SAS UI access remains a manual check; no namespace/network request is used by these tests.
+
+### Stage 4 AMQP bodies and transaction progress
+
+- `ServiceBusAmqpBodyTests` covers a mixed Data/Value/Sequence destructive receive batch,
+  unchanged resend, detached nested AMQP values and both adapter paths on SDK 7.20.1.
+- `MessageFormResubmissionTests.StructuredAmqpEditorPreservesOriginalUntilTextEdited`
+  exercises the actual editor preparation with original/new IDs. Structured bodies have a
+  preview; changing its text explicitly produces UTF-8 Data, as stated in the editor title.
+- `ServiceBusTransactionProgressTests` uses fake senders/receivers and local transactions:
+  a later batch failure retains acknowledged nontransactional progress; failed/cancelled
+  transactions publish no committed progress. Receive-and-delete reports the already
+  removed batch even when a later inspector fails. No broker is contacted.
+- Live broker transaction enlistment/settlement, network failure ambiguity and interactive
+  Azure/emulator workflows still require manual verification. Linux cross-build does not
+  execute these .NET Framework/WinForms tests; Windows CI runs them.
+### Connection profile and filter publication follow-up
+
+Saved raw profile loading uses the same trimmed, case-insensitive keys as explicit transport
+editing. Programmatic transport selection does not rewrite the raw profile. Regression tests
+exercise the saved-profile dropdown with padded transport/runtime keys and unchanged credentials.
+The dialog stages queue/topic/subscription filters; MainForm publishes them only after connection
+success. Tests cover actual dialog acceptance plus successful, rejected and throwing attempts.
+All fixtures are synthetic; no live connection or broker mutation is used.
+
+### Atomic XML export and supported correlation values
+
+The existing XML rule format represents string correlation values only. Export rejects typed
+values, ambiguous property names and parameterized SQL rules instead of silently converting or
+omitting them. A serialization failure aborts the whole in-memory export before destination
+selection or writing. Completed exports replace files atomically. String correlation round-trip
+tests cover adjacent properties, Unicode, leading spaces, colons in values and CR/LF; rejection
+tests exercise the broker model through the real prepare/save boundary and preserve an existing
+backup. All management clients are test doubles; no broker writes occur.
+
+### Transactional receive and inspector clone follow-up
+
+ReceiveAndDelete with a requested or ambient transaction is rejected before reads. All three
+manual test controls validate the combination before startup; helpers enforce the same boundary.
+Tests cover the actual queue validation entry and single/batch helper calls with zero fake reads.
+Legacy single PeekLock statistics are published only after Complete/DeadLetter succeeds; the
+settlement boundary tests cover success and failure without a broker.
+Both receive and send inspector boundaries transfer retained AMQP body metadata to unchanged
+clones. Value/Sequence tests cover both directions and deliberate edits, which remain Data edits.
+Live legacy receiver settlement faults and interactive emulator/Azure workflows remain untested.
+
+Queue/receiver closure tests exercise in-place inspector stream edits through receive and resend, source identity through edited inspector clones and the editor's Submit preparation, and confirmed destructive-receive accounting before single/batch inspector failure. The shared legacy boundary is exercised offline; actual legacy broker receive/settlement and live emulator operations are not run.

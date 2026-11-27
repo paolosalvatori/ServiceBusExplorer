@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+#region Copyright
 
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
@@ -25,6 +27,7 @@
 
 #nullable enable
 using Microsoft.ServiceBus.Messaging;
+using Azure.Messaging.ServiceBus;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.ServiceBus.Helpers;
@@ -527,11 +530,11 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Static Methods
 
-        static bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
-        {
-            return selectedRows.Cast<DataGridViewRow>()
-                .All(row => (row.DataBoundItem as BrokeredMessage)?.State == MessageState.Scheduled);
-        }
+        internal static bool CanCancelScheduledMessages(IEnumerable<BrokeredMessage?> messages) =>
+            messages.All(message => message != null &&
+                (ServiceBusReceivedMessageAdapter.GetReceivedMetadata(message) is ServiceBusReceivedMessage native
+                    ? native.State == ServiceBusMessageState.Scheduled
+                    : message.State == MessageState.Scheduled));
 
         #endregion
 
@@ -1330,7 +1333,21 @@ namespace ServiceBusExplorer.Controls
 
                 Cursor.Current = Cursors.WaitCursor;
                 var brokeredMessages = new List<BrokeredMessage>();
-                if (peek)
+                if (!queueDescription.RequiresSession)
+                {
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                        queueDescription.Path,
+                        null,
+                        SubQueue.None,
+                        peek,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector, failure => writeToLog(failure.Message));
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheQueue : MessagesReceivedFromTheQueue,
+                        brokeredMessages.Count, queueDescription.Path));
+                }
+                else if (peek)
                 {
                     var totalRetrieved = 0;
 
@@ -1425,7 +1442,7 @@ namespace ServiceBusExplorer.Controls
                     MainForm.SingletonMainForm.ReceiveTimeout,
                     queueDescription.Path));
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException) when (queueDescription.RequiresSession)
             {
                 ReadMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
@@ -1553,7 +1570,21 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
 
                 var queuePath = QueueClient.FormatDeadLetterPath(queueDescription.Path);
-                if (peek)
+                if (!queueDescription.RequiresSession)
+                {
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                        queueDescription.Path,
+                        null,
+                        SubQueue.DeadLetter,
+                        peek,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector, failure => writeToLog(failure.Message));
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheDeadletterQueue : MessagesReceivedFromTheDeadletterQueue,
+                        brokeredMessages.Count, queueDescription.Path));
+                }
+                else if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
@@ -1659,7 +1690,7 @@ namespace ServiceBusExplorer.Controls
             {
                 writeToLog(string.Format(NoMessageReceivedFromTheDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException) when (queueDescription.RequiresSession)
             {
                 ReadDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
@@ -1690,7 +1721,21 @@ namespace ServiceBusExplorer.Controls
                 var brokeredMessages = new List<BrokeredMessage>();
 
                 var queuePath = QueueClient.FormatTransferDeadLetterPath(queueDescription.Path);
-                if (peek)
+                if (!queueDescription.RequiresSession)
+                {
+                    brokeredMessages = serviceBusHelper.GetMessagesFromModernDataPlane(
+                        queueDescription.Path,
+                        null,
+                        SubQueue.TransferDeadLetter,
+                        peek,
+                        ServiceBusHelper.ResolveModernReadCount(peek, all, count, MainForm.SingletonMainForm.TopCount),
+                        fromSequenceNumber,
+                        TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout),
+                        messageInspector, failure => writeToLog(failure.Message));
+                    writeToLog(string.Format(peek ? MessagesPeekedFromTheTransferDeadletterQueue : MessagesReceivedFromTheTransferDeadletterQueue,
+                        brokeredMessages.Count, queueDescription.Path));
+                }
+                else if (peek)
                 {
                     var queueClient = serviceBusHelper.MessagingFactory.CreateQueueClient(queuePath, ReceiveMode.PeekLock);
                     var totalRetrieved = 0;
@@ -1796,7 +1841,7 @@ namespace ServiceBusExplorer.Controls
             {
                 writeToLog(string.Format(NoMessageReceivedFromTheTransferDeadletterQueue, MainForm.SingletonMainForm.ReceiveTimeout, queueDescription.Path));
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException) when (queueDescription.RequiresSession)
             {
                 ReadTransferDeadletterMessagesOneAtTheTime(peek, all, count, messageInspector, fromSequenceNumber);
             }
@@ -1843,7 +1888,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (messageInspector != null)
                         {
-                            message = messageInspector.AfterReceiveMessage(message);
+                            message = ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector);
                         }
                         brokeredMessages.Add(message);
                     }
@@ -1866,7 +1911,7 @@ namespace ServiceBusExplorer.Controls
                         if (message != null)
                         {
                             brokeredMessages.Add(messageInspector != null
-                            ? messageInspector.AfterReceiveMessage(message)
+                            ? ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector)
                             : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
@@ -1939,7 +1984,7 @@ namespace ServiceBusExplorer.Controls
                         }
                         if (messageInspector != null)
                         {
-                            message = messageInspector.AfterReceiveMessage(message);
+                            message = ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector);
                         }
                         brokeredMessages.Add(message);
                     }
@@ -1962,7 +2007,7 @@ namespace ServiceBusExplorer.Controls
                         if (message != null)
                         {
                             brokeredMessages.Add(messageInspector != null
-                                ? messageInspector.AfterReceiveMessage(message)
+                                ? ServiceBusReceivedMessageAdapter.InspectReceivedRow(message, messageInspector)
                                 : message);
                         }
                     } while (retrieved > 0 && (all || count > totalRetrieved));
@@ -2440,7 +2485,7 @@ namespace ServiceBusExplorer.Controls
                 finally
                 {
                     queueDescription.Status = EntityStatus.Active;
-                    queueDescription = serviceBusHelper.NamespaceManager.UpdateQueue(queueDescription);
+                    queueDescription = serviceBusHelper.ManagementClient.UpdateQueue(queueDescription);
                     InitializeData();
                 }
             }
@@ -3310,7 +3355,7 @@ namespace ServiceBusExplorer.Controls
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             
-            if(AreAllSelectedMessageScheduled(messagesDataGridView.SelectedRows))
+            if (CanCancelScheduledMessages(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(row => row.DataBoundItem as BrokeredMessage)))
             {
                 SetCancelScheduledMessageToolStripMenuItemText(multipleSelectedRows);
                 cancelScheduledMessageToolStripMenuItem.Visible = true;
@@ -3379,7 +3424,7 @@ namespace ServiceBusExplorer.Controls
             var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
                 .Select(r => (BrokeredMessage)r.DataBoundItem).Where(m => m != null);
 
-            var sequenceNumbersToCancel = messages.Select(s => s.SequenceNumber).ToList();
+            var sequenceNumbersToCancel = messages.Select(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber).ToList();
 
 
             using var waitCursorScope = new WaitCursorScope(thisForm);
@@ -3453,7 +3498,7 @@ namespace ServiceBusExplorer.Controls
                 }
             }
 
-            var sequenceNumbersToDelete = brokeredMessages.Select(s => s?.SequenceNumber).ToList();
+            var sequenceNumbersToDelete = DataGridViewHelper.GetSourceSequenceNumbers(brokeredMessages);
             var deadLetterMessageHandler = new DeadLetterMessageHandler(writeToLog, serviceBusHelper,
                 MainForm.SingletonMainForm.ReceiveTimeout, queueDescription);
 

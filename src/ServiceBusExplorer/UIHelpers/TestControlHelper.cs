@@ -3,6 +3,8 @@ using ServiceBusExplorer.Utilities.Helpers;
 
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Azure.Messaging.ServiceBus;
 
 namespace ServiceBusExplorer.UIHelpers
 {
@@ -25,6 +27,23 @@ namespace ServiceBusExplorer.UIHelpers
         public Action StartLog { get; }
         public Func<Task> StopLog { get; }
         #endregion
+
+        internal static Task StopClients(ref List<ServiceBusSender> cache, List<ServiceBusClient> senders, List<ServiceBusClient> receivers, Action<Exception> report)
+        {
+            cache = null;
+            return Task.WhenAll(CloseClients(senders, report), CloseClients(receivers, report));
+        }
+
+        private static async Task CloseClients(List<ServiceBusClient> owners, Action<Exception> report)
+        {
+            var closing = owners.ToArray();
+            owners.Clear();
+            foreach (var client in closing)
+            {
+                try { await client.DisposeAsync().ConfigureAwait(false); }
+                catch (Exception ex) { report(ex); }
+            }
+        }
 
         #region Public constructor
         public TestControlHelper(MainForm mainForm,

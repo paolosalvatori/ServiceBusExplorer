@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceBus;
+﻿using System;
+using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -22,11 +23,20 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string TestServiceBusPostFix = ".servicebus.int7.windows-int.net";
 
         private readonly string ns;
+        private readonly System.Uri namespaceAddress;
 
         protected ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
         {
             this.ServiceBusNamespace = serviceBusNamespace;
             this.NamespaceManager = namespaceManager;
+            namespaceAddress = namespaceManager.Address;
+            ns = GetNamespace();
+        }
+
+        protected ServiceBusEntity(ServiceBusNamespace serviceBusNamespace, System.Uri address)
+        {
+            ServiceBusNamespace = serviceBusNamespace;
+            namespaceAddress = address;
             ns = GetNamespace();
         }
 
@@ -52,7 +62,7 @@ namespace ServiceBusExplorer.WindowsAzure
             OnCreate?.Invoke(args);
         }
 
-        protected void OnCreated<T>(T entityInstance) where T : EntityDescription
+        protected void OnCreated<T>(T entityInstance)
         {
             OnCreate?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
         }
@@ -63,7 +73,7 @@ namespace ServiceBusExplorer.WindowsAzure
             OnDelete?.Invoke(args);
         }
 
-        protected void OnDeleted<T>(T entityInstance) where T : EntityDescription
+        protected void OnDeleted<T>(T entityInstance)
         {
             OnDelete?.Invoke(new ServiceBusHelperEventArgs(entityInstance, EntityType));
         }
@@ -73,11 +83,30 @@ namespace ServiceBusExplorer.WindowsAzure
             WriteToLog?.Invoke(message);
         }
 
+        protected Uri GetEntityUri(string entityPath)
+        {
+            if (ServiceBusNamespace.UseDevelopmentEmulator)
+            {
+                var endpoint = new UriBuilder(ServiceBusNamespace.Uri) { Scheme = Scheme };
+                endpoint.Path = endpoint.Path.TrimEnd('/') + "/" + entityPath.TrimStart('/');
+                return endpoint.Uri;
+            }
+            if (IsCloudNamespace())
+                return ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, entityPath);
+
+            return new UriBuilder
+            {
+                Host = namespaceAddress.Host,
+                Path = namespaceAddress.AbsolutePath + "/" + entityPath,
+                Scheme = "sb"
+            }.Uri;
+        }
+
         protected bool IsCloudNamespace()
         {
             string uri;
             var connectionStringType = ServiceBusNamespace.ConnectionStringType;
-            var namespaceUri = NamespaceManager.Address;
+            var namespaceUri = namespaceAddress;
             return connectionStringType == ServiceBusNamespaceType.Cloud ||
                   (namespaceUri != null &&
                    !string.IsNullOrWhiteSpace(uri = namespaceUri.ToString()) &&
@@ -89,7 +118,7 @@ namespace ServiceBusExplorer.WindowsAzure
 
         private string GetNamespace()
         {
-            var namespaceUri = NamespaceManager.Address;
+            var namespaceUri = namespaceAddress;
             return IsCloudNamespace() ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
         }
 

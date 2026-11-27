@@ -19,6 +19,7 @@
 //=======================================================================================
 #endregion
 
+using System;
 using System.Threading.Tasks;
 
 using Azure.Core;
@@ -36,6 +37,12 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         readonly WriteToLogDelegate writeToLog;
 
         public string ConnectionString { get; set; }
+        public string AdministrationConnectionString { get; set; }
+        // Keep the original scope available to management-only UI probes.
+        public string ProfileEntityPath { get; set; }
+        public Uri DataPlaneEndpoint { get; set; }
+        public ServiceBusAdministrationClient AdministrationClient { get; set; }
+        public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
         /// <summary>
@@ -75,6 +82,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public bool ConnectionStringContainsEntityPath()
         {
             if (IsEntra) return false;
+            if (ProfileEntityPath != null) return !string.IsNullOrWhiteSpace(ProfileEntityPath);
 
             var connectionStringProperties = ServiceBusConnectionStringProperties.Parse(ConnectionString);
 
@@ -90,34 +98,35 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
         /// </summary>
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
-        public ServiceBusClient CreateServiceBusClient()
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
         {
-            if (IsEntra)
-            {
-                return new ServiceBusClient(
-                    FullyQualifiedNamespace,
-                    EntraTokenCredential,
-                    new ServiceBusClientOptions { TransportType = this.TransportType });
-            }
+            if (DataPlaneUnavailableReason != null) throw new NotSupportedException(DataPlaneUnavailableReason);
+            var endpoint = IsEntra ? DataPlaneEndpoint : ServiceBusConnectionStringProperties.Parse(ConnectionString).Endpoint;
+            var options = new ServiceBusClientOptions { TransportType = TransportType, EnableCrossEntityTransactions = enableCrossEntityTransactions };
+            if (endpoint != null && !endpoint.IsDefaultPort)
+                options.CustomEndpointAddress = endpoint;
 
-            return new ServiceBusClient(
-                ConnectionString,
-                new ServiceBusClientOptions { TransportType = this.TransportType });
+            return IsEntra
+                ? new ServiceBusClient(FullyQualifiedNamespace, EntraTokenCredential, options)
+                : new ServiceBusClient(ConnectionString, options);
         }
 
         /// <summary>
         /// Creates a <see cref="ServiceBusAdministrationClient"/> using Entra credentials or
         /// a connection string depending on the current authentication mode.
         /// </summary>
-        public ServiceBusAdministrationClient CreateAdministrationClient()
+        public virtual ServiceBusAdministrationClient CreateAdministrationClient()
         {
+            if (AdministrationClient != null) return AdministrationClient;
             return IsEntra
                 ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
-                : new ServiceBusAdministrationClient(ConnectionString);
+                : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);
         }
 
         public async Task<bool> IsPremiumNamespace()
         {
+            // Entity-only SAS access cannot query namespace SKU. Match the editor's conservative default.
+            if (ConnectionStringContainsEntityPath()) return false;
             var administrationClient = CreateAdministrationClient();
             NamespaceProperties namespaceProperties = await administrationClient.GetNamespacePropertiesAsync().ConfigureAwait(false);
 

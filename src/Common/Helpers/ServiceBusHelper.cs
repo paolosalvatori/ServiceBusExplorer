@@ -1,4 +1,8 @@
-﻿#region Copyright
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -35,6 +39,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Producer;
 using Azure.Messaging.ServiceBus.Administration;
@@ -57,7 +62,6 @@ namespace ServiceBusExplorer
     using System.IO.Compression;
     using System.Web.UI.WebControls;
     using Abstractions;
-    using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
     {
@@ -138,6 +142,9 @@ namespace ServiceBusExplorer
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
+        private ServiceBusManagementClient managementClient;
+        private Func<ServiceBusAdministrationClient, Task> serviceBusAudienceProbe = static client =>
+            client.QueueExistsAsync("$__scope_probe__$");
         private AzureNotificationHubs.NamespaceManager notificationHubNamespaceManager;
         private MessagingFactory messagingFactory;
         private bool traceEnabled;
@@ -192,8 +199,9 @@ namespace ServiceBusExplorer
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
             entraTokenProvider = serviceBusHelper.entraTokenProvider;
             namespaceManager = serviceBusHelper.NamespaceManager;
+            managementClient = serviceBusHelper.managementClient;
             notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
-            MessagingFactory = serviceBusHelper.MessagingFactory;
+            MessagingFactory = serviceBusHelper.messagingFactory;
             Namespace = serviceBusHelper.Namespace;
             NamespaceUri = serviceBusHelper.NamespaceUri;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
@@ -262,6 +270,8 @@ namespace ServiceBusExplorer
         /// Gets the EntityPath from the current namespace connection, if any.
         /// </summary>
         public string EntityPath => serviceBusNamespaceInstance?.EntityPath;
+        public bool IsEmulator => serviceBusNamespaceInstance?.UseDevelopmentEmulator == true;
+        public ServiceBusManagementClient ManagementClient => managementClient;
 
         /// <summary>
         /// Gets or sets the type of the message defer provider
@@ -422,22 +432,11 @@ namespace ServiceBusExplorer
             }
         }
 
-        private string ConnectionStringWithoutEntityPath
+        private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return null;
-                }
-
-                var builder = new ServiceBusConnectionStringBuilder(connectionString)
-                {
-                    EntityPath = string.Empty
-                };
-
-                return builder.ToString();
-            }
+            var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            builder.EntityPath = string.Empty;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -629,6 +628,10 @@ namespace ServiceBusExplorer
         /// <returns>A messaging factory object.</returns>
         public MessagingFactory CreateMessagingFactory()
         {
+            if (IsEmulator)
+            {
+                throw new NotSupportedException("Service Bus emulator management is available, but legacy send/receive/session operations require the next data-plane migration stage (#727).");
+            }
             MessagingFactory factory;
             if (entraTokenProvider != null)
             {
@@ -636,7 +639,7 @@ namespace ServiceBusExplorer
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
-                factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                factory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
             }
             else
             {
@@ -735,38 +738,161 @@ namespace ServiceBusExplorer
         public bool Connect(ServiceBusNamespace serviceBusNamespace)
         {
             var isEntra = serviceBusNamespace?.IsEntra == true;
-
             if (!isEntra && string.IsNullOrWhiteSpace(serviceBusNamespace?.ConnectionString))
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
 
+            if (!isEntra && !serviceBusNamespace.UseDevelopmentEmulator)
+                GetConnectionStringWithoutEntityPath(serviceBusNamespace.ConnectionString);
+
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
-                var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
-                throw new Exception($"Could not contact host in connection string: { endpoint }.");
+                throw new Exception("Could not resolve the Service Bus endpoint host.");
             }
+
+            return RetryHelper.RetryFunc(() =>
+            {
+                var replacement = PrepareConnection(serviceBusNamespace);
+                // Preparation succeeds as a complete unit before the active profile changes.
+                PublishConnection(replacement);
+                return true;
+            }, writeToLog);
+        }
+
+        private ServiceBusHelper PrepareConnection(ServiceBusNamespace profile)
+        {
+            var replacement = new ServiceBusHelper((message, async) => WriteToLogIf(traceEnabled, message, async))
+            {
+                scheme = scheme,
+                serviceBusAudienceProbe = serviceBusAudienceProbe
+            };
+            replacement.OnCreate += args => OnCreate?.Invoke(args);
+            replacement.OnDelete += args => OnDelete?.Invoke(args);
+            try
+            {
+                if (!replacement.InitializeConnection(profile)) throw new InvalidOperationException("Connection preparation failed.");
+                return replacement;
+            }
+            catch
+            {
+                // Administration/token wrappers do not own disposable connections. The legacy
+                // messaging factory is the provisional resource that can require closing.
+                try { replacement.messagingFactory?.Close(); }
+                catch (Exception ex) { try { WriteToLog("Provisional connection cleanup failed: " + ex.Message); } catch { } }
+                throw;
+            }
+        }
+
+        private void PublishConnection(ServiceBusHelper replacement)
+        {
+            serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
+            connectionString = replacement.connectionString;
+            currentSharedAccessKey = replacement.currentSharedAccessKey;
+            currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
+            namespaceUri = replacement.namespaceUri;
+            connectionStringType = replacement.connectionStringType;
+            ns = replacement.ns;
+            IsEventHubNamespace = replacement.IsEventHubNamespace;
+            namespaceManager = replacement.namespaceManager;
+            notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
+            entraTokenProvider = replacement.entraTokenProvider;
+            managementClient = replacement.managementClient;
+            messagingFactory = replacement.messagingFactory;
+            serviceBusQueue = replacement.serviceBusQueue;
+            serviceBusTopic = replacement.serviceBusTopic;
+            serviceBusSubscription = replacement.serviceBusSubscription;
+            serviceBusRule = replacement.serviceBusRule;
+            serviceBusRelay = replacement.serviceBusRelay;
+            serviceBusNotificationHub = replacement.serviceBusNotificationHub;
+            serviceBusEventHub = replacement.serviceBusEventHub;
+            serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
+            serviceBusPartition = replacement.serviceBusPartition;
+        }
+
+        private bool InitializeConnection(ServiceBusNamespace serviceBusNamespace)
+        {
+            var isEntra = serviceBusNamespace?.IsEntra == true;
+
+            // Reconnect must not leave adapters pointing at a previous namespace.
+            serviceBusNamespaceInstance = serviceBusNamespace;
+            namespaceManager = null;
+            notificationHubNamespaceManager = null;
+            entraTokenProvider = null;
+            managementClient = null;
+            messagingFactory = null;
+            serviceBusQueue = null;
+            serviceBusTopic = null;
+            serviceBusSubscription = null;
+            serviceBusRule = null;
+            serviceBusRelay = null;
+            serviceBusNotificationHub = null;
+            serviceBusEventHub = null;
+            serviceBusConsumerGroup = null;
+            serviceBusPartition = null;
 
             var func = (() =>
             {
-                if (isEntra)
-                {
-                    // Commit the candidate only after the management probe and its sign-in succeed.
-                    (namespaceManager, entraTokenProvider, IsEventHubNamespace) = ConnectEntra(serviceBusNamespace);
-                }
-                serviceBusNamespaceInstance = serviceBusNamespace;
                 connectionString = serviceBusNamespace.ConnectionString;
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
-                if (!isEntra)
+
+                // Reset connection-scoped state so reconnects don't carry over stale values.
+                IsEventHubNamespace = false;
+                var administrationOptions = new ServiceBusAdministrationClientOptions();
+                administrationOptions.Retry.MaxRetries = RetryHelper.RetryCount;
+                var administrationClient = isEntra
+                    ? new ServiceBusAdministrationClient(serviceBusNamespace.FullyQualifiedNamespace,
+                        EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespace.TenantId), administrationOptions)
+                    : CreateAdministrationClient(serviceBusNamespace, administrationOptions);
+                managementClient = new ServiceBusManagementClient(administrationClient, new Uri(serviceBusNamespace.Uri));
+
+                if (IsEmulator)
+                {
+                    namespaceManager = null;
+                    entraTokenProvider = null;
+                }
+                else if (isEntra)
+                {
+                    var endpointUri = new Uri(serviceBusNamespace.Uri);
+                    var tenantId = serviceBusNamespace.TenantId;
+
+                    // Try Service Bus scope first; if the management probe fails with an
+                    // authorization error, the namespace may be an Event Hub namespace that
+                    // requires the Event Hub audience instead.
+                    entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
+                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
+
+                    try
+                    {
+                        // Lightweight scope probe — check for a non-existent queue.
+                        // This issues a single REST call (no entity enumeration) and
+                        // will throw UnauthorizedAccessException if the token audience is wrong.
+                        serviceBusAudienceProbe(administrationClient).ConfigureAwait(false).GetAwaiter().GetResult();
+                    }
+                    catch (Exception ex) when (IsAudienceMismatchException(ex))
+                    {
+                        // Audience mismatch — the namespace expects a different token audience
+                        // (Event Hub vs Service Bus). Retry with Event Hub scope.
+                        WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
+                        entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
+                            tenantId, EntraCredentialFactory.EventHubsAudience);
+                        // Complete interactive Event Hubs sign-in before publishing the replacement.
+                        entraTokenProvider.GetWebTokenAsync(endpointUri.AbsoluteUri, "Manage", false, namespaceManager.Settings.OperationTimeout)
+                            .GetAwaiter().GetResult();
+                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
+                        IsEventHubNamespace = true;
+                    }
+                }
+                else
                 {
                     IsEventHubNamespace = false;
                     entraTokenProvider = null;
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
 
                 // Set retry count
-                if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                if (namespaceManager?.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
                 {
                     namespaceManager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
                                                                                             defaultServiceBusRetryExponential.MaximumBackoff,
@@ -774,7 +900,7 @@ namespace ServiceBusExplorer
                 }
 
                 // Notification Hubs don't support Entra token-provider auth
-                if (!isEntra)
+                if (!isEntra && !IsEmulator)
                 {
                     try
                     {
@@ -795,23 +921,26 @@ namespace ServiceBusExplorer
                     }
                 }
 
-                serviceBusQueue = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusQueue(sbn, nsmgr));
-                serviceBusTopic = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusTopic(sbn, nsmgr));
-                serviceBusSubscription = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusSubscription(sbn, nsmgr));
-                serviceBusRule = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRule(sbn, nsmgr));
-                serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
-                serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
-                serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
-                serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
-                serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
+                serviceBusQueue = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusQueue(sbn, managementClient));
+                serviceBusTopic = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusTopic(sbn, managementClient));
+                serviceBusSubscription = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusSubscription(sbn, managementClient));
+                serviceBusRule = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusRule(sbn, managementClient));
+                if (!IsEmulator)
+                {
+                    serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
+                    serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
+                    serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
+                    serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
+                    serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
+                }
 
-                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceManager.Address.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
-                namespaceUri = namespaceManager.Address;
+                namespaceUri = managementClient.Address;
+                WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
-                ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
+                ns = IsEmulator ? namespaceUri.Host : IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
                 // Event Hubs data-plane clients are created through Azure.Messaging.EventHubs.
-                if (IsEventHubNamespace)
+                if (IsEventHubNamespace || IsEmulator)
                 {
                     MessagingFactory = null;
                 }
@@ -821,12 +950,14 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    MessagingFactory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
-                WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
+                WriteToLogIf(traceEnabled, IsEmulator
+                    ? "Emulator management connected. Legacy data-plane operations are unavailable until migration stage 3."
+                    : MessageFactorySuccessfullyCreated);
                 return true;
             });
-            return RetryHelper.RetryFunc(func, writeToLog);
+            return func();
         }
 
         /// <summary>
@@ -2202,13 +2333,16 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentNullException(BrokeredMessageCannotBeNull);
             }
-            var outboundMessage = messageTemplate.Clone();
+            BrokeredMessage outboundMessage;
             if (bodyType == BodyType.String)
             {
-                using (var reader = new StreamReader(outboundMessage.GetBody<Stream>()))
-                {
+                using (var template = messageTemplate.Clone())
+                using (var reader = new StreamReader(template.GetBody<Stream>()))
                     outboundMessage = new BrokeredMessage(reader.ReadToEnd());
-                }
+            }
+            else
+            {
+                outboundMessage = ServiceBusReceivedMessageAdapter.CloneForResubmission(messageTemplate);
             }
 
             outboundMessage.MessageId = updateMessageId ? Guid.NewGuid().ToString() : messageTemplate.MessageId;
@@ -2250,7 +2384,10 @@ namespace ServiceBusExplorer
             }
             if (messageInspector != null)
             {
-                outboundMessage = messageInspector.BeforeSendMessage(outboundMessage);
+                // The String branch created a new outbound message with no received identity.
+                outboundMessage = bodyType == BodyType.String
+                    ? messageInspector.BeforeSendMessage(outboundMessage) ?? throw new InvalidOperationException("The message inspector returned no message.")
+                    : ServiceBusReceivedMessageAdapter.Inspect(outboundMessage, messageInspector.BeforeSendMessage);
             }
             return outboundMessage;
         }
@@ -2387,6 +2524,233 @@ namespace ServiceBusExplorer
         /// <param name="cancellationTokenSource">The cancellation token.</param>
         /// <param name="traceMessage">A trace message.</param>
         /// <returns>True if the method completed without exceptions, false otherwise.</returns>
+        public bool SendMessages(ServiceBusSender messageSender,
+                                 string entityPath,
+                                 IEnumerable<BrokeredMessage> messageTemplateEnumerable,
+                                 Func<long> getMessageNumber,
+                                 long messageCount,
+                                 int taskId,
+                                 bool updateMessageId,
+                                 bool addMessageNumber,
+                                 bool oneSessionPerTask,
+                                 bool logging,
+                                 bool verbose,
+                                 bool statistics,
+                                 bool sendBatch,
+                                 bool isBinary,
+                                 int batchSize,
+                                 bool senderThinkTime,
+                                 int thinkTime,
+                                 BodyType bodyType,
+                                 IBrokeredMessageInspector messageInspector,
+                                 UpdateStatisticsDelegate updateStatistics,
+                                 CancellationTokenSource cancellationTokenSource,
+                                 out string traceMessage)
+        {
+            if (messageSender == null)
+            {
+                throw new ArgumentNullException(nameof(messageSender));
+            }
+            if (messageTemplateEnumerable == null)
+            {
+                throw new ArgumentNullException(nameof(messageTemplateEnumerable));
+            }
+            if (cancellationTokenSource == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationTokenSource));
+            }
+
+            var templates = new CircularList<BrokeredMessage>(messageTemplateEnumerable);
+            long messagesSent = 0;
+            long totalElapsedTime = 0;
+            long minimumSendTime = long.MaxValue;
+            long maximumSendTime = 0;
+            string exceptionMessage = null;
+            var ok = true;
+            var wcfUri = IsCloudNamespace
+                ? new Uri(namespaceUri, entityPath)
+                : new UriBuilder
+                {
+                    Host = namespaceUri.Host,
+                    Path = $"{namespaceUri.AbsolutePath}/{entityPath}",
+                    Scheme = DefaultScheme
+                }.Uri;
+
+            try
+            {
+                var more = true;
+                while (more && !cancellationTokenSource.IsCancellationRequested)
+                {
+                    var outboundMessages = new List<BrokeredMessage>();
+                    var limit = sendBatch && batchSize > 1 ? batchSize : 1;
+                    while (outboundMessages.Count < limit && !cancellationTokenSource.IsCancellationRequested)
+                    {
+                        var messageNumber = getMessageNumber();
+                        if (messageNumber >= messageCount)
+                        {
+                            more = false;
+                            break;
+                        }
+
+                        var outbound = bodyType == BodyType.Wcf
+                            ? CreateMessageForWcfReceiver(templates.Next, taskId, updateMessageId, oneSessionPerTask, wcfUri)
+                            : CreateMessageForApiReceiver(templates.Next, taskId, updateMessageId, oneSessionPerTask, bodyType, messageInspector);
+                        if (addMessageNumber)
+                        {
+                            outbound.Properties[MessageNumber] = messageNumber;
+                        }
+                        outboundMessages.Add(outbound);
+                    }
+
+                    if (outboundMessages.Count > 0)
+                    {
+                        var acknowledged = 0;
+                        Action<int, long> record = (count, elapsed) =>
+                        {
+                            messagesSent += count;
+                            totalElapsedTime += elapsed;
+                            minimumSendTime = Math.Min(minimumSendTime, elapsed);
+                            maximumSendTime = Math.Max(maximumSendTime, elapsed);
+                            if (statistics)
+                                PublishConfirmedProgress(() => updateStatistics(count, elapsed, DirectionType.Send));
+                            if (logging && System.Transactions.Transaction.Current == null)
+                                foreach (var outbound in outboundMessages.Skip(acknowledged).Take(count))
+                                    LogServiceBusMessageSent(outbound, taskId, isBinary, bodyType == BodyType.Wcf, verbose);
+                            acknowledged += count;
+                        };
+                        try
+                        {
+                            if (outboundMessages.Count == 1)
+                            {
+                                var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0], bodyType == BodyType.String);
+                                var stopwatch = Stopwatch.StartNew();
+                                messageSender.SendMessageAsync(sdkMessage, cancellationTokenSource.Token)
+                                    .GetAwaiter().GetResult();
+                                record(1, stopwatch.ElapsedMilliseconds);
+                            }
+                            else
+                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token, record, bodyType == BodyType.String);
+                        }
+                        finally
+                        {
+                            foreach (var outbound in outboundMessages)
+                            {
+                                outbound.Dispose();
+                            }
+                        }
+                    }
+
+                    if (senderThinkTime && more && !cancellationTokenSource.IsCancellationRequested)
+                    {
+                        WriteToLog(string.Format(SleepingFor, thinkTime));
+                        Thread.Sleep(thinkTime);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
+                ok = false;
+            }
+
+            var averageSendTime = messagesSent > 0 ? totalElapsedTime / messagesSent : maximumSendTime;
+            var messagesPerSecond = totalElapsedTime > 0 ? (double)(messagesSent * 1000) / totalElapsedTime : 0;
+            var builder = new StringBuilder();
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsHeader, taskId));
+            if (!string.IsNullOrWhiteSpace(exceptionMessage))
+            {
+                builder.AppendLine(exceptionMessage);
+            }
+            if (System.Transactions.Transaction.Current != null)
+                builder.AppendLine("Provisional transaction work below; no sends are confirmed until commit succeeds.");
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsLine1,
+                messagesSent, messagesPerSecond, totalElapsedTime));
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, SenderStatisticsLine2,
+                averageSendTime, minimumSendTime == long.MaxValue ? 0 : minimumSendTime, maximumSendTime));
+            traceMessage = builder.ToString();
+            return ok;
+        }
+
+        public static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged) =>
+            SendServiceBusBatch(sender, messages, cancellationToken, acknowledged, false);
+
+        private static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged, bool sendStringValue)
+        {
+            ServiceBusMessageBatch batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
+            try
+            {
+                ServiceBusMessage previous = null;
+                foreach (var brokeredMessage in messages)
+                {
+                    var message = ServiceBusMessageAdapter.ToServiceBusMessage(brokeredMessage, sendStringValue);
+                    bool sameRoute = previous == null ||
+                        (previous.PartitionKey == message.PartitionKey && previous.SessionId == message.SessionId &&
+                         previous.TransactionPartitionKey == message.TransactionPartitionKey);
+                    previous = message;
+                    if (sameRoute && batch.TryAddMessage(message))
+                    {
+                        continue;
+                    }
+
+                    if (batch.Count == 0)
+                    {
+                        throw new InvalidOperationException("A message exceeds the maximum Service Bus batch size.");
+                    }
+
+                    SendConfirmedBatch(sender, batch, cancellationToken, acknowledged);
+                    batch.Dispose();
+                    batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
+                    if (!batch.TryAddMessage(message))
+                    {
+                        throw new InvalidOperationException("A message exceeds the maximum Service Bus batch size.");
+                    }
+                }
+                if (batch.Count > 0)
+                {
+                    SendConfirmedBatch(sender, batch, cancellationToken, acknowledged);
+                }
+            }
+            finally
+            {
+                batch.Dispose();
+            }
+        }
+
+        private static void SendConfirmedBatch(ServiceBusSender sender, ServiceBusMessageBatch batch,
+            CancellationToken cancellationToken, Action<int, long> acknowledged)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var stopwatch = Stopwatch.StartNew();
+            sender.SendMessagesAsync(batch, cancellationToken).GetAwaiter().GetResult();
+            acknowledged(batch.Count, stopwatch.ElapsedMilliseconds);
+        }
+
+        private void LogServiceBusMessageSent(BrokeredMessage message, int taskId, bool isBinary, bool useWcf, bool verbose)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, MessageSuccessfullySent,
+                taskId,
+                string.IsNullOrWhiteSpace(message.MessageId) ? NullValue : message.MessageId,
+                string.IsNullOrWhiteSpace(message.SessionId) ? NullValue : message.SessionId,
+                string.IsNullOrWhiteSpace(message.Label) ? NullValue : message.Label,
+                message.Size));
+            if (verbose)
+            {
+                builder.AppendLine(SentMessagePayloadHeader);
+                using (var bodyStream = message.Clone().GetBodyStream())
+                {
+                    var messageText = GetMessageText(bodyStream, isBinary);
+                    builder.AppendLine(useWcf ? XmlHelper.Indent(messageText) : messageText);
+                }
+                builder.AppendLine(SentMessagePropertiesHeader);
+                foreach (var property in message.Properties)
+                {
+                    builder.AppendLine(string.Format(MessagePropertyFormat, property.Key, property.Value));
+                }
+            }
+            WriteToLog(builder.ToString().TrimEnd());
+        }
+
         public bool SendMessages(MessageSender messageSender,
                                  IEnumerable<BrokeredMessage> messageTemplateEnumerable,
                                  Func<long> getMessageNumber,
@@ -2409,6 +2773,7 @@ namespace ServiceBusExplorer
                                  CancellationTokenSource cancellationTokenSource,
                                  out string traceMessage)
         {
+            if (System.Transactions.Transaction.Current != null) logging = false;
             if (messageSender == null)
             {
                 throw new ArgumentNullException(MessageSenderCannotBeNull);
@@ -2515,7 +2880,7 @@ namespace ServiceBusExplorer
                             totalElapsedTime += elapsedMilliseconds;
                             if (statistics)
                             {
-                                updateStatistics(messageList.Count, elapsedMilliseconds, DirectionType.Send);
+                                PublishConfirmedProgress(updateStatistics, messageList.Count, elapsedMilliseconds, DirectionType.Send);
                             }
                         }
                         if (senderThinkTime)
@@ -2578,7 +2943,7 @@ namespace ServiceBusExplorer
                         totalElapsedTime += elapsedMilliseconds;
                         if (statistics)
                         {
-                            updateStatistics(1, elapsedMilliseconds, DirectionType.Send);
+                            PublishConfirmedProgress(updateStatistics, 1, elapsedMilliseconds, DirectionType.Send);
                         }
                         if (senderThinkTime)
                         {
@@ -2652,7 +3017,8 @@ namespace ServiceBusExplorer
                                              averageSendTime,
                                              minimumSendTime == long.MaxValue ? 0 : minimumSendTime,
                                              maximumSendTime));
-            traceMessage = builder.ToString();
+            traceMessage = (System.Transactions.Transaction.Current == null ? "" :
+                "Provisional transaction work below; operations are not confirmed until commit succeeds.\n") + builder;
             return ok;
         }
 
@@ -2876,7 +3242,9 @@ namespace ServiceBusExplorer
         /// <param name="cancellationTokenSource">The cancellation token.</param>
         /// <param name="traceMessage">A trace message.</param>
         /// <returns>True if the method completed without exceptions, false otherwise.</returns>
-        public bool ReceiveMessages(MessageReceiver messageReceiver,
+        public bool ReceiveMessages(ServiceBusReceiver messageReceiver,
+                                    ServiceBusReceiveMode receiveMode,
+                                    bool receivedFromDeadLetterQueue,
                                     int taskId,
                                     int timeout,
                                     Filter filter,
@@ -2897,6 +3265,296 @@ namespace ServiceBusExplorer
         {
             if (messageReceiver == null)
             {
+                throw new ArgumentNullException(nameof(messageReceiver));
+            }
+            if (cancellationTokenSource == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationTokenSource));
+            }
+
+            ValidateReceiveTransaction(receiveMode == ServiceBusReceiveMode.ReceiveAndDelete);
+
+            var messageDeferProvider = Activator.CreateInstance(messageDeferProviderType) as IMessageDeferProvider;
+            var readingDeferredMessages = false;
+            var messagesReceived = 0L;
+            long totalReceiveElapsedTime = 0;
+            long totalCompleteElapsedTime = 0;
+            long minimumReceiveTime = long.MaxValue;
+            long maximumReceiveTime = 0;
+            long minimumCompleteTime = long.MaxValue;
+            long maximumCompleteTime = 0;
+            string exceptionMessage = null;
+            List<ServiceBusReceivedMessage> unsettledMessages = null;
+            var ok = true;
+            MessageEncodingBindingElement element = scheme == DefaultScheme
+                ? (MessageEncodingBindingElement)new BinaryMessageEncodingBindingElement()
+                : new TextMessageEncodingBindingElement();
+            var encoder = element.CreateMessageEncoderFactory().Encoder;
+
+            try
+            {
+                var completed = false;
+                while (!completed && !cancellationTokenSource.IsCancellationRequested)
+                {
+                    var stopwatch = Stopwatch.StartNew();
+                    IReadOnlyList<ServiceBusReceivedMessage> messages;
+                    if (receiveBatch && batchSize > 0)
+                    {
+                        messages = messageReceiver.ReceiveMessagesAsync(
+                            batchSize,
+                            GetModernReceiveWait(TimeSpan.FromSeconds(timeout)),
+                            cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        completed = messages == null || messages.Count == 0;
+                    }
+                    else
+                    {
+                        ServiceBusReceivedMessage receivedMessage;
+                        if (readingDeferredMessages)
+                        {
+                            if (!messageDeferProvider.Dequeue(out var sequenceNumber)) break;
+                            receivedMessage = messageReceiver.ReceiveDeferredMessageAsync(
+                                sequenceNumber,
+                                cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        }
+                        else
+                        {
+                            receivedMessage = messageReceiver.ReceiveMessageAsync(
+                                GetModernReceiveWait(TimeSpan.FromSeconds(timeout)),
+                                cancellationTokenSource.Token).GetAwaiter().GetResult();
+                        }
+
+                        if (receivedMessage == null)
+                        {
+                            if (!readingDeferredMessages && messageDeferProvider.Count > 0)
+                            {
+                                readingDeferredMessages = true;
+                                continue;
+                            }
+                            completed = true;
+                            continue;
+                        }
+                        messages = new[] { receivedMessage };
+                    }
+                    stopwatch.Stop();
+
+                    if (completed)
+                    {
+                        continue;
+                    }
+                    unsettledMessages = messages.ToList();
+
+                    totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
+                    minimumReceiveTime = Math.Min(minimumReceiveTime, stopwatch.ElapsedMilliseconds);
+                    maximumReceiveTime = Math.Max(maximumReceiveTime, stopwatch.ElapsedMilliseconds);
+                    if (receiveMode == ServiceBusReceiveMode.ReceiveAndDelete)
+                    {
+                        // The entire SDK batch is already removed even if a later inspector fails.
+                        messagesReceived += messages.Count;
+                        var count = messages.Count;
+                        var elapsed = stopwatch.ElapsedMilliseconds;
+                        if (statistics) PublishConfirmedProgress(() => updateStatistics(count, elapsed, DirectionType.Receive));
+                    }
+
+                    var logBuilder = new StringBuilder();
+                    foreach (var receivedMessage in messages)
+                    {
+                        var compatibilityMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(receivedMessage);
+                        try
+                        {
+                            if (messageInspector != null)
+                            {
+                                compatibilityMessage = ServiceBusReceivedMessageAdapter.Inspect(compatibilityMessage, messageInspector.AfterReceiveMessage);
+                            }
+
+                            var mayDefer = defer && !readingDeferredMessages;
+                            var matched = (mayDefer || moveToDeadLetterQueue) && filter != null && filter.Match(compatibilityMessage);
+                            var deferredMessage = mayDefer && matched;
+                            var movedToDeadLetterQueue = !deferredMessage && moveToDeadLetterQueue && matched;
+                            var settlementStopwatch = Stopwatch.StartNew();
+                            if (deferredMessage)
+                            {
+                                messageReceiver.DeferMessageAsync(receivedMessage, cancellationToken: cancellationTokenSource.Token)
+                                    .GetAwaiter().GetResult();
+                                messageDeferProvider.Enqueue(receivedMessage.SequenceNumber);
+                            }
+                            else if (movedToDeadLetterQueue)
+                            {
+                                messageReceiver.DeadLetterMessageAsync(receivedMessage, cancellationToken: cancellationTokenSource.Token)
+                                    .GetAwaiter().GetResult();
+                                messagesReceived++;
+                            }
+                            else if (receiveMode == ServiceBusReceiveMode.PeekLock)
+                            {
+                                if (completeReceive)
+                                {
+                                    messageReceiver.CompleteMessageAsync(receivedMessage, cancellationTokenSource.Token)
+                                        .GetAwaiter().GetResult();
+                                    messagesReceived++;
+                                }
+                                else if (!receiveBatch)
+                                {
+                                    messageReceiver.AbandonMessageAsync(receivedMessage, cancellationToken: cancellationTokenSource.Token)
+                                        .GetAwaiter().GetResult();
+                                }
+                            }
+                            if (receiveMode == ServiceBusReceiveMode.PeekLock &&
+                                (movedToDeadLetterQueue || (!deferredMessage && completeReceive)) && statistics)
+                            {
+                                var elapsed = stopwatch.ElapsedMilliseconds / messages.Count;
+                                PublishConfirmedProgress(() => updateStatistics(1, elapsed, DirectionType.Receive));
+                            }
+                            if (receiveMode != ServiceBusReceiveMode.PeekLock ||
+                                deferredMessage ||
+                                movedToDeadLetterQueue ||
+                                completeReceive ||
+                                !receiveBatch)
+                            {
+                                unsettledMessages.Remove(receivedMessage);
+                            }
+                            settlementStopwatch.Stop();
+                            totalCompleteElapsedTime += settlementStopwatch.ElapsedMilliseconds;
+                            minimumCompleteTime = Math.Min(minimumCompleteTime, settlementStopwatch.ElapsedMilliseconds);
+                            maximumCompleteTime = Math.Max(maximumCompleteTime, settlementStopwatch.ElapsedMilliseconds);
+
+                            if (logging && System.Transactions.Transaction.Current == null)
+                            {
+                                if (receiveMode == ServiceBusReceiveMode.PeekLock && !completeReceive &&
+                                    !deferredMessage && !movedToDeadLetterQueue)
+                                {
+                                    logBuilder.AppendLine(string.Format(MessagePeekedButNotConsumed,
+                                        taskId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.MessageId) ? NullValue : compatibilityMessage.MessageId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.SessionId) ? NullValue : compatibilityMessage.SessionId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.Label) ? NullValue : compatibilityMessage.Label,
+                                        compatibilityMessage.Size));
+                                }
+                                else
+                                {
+                                    logBuilder.AppendLine(string.Format(MessageSuccessfullyReceived,
+                                        taskId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.MessageId) ? NullValue : compatibilityMessage.MessageId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.SessionId) ? NullValue : compatibilityMessage.SessionId,
+                                        string.IsNullOrWhiteSpace(compatibilityMessage.Label) ? NullValue : compatibilityMessage.Label,
+                                        compatibilityMessage.Size,
+                                        receivedMessage.DeliveryCount));
+                                }
+                                if (deferredMessage)
+                                {
+                                    logBuilder.AppendLine(MessageDeferred);
+                                }
+                                if (readingDeferredMessages)
+                                {
+                                    logBuilder.AppendLine(ReadMessageDeferred);
+                                }
+                                if (movedToDeadLetterQueue)
+                                {
+                                    logBuilder.AppendLine(MessageMovedToDeadLetterQueue);
+                                }
+                                if (receivedFromDeadLetterQueue)
+                                {
+                                    logBuilder.AppendLine(MessageReadFromDeadLetterQueue);
+                                }
+                                if (verbose)
+                                {
+                                    GetMessageAndProperties(logBuilder, compatibilityMessage, encoder);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            compatibilityMessage?.Dispose();
+                        }
+                    }
+
+                    if (logging && logBuilder.Length > 0)
+                    {
+                        WriteToLog(logBuilder.ToString().TrimEnd());
+                    }
+                    unsettledMessages = null;
+                    if (receiverThinkTime && !completed && !cancellationTokenSource.IsCancellationRequested)
+                    {
+                        WriteToLog(string.Format(SleepingFor, thinkTime));
+                        Thread.Sleep(thinkTime);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                exceptionMessage = string.Format(ExceptionOccurred, ex.Message);
+                if (unsettledMessages != null && receiveMode == ServiceBusReceiveMode.PeekLock)
+                {
+                    foreach (var message in unsettledMessages)
+                    {
+                        try
+                        {
+                            messageReceiver.AbandonMessageAsync(message, cancellationToken: CancellationToken.None)
+                                .GetAwaiter().GetResult();
+                        }
+                        catch (Exception abandonException)
+                        {
+                            exceptionMessage += $" Unable to abandon message {message.SequenceNumber}: {abandonException.Message}";
+                        }
+                    }
+                }
+                ok = false;
+            }
+
+            var builder = new StringBuilder();
+            if (System.Transactions.Transaction.Current != null)
+                builder.AppendLine("Provisional transaction work below; no settlements are confirmed until commit succeeds.");
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsHeader, taskId));
+            if (!string.IsNullOrWhiteSpace(exceptionMessage))
+            {
+                builder.AppendLine(exceptionMessage);
+            }
+            var averageReceiveTime = messagesReceived > 0 ? totalReceiveElapsedTime / messagesReceived : maximumReceiveTime;
+            var messagesPerSecond = totalReceiveElapsedTime > 0
+                ? (double)(messagesReceived * 1000) / totalReceiveElapsedTime
+                : 0;
+            if (receiveMode == ServiceBusReceiveMode.PeekLock && completeReceive)
+            {
+                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsWithCompleteLine1,
+                    messagesReceived, messagesPerSecond, totalReceiveElapsedTime, totalCompleteElapsedTime));
+            }
+            else
+            {
+                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsLine1,
+                    messagesReceived, messagesPerSecond, totalReceiveElapsedTime));
+            }
+            builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsLine2,
+                averageReceiveTime, minimumReceiveTime == long.MaxValue ? 0 : minimumReceiveTime, maximumReceiveTime));
+            if (receiveMode == ServiceBusReceiveMode.PeekLock && completeReceive)
+            {
+                var averageCompleteTime = messagesReceived > 0 ? totalCompleteElapsedTime / messagesReceived : maximumCompleteTime;
+                builder.AppendLine(string.Format(CultureInfo.CurrentCulture, ReceiverStatisticsLine3,
+                    averageCompleteTime, minimumCompleteTime == long.MaxValue ? 0 : minimumCompleteTime, maximumCompleteTime));
+            }
+            traceMessage = builder.ToString();
+            return ok;
+        }
+
+        public bool ReceiveMessages(MessageReceiver messageReceiver,
+                                    int taskId,
+                                    int timeout,
+                                    Filter filter,
+                                    bool moveToDeadLetterQueue,
+                                    bool completeReceive,
+                                    bool defer,
+                                    bool logging,
+                                    bool verbose,
+                                    bool statistics,
+                                    bool receiveBatch,
+                                    int batchSize,
+                                    bool receiverThinkTime,
+                                    int thinkTime,
+                                    IBrokeredMessageInspector messageInspector,
+                                    UpdateStatisticsDelegate updateStatistics,
+                                    CancellationTokenSource cancellationTokenSource,
+                                    out string traceMessage)
+        {
+            if (System.Transactions.Transaction.Current != null) logging = false;
+            if (messageReceiver == null)
+            {
                 throw new ArgumentNullException(MessageReceiverCannotBeNull);
             }
 
@@ -2904,6 +3562,8 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentNullException(CancellationTokenSourceCannotBeNull);
             }
+
+            ValidateReceiveTransaction(messageReceiver.Mode == ReceiveMode.ReceiveAndDelete);
 
             BrokeredMessage inboundMessage = null;
             StringBuilder builder;
@@ -2948,11 +3608,12 @@ namespace ServiceBusExplorer
                             var messageEnumerable = messageReceiver.ReceiveBatch(batchSize, TimeSpan.FromSeconds(timeout));
                             stopwatch.Stop();
 
-                            messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable.ToList();
-                            if (messageInspector != null)
+                            messageList = messageEnumerable as IList<BrokeredMessage> ?? messageEnumerable?.ToList() ?? new List<BrokeredMessage>();
+                            messageList = InspectReceivedMessages(messageList, messageReceiver.Mode, messageInspector, count =>
                             {
-                                messageList = messageList.Select(b => messageInspector.AfterReceiveMessage(b)).ToList();
-                            }
+                                messagesReceived += count;
+                                if (statistics) PublishConfirmedProgress(updateStatistics, count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                            });
                             isCompleted = messageEnumerable == null || !messageList.Any();
                             if (isCompleted)
                             {
@@ -2963,7 +3624,7 @@ namespace ServiceBusExplorer
                                 if (completeReceive)
                                 {
                                     stopwatch = Stopwatch.StartNew();
-                                    messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
+                                    messageReceiver.CompleteBatch(messageList.Select(ServiceBusReceivedMessageAdapter.GetSourceLockToken));
                                     stopwatch.Stop();
 
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
@@ -2978,10 +3639,6 @@ namespace ServiceBusExplorer
                                     messagesReceived += messageList.Count;
                                 }
                             }
-                            else
-                            {
-                                messagesReceived += messageList.Count;
-                            }
                             if (stopwatch.ElapsedMilliseconds > maximumReceiveTime)
                             {
                                 maximumReceiveTime = stopwatch.ElapsedMilliseconds;
@@ -2991,7 +3648,7 @@ namespace ServiceBusExplorer
                                 minimumReceiveTime = stopwatch.ElapsedMilliseconds;
                             }
                             totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
-                            if (statistics)
+                            if (statistics && messageReceiver.Mode == ReceiveMode.PeekLock && completeReceive)
                             {
                                 if (messageReceiver.PrefetchCount > 0)
                                 {
@@ -3003,7 +3660,7 @@ namespace ServiceBusExplorer
                                     {
                                         if (fetchedMessages > 0)
                                         {
-                                            updateStatistics(fetchedMessages,
+                                            PublishConfirmedProgress(updateStatistics, fetchedMessages,
                                                              prefetchElapsedTime,
                                                              DirectionType.Receive);
                                             fetchedMessages = messageList.Count;
@@ -3017,7 +3674,7 @@ namespace ServiceBusExplorer
                                 }
                                 else
                                 {
-                                    updateStatistics(messageList.Count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                    PublishConfirmedProgress(updateStatistics, messageList.Count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
                                 }
                             }
                             builder = new StringBuilder();
@@ -3078,7 +3735,7 @@ namespace ServiceBusExplorer
                                 try
                                 {
                                     var stopwatch = Stopwatch.StartNew();
-                                    messageReceiver.CompleteBatch(messageList.Select(b => b.LockToken));
+                                    messageReceiver.CompleteBatch(messageList.Select(ServiceBusReceivedMessageAdapter.GetSourceLockToken));
                                     stopwatch.Stop();
 
                                     if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
@@ -3136,10 +3793,12 @@ namespace ServiceBusExplorer
                                 stopwatch.Start();
                                 inboundMessage = messageReceiver.Receive(TimeSpan.FromSeconds(timeout));
                                 stopwatch.Stop();
-                                if (inboundMessage != null && messageInspector != null)
-                                {
-                                    inboundMessage = messageInspector.AfterReceiveMessage(inboundMessage);
-                                }
+                                inboundMessage = InspectReceivedMessages(inboundMessage == null ? new List<BrokeredMessage>() : new List<BrokeredMessage> { inboundMessage },
+                                    messageReceiver.Mode, messageInspector, count =>
+                                    {
+                                        messagesReceived += count;
+                                        if (statistics) PublishConfirmedProgress(updateStatistics, count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                    }).SingleOrDefault();
                                 isCompleted = inboundMessage == null &&
                                               messageDeferProvider.Count == 0;
                             }
@@ -3153,10 +3812,12 @@ namespace ServiceBusExplorer
                                         stopwatch.Start();
                                         inboundMessage = messageReceiver.Receive(sequenceNumber);
                                         stopwatch.Stop();
-                                        if (inboundMessage != null && messageInspector != null)
-                                        {
-                                            inboundMessage = messageInspector.AfterReceiveMessage(inboundMessage);
-                                        }
+                                        inboundMessage = InspectReceivedMessages(inboundMessage == null ? new List<BrokeredMessage>() : new List<BrokeredMessage> { inboundMessage },
+                                            messageReceiver.Mode, messageInspector, count =>
+                                            {
+                                                messagesReceived += count;
+                                                if (statistics) PublishConfirmedProgress(updateStatistics, count, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
+                                            }).SingleOrDefault();
                                         readDeferredMessage = true;
                                     }
                                 }
@@ -3180,35 +3841,7 @@ namespace ServiceBusExplorer
                                 minimumReceiveTime = stopwatch.ElapsedMilliseconds;
                             }
                             totalReceiveElapsedTime += stopwatch.ElapsedMilliseconds;
-                            if (statistics)
-                            {
-                                if (messageReceiver.PrefetchCount > 0)
-                                {
-                                    if (stopwatch.ElapsedMilliseconds == 0)
-                                    {
-                                        fetchedMessages++;
-                                    }
-                                    else
-                                    {
-                                        if (fetchedMessages > 0)
-                                        {
-                                            updateStatistics(fetchedMessages,
-                                                             prefetchElapsedTime,
-                                                             DirectionType.Receive);
-                                            fetchedMessages = 1;
-                                        }
-                                        else
-                                        {
-                                            fetchedMessages++;
-                                        }
-                                        prefetchElapsedTime = stopwatch.ElapsedMilliseconds;
-                                    }
-                                }
-                                else
-                                {
-                                    updateStatistics(1, stopwatch.ElapsedMilliseconds, DirectionType.Receive);
-                                }
-                            }
+                            var receiveElapsed = stopwatch.ElapsedMilliseconds;
                             builder = new StringBuilder();
 
                             if (defer &&
@@ -3217,7 +3850,7 @@ namespace ServiceBusExplorer
                                 filter.Match(inboundMessage))
                             {
                                 inboundMessage.Defer();
-                                messageDeferProvider.Enqueue(inboundMessage.SequenceNumber);
+                                messageDeferProvider.Enqueue(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber(inboundMessage));
                                 deferredMessage = true;
                             }
 
@@ -3226,7 +3859,7 @@ namespace ServiceBusExplorer
                                 filter != null &&
                                 filter.Match(inboundMessage))
                             {
-                                inboundMessage.DeadLetter();
+                                SettleAndPublishReceive(inboundMessage.DeadLetter, statistics ? updateStatistics : null, receiveElapsed);
                                 movedToDeadLetterQueue = true;
                                 messagesReceived++;
                             }
@@ -3241,7 +3874,7 @@ namespace ServiceBusExplorer
                                     {
                                         stopwatch = new Stopwatch();
                                         stopwatch.Start();
-                                        inboundMessage.Complete();
+                                        SettleAndPublishReceive(inboundMessage.Complete, statistics ? updateStatistics : null, receiveElapsed);
                                         stopwatch.Stop();
                                         if (stopwatch.ElapsedMilliseconds > maximumCompleteTime)
                                         {
@@ -3270,10 +3903,7 @@ namespace ServiceBusExplorer
                                         totalCompleteElapsedTime += stopwatch.ElapsedMilliseconds;
                                     }
                                 }
-                                else
-                                {
-                                    messagesReceived++;
-                                }
+
                             }
 
                             if (logging)
@@ -3374,7 +4004,7 @@ namespace ServiceBusExplorer
 
                 if (messageReceiver.PrefetchCount > 0 && fetchedMessages > 0 && prefetchElapsedTime > 0)
                 {
-                    updateStatistics(fetchedMessages, prefetchElapsedTime, DirectionType.Receive);
+                    PublishConfirmedProgress(updateStatistics, fetchedMessages, prefetchElapsedTime, DirectionType.Receive);
                 }
             }
             catch (Exception ex)
@@ -3429,7 +4059,8 @@ namespace ServiceBusExplorer
                                              minimumCompleteTime == long.MaxValue ? 0 : minimumCompleteTime,
                                              maximumCompleteTime));
             }
-            traceMessage = builder.ToString();
+            traceMessage = (System.Transactions.Transaction.Current == null ? "" :
+                "Provisional transaction work below; operations are not confirmed until commit succeeds.\n") + builder;
             return ok;
         }
 
@@ -3930,22 +4561,379 @@ namespace ServiceBusExplorer
                 address;
         }
 
+        // Statistics describe confirmed operations, not provisional transactional work.
+        private static void PublishConfirmedProgress(UpdateStatisticsDelegate updateStatistics,
+            long count, long elapsed, DirectionType direction) =>
+            PublishConfirmedProgress(() => updateStatistics(count, elapsed, direction));
+
+        public static void PublishConfirmedProgress(Action publish)
+        {
+            var transaction = System.Transactions.Transaction.Current;
+            if (transaction == null) { publish(); return; }
+            transaction.TransactionCompleted += (_, args) =>
+            {
+                if (args.Transaction.TransactionInformation.Status == System.Transactions.TransactionStatus.Committed)
+                    publish();
+            };
+        }
+
+        public static void ValidateReceiveTransaction(bool receiveAndDelete, bool requested = false)
+        {
+            if (receiveAndDelete && (requested || System.Transactions.Transaction.Current != null))
+                throw new NotSupportedException("ReceiveAndDelete cannot be rolled back. Select PeekLock for transactional receiving; no messages were read.");
+        }
+
+        // ReceiveAndDelete has already consumed the entire broker batch. Account for it
+        // before user code can throw, including when an inspector fails on its first row.
+        public static IList<BrokeredMessage> InspectReceivedMessages(IList<BrokeredMessage> messages,
+            ReceiveMode mode, IBrokeredMessageInspector inspector, Action<int> consumed)
+        {
+            if (mode == ReceiveMode.ReceiveAndDelete && messages.Count > 0) consumed(messages.Count);
+            return inspector == null ? messages : messages.Select(message =>
+                ServiceBusReceivedMessageAdapter.Inspect(message, inspector.AfterReceiveMessage)).ToList();
+        }
+
+        public static void SettleAndPublishReceive(Action settle, UpdateStatisticsDelegate updateStatistics, long elapsed)
+        {
+            settle();
+            if (updateStatistics != null) PublishConfirmedProgress(updateStatistics, 1, elapsed, DirectionType.Receive);
+        }
+
+        public static System.Transactions.TransactionScope CreateDataPlaneTransactionScope() =>
+            new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled);
+
+        public static bool ExecuteReceiveTransaction(Func<bool> receive, bool commit, CancellationToken cancellationToken)
+        {
+            using (var scope = CreateDataPlaneTransactionScope())
+            {
+                var succeeded = receive();
+                if (!succeeded || !commit || cancellationToken.IsCancellationRequested) return false;
+                scope.Complete();
+                return true;
+            }
+        }
+
         public ServiceBusHelper2 GetServiceBusHelper2()
         {
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
-            serviceBusHelper2.ConnectionString = ConnectionString;
-            serviceBusHelper2.TransportType = UseAmqpWebSockets
+            serviceBusHelper2.ProfileEntityPath = serviceBusNamespaceInstance?.EntityPath;
+
+            if (serviceBusNamespaceInstance?.IsEntra != true)
+            {
+                var profile = serviceBusNamespaceInstance?.ConnectionString ?? ConnectionString;
+                if (!string.IsNullOrWhiteSpace(profile))
+                {
+                    try
+                    {
+                        serviceBusHelper2.ConnectionString = GetDataPlaneConnectionString(profile, IsEmulator);
+                    }
+                    catch (Exception ex) when (ex is FormatException || ex is NotSupportedException)
+                    {
+                        // A management-only profile can still be used to browse the namespace.
+                        serviceBusHelper2.DataPlaneUnavailableReason = ex.Message;
+                    }
+                }
+            }
+            serviceBusHelper2.AdministrationClient = managementClient?.Client;
+            if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)
+                serviceBusHelper2.AdministrationConnectionString = GetAdministrationConnectionString(serviceBusNamespaceInstance);
+            serviceBusHelper2.TransportType = !IsEmulator && UseAmqpWebSockets
                 ? Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets
                 : Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpTcp;
 
             if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
+                serviceBusHelper2.DataPlaneEndpoint = new Uri(serviceBusNamespaceInstance.Uri);
                 serviceBusHelper2.EntraTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
                     serviceBusNamespaceInstance.TenantId);
             }
 
             return serviceBusHelper2;
+        }
+
+        public MessagingFactory GetSessionTestFactory(bool requiresSession, bool createNew = false)
+        {
+            if (!requiresSession) return null;
+            return createNew ? CreateMessagingFactory() : MessagingFactory;
+        }
+
+        public static ServiceBusReceiver CreateSubscriptionTestReceiver(ServiceBusClient client, string topic,
+            string subscription, ReceiveMode mode, int prefetchCount, bool deadLetter)
+        {
+            return client.CreateReceiver(topic, subscription, new ServiceBusReceiverOptions
+            {
+                PrefetchCount = prefetchCount,
+                ReceiveMode = mode == ReceiveMode.PeekLock ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete,
+                SubQueue = deadLetter ? SubQueue.DeadLetter : SubQueue.None
+            });
+        }
+
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        {
+            var serviceBusHelper2 = GetServiceBusHelper2();
+            if (!serviceBusHelper2.IsEntra)
+            {
+                serviceBusHelper2.ConnectionString = GetDataPlaneConnectionString(
+                    ConnectionString,
+                    IsEmulator);
+            }
+            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
+        }
+
+        public List<BrokeredMessage> GetMessagesFromModernDataPlane(
+            string entityPath,
+            string subscriptionName,
+            SubQueue subQueue,
+            bool peek,
+            int count,
+            long? fromSequenceNumber,
+            TimeSpan receiveTimeout,
+            IBrokeredMessageInspector messageInspector, Action<Exception> reportFailure = null)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+
+            ValidateReceiveTransaction(!peek);
+            return ReadMessagesFromModernClient(CreateServiceBusClient(), entityPath, subscriptionName,
+                subQueue, peek, count, fromSequenceNumber, receiveTimeout, messageInspector, reportFailure);
+        }
+
+        public static List<BrokeredMessage> ReadMessagesFromModernClient(ServiceBusClient client,
+            string entityPath, string subscriptionName, SubQueue subQueue, bool peek, int count,
+            long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector,
+            Action<Exception> reportFailure = null)
+        {
+            var rows = new List<BrokeredMessage>();
+            Exception failure = null;
+            ServiceBusReceiver receiver = null;
+            try
+            {
+                var options = new ServiceBusReceiverOptions
+                {
+                    ReceiveMode = peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete,
+                    SubQueue = subQueue
+                };
+                receiver = string.IsNullOrWhiteSpace(subscriptionName)
+                    ? client.CreateReceiver(entityPath, options)
+                    : client.CreateReceiver(entityPath, subscriptionName, options);
+                rows = ReadMessagesFromModernReceiver(receiver, peek, count, fromSequenceNumber, receiveTimeout,
+                    messageInspector, peek ? null : new Action<BrokeredMessage>(message => rows.Add(message)));
+            }
+            catch (Exception ex) { failure = ex; }
+            finally
+            {
+                try { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+                try { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+            }
+            if (failure != null)
+            {
+                if (peek)
+                {
+                    foreach (var row in rows) row.Dispose();
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
+                }
+                var partial = new PartialMessageReadException(rows, failure);
+                if (reportFailure == null) throw partial;
+                reportFailure(partial);
+            }
+            return rows;
+        }
+
+        // The legacy AMQP receiver treats a zero timeout as ten seconds. The modern
+        // SDK permits zero only when prefetch is enabled.
+        internal static TimeSpan GetModernReceiveWait(TimeSpan timeout) =>
+            timeout == TimeSpan.Zero ? TimeSpan.FromSeconds(10) : timeout;
+
+        public static int ResolveModernReadCount(bool peek, bool all, int count, int topCount) =>
+            all && !peek ? int.MaxValue : all ? topCount : count;
+
+        public static List<BrokeredMessage> ReadMessagesFromModernReceiver(ServiceBusReceiver receiver,
+            bool peek, int count, long? fromSequenceNumber, TimeSpan receiveTimeout, IBrokeredMessageInspector messageInspector, Action<BrokeredMessage> received = null)
+        {
+            if (!peek && System.Transactions.Transaction.Current != null)
+                ValidateReceiveTransaction(receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete);
+            var targetCount = count;
+            var brokeredMessages = new List<BrokeredMessage>(Math.Min(Math.Max(count, 0), 100));
+            try
+            {
+                var nextSequenceNumber = fromSequenceNumber;
+                while (brokeredMessages.Count < targetCount)
+                {
+                    var batchSize = Math.Min(100, targetCount - brokeredMessages.Count);
+                    IReadOnlyList<ServiceBusReceivedMessage> messages;
+                    if (peek)
+                    {
+                        messages = receiver.PeekMessagesAsync(batchSize, nextSequenceNumber)
+                            .GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        messages = receiver.ReceiveMessagesAsync(batchSize, GetModernReceiveWait(receiveTimeout))
+                            .GetAwaiter().GetResult();
+                    }
+
+                    if (messages == null || messages.Count == 0)
+                    {
+                        break;
+                    }
+
+                    if (!peek && receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete)
+                    {
+                        // Every message in a returned destructive batch is already gone from
+                        // the broker. Keep independent originals until all inspection succeeds.
+                        var originals = new List<BrokeredMessage>(messages.Count);
+                        Exception conversionFailure = null;
+                        foreach (var native in messages)
+                        {
+                            originals.Add(ServiceBusReceivedMessageAdapter.RetainForDestructiveRead(native, out var error));
+                            if (error != null && conversionFailure == null) conversionFailure = error;
+                        }
+                        var inspectedBatch = new List<BrokeredMessage>();
+                        try
+                        {
+                            if (conversionFailure != null)
+                                throw new InvalidOperationException("Some received metadata could not be displayed. Original AMQP messages were retained.", conversionFailure);
+                            if (messageInspector != null)
+                                foreach (var message in messages)
+                                {
+                                    var candidate = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
+                                    try
+                                    {
+                                        var inspected = ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
+                                        if (!ReferenceEquals(candidate, inspected)) candidate.Dispose();
+                                        inspectedBatch.Add(inspected);
+                                    }
+                                    catch { candidate.Dispose(); throw; }
+                                }
+                        }
+                        catch
+                        {
+                            foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
+                            foreach (var inspected in inspectedBatch) inspected.Dispose();
+                            throw;
+                        }
+                        if (messageInspector != null)
+                            foreach (var original in originals) original.Dispose();
+                        foreach (var row in messageInspector == null ? originals : inspectedBatch)
+                        { brokeredMessages.Add(row); received?.Invoke(row); }
+                        continue;
+                    }
+
+                    foreach (var message in messages)
+                    {
+                        var brokeredMessage = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
+                        try
+                        {
+                            var inspected = messageInspector == null ? brokeredMessage :
+                                ServiceBusReceivedMessageAdapter.Inspect(brokeredMessage, messageInspector.AfterReceiveMessage);
+                            brokeredMessages.Add(inspected);
+                            received?.Invoke(inspected);
+                        }
+                        catch
+                        {
+                            brokeredMessage.Dispose();
+                            throw;
+                        }
+                    }
+
+                    if (peek)
+                    {
+                        var lastSequenceNumber = messages[messages.Count - 1].SequenceNumber;
+                        if (lastSequenceNumber == long.MaxValue)
+                        {
+                            break;
+                        }
+                        nextSequenceNumber = lastSequenceNumber + 1;
+                    }
+                }
+                return brokeredMessages;
+            }
+            catch (Exception ex)
+            {
+                if (!peek && receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete && received == null)
+                    throw new PartialMessageReadException(brokeredMessages, ex);
+                foreach (var message in received == null ? brokeredMessages : Enumerable.Empty<BrokeredMessage>())
+                {
+                    message?.Dispose();
+                }
+                throw;
+            }
+        }
+
+        public static string GetDataPlaneConnectionString(ServiceBusNamespace serviceBusNamespace)
+        {
+            if (serviceBusNamespace == null)
+            {
+                throw new ArgumentNullException(nameof(serviceBusNamespace));
+            }
+            return GetDataPlaneConnectionString(serviceBusNamespace.ConnectionString, serviceBusNamespace.UseDevelopmentEmulator);
+        }
+
+        public static string GetDataPlaneConnectionString(string connectionString, bool useDevelopmentEmulator)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException(ServiceBusConnectionStringCannotBeNull, nameof(connectionString));
+            }
+
+            var retained = new List<string>();
+            UriBuilder endpoint = null;
+            int? runtimePort = null;
+            int? managementPort = null;
+            foreach (var part in connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var separator = part.IndexOf('=');
+                if (separator < 1)
+                    throw new FormatException("Invalid Service Bus connection string setting.");
+
+                var key = part.Substring(0, separator).Trim();
+                var value = part.Substring(separator + 1).Trim();
+                if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (endpoint != null)
+                        throw new FormatException("Specify a single Service Bus endpoint.");
+                    endpoint = new UriBuilder(value);
+                }
+                else if (key.Equals("ManagementPort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (managementPort.HasValue || !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("Specify a single ManagementPort between 1 and 65535.");
+                    managementPort = port;
+                }
+                else if (key.Equals("RuntimePort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (runtimePort.HasValue || !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("Specify a single RuntimePort between 1 and 65535.");
+                    runtimePort = port;
+                }
+                else if (!new[] { "TransportType", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    retained.Add(key + "=" + value);
+                }
+            }
+
+            if (endpoint == null)
+                throw new FormatException("The Service Bus connection string must include an Endpoint setting.");
+            if (runtimePort.HasValue)
+                endpoint.Port = runtimePort.Value;
+            else if (useDevelopmentEmulator)
+            {
+                // With separate management metadata, an explicit, distinct Endpoint port is the AMQP destination.
+                bool explicitDataPort = managementPort.HasValue && endpoint.Port > 0 && endpoint.Port != 5300 && endpoint.Port != managementPort;
+                bool standardPair = (!managementPort.HasValue || managementPort == 5300) &&
+                    (endpoint.Port == -1 || endpoint.Port == 5672);
+                if (!explicitDataPort && !standardPair)
+                    throw new NotSupportedException("Set RuntimePort to this emulator's mapped AMQP port before using data operations.");
+                if (!explicitDataPort) endpoint.Port = 5672;
+            }
+
+            retained.Insert(0, "Endpoint=" + endpoint.Uri.AbsoluteUri);
+            return string.Join(";", retained);
         }
 
         public async Task<QueueProperties> GetQueueProperties(QueueDescription oldQueueDescription)
@@ -3955,10 +4943,8 @@ namespace ServiceBusExplorer
 
         public async Task<List<QueueProperties>> GetQueueProperties(List<QueueDescription> oldQueueDescriptions)
         {
-            var administrationClient = serviceBusNamespaceInstance?.IsEntra == true
-                ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
-                : new ServiceBusAdministrationClient(connectionString);
+            var administrationClient = managementClient?.Client
+                ?? throw new InvalidOperationException("Service Bus management is disconnected.");
             var result = new List<QueueProperties>();
 
             foreach (QueueDescription oldQueueDescription in oldQueueDescriptions)
@@ -3976,20 +4962,14 @@ namespace ServiceBusExplorer
 
         public async Task<List<SubscriptionProperties>> GetSubscriptionProperties(List<SubscriptionWrapper> oldSubscriptionWrappers)
         {
-            var managementClient = serviceBusNamespaceInstance?.IsEntra == true
-                ? new ServiceBusAdministrationClient(serviceBusNamespaceInstance.FullyQualifiedNamespace,
-                    EntraCredentialFactory.CreateNewSdkTokenCredential(serviceBusNamespaceInstance.TenantId))
-                : new ServiceBusAdministrationClient(connectionString);
+            var administrationClient = managementClient?.Client
+                ?? throw new InvalidOperationException("Service Bus management is disconnected.");
             var result = new List<SubscriptionProperties>();
 
             foreach (SubscriptionWrapper oldSubscriptionWrapper in oldSubscriptionWrappers)
             {
-                var topicResponse = await managementClient.GetTopicAsync(
-                    oldSubscriptionWrapper.TopicDescription.Path)
-                    .ConfigureAwait(false);
-
-                var subscriptionResponse = await managementClient.GetSubscriptionAsync(
-                    topicResponse.Value.Name,
+                var subscriptionResponse = await administrationClient.GetSubscriptionAsync(
+                    oldSubscriptionWrapper.TopicDescription.Path,
                     oldSubscriptionWrapper.SubscriptionDescription.Name)
                     .ConfigureAwait(false);
 
@@ -4292,6 +5272,76 @@ namespace ServiceBusExplorer
             return entity;
         }
 
+        public static string GetAdministrationConnectionString(ServiceBusNamespace serviceBusNamespace)
+        {
+            if (serviceBusNamespace == null)
+            {
+                throw new ArgumentNullException(nameof(serviceBusNamespace));
+            }
+            var parts = serviceBusNamespace.ConnectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var retained = new List<string>();
+            UriBuilder endpoint = null;
+            int? managementPort = null;
+            foreach (var part in parts)
+            {
+                var separator = part.IndexOf('=');
+                if (separator < 1)
+                {
+                    throw new FormatException("Invalid Service Bus connection string setting.");
+                }
+                var key = part.Substring(0, separator).Trim();
+                if (new[] { "TransportType", "RuntimePort", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                var value = part.Substring(separator + 1).Trim();
+                if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
+                {
+                    endpoint = new UriBuilder(value);
+                }
+                else if (key.Equals("ManagementPort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("ManagementPort must be between 1 and 65535.");
+                    managementPort = port;
+                }
+                else
+                {
+                    retained.Add(key + "=" + value);
+                }
+            }
+
+            if (endpoint == null) throw new FormatException("A Service Bus endpoint is required.");
+            // An Azure messaging endpoint may name the AMQP listener. Administration uses HTTPS.
+            var defaultPort = serviceBusNamespace.UseDevelopmentEmulator
+                ? (endpoint.Port == -1 || endpoint.Port == 5672 ? 5300 : endpoint.Port)
+                : -1;
+            endpoint.Port = managementPort ?? defaultPort;
+            retained.Insert(0, "Endpoint=" + endpoint.Uri.AbsoluteUri);
+            return string.Join(";", retained);
+        }
+
+        internal static ServiceBusAdministrationClient CreateAdministrationClient(ServiceBusNamespace serviceBusNamespace,
+            ServiceBusAdministrationClientOptions options)
+        {
+            if (serviceBusNamespace.ConnectionStringType == ServiceBusNamespaceType.OnPremises)
+            {
+                throw new NotSupportedException("Azure.Messaging.ServiceBus administration does not support on-premises Service Bus Server (Windows/STS authentication). Use the previous release for this environment.");
+            }
+            var connection = GetAdministrationConnectionString(serviceBusNamespace);
+            if (serviceBusNamespace.UseDevelopmentEmulator || string.IsNullOrEmpty(serviceBusNamespace.EntityPath))
+                return new ServiceBusAdministrationClient(connection, options);
+
+            var endpoint = Azure.Messaging.ServiceBus.ServiceBusConnectionStringProperties.Parse(connection).Endpoint;
+            var audience = new UriBuilder(endpoint) { Scheme = Uri.UriSchemeHttps, Port = -1, Path = serviceBusNamespace.EntityPath }.Uri;
+            if (!string.Equals(audience.GetComponents(UriComponents.Path, UriFormat.Unescaped), serviceBusNamespace.EntityPath, StringComparison.Ordinal))
+                throw new ArgumentException("EntityPath must identify a relative Service Bus entity.", nameof(serviceBusNamespace));
+            var keyName = serviceBusNamespace.SharedAccessKeyName;
+            var key = serviceBusNamespace.SharedAccessKey;
+            return EntityScopedSasPolicy.CreateClient(endpoint, options, () =>
+                SharedAccessSignatureTokenProvider.GetSharedAccessSignature(keyName, key, audience.AbsoluteUri, TimeSpan.FromHours(1)));
+        }
+
         private static Encoding GetEncoding()
         {
             switch (encodingType)
@@ -4308,28 +5358,6 @@ namespace ServiceBusExplorer
                     return Encoding.Unicode;
                 default:
                     return Encoding.UTF8;
-            }
-        }
-
-        private (Microsoft.ServiceBus.NamespaceManager, TokenProvider, bool) ConnectEntra(ServiceBusNamespace candidate)
-        {
-            var endpoint = new Uri(candidate.Uri);
-            var provider = EntraCredentialFactory.CreateOldSdkTokenProvider(candidate.TenantId);
-            var manager = new Microsoft.ServiceBus.NamespaceManager(endpoint, provider);
-            try
-            {
-                manager.QueueExists("$__scope_probe__$");
-                return (manager, provider, false);
-            }
-            catch (Exception ex) when (IsAudienceMismatchException(ex))
-            {
-                WriteToLogIf(traceEnabled, "Service Bus audience rejected (audience mismatch); retrying with Event Hub scope.");
-                provider = EntraCredentialFactory.CreateOldSdkTokenProvider(candidate.TenantId, EntraCredentialFactory.EventHubsAudience);
-                // Populate the legacy provider's cache before replacing the active connection.
-                // A canceled Event Hubs sign-in must also stop Connect before it loads entities.
-                provider.GetWebTokenAsync(endpoint.AbsoluteUri, "Manage", false, manager.Settings.OperationTimeout)
-                    .GetAwaiter().GetResult();
-                return (new Microsoft.ServiceBus.NamespaceManager(endpoint, provider), provider, true);
             }
         }
 
@@ -4380,6 +5408,11 @@ namespace ServiceBusExplorer
                 return message.Contains("401") ||
                        message.Contains("40100") ||
                        ex.InnerException is UnauthorizedAccessException;
+            }
+
+            if (ex is Azure.RequestFailedException requestFailed)
+            {
+                return requestFailed.Status == 401;
             }
 
             return false;

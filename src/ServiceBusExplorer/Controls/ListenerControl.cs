@@ -1,4 +1,6 @@
-﻿#region Copyright
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team 
 //
@@ -134,7 +136,7 @@ namespace ServiceBusExplorer.Controls
         private bool sorting;
         private string messagesFilterExpression;
         private readonly SortableBindingList<BrokeredMessage> messageBindingList = new SortableBindingList<BrokeredMessage> { AllowNew = false, AllowEdit = false, AllowRemove = false };
-        private EntityDescription entityDescription;
+        private ServiceBusEntityInfo entityDescription;
         private QueueClient queueClient;
         private SubscriptionClient subscriptionClient;
         private readonly MessageEncoder encoder;
@@ -176,7 +178,7 @@ namespace ServiceBusExplorer.Controls
                                Func<Task> stopLog,
                                Action startLog,
                                ServiceBusHelper serviceBusHelper, 
-                               EntityDescription entityDescription)
+                               ServiceBusEntityInfo entityDescription)
         {
             this.logStopped = false;
             Task.Factory.StartNew(AsyncTrackMessage).ContinueWith(t =>
