@@ -4696,6 +4696,51 @@ namespace ServiceBusExplorer
             return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
         }
 
+        public virtual async Task<int> ResubmitMessagesAsync(string entityPath,
+            IEnumerable<BrokeredMessage> rows, bool useAscii, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            if (rows == null) throw new ArgumentNullException(nameof(rows));
+            cancellationToken.ThrowIfCancellationRequested();
+            var messages = new List<ServiceBusMessage>();
+            foreach (var row in rows)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var bodyType = BodyType.Stream;
+                if (ServiceBusReceivedMessageAdapter.GetReceivedMetadata(row) == null)
+                    GetMessageText(row, useAscii, out bodyType);
+                var wcfUri = bodyType == BodyType.Wcf
+                    ? (IsCloudNamespace ? new Uri(NamespaceUri, entityPath) : new UriBuilder
+                    {
+                        Host = NamespaceUri.Host,
+                        Path = $"{NamespaceUri.AbsolutePath}/{entityPath}",
+                        Scheme = "sb"
+                    }.Uri) : null;
+                using (var converted = bodyType == BodyType.Wcf
+                    ? CreateMessageForWcfReceiver(row, 0, false, false, wcfUri)
+                    : ServiceBusMessageAdapter.PrepareForReplay(row, false, null, bodyType, false, null))
+                {
+                    messages.Add(ServiceBusMessageAdapter.ToServiceBusMessage(converted));
+                }
+            }
+            if (messages.Count == 0) return 0;
+            var client = CreateServiceBusClient();
+            try
+            {
+                var sender = client.CreateSender(entityPath);
+                try
+                {
+                    // Preserve the existing single-batch operation: an oversized batch
+                    // fails rather than silently introducing partially committed batches.
+                    await sender.SendMessagesAsync(messages, cancellationToken).ConfigureAwait(false);
+                    return messages.Count;
+                }
+                finally { await sender.DisposeAsync().ConfigureAwait(false); }
+            }
+            finally { await client.DisposeAsync().ConfigureAwait(false); }
+        }
+
         public virtual async Task<List<SessionInfo>> GetMessageSessionsFromModernDataPlane(
             string entityPath, string subscriptionName, CancellationToken cancellationToken)
         {

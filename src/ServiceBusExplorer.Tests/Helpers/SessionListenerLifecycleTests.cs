@@ -479,6 +479,44 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         private sealed class Sender : ServiceBusSender { }
 
+        [Fact]
+        public void ResubmitMenuContinuationSendsSelectedRowsAndLogsOnlyAfterSuccess()
+        {
+            RunUi(async (form, listener) =>
+            {
+                var helper = new ResubmitHelper();
+                Set(listener, "serviceBusHelper", helper);
+                var logs = new List<string>();
+                Set(listener, "writeToLog", new WriteToLogDelegate((text, __) => logs.Add(text)));
+                using var selected = new BrokeredMessage(new System.IO.MemoryStream(new byte[] { 1 }));
+                using var unselected = new BrokeredMessage(new System.IO.MemoryStream(new byte[] { 2 }));
+                var grid = (DataGridView)Field("messagesDataGridView").GetValue(listener);
+                grid.DataSource = new System.ComponentModel.BindingList<BrokeredMessage>(new List<BrokeredMessage> { selected, unselected });
+                grid.ClearSelection();
+                grid.Rows[0].Selected = true;
+                var operation = listener.ResubmitSelectedMessagesToAsync("destination", true);
+                Assert.False(operation.IsCompleted);
+                Assert.Empty(logs);
+                Assert.Same(selected, Assert.Single(helper.Rows));
+                Assert.Equal("destination", helper.Path);
+                Assert.True(helper.UseAscii);
+                helper.Completion.SetResult(1);
+                await operation;
+                Assert.Single(logs);
+            });
+        }
+
+        private sealed class ResubmitHelper : ServiceBusHelper
+        {
+            public ResubmitHelper() : base((_, __) => { }) { }
+            public readonly TaskCompletionSource<int> Completion = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+            public List<BrokeredMessage> Rows;
+            public string Path;
+            public bool UseAscii;
+            public override Task<int> ResubmitMessagesAsync(string entityPath, IEnumerable<BrokeredMessage> rows, bool useAscii, CancellationToken cancellationToken)
+            { Path = entityPath; Rows = new List<BrokeredMessage>(rows); UseAscii = useAscii; return Completion.Task; }
+        }
+
         private static Control CreateManualControl(string kind)
         {
             var main = (ServiceBusExplorer.Forms.MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(ServiceBusExplorer.Forms.MainForm));
