@@ -21,7 +21,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var secondary = helper.GetServiceBusHelper2();
             Assert.Equal(entity, secondary.ProfileEntityPath);
             Assert.True(secondary.ConnectionStringContainsEntityPath());
-            Assert.DoesNotContain("EntityPath", secondary.ConnectionString);
+            Assert.Contains("EntityPath=" + entity, secondary.ConnectionString);
             Assert.DoesNotContain("EntityPath", secondary.AdministrationConnectionString);
             Assert.Equal(entity, new ServiceBusHelper((_, __) => { }, helper).GetServiceBusHelper2().ProfileEntityPath);
         }

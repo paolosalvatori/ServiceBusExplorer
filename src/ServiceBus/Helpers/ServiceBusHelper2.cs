@@ -38,8 +38,9 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public string ConnectionString { get; set; }
         public string AdministrationConnectionString { get; set; }
-        // Original profile scope survives removal of EntityPath from SDK connection strings.
+        // Keep the original scope available to management-only UI probes.
         public string ProfileEntityPath { get; set; }
+        public Uri DataPlaneEndpoint { get; set; }
         public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
@@ -99,17 +100,14 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public ServiceBusClient CreateServiceBusClient()
         {
             if (DataPlaneUnavailableReason != null) throw new NotSupportedException(DataPlaneUnavailableReason);
-            if (IsEntra)
-            {
-                return new ServiceBusClient(
-                    FullyQualifiedNamespace,
-                    EntraTokenCredential,
-                    new ServiceBusClientOptions { TransportType = this.TransportType });
-            }
+            var endpoint = IsEntra ? DataPlaneEndpoint : ServiceBusConnectionStringProperties.Parse(ConnectionString).Endpoint;
+            var options = new ServiceBusClientOptions { TransportType = TransportType };
+            if (endpoint != null && !endpoint.IsDefaultPort)
+                options.CustomEndpointAddress = endpoint;
 
-            return new ServiceBusClient(
-                ConnectionString,
-                new ServiceBusClientOptions { TransportType = this.TransportType });
+            return IsEntra
+                ? new ServiceBusClient(FullyQualifiedNamespace, EntraTokenCredential, options)
+                : new ServiceBusClient(ConnectionString, options);
         }
 
         /// <summary>

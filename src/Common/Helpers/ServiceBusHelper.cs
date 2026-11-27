@@ -4074,8 +4074,22 @@ namespace ServiceBusExplorer
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
             serviceBusHelper2.ProfileEntityPath = serviceBusNamespaceInstance?.EntityPath;
 
-            serviceBusHelper2.ConnectionString = serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra
-                ? GetDataPlaneConnectionString(serviceBusNamespaceInstance) : ConnectionString;
+            if (serviceBusNamespaceInstance?.IsEntra != true)
+            {
+                var profile = serviceBusNamespaceInstance?.ConnectionString ?? ConnectionString;
+                if (!string.IsNullOrWhiteSpace(profile))
+                {
+                    try
+                    {
+                        serviceBusHelper2.ConnectionString = GetDataPlaneConnectionString(profile, IsEmulator);
+                    }
+                    catch (Exception ex) when (ex is FormatException || ex is NotSupportedException)
+                    {
+                        // A management-only profile can still be used to browse the namespace.
+                        serviceBusHelper2.DataPlaneUnavailableReason = ex.Message;
+                    }
+                }
+            }
             if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)
                 serviceBusHelper2.AdministrationConnectionString = GetAdministrationConnectionString(serviceBusNamespaceInstance);
             serviceBusHelper2.TransportType = !IsEmulator && UseAmqpWebSockets
@@ -4085,6 +4099,7 @@ namespace ServiceBusExplorer
             if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
+                serviceBusHelper2.DataPlaneEndpoint = new Uri(serviceBusNamespaceInstance.Uri);
                 serviceBusHelper2.EntraTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
                     serviceBusNamespaceInstance.TenantId);
             }
@@ -4109,45 +4124,57 @@ namespace ServiceBusExplorer
             }
 
             var retained = new List<string>();
-            var endpointFound = false;
+            UriBuilder endpoint = null;
+            int? runtimePort = null;
+            int? managementPort = null;
             foreach (var part in connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var separator = part.IndexOf('=');
                 if (separator < 1)
-                {
                     throw new FormatException("Invalid Service Bus connection string setting.");
-                }
 
                 var key = part.Substring(0, separator).Trim();
-                if (new[] { "TransportType", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
+                var value = part.Substring(separator + 1).Trim();
                 if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (endpointFound)
-                    {
-                        throw new FormatException("The emulator connection string contains more than one Endpoint setting.");
-                    }
-                    var endpoint = new UriBuilder(part.Substring(separator + 1).Trim());
-                    if (useDevelopmentEmulator)
-                    {
-                        endpoint.Port = 5672;
-                    }
-                    retained.Add("Endpoint=" + endpoint.Uri.AbsoluteUri);
-                    endpointFound = true;
+                    if (endpoint != null)
+                        throw new FormatException("Specify a single Service Bus endpoint.");
+                    endpoint = new UriBuilder(value);
                 }
-                else
+                else if (key.Equals("ManagementPort", StringComparison.OrdinalIgnoreCase))
                 {
-                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
+                    if (managementPort.HasValue || !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("Specify a single ManagementPort between 1 and 65535.");
+                    managementPort = port;
+                }
+                else if (key.Equals("RuntimePort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (runtimePort.HasValue || !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("Specify a single RuntimePort between 1 and 65535.");
+                    runtimePort = port;
+                }
+                else if (!new[] { "TransportType", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    retained.Add(key + "=" + value);
                 }
             }
 
-            if (!endpointFound)
+            if (endpoint == null)
+                throw new FormatException("The Service Bus connection string must include an Endpoint setting.");
+            if (runtimePort.HasValue)
+                endpoint.Port = runtimePort.Value;
+            else if (useDevelopmentEmulator)
             {
-                throw new FormatException("The emulator connection string must include an Endpoint setting.");
+                // With separate management metadata, an explicit, distinct Endpoint port is the AMQP destination.
+                bool explicitDataPort = managementPort.HasValue && endpoint.Port > 0 && endpoint.Port != 5300 && endpoint.Port != managementPort;
+                bool standardPair = (!managementPort.HasValue || managementPort == 5300) &&
+                    (endpoint.Port == -1 || endpoint.Port == 5672);
+                if (!explicitDataPort && !standardPair)
+                    throw new NotSupportedException("Set RuntimePort to this emulator's mapped AMQP port before using data operations.");
+                if (!explicitDataPort) endpoint.Port = 5672;
             }
 
+            retained.Insert(0, "Endpoint=" + endpoint.Uri.AbsoluteUri);
             return string.Join(";", retained);
         }
 
