@@ -1,0 +1,30 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageVersion Include="Azure.Identity" Version="1.21.0" />
+		<PackageVersion Include="Azure.Identity.Broker" Version="1.7.0" />
+		<PackageVersion Include="Azure.Messaging.EventGrid.Namespaces" Version="1.1.0" />
+		<PackageVersion Include="Azure.Messaging.EventHubs" Version="5.12.2" />
+		<PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.21.0" />
+		<PackageVersion Include="Azure.ResourceManager.EventGrid" Version="1.1.0" />
+		<PackageVersion Include="CommandLineParser" Version="2.9.1" />
+		<PackageVersion Include="FluentAssertions" Version="6.12.0" />
+		<PackageVersion Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
+		<PackageVersion Include="Microsoft.Azure.Relay" Version="3.0.1" />
+		<PackageVersion Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+		<PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageVersion Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
+		<PackageVersion Include="Microsoft.Rest.ClientRuntime.Azure" Version="3.3.19" />
+		<PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+		<!-- Compatibility bridge for legacy Service Bus/Relay (built against 6.x).
+             Jwt brings matching JsonWebTokens/Tokens transitively; do not pin them independently. -->
+		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.36.0" />
+		<PackageVersion Include="System.Resources.Extensions" Version="8.0.0" />
+		<PackageVersion Include="WindowsAzure.ServiceBus" Version="7.0.1" />
+		<PackageVersion Include="xunit" Version="2.9.3" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+	</ItemGroup>
+</Project>

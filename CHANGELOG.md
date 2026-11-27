@@ -1,5 +1,14 @@
 # Changelog — ServiceBusExplorer (Tailormade fork)
 
+## Unreleased — dependency management (#903)
+
+- Centralize package versions; retain the legacy JWT 6.x family at patched 6.36.0
+  without an independent JsonWebTokens pin. This deprecated family is a temporary
+  compatibility bridge, not a long-term supported dependency choice.
+- Align Relay Azure.Identity from 1.13.2 to the shared 1.21.0.
+- Restore defaults to nuget.org only; corporate/offline users need an explicit
+  mirror configuration. See [dependency decisions and merge steps](docs/dependency-management.md).
+
 ## Unreleased — modern Service Bus management (#911)
 
 - On-premises **Service Bus for Windows Server management is no longer supported**.
