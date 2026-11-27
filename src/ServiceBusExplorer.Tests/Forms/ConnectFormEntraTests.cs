@@ -18,7 +18,7 @@ using Xunit;
 namespace ServiceBusExplorer.Tests.Forms
 {
     [Collection("Entra credential cache")]
-    public class ConnectFormEntraTests
+    public partial class ConnectFormEntraTests
     {
         private const string ControlNameServiceBusNamespace = "cboServiceBusNamespace";
         private const string ControlNameAuthMode = "cboAuthMode";
@@ -262,9 +262,11 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ConnectButton_DismissedSignInPreservesActiveSettings(bool browserOnly)
+        [InlineData(false, false, "localhost")]
+        [InlineData(true, false, "localhost")]
+        [InlineData(false, true, "localhost")]
+        [InlineData(true, true, LocalSas)]
+        public void ConnectButton_DismissedSignInPreservesActiveSettings(bool browserOnly, bool savedEmulator, string endpoint)
         {
             RunOnStaThread(() =>
             {
@@ -285,12 +287,17 @@ namespace ServiceBusExplorer.Tests.Forms
                     EntraCredentialFactory.UseSystemBrowserOnly = browserOnly;
                     ServiceBusHelperEntraTests.CacheCredential("interactiveBrowserCredentials", tenant, browserOnly ? unexpected : credential);
                     ServiceBusHelperEntraTests.CacheCredential("systemBrowserCredentials", tenant, browserOnly ? credential : unexpected);
+                    if (savedEmulator)
+                    {
+                        helper.ServiceBusNamespaces[SavedProfileKey] = ServiceBusNamespace.GetServiceBusNamespace(
+                            SavedProfileKey, SavedEmulator, (_, __) => { });
+                    }
                     using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
                     {
                         form.Show();
-                        GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                        GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = savedEmulator ? 2 : 1;
                         GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
-                        GetTextBox(form, ControlNameUri).Text = "localhost";
+                        GetTextBox(form, ControlNameUri).Text = endpoint;
                         GetComboBox(form, ControlNameTenantIds).Text = tenant;
                         GetTextBox(form, "txtQueueFilterExpression").Text = "submitted filter";
                         GetComboBox(form, "cboConnectivityMode").SelectedItem = previousMode == Microsoft.ServiceBus.ConnectivityMode.Http

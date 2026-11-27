@@ -336,8 +336,7 @@ namespace ServiceBusExplorer.Forms
             savedConnectionsToolStripMenuItem.DropDown.Closed += SavedConnectionsDropDown_Closed;
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
-            GetServiceBusNamespacesFromConfiguration();
-            GetServiceBusNamespaceFromEnvironmentVariable();
+            LoadSavedConnections(EnvironmentConnectionString);
             GetBrokeredMessageInspectorsFromConfiguration();
             GetEventDataInspectorsFromConfiguration();
             GetBrokeredMessageGeneratorsFromConfiguration();
@@ -345,7 +344,6 @@ namespace ServiceBusExplorer.Forms
             GetServiceBusNamespaceSettingsFromConfiguration();
             ThemeManager.RegisterComponents(components);
             ReadEventHubPartitionCheckpointFile();
-            UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
             InitializeDashboard();
 
@@ -820,12 +818,7 @@ namespace ServiceBusExplorer.Forms
 
                 if (lastConfigFileUse != configFileUse)
                 {
-                    // Refresh the ServiceBus namespaces
-                    GetServiceBusNamespacesFromConfiguration();
-                    GetServiceBusNamespaceFromEnvironmentVariable();
-
-                    // Then update the shortcut menus
-                    UpdateSavedConnectionsMenu();
+                    LoadSavedConnections(EnvironmentConnectionString);
                 }
 
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainSettings.LogFontSize);
@@ -4107,14 +4100,22 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void GetServiceBusNamespaceFromEnvironmentVariable()
+        private static string EnvironmentConnectionString =>
+            Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
+
+        internal void LoadSavedConnections(string environmentConnectionString)
         {
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
-            if (!string.IsNullOrWhiteSpace(connectionString))
+            GetServiceBusNamespacesFromConfiguration();
+            if (!string.IsNullOrWhiteSpace(environmentConnectionString))
             {
                 const string key = @"HKEY_CURRENT_USER\Environment connection string";
-                serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, connectionString, StaticWriteToLog));
+                var profile = ServiceBusNamespace.GetServiceBusNamespace(key, environmentConnectionString, WriteToLog);
+                if (profile != null)
+                {
+                    serviceBusHelper.ServiceBusNamespaces[key] = profile;
+                }
             }
+            UpdateSavedConnectionsMenu();
         }
 
         private void GetBrokeredMessageInspectorsFromConfiguration()

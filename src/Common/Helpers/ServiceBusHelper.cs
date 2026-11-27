@@ -61,7 +61,6 @@ namespace ServiceBusExplorer
     using System.IO.Compression;
     using System.Web.UI.WebControls;
     using Abstractions;
-    using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
     {
@@ -432,22 +431,11 @@ namespace ServiceBusExplorer
             }
         }
 
-        private string ConnectionStringWithoutEntityPath
+        private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return null;
-                }
-
-                var builder = new ServiceBusConnectionStringBuilder(connectionString)
-                {
-                    EntityPath = string.Empty
-                };
-
-                return builder.ToString();
-            }
+            var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            builder.EntityPath = string.Empty;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -650,7 +638,7 @@ namespace ServiceBusExplorer
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
-                factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                factory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
             }
             else
             {
@@ -753,6 +741,9 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
+
+            if (!isEntra && !serviceBusNamespace.UseDevelopmentEmulator)
+                GetConnectionStringWithoutEntityPath(serviceBusNamespace.ConnectionString);
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
@@ -896,7 +887,7 @@ namespace ServiceBusExplorer
                 {
                     IsEventHubNamespace = false;
                     entraTokenProvider = null;
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
 
                 // Set retry count
@@ -958,7 +949,7 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    MessagingFactory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
                 WriteToLogIf(traceEnabled, IsEmulator
                     ? "Emulator management connected. Legacy data-plane operations are unavailable until migration stage 3."
