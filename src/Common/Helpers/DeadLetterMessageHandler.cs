@@ -199,12 +199,33 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
-            var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath();
+            try
+            {
+                return await MoveMessagesCore(sequenceNumbers, transferDLQ,
+                    (index, locked) => messageSender.SendAsync(messagesToSend == null ? locked : messagesToSend[index])).ConfigureAwait(false);
+            }
+            finally
+            {
+                await messageSender.CloseAsync().ConfigureAwait(false);
+            }
+        }
 
-            var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(
-                dlqEntityPath,
-                ReceiveMode.PeekLock);
+        public Task<DeletedDlqMessagesResult> MovePreparedMessages(List<long> sequenceNumbers, bool transferDLQ,
+            IReadOnlyList<BrokeredMessage> messages, Func<Azure.Messaging.ServiceBus.ServiceBusMessage, Task> send)
+        {
+            if (send == null) throw new ArgumentNullException(nameof(send));
+            if (messages == null || messages.Count != sequenceNumbers.Count)
+                throw new ArgumentException("Provide one prepared message for each source sequence number.", nameof(messages));
 
+            // Convert the entire selection before taking a lock or sending the first replacement.
+            var prepared = messages.Select(ServiceBusMessageAdapter.ToReplayMessage).ToArray();
+            return MoveMessagesCore(sequenceNumbers, transferDLQ, (index, _) => send(prepared[index]));
+        }
+
+        private async Task<DeletedDlqMessagesResult> MoveMessagesCore(List<long> sequenceNumbers, bool transferDLQ, Func<int, BrokeredMessage, Task> send)
+        {
+            // Reject duplicate source rows and pin each prepared message to its source before acquiring a lock.
+            var indices = sequenceNumbers.Select((number, index) => new { number, index }).ToDictionary(item => item.number, item => item.index);
             var timedOut = false;
             var done = false;
             var lockedMessages = new List<BrokeredMessage>(1000);
@@ -216,6 +237,12 @@ namespace ServiceBusExplorer.Helpers
                 throw new LockDurationTooLowException();
             }
 
+            var dlqEntityPath = transferDLQ ? GetTransferDlqEntityPath() : GetDlqEntityPath();
+
+            var messageReceiver = serviceBusHelper.MessagingFactory.CreateMessageReceiver(
+                dlqEntityPath,
+                ReceiveMode.PeekLock);
+
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -226,36 +253,17 @@ namespace ServiceBusExplorer.Helpers
 
                     if (message != null)
                     {
-                        if (sequenceNumbers.Contains(message.SequenceNumber))
+                        if (indices.TryGetValue(message.SequenceNumber, out var index))
                         {
-                            try
+                            using (message)
                             {
-                                if (messagesToSend == null)
-                                {
-                                    await messageSender.SendAsync(message).ConfigureAwait(false);
-                                }
-                                else
-                                {
-                                    var index = sequenceNumbers.IndexOf(message.SequenceNumber);
-                                    await messageSender.SendAsync(messagesToSend[index])
-                                        .ConfigureAwait(false);
-                                }
-
-                                await message.CompleteAsync().ConfigureAwait(false);
+                                var sequence = message.SequenceNumber;
+                                await SendAndSettleAsync(() => send(index, message), () => message.CompleteAsync(),
+                                    () => message.AbandonAsync()).ConfigureAwait(false);
+                                indices.Remove(sequence);
+                                movedSequenceNumbers.Add(sequence);
+                                done = indices.Count == 0;
                             }
-                            catch
-                            {
-                                await message.AbandonAsync().ConfigureAwait(false);
-                                throw;
-                            }
-
-                            movedSequenceNumbers.Add(message.SequenceNumber);
-                            if (movedSequenceNumbers.Count >= sequenceNumbers.Count)
-                            {
-                                done = true;
-                            }
-
-                            message.Dispose();
                         }
                         else
                         {
@@ -282,19 +290,46 @@ namespace ServiceBusExplorer.Helpers
             }
             finally
             {
-                foreach (var message in lockedMessages)
+                try
                 {
-                    await message.AbandonAsync().ConfigureAwait(false);
-                    message.Dispose();
+                    foreach (var message in lockedMessages)
+                    {
+                        using (message) await message.AbandonAsync().ConfigureAwait(false);
+                    }
                 }
-
-                await messageSender.CloseAsync().ConfigureAwait(false);
-                await messageReceiver.CloseAsync().ConfigureAwait(false);
-
+                finally
+                {
+                    await messageReceiver.CloseAsync().ConfigureAwait(false);
+                }
                 stopwatch.Stop();
             }
 
             return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers);
+        }
+
+        internal static async Task SendAndSettleAsync(Func<Task> send, Func<Task> complete, Func<Task> abandon)
+        {
+            try
+            {
+                await send().ConfigureAwait(false);
+                await complete().ConfigureAwait(false);
+            }
+            catch (Exception failure)
+            {
+                try
+                {
+                    await abandon().ConfigureAwait(false);
+                }
+                catch (MessageLockLostException)
+                {
+                    // The expired lock already released the source. Preserve the delivery failure.
+                }
+                catch (Exception abandonFailure)
+                {
+                    throw new AggregateException("Delivery or settlement failed and the source lock could not be released.", failure, abandonFailure);
+                }
+                throw;
+            }
         }
 
         public string GetFailureExplanation(DeletedDlqMessagesResult result, int targetMessageCount, bool delete)

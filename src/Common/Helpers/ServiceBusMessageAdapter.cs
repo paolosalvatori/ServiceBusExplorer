@@ -1,7 +1,7 @@
 using System;
-using System.IO;
+using System.Linq;
 
-using Azure;
+using Azure.Core.Amqp;
 using Azure.Messaging.ServiceBus;
 
 using Microsoft.ServiceBus.Messaging;
@@ -10,26 +10,44 @@ namespace ServiceBusExplorer.Helpers
 {
     public static class ServiceBusMessageAdapter
     {
-        public static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message)
+        public static bool TryGetReplayText(BrokeredMessage message, out string text) => MessageReplayBody.TryGetText(message, out text);
+
+        public static BrokeredMessage PrepareForReplay(BrokeredMessage source, bool replaceProperties, string editedText,
+            BodyType originalType, bool newId, IBrokeredMessageInspector inspector)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            var outbound = source.Clone();
+            try
+            {
+                if (editedText != null) MessageReplayBody.Edit(outbound, editedText, originalType);
+                if (replaceProperties) outbound.Properties.Clear();
+                if (inspector != null)
+                {
+                    // An inspector can return a replacement that still owns or wraps this clone's stream.
+                    outbound = inspector.BeforeSendMessage(outbound) ?? throw new InvalidOperationException("The message inspector returned null.");
+                }
+                foreach (var key in outbound.Properties.Keys.Where(key => Constants.AlwaysOmittedProperties.Contains(key, StringComparer.OrdinalIgnoreCase)).ToArray())
+                    outbound.Properties.Remove(key);
+                if (newId) outbound.MessageId = Guid.NewGuid().ToString();
+                return outbound;
+            }
+            catch
+            {
+                outbound.Dispose();
+                throw;
+            }
+        }
+
+        public static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message) => ToReplayMessage(message);
+
+        public static ServiceBusMessage ToReplayMessage(BrokeredMessage message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            byte[] body;
-            using (var clone = message.Clone())
-            using (var bodyStream = clone.GetBody<Stream>())
-            using (var buffer = new MemoryStream())
-            {
-                if (bodyStream != null)
-                {
-                    bodyStream.CopyTo(buffer);
-                }
-                body = buffer.ToArray();
-            }
-
-            var serviceBusMessage = new ServiceBusMessage(new BinaryData(body))
+            var serviceBusMessage = new ServiceBusMessage(new AmqpAnnotatedMessage(MessageReplayBody.Read(message)))
             {
                 MessageId = message.MessageId,
                 SessionId = message.SessionId,

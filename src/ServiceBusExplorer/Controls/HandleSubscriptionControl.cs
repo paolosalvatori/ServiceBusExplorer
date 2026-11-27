@@ -2218,7 +2218,7 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
             using (var messageForm = new MessageForm(subscriptionWrapper, bindingList[e.RowIndex],
-                serviceBusHelper, writeToLog))
+                serviceBusHelper, writeToLog, MessageForm.QueueType.Deadletter))
             {
                 messageForm.ShowDialog();
 
@@ -2463,7 +2463,7 @@ namespace ServiceBusExplorer.Controls
                 }
 
                 using (var form = new MessageForm(subscriptionWrapper, deadletterDataGridView.SelectedRows.Cast<DataGridViewRow>()
-                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog))
+                           .Select(r => (BrokeredMessage)r.DataBoundItem), serviceBusHelper, writeToLog, MessageForm.QueueType.Deadletter))
                 {
                     form.ShowDialog();
                     if (form.RemovedSequenceNumbers != null && form.RemovedSequenceNumbers.Any())

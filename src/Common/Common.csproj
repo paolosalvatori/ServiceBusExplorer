@@ -19,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
 
+    <InternalsVisibleTo Include="ServiceBusExplorer.Tests" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="4.2.0" />
 
     <PackageReference Include="Azure.Identity" Version="1.21.0" />

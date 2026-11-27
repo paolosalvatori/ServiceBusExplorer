@@ -72,11 +72,15 @@ access and verifies `http://localhost:5300`. See the upstream
 and [emulator setup documentation](https://learn.microsoft.com/azure/service-bus-messaging/test-locally-with-service-bus-emulator).
 
 The emulator does not expose Event Hubs, Notification Hubs or Relay nodes.
-Management profiles may retain an administration endpoint on a custom port;
-the data-plane connection builder independently selects AMQP port **5672** and
-removes entity-scoped/legacy transport settings. The saved connection string is
-not rewritten. This stage does **not** claim end-to-end emulator support or
-completion of #727.
+The default emulator uses administration port 5300 and AMQP TCP port 5672.
+For a remapped instance, set `RuntimePort` to its published AMQP port, for
+example `Endpoint=sb://localhost:15300/;RuntimePort=15672` in the raw profile.
+With a separate `ManagementPort`, an explicit, distinct `Endpoint` port also
+identifies the data listener. A profile pointing at the HTTP listener, including
+port 5300, allows browsing and requires an explicit AMQP destination before
+sending, purging or cancelling. A bare emulator host uses the standard data port.
+Azure SAS data connections retain `EntityPath` as their signing scope. Explicit
+Azure transport ports are applied to the physical connection.
 No live emulator or Azure namespace was available during validation; mocked
 administration workflows and SDK request construction are covered, not live
 service compatibility or emulator feature availability.
@@ -90,19 +94,16 @@ properties, and application properties from the existing editable
 message editing, inspectors, generators, and existing import/export formats
 working while those extension and UI contracts are migrated separately.
 `ForcePersistence` has no new-SDK equivalent and is not mapped; Service Bus
-messages are durable by service semantics. `ViaPartitionKey` also has no
-`ServiceBusMessage` equivalent and is not preserved by this send adapter.
+messages are durable by service semantics. The adapter maps `ViaPartitionKey`
+to `TransactionPartitionKey`.
 
-This is an incremental stage, not completion of the data-plane migration.
-Queue/topic test senders, ordinary and dead-letter receivers, session
-operations, dead-letter settlement/moves, and listener pumps still use legacy
-clients and remain unavailable for emulator data-plane profiles. In
-particular, dead-letter move combines sending with settlement on the original
-receiver; that path remains legacy rather than risk sending a duplicate or
-losing the original message. The next increment must move those operations to
-the SDK receiver/processor APIs and replace plugin/UI message contracts only
-with an explicit compatibility plan. Event Hubs and Notification Hubs are
-unchanged.
+The editor sends ordinary copies and DLQ replacements through the same modern
+sender. The legacy receiver completes its locked source only after the send
+succeeds. A move with a retained ID requires a destination with duplicate
+detection disabled. Choose **Generate new MessageId** when detection is enabled
+or cannot be verified. A lost lock or connection after delivery can still
+leave both copies. Ordinary receivers, sessions, listener pumps and the DLQ
+receiver continue to depend on the legacy client.
 
 ### Compatibility decisions for review
 
@@ -166,8 +167,8 @@ adapter and the separate emulator administration/data-plane ports.
 
 The modern helper retains distinct administration and data endpoints. Emulator
 resubmission uses AMQP TCP regardless of the WebSockets preference. Unedited
-messages retain their original raw body and sendable identity/routing fields;
-text edits are sent as UTF-8. The new-ID option changes MessageId only.
+messages retain their sendable identity and routing fields. The editor preserves
+AMQP Data and Value body types. The new-ID option changes MessageId only.
 ViaPartitionKey maps to TransactionPartitionKey, but transactional send-via and
 atomic dead-letter moves are not implemented by this resubmission stage.
 The management-stage XML compatibility preflight remains in place.
@@ -194,9 +195,9 @@ the emulator**. Offline builds and synthetic tests do not replace that validatio
 
 ### Edited legacy message bodies (#912)
 
-The resend editor preserves the original serialized String or ByteArray format
-when editing a body detected as either legacy DataContract format. Unchanged bodies
-retain their original bytes; Stream bodies edited as text remain UTF-8 streams.
-The body-type selector does not silently reinterpret an existing message. This
-preserves legacy GetBody<string>() / GetBody<byte[]>() consumers while retaining
-IDs/routing unless Generate new MessageId is explicitly selected.
+Native AMQP text and binary Values keep their wire type when edited. Other
+Values can be copied when the modern codec reproduces their original section exactly. A body discarded by the legacy
+receiver, including AMQP Sequence, stops replay before settlement. Legacy
+DataContract String and ByteArray edits retain their serialized format. Ordinary
+stream edits use UTF-8. Bulk and single replay exclude prior dead-letter and
+NServiceBus recovery properties.
