@@ -23,6 +23,7 @@
 #region Using Directives
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Globalization;
@@ -105,6 +106,10 @@ namespace ServiceBusExplorer.Controls
         private double receiverAverageTime;
         private double receiverTotalTime;
         private int actionCount;
+        private readonly List<Task> pendingOperations = new List<Task>();
+        private Task cancelActionsTask;
+        private bool disposalStarted;
+        private bool disposalReady;
         private int receiverTaskCount = 1;
         private int receiverBatchSize = 1;
         private int receiverThinkTime;
@@ -125,6 +130,7 @@ namespace ServiceBusExplorer.Controls
             controlHelper = new TestControlHelper(mainForm, writeToLog, stopLog, startLog, serviceBusHelper);
             this.subscriptionWrapper = subscriptionWrapper;
             InitializeComponent();
+            ListenerShutdownCoordinator.Shared.Register(ShutdownAsync);
             InitializeControls();
         } 
         #endregion
@@ -251,8 +257,10 @@ namespace ServiceBusExplorer.Controls
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
+            var registering = false;
             try
             {
+                if (closeRequested || IsDisposed) return;
                 if (btnStart.Text == StopCaption)
                 {
                     await CancelActions();
@@ -263,13 +271,18 @@ namespace ServiceBusExplorer.Controls
                 if (controlHelper.ServiceBusHelper != null &&
                     ValidateParameters())
                 {
+                    btnStart.Enabled = false;
+                    if (!await PrepareStartAsync()) return;
                     controlHelper.StartLog?.Invoke();
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
                     //*****************************************************************************************************
                     //                                   Initialize Statistics and Manager Action
                     //*****************************************************************************************************
-                    actionCount = 0;
+                    BeginWorkerRegistration();
+                    registering = true;
+                    cancelActionsTask = null;
+                    pendingOperations.Clear();
                     receiverMessageNumber = 0;
                     receiverMessagesPerSecond = 0;
                     receiverMinimumTime = long.MaxValue;
@@ -281,28 +294,12 @@ namespace ServiceBusExplorer.Controls
                         chart.Series.ToList().ForEach(s => s.Points.Clear());
                     }
                     managerResetEvent = new ManualResetEventSlim(false);
-                    Action<CancellationTokenSource> managerAction = cts =>
-                    {
-                        if (cts == null)
+                    Func<CancellationTokenSource, Task> managerAction = cts =>
+                        WorkerOperationDrain.RunManagerAsync(this, managerResetEvent, cts.Token, async () =>
                         {
-                            return;
-                        }
-                        try
-                        {
-                            managerResetEvent.Wait(cts.Token);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                        }
-                        if (!cts.IsCancellationRequested)
-                        {
-                            Invoke((MethodInvoker) async delegate
-                            {
-                                btnStart.Text = StartCaption;
-                                await MainForm.SingletonMainForm.RefreshSelectedEntity();
-                            });
-                        }
-                    };
+                            btnStart.Text = StartCaption;
+                            await MainForm.SingletonMainForm.RefreshSelectedEntity();
+                        });
 
                     Action updateGraphAction = () =>
                     {
@@ -341,24 +338,10 @@ namespace ServiceBusExplorer.Controls
                                 }
                             }
                         }
-                        if (Interlocked.Decrement(ref actionCount) == 0)
-                        {
-                            managerResetEvent.Set();
-                        }
                     };
 
-                    AsyncCallback updateGraphCallback = a =>
-                    {
-                        var action = a.AsyncState as Action;
-                        if (action != null)
-                        {
-                            action.EndInvoke(a);
-                            if (Interlocked.Decrement(ref actionCount) == 0)
-                            {
-                                managerResetEvent.Set();
-                            }
-                        }
-                    };
+                    AsyncCallback updateGraphCallback = a => WorkerOperationDrain.Complete(
+                        () => (( Action )a.AsyncState).EndInvoke(a), HandleException, WorkerFinished);
 
                     blockingCollection = new BlockingCollection<Tuple<long, long, DirectionType>>();
                     //*****************************************************************************************************
@@ -369,7 +352,6 @@ namespace ServiceBusExplorer.Controls
                     {
                         throw new ArgumentException(NoSubscriptionSelected);
                     }
-                    var messagingFactory = controlHelper.ServiceBusHelper.GetSessionTestFactory(currentSubscription.RequiresSession);
                     var currentReceiveMode = cboReceivedMode.Text == PeekLock ?
                                                                      ReceiveMode.PeekLock :
                                                                      ReceiveMode.ReceiveAndDelete;
@@ -386,97 +368,149 @@ namespace ServiceBusExplorer.Controls
 
                         Action<int> receiverAction = taskId =>
                         {
-                            var allSessionsAccepted = false;
-
-                            while (!allSessionsAccepted && !runCancellation.IsCancellationRequested)
+                            var requiresSessionReceiver = currentSubscription.RequiresSession && !currentReadFromDeadLetterQueue;
+                            var receiveMode = currentReceiveMode == ReceiveMode.PeekLock
+                                ? ServiceBusReceiveMode.PeekLock
+                                : ServiceBusReceiveMode.ReceiveAndDelete;
+                            var client = controlHelper.ServiceBusHelper.CreateServiceBusClient();
+                            try
                             {
-                                ServiceBusClient client = null;
-                                ServiceBusReceiver sdkReceiver = null;
-                                MessageReceiver legacyReceiver = null;
+                                var allSessionsAccepted = false;
+                                while (!allSessionsAccepted && !runCancellation.IsCancellationRequested)
+                                {
+                                    ServiceBusReceiver receiver = null;
+                                    try
+                                    {
+                                        if (currentReadFromDeadLetterQueue)
+                                        {
+                                            receiver = client.CreateReceiver(
+                                                currentSubscription.TopicPath,
+                                                currentSubscription.Name,
+                                                new ServiceBusReceiverOptions
+                                                {
+                                                    PrefetchCount = prefetchCount,
+                                                    ReceiveMode = receiveMode,
+                                                    SubQueue = SubQueue.DeadLetter
+                                                });
+                                        }
+                                        else if (requiresSessionReceiver)
+                                        {
+                                            receiver = controlHelper.ServiceBusHelper.AcceptNextSessionFromModernDataPlane(
+                                                client,
+                                                currentSubscription.TopicPath,
+                                                currentSubscription.Name,
+                                                receiveMode,
+                                                prefetchCount,
+                                                TimeSpan.FromSeconds(sessionTimeout),
+                                                runCancellation.Token);
+                                        }
+                                        else
+                                        {
+                                            receiver = client.CreateReceiver(
+                                                currentSubscription.TopicPath,
+                                                currentSubscription.Name,
+                                                new ServiceBusReceiverOptions
+                                                {
+                                                    PrefetchCount = prefetchCount,
+                                                    ReceiveMode = receiveMode
+                                                });
+                                        }
+
+                                        string traceMessage = null;
+                                        var useTransaction = checkBoxReceiverUseTransaction.Checked;
+                                        var succeeded = ServiceBusHelper.ExecuteManualReceive(() =>
+                                            controlHelper.ServiceBusHelper.ReceiveMessages(receiver,
+                                                    receiveMode,
+                                                    currentReadFromDeadLetterQueue,
+                                                    taskId,
+                                                    receiveTimeout,
+                                                    filter,
+                                                    currentMoveToDeadLetterQueue,
+                                                    checkBoxCompleteReceive.Checked,
+                                                    checkBoxDeferMessage.Checked,
+                                                    checkBoxEnableReceiverLogging.Checked,
+                                                    checkBoxReceiverVerboseLogging.Checked,
+                                                    checkBoxReceiverEnableStatistics.Checked,
+                                                    checkBoxReceiveBatch.Checked,
+                                                    receiverBatchSize,
+                                                    checkBoxReceiverThinkTime.Checked,
+                                                    receiverThinkTime,
+                                                    receiverBrokeredMessageInspector,
+                                                    UpdateStatistics,
+                                                    runCancellation,
+                                                    out traceMessage), useTransaction,
+                                            checkBoxReceiverCommitTransaction.Checked, runCancellation.Token, out var committed);
+                                        if (useTransaction)
+                                            traceMessage += committed ? TransactionCommitted : TransactionAborted;
+                                        if (!string.IsNullOrWhiteSpace(traceMessage))
+                                        {
+                                            controlHelper.WriteToLog(traceMessage.Substring(0, traceMessage.Length - 1));
+                                        }
+                                        allSessionsAccepted = !requiresSessionReceiver || !succeeded;
+                                    }
+                                    catch (TimeoutException ex)
+                                    {
+                                        if (requiresSessionReceiver)
+                                        {
+                                            controlHelper.WriteToLog(string.Format(NoMoreSessionsToAccept, taskId));
+                                            allSessionsAccepted = true;
+                                        }
+                                        else
+                                        {
+                                            if (!runCancellation.IsCancellationRequested)
+                                            {
+                                                HandleException(ex);
+                                            }
+                                            allSessionsAccepted = true;
+                                        }
+                                    }
+                                    catch (OperationCanceledException) when (runCancellation.IsCancellationRequested)
+                                    {
+                                        allSessionsAccepted = true;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        HandleException(ex);
+                                        allSessionsAccepted = true;
+                                    }
+                                    finally
+                                    {
+                                        if (receiver != null)
+                                        {
+                                            try
+                                            {
+                                                receiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                HandleException(ex);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            finally
+                            {
                                 try
                                 {
-                                    if (messagingFactory == null)
-                                    {
-                                        client = controlHelper.ServiceBusHelper.CreateServiceBusClient();
-                                        sdkReceiver = ServiceBusHelper.CreateSubscriptionTestReceiver(client, currentSubscription.TopicPath,
-                                            currentSubscription.Name, currentReceiveMode, prefetchCount, currentReadFromDeadLetterQueue);
-                                    }
-                                    else
-                                    {
-                                        legacyReceiver = currentReadFromDeadLetterQueue
-                                            ? messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(
-                                                currentSubscription.TopicPath, currentSubscription.Name), currentReceiveMode)
-                                            : messagingFactory.CreateSubscriptionClient(currentSubscription.TopicPath, currentSubscription.Name,
-                                                currentReceiveMode).AcceptMessageSession(TimeSpan.FromSeconds(sessionTimeout));
-                                        legacyReceiver.PrefetchCount = prefetchCount;
-                                    }
-
-                                    string traceMessage = null;
-                                    Func<bool> receive = () => sdkReceiver != null
-                                        ? controlHelper.ServiceBusHelper.ReceiveMessages(sdkReceiver, sdkReceiver.ReceiveMode, currentReadFromDeadLetterQueue,
-                                            taskId, receiveTimeout, filter, currentMoveToDeadLetterQueue, checkBoxCompleteReceive.Checked,
-                                            checkBoxDeferMessage.Checked, checkBoxEnableReceiverLogging.Checked, checkBoxReceiverVerboseLogging.Checked,
-                                            checkBoxReceiverEnableStatistics.Checked, checkBoxReceiveBatch.Checked, receiverBatchSize,
-                                            checkBoxReceiverThinkTime.Checked, receiverThinkTime, receiverBrokeredMessageInspector, UpdateStatistics,
-                                            runCancellation, out traceMessage)
-                                        : controlHelper.ServiceBusHelper.ReceiveMessages(legacyReceiver, taskId, receiveTimeout, filter, currentMoveToDeadLetterQueue,
-                                            checkBoxCompleteReceive.Checked, checkBoxDeferMessage.Checked, checkBoxEnableReceiverLogging.Checked,
-                                            checkBoxReceiverVerboseLogging.Checked, checkBoxReceiverEnableStatistics.Checked, checkBoxReceiveBatch.Checked,
-                                            receiverBatchSize, checkBoxReceiverThinkTime.Checked, receiverThinkTime, receiverBrokeredMessageInspector,
-                                            UpdateStatistics, runCancellation, out traceMessage);
-                                    if (checkBoxReceiverUseTransaction.Checked)
-                                    {
-                                        bool committed = ServiceBusHelper.ExecuteReceiveTransaction(receive, checkBoxReceiverCommitTransaction.Checked,
-                                            runCancellation.Token);
-                                        traceMessage += committed ? TransactionCommitted : TransactionAborted;
-                                    }
-                                    else receive();
-                                    if (!string.IsNullOrWhiteSpace(traceMessage)) controlHelper.WriteToLog(traceMessage.TrimEnd());
-                                }
-                                catch (TimeoutException) when (currentSubscription.RequiresSession)
-                                {
-                                    controlHelper.WriteToLog(string.Format(NoMoreSessionsToAccept, taskId));
-                                    allSessionsAccepted = true;
+                                    client.DisposeAsync().AsTask().GetAwaiter().GetResult();
                                 }
                                 catch (Exception ex)
                                 {
                                     HandleException(ex);
-                                    break;
                                 }
-                                finally
-                                {
-                                    try
-                                    {
-                                        if (sdkReceiver != null) sdkReceiver.DisposeAsync().AsTask().GetAwaiter().GetResult();
-                                        if (legacyReceiver != null) legacyReceiver.Close();
-                                    }
-                                    catch (Exception ex) { HandleException(ex); }
-                                    try { if (client != null) client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
-                                    catch (Exception ex) { HandleException(ex); }
-                                }
-                                if (!currentSubscription.RequiresSession) break;
                             }
                         };
 
                         // Define Receiver AsyncCallback
-                        AsyncCallback receiverCallback = a =>
-                        {
-                            var action = a.AsyncState as Action<int>;
-                            if (action != null)
-                            {
-                                action.EndInvoke(a);
-                                if (Interlocked.Decrement(ref actionCount) == 0)
-                                {
-                                    managerResetEvent.Set();
-                                }
-                            }
-                        };
+                        AsyncCallback receiverCallback = a => WorkerOperationDrain.Complete(
+                        () => (( Action<int> )a.AsyncState).EndInvoke(a), HandleException, WorkerFinished);
 
                         // Start Receiver Actions
                         for (var i = 0; i < receiverTaskCount; i++)
                         {
-                            receiverAction.BeginInvoke(i, receiverCallback, receiverAction);
-                            Interlocked.Increment(ref actionCount);
+                            RegisterWorker();
+                            pendingOperations.Add(WorkerOperationDrain.Start(callback => receiverAction.BeginInvoke(i, callback, receiverAction), receiverCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                         }
                     }
                     catch (Exception ex)
@@ -486,10 +520,10 @@ namespace ServiceBusExplorer.Controls
                     if (actionCount > 0)
                     {
                         managerCancellationTokenSource = new CancellationTokenSource();
-                        managerAction.BeginInvoke(managerCancellationTokenSource, null, null);
+                        pendingOperations.Add(managerAction(managerCancellationTokenSource));
                         graphCancellationTokenSource = new CancellationTokenSource();
-                        updateGraphAction.BeginInvoke(updateGraphCallback, updateGraphAction);
-                        Interlocked.Increment(ref actionCount);
+                        RegisterWorker();
+                        pendingOperations.Add(WorkerOperationDrain.Start(callback => updateGraphAction.BeginInvoke(callback, updateGraphAction), updateGraphCallback, ex => WorkerOperationDrain.Complete(() => { throw ex; }, HandleException, WorkerFinished)));
                         btnStart.Text = StopCaption;
                     }
                 }
@@ -500,6 +534,7 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
+                if (registering) EndWorkerRegistration();
                 btnStart.Enabled = true;
                 Cursor.Current = Cursors.Default;
             }
@@ -617,20 +652,54 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        internal async Task CancelActions()
+        private bool closeRequested;
+
+        internal Task ShutdownAsync()
         {
+            closeRequested = true;
+            return CancelActions();
+        }
+
+        internal async Task<bool> PrepareStartAsync()
+        {
+            if (closeRequested || IsDisposed) return false;
+            await CancelActions();
+            return !closeRequested && !IsDisposed;
+        }
+
+        // Reserve one count for registration itself. No worker can signal completion
+        // while the UI is still adding later workers or the graph/manager operations.
+        internal void BeginWorkerRegistration() => actionCount = 1;
+        internal void RegisterWorker() => Interlocked.Increment(ref actionCount);
+        internal void EndWorkerRegistration() => WorkerFinished();
+
+        private void WorkerFinished()
+        {
+            if (Interlocked.Decrement(ref actionCount) == 0) managerResetEvent?.Set();
+        }
+
+        internal Task CancelActions()
+        {
+            return cancelActionsTask ?? (cancelActionsTask = CancelActionsCoreAsync());
+        }
+
+        private async Task CancelActionsCoreAsync()
+        {
+            managerCancellationTokenSource?.Cancel();
+            graphCancellationTokenSource?.Cancel();
+            receiverCancellationTokenSource?.Cancel();
+            try { await WorkerOperationDrain.DrainAsync(pendingOperations.ToArray()); }
+            catch (Exception ex) { try { HandleException(ex); } catch { } }
+            pendingOperations.Clear();
             if (controlHelper.StopLog != null)
             {
                 await controlHelper.StopLog();
             }
-            managerCancellationTokenSource?.Cancel();
-            graphCancellationTokenSource?.Cancel();
-            receiverCancellationTokenSource?.Cancel();
         }
 
         internal async void btnCancel_Click(object sender, EventArgs e)
         {
-            await CancelActions();
+            await ShutdownAsync();
             OnCancel?.Invoke();
         }
 
@@ -830,6 +899,18 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
+        private async void DisposeAfterWorkersAsync()
+        {
+            try { await ShutdownAsync(); }
+            catch (Exception ex) { try { HandleException(ex); } catch { } }
+            finally
+            {
+                ListenerShutdownCoordinator.Shared.Unregister(ShutdownAsync);
+                disposalReady = true;
+                Dispose();
+            }
+        }
+
         /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
@@ -838,6 +919,11 @@ namespace ServiceBusExplorer.Controls
         {
             try
             {
+                if (disposing && !disposalReady)
+                {
+                    if (!disposalStarted) { disposalStarted = true; DisposeAfterWorkersAsync(); }
+                    return;
+                }
                 if (disposing)
                 {
                     components?.Dispose();

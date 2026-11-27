@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Windows.Forms;
 
 #endregion
@@ -50,14 +49,9 @@ namespace ServiceBusExplorer.Forms
             txtMessageCount.Text = count.ToString(CultureInfo.InvariantCulture);
             cboReceiverInspector.Items.Add(SelectBrokeredMessageInspector);
             cboReceiverInspector.SelectedIndex = 0;
-            var messageInspectors = brokeredMessageInspectors as string[] ?? brokeredMessageInspectors.ToArray();
-            if (!messageInspectors.Any())
+            foreach (var inspector in brokeredMessageInspectors)
             {
-                return;
-            }
-            for (var i = 0; i < messageInspectors.Length; i++)
-            {
-                cboReceiverInspector.Items.Add(messageInspectors[i]);
+                cboReceiverInspector.Items.Add(inspector);
             }
 
             txtFromSession.Enabled = fromSessionSelectionActive;
@@ -82,6 +76,18 @@ namespace ServiceBusExplorer.Forms
         #region Event Handlers
         private void btnOk_Click(object? sender, EventArgs? e)
         {
+            var sessionId = txtFromSession.Enabled && txtFromSession.TextLength > 0 ? txtFromSession.Text : null;
+            try
+            {
+                ServiceBusHelper.ValidateSessionSelector(sessionId);
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(this, ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtFromSession.Focus();
+                return;
+            }
+            FromSession = sessionId;
             DialogResult = DialogResult.OK;
             if (int.TryParse(txtMessageCount.Text, out var count))
             {
@@ -102,10 +108,6 @@ namespace ServiceBusExplorer.Forms
                 }
             }
 
-            if (!string.IsNullOrEmpty(txtFromSession.Text))
-            {
-                FromSession = txtFromSession.Text;
-            }
             Close();
         }
 

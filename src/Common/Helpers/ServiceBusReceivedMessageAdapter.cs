@@ -122,7 +122,10 @@ namespace ServiceBusExplorer.Helpers
             }
         }
 
-        public static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message)
+        public static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message) =>
+            ToBrokeredMessage(message, message?.SessionId, message?.PartitionKey);
+
+        private static BrokeredMessage ToBrokeredMessage(ServiceBusReceivedMessage message, string sessionId, string partitionKey)
         {
             if (message == null)
             {
@@ -132,7 +135,7 @@ namespace ServiceBusExplorer.Helpers
             var brokeredMessage = CreateBodyRow(message);
             try
             {
-                CopyReceivedProperties(message, brokeredMessage);
+                CopyReceivedProperties(message, brokeredMessage, sessionId, partitionKey);
                 return brokeredMessage;
             }
             catch
@@ -190,7 +193,7 @@ namespace ServiceBusExplorer.Helpers
             }
             try
             {
-                CopyReceivedProperties(message, row);
+                CopyReceivedProperties(message, row, message.SessionId, message.PartitionKey);
                 failure = null;
             }
             catch (Exception ex)
@@ -201,14 +204,14 @@ namespace ServiceBusExplorer.Helpers
             return row;
         }
 
-        private static void CopyReceivedProperties(ServiceBusReceivedMessage message, BrokeredMessage brokeredMessage)
+        private static void CopyReceivedProperties(ServiceBusReceivedMessage message, BrokeredMessage brokeredMessage, string sessionId, string partitionKey)
         {
             SetReceivedProperty(brokeredMessage, "SequenceNumber", message.SequenceNumber);
             if (!string.IsNullOrEmpty(message.MessageId))
             {
                 brokeredMessage.MessageId = message.MessageId;
             }
-            brokeredMessage.SessionId = message.SessionId;
+            brokeredMessage.SessionId = sessionId;
             brokeredMessage.CorrelationId = message.CorrelationId;
             brokeredMessage.ContentType = message.ContentType;
             brokeredMessage.Label = message.Subject;
@@ -217,10 +220,10 @@ namespace ServiceBusExplorer.Helpers
             brokeredMessage.ReplyToSessionId = message.ReplyToSessionId;
             brokeredMessage.TimeToLive = message.TimeToLive;
             brokeredMessage.ScheduledEnqueueTimeUtc = message.ScheduledEnqueueTime.UtcDateTime;
-            if (string.IsNullOrEmpty(message.SessionId) ||
-                string.Equals(message.SessionId, message.PartitionKey, StringComparison.Ordinal))
+            if ((string.IsNullOrEmpty(sessionId) || string.Equals(sessionId, partitionKey, StringComparison.Ordinal)) &&
+                !string.Equals(brokeredMessage.PartitionKey, partitionKey, StringComparison.Ordinal))
             {
-                brokeredMessage.PartitionKey = message.PartitionKey;
+                brokeredMessage.PartitionKey = partitionKey;
             }
 
             foreach (var property in message.ApplicationProperties)
@@ -239,6 +242,39 @@ namespace ServiceBusExplorer.Helpers
             SetReceivedProperty(brokeredMessage, "LockToken", Guid.Parse(message.LockToken));
             SetReceivedProperty(brokeredMessage, "DeadLetterSource", message.DeadLetterSource);
             brokeredMessage.ViaPartitionKey = message.TransactionPartitionKey;
+        }
+
+        // Reuse the received-message adapter for public receiver headers, then overlay
+        // only editable content from the inspector. This is a receive row, not a send clone.
+        public static BrokeredMessage ToReceivedRow(ServiceBusReceivedMessage original, BrokeredMessage inspected)
+        {
+            // Initialize the desired valid routing once. Clearing PartitionKey on an
+            // already session-bound legacy message is rejected by the pinned SDK.
+            var row = ToBrokeredMessage(original, inspected.SessionId, inspected.PartitionKey);
+            try
+            {
+                using (var copy = inspected.Clone())
+                using (var stream = copy.GetBody<Stream>())
+                using (var buffer = new MemoryStream())
+                {
+                    stream?.CopyTo(buffer);
+                    row.SetBodyStream(new MemoryStream(buffer.ToArray()));
+                }
+                row.MessageId = inspected.MessageId;
+                row.ViaPartitionKey = inspected.ViaPartitionKey;
+                row.CorrelationId = inspected.CorrelationId;
+                row.ContentType = inspected.ContentType;
+                row.Label = inspected.Label;
+                row.To = inspected.To;
+                row.ReplyTo = inspected.ReplyTo;
+                row.ReplyToSessionId = inspected.ReplyToSessionId;
+                row.TimeToLive = inspected.TimeToLive;
+                row.ScheduledEnqueueTimeUtc = inspected.ScheduledEnqueueTimeUtc;
+                row.Properties.Clear();
+                foreach (var property in inspected.Properties) row.Properties.Add(property.Key, property.Value);
+                return row;
+            }
+            catch { row.Dispose(); throw; }
         }
 
         private static void SetReceivedProperty(BrokeredMessage target, string name, object value) =>

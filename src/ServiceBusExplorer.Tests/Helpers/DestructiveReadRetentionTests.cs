@@ -31,6 +31,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 var partial = Assert.IsType<PartialMessageReadException>(reported);
                 Assert.Equal(4, partial.Messages.Count);
+                Assert.Equal(new long[] { 1, 2, 3, 4 }, rows.Select(row => row.SequenceNumber));
                 Assert.Equal(new long[] { 1, 2, 3, 4 }, rows.Select(ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber));
                 Assert.Equal(new[] { "edited1", "body2", "body3", "body4" }, rows.Select(Text));
                 Assert.Equal(2, receiver.Calls);

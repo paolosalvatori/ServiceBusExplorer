@@ -580,15 +580,15 @@ namespace ServiceBusExplorer.Forms
         {
             if (testQueueControl != null)
             {
-                await testQueueControl.CancelActions();
+                await testQueueControl.ShutdownAsync();
             }
             if (testTopicControl != null)
             {
-                await testTopicControl.CancelActions();
+                await testTopicControl.ShutdownAsync();
             }
             if (testSubscriptionControl != null)
             {
-                await testSubscriptionControl.CancelActions();
+                await testSubscriptionControl.ShutdownAsync();
             }
             if (testEventHubControl != null)
             {
@@ -773,18 +773,35 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
+        private bool listenerCloseReady;
+        private bool listenerClosePending;
+
+        private async void ContainerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            var shutdowns = panelMain.Controls.OfType<ListenerControl>().Select(control => new Func<Task>(control.ShutdownAsync))
+                .Concat(panelMain.Controls.OfType<TestQueueControl>().Select(control => new Func<Task>(control.ShutdownAsync)))
+                .Concat(panelMain.Controls.OfType<TestTopicControl>().Select(control => new Func<Task>(control.ShutdownAsync)))
+                .Concat(panelMain.Controls.OfType<TestSubscriptionControl>().Select(control => new Func<Task>(control.ShutdownAsync))).ToArray();
+            if (!listenerCloseReady && shutdowns.Length > 0 &&
+                e.CloseReason != System.Windows.Forms.CloseReason.WindowsShutDown && e.CloseReason != System.Windows.Forms.CloseReason.TaskManagerClosing)
+            {
+                e.Cancel = true;
+                if (listenerClosePending) return;
+                listenerClosePending = true;
+                try { await Task.WhenAll(shutdowns.Select(shutdown => shutdown())); }
+                catch (Exception ex) { HandleException(ex); }
+                finally
+                {
+                    listenerCloseReady = true;
+                    listenerClosePending = false;
+                    if (!IsDisposed) BeginInvoke(new Action(Close));
+                }
+                return;
+            }
             cancellationTokenSource.Cancel(false);
-            foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-            {
-                userControl.Dispose();
-            }
-            if (logTraceListener != null &&
-                Trace.Listeners.Contains(logTraceListener))
-            {
+            foreach (var userControl in panelMain.Controls.OfType<UserControl>()) userControl.Dispose();
+            if (logTraceListener != null && Trace.Listeners.Contains(logTraceListener))
                 Trace.Listeners.Remove(logTraceListener);
-            }
         }
 
         private void HandleException(Exception ex)

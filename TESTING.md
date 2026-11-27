@@ -142,6 +142,16 @@ Moves from partitioned sources or transfer dead-letter queues are explicitly uns
 
 Release cross-build and exact-head Windows CI cover these regressions. Live Azure/emulator transactions, interactive bulk actions, partition routing and lock-expiry behavior are not verified; no live data was accessed and screenshots remain deferred.
 
+### Session-stage readiness follow-up (#914)
+
+- Processor callbacks propagate inspector, tracking and cancellation failures; successful return can no longer trigger automatic acknowledgment after failed work. Manual completion follows successful processing. Synthetic callback tests cover automatic/manual completion and cancellation.
+- Stop, close and disposal share a single per-run shutdown task. Normal container/main close awaits processor callback drain before client disposal; logging stays available until drain completes. Tracking posts an awaited update to the UI instead of blocking it, and session counters reset between runs. A Windows message-loop regression runs a real listener callback while a fake processor is draining, checks overlapping shutdown identity, and verifies processor/client/log ordering. Windows system shutdown remains best-effort and does not cancel the OS shutdown.
+- Queue/topic/subscription manual receive transactions only complete when the receive helper succeeds, commit is requested and cancellation is absent. Synthetic ambient transactions verify committed versus aborted outcomes.
+- Entity-wide session peek uses an ordinary receiver and never acquires a session lock. Receive All reads bounded batches across successive sessions until accept timeout; a selected session remains scoped to that session. Session rows read state through the enumerated browsable session with its own SDK operation timeout. Row changes clear old state immediately, and late reads and errors cannot overwrite the latest selection.
+- Legacy SDK session enumeration remains intentional; this change does not provide modern enumeration or emulator support for that legacy boundary. Live Azure/emulator settlement, transaction enlistment, lock renewal/expiry and session enumeration are unverified. Interactive row-change/state-fetch errors, normal application close with real processors, Windows OS shutdown, and repeated live start/stop remain manual checks. Automated UI tests use synthetic SDK clients; no live service or screenshots were used.
+
+The final shutdown guard also waits for an in-progress SDK start before processor/client disposal. Manual queue/topic/subscription test controls track delegate work through EndInvoke/callback completion, cancel then await that work before closing shared clients and stopping logs, and defer disposal until that drain completes. Normal container/main close participates in the same tasks. Synthetic Windows message-loop tests cover startup cancellation and workers synchronously invoking the UI while their drain is awaited. The sender and receiver cancel their think-time waits during shutdown. In-flight SDK operations retain their own cancellation and timeout behavior.
+
 - Use a queue-scoped SAS profile to verify the signed data audience and rejection of a different entity. Verify explicit Azure transport ports and independently remapped emulator administration and AMQP listeners. Management-only custom mappings must block data operations.
 - The wire fixtures decode native AMQP through the pinned legacy receiver. They cover untouched Data and Value, corrected text and binary Values, legacy DataContract bodies, reserved recovery properties and refusal when the receiver lost the body.
 - The editor requires a fresh ID for a destructive replay when duplicate detection is enabled or unknown. The settlement tests cover accepted, failed, cancelled and expired-lock operations. Live delivery, lock expiry, duplicate suppression and interactive cancellation still require broker-backed acceptance.
@@ -172,6 +182,25 @@ Secondary helpers retain original profile EntityPath metadata separately from no
 - Live broker transaction enlistment/settlement, network failure ambiguity and interactive
   Azure/emulator workflows still require manual verification. Linux cross-build does not
   execute these .NET Framework/WinForms tests; Windows CI runs them.
+
+### Stage 5 independent-review regressions
+
+- Manual queue/topic/subscription workers use `ExecuteManualReceive` to distinguish failed
+  processing from a successful requested rollback. The failed session inspector matrix covers
+  transactions on/off and commit on/off; failure always ends that worker's session loop.
+- The actual listener callback and checkbox are exercised with a per-run settlement snapshot.
+  Checkbox changes during a run cannot suppress manual settlement or add duplicate settlement.
+- Queue close tests run a real WinForms message pump and await the manager's final UI work,
+  including failure and repeated close. Client disposal follows that work; cancellation before
+  completion prevents a new final refresh from being queued.
+- Synthetic SDK clients verify ordinary modern receivers for queue/subscription DLQs and
+  cloud queue transfer DLQs, including cleanup. The emulator rejects transfer DLQ browsing
+  before client creation. Subscription transfer DLQ browsing is explicitly unsupported in
+  this view instead of incorrectly reading the ordinary DLQ. Partitioned browse entry points
+  use the modern path; unsafe move guards remain. Legacy session enumeration remains unchanged.
+- No live Azure/emulator operations or screenshots are part of these tests. Actual broker
+  transaction/settlement behavior, live DLQ paging and interactive close under network outages
+  still need manual validation; Linux builds do not execute .NET Framework WinForms tests.
 ### Connection profile and filter publication follow-up
 
 Saved raw profile loading uses the same trimmed, case-insensitive keys as explicit transport
@@ -202,4 +231,5 @@ Both receive and send inspector boundaries transfer retained AMQP body metadata 
 clones. Value/Sequence tests cover both directions and deliberate edits, which remain Data edits.
 Live legacy receiver settlement faults and interactive emulator/Azure workflows remain untested.
 
+Session follow-up regressions exercise the modern session browse helper with synthetic accept, receive, receiver-disposal and client-disposal failures, preserving earlier consumed rows and reporting the failure. Pumped WinForms tests exercise the shared Start preparation and permanent Close paths in all three manual controls, plus EndInvoke/start-failure accounting even when error logging throws. Stop remains reversible. Live session broker behavior and manual visual checks remain unverified.
 Queue/receiver closure tests exercise in-place inspector stream edits through receive and resend, source identity through edited inspector clones and the editor's Submit preparation, and confirmed destructive-receive accounting before single/batch inspector failure. The shared legacy boundary is exercised offline; actual legacy broker receive/settlement and live emulator operations are not run.

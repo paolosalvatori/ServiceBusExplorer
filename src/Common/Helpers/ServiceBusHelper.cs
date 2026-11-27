@@ -2643,7 +2643,7 @@ namespace ServiceBusExplorer
                     if (senderThinkTime && more && !cancellationTokenSource.IsCancellationRequested)
                     {
                         WriteToLog(string.Format(SleepingFor, thinkTime));
-                        Thread.Sleep(thinkTime);
+                        cancellationTokenSource.Token.WaitHandle.WaitOne(thinkTime);
                     }
                 }
             }
@@ -3474,7 +3474,7 @@ namespace ServiceBusExplorer
                     if (receiverThinkTime && !completed && !cancellationTokenSource.IsCancellationRequested)
                     {
                         WriteToLog(string.Format(SleepingFor, thinkTime));
-                        Thread.Sleep(thinkTime);
+                        cancellationTokenSource.Token.WaitHandle.WaitOne(thinkTime);
                     }
                 }
             }
@@ -4577,6 +4577,20 @@ namespace ServiceBusExplorer
             };
         }
 
+        public static bool ExecuteManualReceive(Func<bool> receive, bool useTransaction, bool commit,
+            CancellationToken cancellationToken, out bool committed)
+        {
+            bool succeeded = false;
+            committed = false;
+            if (useTransaction)
+                committed = ExecuteReceiveTransaction(() => succeeded = receive(), commit, cancellationToken);
+            else
+                succeeded = receive();
+            // A requested rollback is not a processing failure. A failed callback always ends
+            // this worker's session loop, whether or not a transaction was requested.
+            return succeeded && !cancellationToken.IsCancellationRequested;
+        }
+
         public static void ValidateReceiveTransaction(bool receiveAndDelete, bool requested = false)
         {
             if (receiveAndDelete && (requested || System.Transactions.Transaction.Current != null))
@@ -4669,7 +4683,7 @@ namespace ServiceBusExplorer
             });
         }
 
-        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
         {
             var serviceBusHelper2 = GetServiceBusHelper2();
             if (!serviceBusHelper2.IsEntra)
@@ -4679,6 +4693,151 @@ namespace ServiceBusExplorer
                     IsEmulator);
             }
             return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
+        }
+
+        public ServiceBusSessionReceiver AcceptNextSessionFromModernDataPlane(
+            ServiceBusClient client,
+            string entityPath,
+            string subscriptionName,
+            ServiceBusReceiveMode receiveMode,
+            int prefetchCount,
+            TimeSpan acceptTimeout,
+            CancellationToken cancellationToken)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+
+            using (var timeoutCancellationTokenSource = new CancellationTokenSource(acceptTimeout))
+            using (var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+                timeoutCancellationTokenSource.Token,
+                cancellationToken))
+            {
+                var options = new ServiceBusSessionReceiverOptions
+                {
+                    PrefetchCount = prefetchCount,
+                    ReceiveMode = receiveMode
+                };
+
+                try
+                {
+                    return string.IsNullOrWhiteSpace(subscriptionName)
+                        ? client.AcceptNextSessionAsync(entityPath, options, linkedCancellationTokenSource.Token)
+                            .GetAwaiter().GetResult()
+                        : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, linkedCancellationTokenSource.Token)
+                            .GetAwaiter().GetResult();
+                }
+                catch (OperationCanceledException ex) when (
+                    timeoutCancellationTokenSource.IsCancellationRequested &&
+                    !cancellationToken.IsCancellationRequested)
+                {
+                    throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
+                }
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout)
+                {
+                    throw new TimeoutException("No Service Bus session became available before the accept timeout.", ex);
+                }
+            }
+        }
+
+        public static void ValidateSessionSelector(string sessionId)
+        {
+            if (sessionId != null && (string.IsNullOrWhiteSpace(sessionId) || sessionId.Length > 128))
+            {
+                throw new ArgumentException("A session ID must contain a non-whitespace character and be at most 128 characters long.", nameof(sessionId));
+            }
+        }
+
+        public List<BrokeredMessage> GetMessagesFromModernSessionDataPlane(
+            string entityPath,
+            string subscriptionName,
+            string sessionId,
+            bool peek,
+            int count,
+            long? fromSequenceNumber,
+            TimeSpan receiveTimeout,
+            IBrokeredMessageInspector messageInspector, Action<Exception> reportFailure = null)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+            ValidateSessionSelector(sessionId);
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+            if (count == 0)
+            {
+                return new List<BrokeredMessage>();
+            }
+
+            if (peek && sessionId == null)
+                return GetMessagesFromModernDataPlane(entityPath, subscriptionName, SubQueue.None,
+                    true, count, fromSequenceNumber, receiveTimeout, messageInspector);
+
+            ValidateReceiveTransaction(!peek);
+            Exception failure = null;
+            var messages = new List<BrokeredMessage>();
+            var client = CreateServiceBusClient();
+            try
+            {
+                do
+                {
+                    ServiceBusSessionReceiver receiver = null;
+                    try
+                    {
+                        var options = new ServiceBusSessionReceiverOptions
+                        {
+                            ReceiveMode = peek ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete
+                        };
+                        using (var acceptCancellation = new CancellationTokenSource(receiveTimeout))
+                        {
+                            try
+                            {
+                                receiver = sessionId == null
+                                    ? (string.IsNullOrWhiteSpace(subscriptionName)
+                                        ? client.AcceptNextSessionAsync(entityPath, options, acceptCancellation.Token)
+                                        : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, acceptCancellation.Token)).GetAwaiter().GetResult()
+                                    : (string.IsNullOrWhiteSpace(subscriptionName)
+                                        ? client.AcceptSessionAsync(entityPath, sessionId, options, acceptCancellation.Token)
+                                        : client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, acceptCancellation.Token)).GetAwaiter().GetResult();
+                            }
+                            catch (OperationCanceledException) when (acceptCancellation.IsCancellationRequested) { break; }
+                            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceTimeout) { break; }
+                        }
+                        var batch = ReadMessagesFromModernReceiver(receiver, peek, count - messages.Count,
+                            fromSequenceNumber, receiveTimeout, messageInspector, message => messages.Add(message));
+                        // A selected session is read once; avoid repeatedly accepting an empty session.
+                        if (sessionId != null || peek || batch.Count == 0) break;
+                    }
+                    catch (Exception ex) { failure = ex; }
+                    finally
+                    {
+                        try { receiver?.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                        catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+                    }
+                    if (failure != null) break;
+                } while (messages.Count < count);
+            }
+            catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+            finally
+            {
+                try { client.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
+                catch (Exception ex) { failure = failure == null ? ex : new AggregateException(failure, ex); }
+            }
+            if (failure != null)
+            {
+                var partial = new PartialMessageReadException(messages, failure);
+                if (reportFailure == null) throw partial;
+                reportFailure(partial);
+            }
+            return messages;
         }
 
         public List<BrokeredMessage> GetMessagesFromModernDataPlane(
@@ -4695,6 +4854,9 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentException("An entity path is required.", nameof(entityPath));
             }
+
+            if (IsEmulator && subQueue == SubQueue.TransferDeadLetter)
+                throw new NotSupportedException("Transfer dead-letter browsing is not supported on the Service Bus emulator.");
 
             ValidateReceiveTransaction(!peek);
             return ReadMessagesFromModernClient(CreateServiceBusClient(), entityPath, subscriptionName,
@@ -4782,7 +4944,7 @@ namespace ServiceBusExplorer
                         break;
                     }
 
-                    if (!peek && receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete)
+                    if (!peek && (received != null || receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete))
                     {
                         // Every message in a returned destructive batch is already gone from
                         // the broker. Keep independent originals until all inspection succeeds.
@@ -4798,18 +4960,22 @@ namespace ServiceBusExplorer
                         {
                             if (conversionFailure != null)
                                 throw new InvalidOperationException("Some received metadata could not be displayed. Original AMQP messages were retained.", conversionFailure);
-                            if (messageInspector != null)
-                                foreach (var message in messages)
+                            if (messageInspector == null)
+                            {
+                                foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
+                                continue;
+                            }
+                            for (var index = 0; index < originals.Count; index++)
+                            {
+                                // Fresh adaptation provides original public receiver headers
+                                // and an independent body; fallback originals remain untouched.
+                                using (var candidate = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(messages[index]))
                                 {
-                                    var candidate = ServiceBusReceivedMessageAdapter.ToBrokeredMessage(message);
-                                    try
-                                    {
-                                        var inspected = ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
-                                        if (!ReferenceEquals(candidate, inspected)) candidate.Dispose();
-                                        inspectedBatch.Add(inspected);
-                                    }
-                                    catch { candidate.Dispose(); throw; }
+                                    var inspected = ServiceBusReceivedMessageAdapter.Inspect(candidate, messageInspector.AfterReceiveMessage);
+                                    try { inspectedBatch.Add(ServiceBusReceivedMessageAdapter.ToReceivedRow(messages[index], inspected)); }
+                                    finally { if (!ReferenceEquals(candidate, inspected)) inspected.Dispose(); }
                                 }
+                            }
                         }
                         catch
                         {
@@ -4817,10 +4983,8 @@ namespace ServiceBusExplorer
                             foreach (var inspected in inspectedBatch) inspected.Dispose();
                             throw;
                         }
-                        if (messageInspector != null)
-                            foreach (var original in originals) original.Dispose();
-                        foreach (var row in messageInspector == null ? originals : inspectedBatch)
-                        { brokeredMessages.Add(row); received?.Invoke(row); }
+                        foreach (var original in originals) original.Dispose();
+                        foreach (var inspected in inspectedBatch) { brokeredMessages.Add(inspected); received?.Invoke(inspected); }
                         continue;
                     }
 
