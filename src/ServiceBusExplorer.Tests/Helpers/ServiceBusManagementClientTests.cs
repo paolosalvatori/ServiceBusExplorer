@@ -19,7 +19,7 @@ using Legacy = Microsoft.ServiceBus.Messaging;
 namespace ServiceBusExplorer.Tests.Helpers
 {
     [Collection("Service Bus connection settings")]
-    public class ServiceBusManagementClientTests
+    public partial class ServiceBusManagementClientTests
     {
         private const string EmulatorConnection = "Endpoint=sb://localhost:5672;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;UseDevelopmentEmulator=true;TransportType=Amqp;EntityPath=orders";
 
@@ -33,7 +33,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             {
                 ServiceBusHelper.UseAmqpWebSockets = websockets;
                 var helper = new ServiceBusHelper((_, __) => { });
-                var profile = ServiceBusNamespace.GetServiceBusNamespace("synthetic", EmulatorConnection.Replace(":5672", ":5300"), (_, __) => { });
+                var profile = ServiceBusNamespace.GetServiceBusNamespace("synthetic", EmulatorConnection.Replace(":5672", ":5300") + ";RuntimePort=5672", (_, __) => { });
                 typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(helper, profile);
                 var secondary = helper.GetServiceBusHelper2();
                 secondary.AdministrationConnectionString.Should().Contain(":5300");
@@ -430,39 +430,83 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Theory]
-        [InlineData("localhost:5672")]
-        [InlineData("localhost:5300")]
-        [InlineData("127.0.0.1:55300")]
-        public async Task EmulatorDataPlaneConnection_UsesAmqpPortAndStripsEntityScope(string endpoint)
+        [InlineData("localhost:5672", "", 5672)]
+        [InlineData("localhost", "", 5672)]
+        [InlineData("localhost:5300", ";RuntimePort=5672", 5672)]
+        [InlineData("localhost:15300", ";RuntimePort=15672", 15672)]
+        [InlineData("localhost:15672", ";ManagementPort=15300", 15672)]
+        [InlineData("localhost:15300", ";ManagementPort=15300;RuntimePort=15672", 15672)]
+        public async Task EmulatorDataPlaneConnection_UsesConfiguredAmqpPortAndEntityScope(string endpoint, string extra, int port)
         {
-            var connection = EmulatorConnection.Replace("localhost:5672", endpoint);
-            var ns = ServiceBusNamespace.GetServiceBusNamespace("test", connection, (_, __) => { });
-
-            var dataPlane = ServiceBusHelper.GetDataPlaneConnectionString(ns);
-
-            dataPlane.Should().Contain("Endpoint=sb://");
-            dataPlane.Should().Contain(":5672/");
-            dataPlane.Should().Contain("UseDevelopmentEmulator=true");
-            dataPlane.Should().NotContain("TransportType");
-            dataPlane.Should().NotContain("EntityPath");
-            var client = new ServiceBusClient(dataPlane);
+            var profile = ServiceBusNamespace.GetServiceBusNamespace("test", EmulatorConnection.Replace("localhost:5672", endpoint) + extra, (_, __) => { });
+            var helper = new ServiceBusHelper((_, __) => { });
+            typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(helper, profile);
+            var secondary = helper.GetServiceBusHelper2();
+            secondary.ConnectionString.Should().Contain(":" + port + "/").And.Contain("EntityPath=orders")
+                .And.NotContain("TransportType").And.NotContain("ManagementPort").And.NotContain("RuntimePort");
+            await using var client = secondary.CreateServiceBusClient();
+            PhysicalEndpoint(client).Port.Should().Be(port);
             client.CreateSender("orders").Should().NotBeNull();
-            await client.DisposeAsync();
+            ((Action)(() => client.CreateSender("other"))).Should().Throw<ArgumentException>();
+        }
+
+        [Theory]
+        [InlineData("localhost:5300", "")]
+        [InlineData("localhost:5300", ";ManagementPort=15300")]
+        [InlineData("localhost:15300", "")]
+        [InlineData("localhost", ";ManagementPort=15300")]
+        [InlineData("localhost:15300", ";ManagementPort=15300")]
+        public void RemappedManagementOnlyEmulatorRefusesDataOperations(string endpoint, string extra)
+        {
+            var profile = ServiceBusNamespace.GetServiceBusNamespace("test", EmulatorConnection.Replace("localhost:5672", endpoint) + extra, (_, __) => { });
+            var helper = new ServiceBusHelper((_, __) => { });
+            typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(helper, profile);
+            var secondary = helper.GetServiceBusHelper2();
+            secondary.CreateAdministrationClient().Should().NotBeNull();
+            ((Action)(() => secondary.CreateServiceBusClient())).Should().Throw<NotSupportedException>().WithMessage("*RuntimePort*");
         }
 
         [Fact]
-        public async Task AzureDataPlaneConnection_StripsEntityScopeAndLegacyTransport()
+        public async Task ManagementPortAloneDoesNotSetTheAzureDataEndpoint()
         {
-            const string connection = "Endpoint=sb://example.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=test;TransportType=NetMessaging;EntityPath=orders";
+            const string profile = "Endpoint=sb://namespace.invalid/;ManagementPort=14443;SharedAccessKeyName=name;SharedAccessKey=test";
+            var data = ServiceBusHelper.GetDataPlaneConnectionString(profile, false);
+            var helper = new ServiceBusExplorer.ServiceBus.Helpers.ServiceBusHelper2((_, __) => { }) { ConnectionString = data };
+            await using var client = helper.CreateServiceBusClient();
+            PhysicalEndpoint(client).IsDefaultPort.Should().BeTrue();
+            data.Should().NotContain("14443");
+        }
 
-            var dataPlane = ServiceBusHelper.GetDataPlaneConnectionString(connection, useDevelopmentEmulator: false);
-
-            dataPlane.Should().Contain("Endpoint=sb://example.servicebus.windows.net/");
-            dataPlane.Should().NotContain("TransportType");
-            dataPlane.Should().NotContain("EntityPath");
-            var client = new ServiceBusClient(dataPlane);
+        [Fact]
+        public async Task AzureDataPlaneConnection_RetainsScopeAndUsesExplicitWireEndpoint()
+        {
+            const string connection = "Endpoint=sb://example.servicebus.windows.net:15671/;ManagementPort=14443;SharedAccessKeyName=send;SharedAccessKey=test;TransportType=Amqp;EntityPath=orders";
+            var data = ServiceBusHelper.GetDataPlaneConnectionString(connection, false);
+            data.Should().Contain("EntityPath=orders").And.NotContain("ManagementPort").And.NotContain("TransportType");
+            var helper = new ServiceBusExplorer.ServiceBus.Helpers.ServiceBusHelper2((_, __) => { }) { ConnectionString = data };
+            await using var client = helper.CreateServiceBusClient();
+            PhysicalEndpoint(client).Port.Should().Be(15671);
+            var transport = AmqpTransport(client);
+            var credential = (TokenCredential)transport.GetType().GetProperty("Credential", Instance).GetValue(transport);
+            var token = credential.GetToken(new TokenRequestContext(Array.Empty<string>()), CancellationToken.None).Token;
+            var resource = token.Split('&')[0].Substring("SharedAccessSignature sr=".Length);
+            Uri.UnescapeDataString(resource).Should().Be("amqps://example.servicebus.windows.net/orders");
             client.CreateSender("orders").Should().NotBeNull();
-            await client.DisposeAsync();
+            ((Action)(() => client.CreateSender("other"))).Should().Throw<ArgumentException>();
+        }
+
+        private const BindingFlags Instance = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+        private static object AmqpTransport(ServiceBusClient client)
+        {
+            object connection = typeof(ServiceBusClient).GetProperty("Connection", Instance).GetValue(client);
+            return connection.GetType().GetProperty("InnerClient", Instance).GetValue(connection);
+        }
+
+        private static Uri PhysicalEndpoint(ServiceBusClient client)
+        {
+            var transport = AmqpTransport(client);
+            return (Uri)transport.GetType().GetProperty("ConnectionEndpoint", Instance).GetValue(transport);
         }
 
         [Fact]
@@ -476,7 +520,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             var copy = new ServiceBusHelper((_, __) => { }, helper);
             copy.IsEmulator.Should().BeTrue();
             copy.GetServiceBusHelper2().ConnectionString.Should().Contain("Endpoint=sb://localhost:5672/");
-            copy.GetServiceBusHelper2().ConnectionString.Should().NotContain("EntityPath");
+            copy.GetServiceBusHelper2().ConnectionString.Should().Contain("EntityPath=orders");
             ns.ConnectionString.Should().Be(EmulatorConnection);
             ((Action)(() => copy.CreateMessagingFactory())).Should().Throw<NotSupportedException>().WithMessage("*data-plane*");
         }
@@ -565,11 +609,12 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
-        private static ServiceBusHelper NewHelper(FakeAdministrationClient client)
+        private static ServiceBusHelper NewHelper(FakeAdministrationClient client, string profile = EmulatorConnection)
         {
             var helper = new ServiceBusHelper((_, __) => { });
-            var ns = ServiceBusNamespace.GetServiceBusNamespace("test", EmulatorConnection, (_, __) => { });
+            var ns = ServiceBusNamespace.GetServiceBusNamespace("test", profile, (_, __) => { });
             var management = NewClient(client);
+            typeof(ServiceBusHelper).GetField("managementClient", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(helper, management);
             foreach (var entity in new[] { "Queue", "Topic", "Subscription", "Rule" })
             {
                 var type = typeof(ServiceBusHelper).Assembly.GetType("ServiceBusExplorer.WindowsAzure.ServiceBus" + entity, true);
@@ -593,11 +638,25 @@ namespace ServiceBusExplorer.Tests.Helpers
             public RuleFilter ExportedFilter { get; set; } = new TrueRuleFilter();
             private readonly Dictionary<string, QueueProperties> queues = new Dictionary<string, QueueProperties>();
 
-            private static QueueProperties Queue(string name) => ServiceBusModelFactory.QueueProperties(name,
-                lockDuration: TimeSpan.FromMinutes(1), maxSizeInMegabytes: 1024,
+            public MessagingSku Sku { get; set; } = MessagingSku.Standard;
+            public bool Partitioned { get; set; }
+            public long BrokerSize { get; set; } = 1024;
+            public EntityStatus QueueStatus { get; set; } = EntityStatus.Active;
+            public int NamespaceReads { get; private set; }
+            public Exception NamespaceFailure { get; set; }
+
+            public override Task<Response<NamespaceProperties>> GetNamespacePropertiesAsync(CancellationToken cancellationToken = default)
+            {
+                NamespaceReads++;
+                if (NamespaceFailure != null) throw NamespaceFailure;
+                return Result(ServiceBusModelFactory.NamespaceProperties("test", default, default, Sku, 0, null));
+            }
+
+            private QueueProperties Queue(string name) => ServiceBusModelFactory.QueueProperties(name,
+                lockDuration: TimeSpan.FromMinutes(1), maxSizeInMegabytes: BrokerSize, enablePartitioning: Partitioned,
                 defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue,
                 duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), maxDeliveryCount: 10,
-                status: EntityStatus.Active, userMetadata: "", maxMessageSizeInKilobytes: 4096);
+                status: name == "orders" ? QueueStatus : EntityStatus.Active, userMetadata: "", maxMessageSizeInKilobytes: 4096);
             private static Task<Response<T>> Result<T>(T value) => Task.FromResult(Response.FromValue(value, null));
             private static AsyncPageable<T> Pages<T>(params T[] values) where T : notnull =>
                 AsyncPageable<T>.FromPages(values.Select((value, index) => Page<T>.FromValues(new[] { value }, index == values.Length - 1 ? null : "next", null)));
@@ -654,7 +713,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             public override Task<Response<TopicProperties>> UpdateTopicAsync(TopicProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<SubscriptionProperties>> UpdateSubscriptionAsync(SubscriptionProperties properties, CancellationToken cancellationToken = default) => Result(properties);
             public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken cancellationToken = default) =>
-                Result(ServiceBusModelFactory.TopicProperties(name, maxSizeInMegabytes: 1024, defaultMessageTimeToLive: TimeSpan.MaxValue,
+                Result(ServiceBusModelFactory.TopicProperties(name, maxSizeInMegabytes: BrokerSize, enablePartitioning: Partitioned, defaultMessageTimeToLive: TimeSpan.MaxValue,
                     autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), status: EntityStatus.Active));
             public override Task<Response<TopicRuntimeProperties>> GetTopicRuntimePropertiesAsync(string name, CancellationToken cancellationToken = default) =>
                 RuntimeUnavailable ? throw new InvalidOperationException("Synthetic runtime refresh unavailable") :

@@ -127,7 +127,7 @@ namespace ServiceBusExplorer.Helpers
                 do
                 {
                     var message = await messageReceiver.ReceiveMessageAsync(
-                        TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
+                        ServiceBusHelper.GetModernReceiveWait(TimeSpan.FromSeconds(receiveTimeoutInSeconds))).ConfigureAwait(false);
                     if (message == null)
                     {
                         done = true;
@@ -179,8 +179,23 @@ namespace ServiceBusExplorer.Helpers
 
     
 
-        public async Task<DeletedDlqMessagesResult> MoveMessages(string targetEntityPath,
-            List<long> sequenceNumbers, bool transferDLQ, List<BrokeredMessage> messagesToSend = null)
+        public Task<DeletedDlqMessagesResult> MoveMessages(string targetEntityPath,
+            List<long> sequenceNumbers, bool transferDLQ, List<BrokeredMessage> messagesToSend = null) =>
+            MoveMessagesCore(targetEntityPath, sequenceNumbers, transferDLQ, messagesToSend);
+
+        public Task<DeletedDlqMessagesResult> MovePreparedMessages(List<long> sequenceNumbers, bool transferDLQ,
+            IReadOnlyList<BrokeredMessage> messages, Func<Azure.Messaging.ServiceBus.ServiceBusMessage, Task> send)
+        {
+            if (send == null) throw new ArgumentNullException(nameof(send));
+            if (sequenceNumbers == null || messages == null || messages.Count != sequenceNumbers.Count)
+                throw new ArgumentException("Provide one prepared message for each source sequence number.", nameof(messages));
+            var prepared = messages.Select(ServiceBusMessageAdapter.ToReplayMessage).ToArray();
+            return MoveMessagesCore(null, sequenceNumbers, transferDLQ, null, (index, _) => send(prepared[index]));
+        }
+
+        private async Task<DeletedDlqMessagesResult> MoveMessagesCore(string targetEntityPath,
+            List<long> sequenceNumbers, bool transferDLQ, List<BrokeredMessage> messagesToSend = null,
+            Func<int, ServiceBusReceivedMessage, Task> externalSend = null)
         {
             if (transferDLQ || sourceQueueDescription?.EnablePartitioning == true ||
                 sourceSubscriptionWrapper?.TopicDescription?.EnablePartitioning == true)
@@ -200,6 +215,9 @@ namespace ServiceBusExplorer.Helpers
                 }
             }
 
+            // Validate every payload and source identity before acquiring a broker lock.
+            var prepared = messagesToSend?.Select(ServiceBusMessageAdapter.ToReplayMessage).ToArray();
+            var indices = sequenceNumbers.Select((number, index) => new { number, index }).ToDictionary(item => item.number, item => item.index);
             string failure = null;
             var timedOut = false;
             var done = false;
@@ -220,33 +238,34 @@ namespace ServiceBusExplorer.Helpers
             try
             {
                 messageReceiver = CreateReceiver(client, transferDLQ);
-                messageSender = client.CreateSender(targetEntityPath);
+                if (externalSend == null) messageSender = client.CreateSender(targetEntityPath);
                 do
                 {
                     var message = await messageReceiver.ReceiveMessageAsync(
-                        TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
+                        ServiceBusHelper.GetModernReceiveWait(TimeSpan.FromSeconds(receiveTimeoutInSeconds))).ConfigureAwait(false);
 
                     if (message != null)
                     {
-                        if (sequenceNumbers.Contains(message.SequenceNumber))
+                        if (indices.TryGetValue(message.SequenceNumber, out var index))
                         {
                             try
                             {
-                                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                                if (externalSend != null)
                                 {
-                                    if (messagesToSend == null)
-                                    {
-                                        var outbound = ServiceBusMessageAdapter.ToServiceBusMessageFromReceivedMessage(message);
-                                        await messageSender.SendMessageAsync(outbound).ConfigureAwait(false);
-                                    }
-                                    else
-                                    {
-                                        var index = sequenceNumbers.IndexOf(message.SequenceNumber);
-                                        var outbound = ServiceBusMessageAdapter.ToServiceBusMessage(messagesToSend[index]);
-                                        await messageSender.SendMessageAsync(outbound).ConfigureAwait(false);
-                                    }
+                                    await externalSend(index, message).ConfigureAwait(false);
                                     await messageReceiver.CompleteMessageAsync(message).ConfigureAwait(false);
-                                    scope.Complete();
+                                }
+                                else
+                                {
+                                    using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                                    {
+                                        var outbound = prepared == null
+                                            ? ServiceBusMessageAdapter.ToServiceBusMessageFromReceivedMessage(message)
+                                            : prepared[index];
+                                        await messageSender.SendMessageAsync(outbound).ConfigureAwait(false);
+                                        await messageReceiver.CompleteMessageAsync(message).ConfigureAwait(false);
+                                        scope.Complete();
+                                    }
                                 }
                             }
                             catch (Exception moveException)
@@ -262,6 +281,7 @@ namespace ServiceBusExplorer.Helpers
                                 throw;
                             }
 
+                            indices.Remove(message.SequenceNumber);
                             movedSequenceNumbers.Add(message.SequenceNumber);
                             if (movedSequenceNumbers.Count >= sequenceNumbers.Count)
                             {
@@ -306,6 +326,31 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return new DeletedDlqMessagesResult(timedOut, movedSequenceNumbers, failure);
+        }
+
+        internal static async Task SendAndSettleAsync(Func<Task> send, Func<Task> complete, Func<Task> abandon)
+        {
+            try
+            {
+                await send().ConfigureAwait(false);
+                await complete().ConfigureAwait(false);
+            }
+            catch (Exception failure)
+            {
+                try
+                {
+                    await abandon().ConfigureAwait(false);
+                }
+                catch (MessageLockLostException)
+                {
+                    // The expired lock already released the source. Preserve the delivery failure.
+                }
+                catch (Exception abandonFailure)
+                {
+                    throw new AggregateException("Delivery or settlement failed and the source lock could not be released.", failure, abandonFailure);
+                }
+                throw;
+            }
         }
 
         public string GetFailureExplanation(DeletedDlqMessagesResult result, int targetMessageCount, bool delete)

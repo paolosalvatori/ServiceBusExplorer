@@ -38,8 +38,10 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
 
         public string ConnectionString { get; set; }
         public string AdministrationConnectionString { get; set; }
-        // Original profile scope survives removal of EntityPath from SDK connection strings.
+        // Keep the original scope available to management-only UI probes.
         public string ProfileEntityPath { get; set; }
+        public Uri DataPlaneEndpoint { get; set; }
+        public ServiceBusAdministrationClient AdministrationClient { get; set; }
         public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
@@ -99,20 +101,14 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
         {
             if (DataPlaneUnavailableReason != null) throw new NotSupportedException(DataPlaneUnavailableReason);
-            var options = new ServiceBusClientOptions
-            {
-                TransportType = this.TransportType,
-                EnableCrossEntityTransactions = enableCrossEntityTransactions
-            };
-            if (IsEntra)
-            {
-                return new ServiceBusClient(
-                    FullyQualifiedNamespace,
-                    EntraTokenCredential,
-                    options);
-            }
+            var endpoint = IsEntra ? DataPlaneEndpoint : ServiceBusConnectionStringProperties.Parse(ConnectionString).Endpoint;
+            var options = new ServiceBusClientOptions { TransportType = TransportType, EnableCrossEntityTransactions = enableCrossEntityTransactions };
+            if (endpoint != null && !endpoint.IsDefaultPort)
+                options.CustomEndpointAddress = endpoint;
 
-            return new ServiceBusClient(ConnectionString, options);
+            return IsEntra
+                ? new ServiceBusClient(FullyQualifiedNamespace, EntraTokenCredential, options)
+                : new ServiceBusClient(ConnectionString, options);
         }
 
         /// <summary>
@@ -121,6 +117,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// </summary>
         public virtual ServiceBusAdministrationClient CreateAdministrationClient()
         {
+            if (AdministrationClient != null) return AdministrationClient;
             return IsEntra
                 ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
                 : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);

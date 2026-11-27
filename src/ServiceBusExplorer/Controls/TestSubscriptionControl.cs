@@ -31,9 +31,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
-using System.Windows.Forms;
 using Azure.Messaging.ServiceBus;
+using System.Windows.Forms;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Enums;
@@ -278,10 +277,6 @@ namespace ServiceBusExplorer.Controls
                     btnStart.Enabled = false;
                     Cursor.Current = Cursors.WaitCursor;
                     //*****************************************************************************************************
-                    //                                   Retrieve Messaging Factory
-                    //*****************************************************************************************************
-
-                    //*****************************************************************************************************
                     //                                   Initialize Statistics and Manager Action
                     //*****************************************************************************************************
                     BeginWorkerRegistration();
@@ -365,7 +360,8 @@ namespace ServiceBusExplorer.Controls
 
                     try
                     {
-                        receiverCancellationTokenSource = new CancellationTokenSource();
+                        var runCancellation = new CancellationTokenSource();
+                        receiverCancellationTokenSource = runCancellation;
                         receiverBrokeredMessageInspector = cboReceiverInspector.SelectedIndex > 0
                                                       ? Activator.CreateInstance(controlHelper.ServiceBusHelper.BrokeredMessageInspectors[cboReceiverInspector.Text]) as IBrokeredMessageInspector
                                                       : null;
@@ -380,7 +376,7 @@ namespace ServiceBusExplorer.Controls
                             try
                             {
                                 var allSessionsAccepted = false;
-                                while (!allSessionsAccepted && !receiverCancellationTokenSource.IsCancellationRequested)
+                                while (!allSessionsAccepted && !runCancellation.IsCancellationRequested)
                                 {
                                     ServiceBusReceiver receiver = null;
                                     try
@@ -406,7 +402,7 @@ namespace ServiceBusExplorer.Controls
                                                 receiveMode,
                                                 prefetchCount,
                                                 TimeSpan.FromSeconds(sessionTimeout),
-                                                receiverCancellationTokenSource.Token);
+                                                runCancellation.Token);
                                         }
                                         else
                                         {
@@ -441,9 +437,9 @@ namespace ServiceBusExplorer.Controls
                                                     receiverThinkTime,
                                                     receiverBrokeredMessageInspector,
                                                     UpdateStatistics,
-                                                    receiverCancellationTokenSource,
+                                                    runCancellation,
                                                     out traceMessage), useTransaction,
-                                            checkBoxReceiverCommitTransaction.Checked, receiverCancellationTokenSource.Token, out var committed);
+                                            checkBoxReceiverCommitTransaction.Checked, runCancellation.Token, out var committed);
                                         if (useTransaction)
                                             traceMessage += committed ? TransactionCommitted : TransactionAborted;
                                         if (!string.IsNullOrWhiteSpace(traceMessage))
@@ -461,14 +457,14 @@ namespace ServiceBusExplorer.Controls
                                         }
                                         else
                                         {
-                                            if (!receiverCancellationTokenSource.IsCancellationRequested)
+                                            if (!runCancellation.IsCancellationRequested)
                                             {
                                                 HandleException(ex);
                                             }
                                             allSessionsAccepted = true;
                                         }
                                     }
-                                    catch (OperationCanceledException) when (receiverCancellationTokenSource.IsCancellationRequested)
+                                    catch (OperationCanceledException) when (runCancellation.IsCancellationRequested)
                                     {
                                         allSessionsAccepted = true;
                                     }

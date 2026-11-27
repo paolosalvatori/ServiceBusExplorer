@@ -62,7 +62,6 @@ namespace ServiceBusExplorer
     using System.IO.Compression;
     using System.Web.UI.WebControls;
     using Abstractions;
-    using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
     {
@@ -433,22 +432,11 @@ namespace ServiceBusExplorer
             }
         }
 
-        private string ConnectionStringWithoutEntityPath
+        private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return null;
-                }
-
-                var builder = new ServiceBusConnectionStringBuilder(connectionString)
-                {
-                    EntityPath = string.Empty
-                };
-
-                return builder.ToString();
-            }
+            var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            builder.EntityPath = string.Empty;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -651,7 +639,7 @@ namespace ServiceBusExplorer
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
-                factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                factory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
             }
             else
             {
@@ -754,6 +742,9 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
+
+            if (!isEntra && !serviceBusNamespace.UseDevelopmentEmulator)
+                GetConnectionStringWithoutEntityPath(serviceBusNamespace.ConnectionString);
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
@@ -897,7 +888,7 @@ namespace ServiceBusExplorer
                 {
                     IsEventHubNamespace = false;
                     entraTokenProvider = null;
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
 
                 // Set retry count
@@ -959,7 +950,7 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    MessagingFactory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
                 WriteToLogIf(traceEnabled, IsEmulator
                     ? "Emulator management connected. Legacy data-plane operations are unavailable until migration stage 3."
@@ -2342,13 +2333,16 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentNullException(BrokeredMessageCannotBeNull);
             }
-            var outboundMessage = ServiceBusReceivedMessageAdapter.CloneForResubmission(messageTemplate);
+            BrokeredMessage outboundMessage;
             if (bodyType == BodyType.String)
             {
-                using (var reader = new StreamReader(outboundMessage.GetBody<Stream>()))
-                {
+                using (var template = messageTemplate.Clone())
+                using (var reader = new StreamReader(template.GetBody<Stream>()))
                     outboundMessage = new BrokeredMessage(reader.ReadToEnd());
-                }
+            }
+            else
+            {
+                outboundMessage = ServiceBusReceivedMessageAdapter.CloneForResubmission(messageTemplate);
             }
 
             outboundMessage.MessageId = updateMessageId ? Guid.NewGuid().ToString() : messageTemplate.MessageId;
@@ -2390,7 +2384,10 @@ namespace ServiceBusExplorer
             }
             if (messageInspector != null)
             {
-                outboundMessage = ServiceBusReceivedMessageAdapter.Inspect(outboundMessage, messageInspector.BeforeSendMessage);
+                // The String branch created a new outbound message with no received identity.
+                outboundMessage = bodyType == BodyType.String
+                    ? messageInspector.BeforeSendMessage(outboundMessage) ?? throw new InvalidOperationException("The message inspector returned no message.")
+                    : ServiceBusReceivedMessageAdapter.Inspect(outboundMessage, messageInspector.BeforeSendMessage);
             }
             return outboundMessage;
         }
@@ -2625,14 +2622,14 @@ namespace ServiceBusExplorer
                         {
                             if (outboundMessages.Count == 1)
                             {
-                                var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0]);
+                                var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0], bodyType == BodyType.String);
                                 var stopwatch = Stopwatch.StartNew();
                                 messageSender.SendMessageAsync(sdkMessage, cancellationTokenSource.Token)
                                     .GetAwaiter().GetResult();
                                 record(1, stopwatch.ElapsedMilliseconds);
                             }
                             else
-                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token, record);
+                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token, record, bodyType == BodyType.String);
                         }
                         finally
                         {
@@ -2674,15 +2671,23 @@ namespace ServiceBusExplorer
             return ok;
         }
 
-        public static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged)
+        public static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged) =>
+            SendServiceBusBatch(sender, messages, cancellationToken, acknowledged, false);
+
+        private static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged, bool sendStringValue)
         {
             ServiceBusMessageBatch batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
             try
             {
+                ServiceBusMessage previous = null;
                 foreach (var brokeredMessage in messages)
                 {
-                    var message = ServiceBusMessageAdapter.ToServiceBusMessage(brokeredMessage);
-                    if (batch.TryAddMessage(message))
+                    var message = ServiceBusMessageAdapter.ToServiceBusMessage(brokeredMessage, sendStringValue);
+                    bool sameRoute = previous == null ||
+                        (previous.PartitionKey == message.PartitionKey && previous.SessionId == message.SessionId &&
+                         previous.TransactionPartitionKey == message.TransactionPartitionKey);
+                    previous = message;
+                    if (sameRoute && batch.TryAddMessage(message))
                     {
                         continue;
                     }
@@ -3297,16 +3302,16 @@ namespace ServiceBusExplorer
                     {
                         messages = messageReceiver.ReceiveMessagesAsync(
                             batchSize,
-                            TimeSpan.FromSeconds(timeout),
+                            GetModernReceiveWait(TimeSpan.FromSeconds(timeout)),
                             cancellationTokenSource.Token).GetAwaiter().GetResult();
                         completed = messages == null || messages.Count == 0;
                     }
                     else
                     {
                         ServiceBusReceivedMessage receivedMessage;
-                        if (readingDeferredMessages && messageDeferProvider.Count > 0 &&
-                            messageDeferProvider.Dequeue(out var sequenceNumber))
+                        if (readingDeferredMessages)
                         {
+                            if (!messageDeferProvider.Dequeue(out var sequenceNumber)) break;
                             receivedMessage = messageReceiver.ReceiveDeferredMessageAsync(
                                 sequenceNumber,
                                 cancellationTokenSource.Token).GetAwaiter().GetResult();
@@ -3314,7 +3319,7 @@ namespace ServiceBusExplorer
                         else
                         {
                             receivedMessage = messageReceiver.ReceiveMessageAsync(
-                                TimeSpan.FromSeconds(timeout),
+                                GetModernReceiveWait(TimeSpan.FromSeconds(timeout)),
                                 cancellationTokenSource.Token).GetAwaiter().GetResult();
                         }
 
@@ -3361,8 +3366,9 @@ namespace ServiceBusExplorer
                                 compatibilityMessage = ServiceBusReceivedMessageAdapter.Inspect(compatibilityMessage, messageInspector.AfterReceiveMessage);
                             }
 
-                            var matched = filter != null && filter.Match(compatibilityMessage);
-                            var deferredMessage = defer && !readingDeferredMessages && matched;
+                            var mayDefer = defer && !readingDeferredMessages;
+                            var matched = (mayDefer || moveToDeadLetterQueue) && filter != null && filter.Match(compatibilityMessage);
+                            var deferredMessage = mayDefer && matched;
                             var movedToDeadLetterQueue = !deferredMessage && moveToDeadLetterQueue && matched;
                             var settlementStopwatch = Stopwatch.StartNew();
                             if (deferredMessage)
@@ -4607,9 +4613,12 @@ namespace ServiceBusExplorer
             if (updateStatistics != null) PublishConfirmedProgress(updateStatistics, 1, elapsed, DirectionType.Receive);
         }
 
+        public static System.Transactions.TransactionScope CreateDataPlaneTransactionScope() =>
+            new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled);
+
         public static bool ExecuteReceiveTransaction(Func<bool> receive, bool commit, CancellationToken cancellationToken)
         {
-            using (var scope = new System.Transactions.TransactionScope())
+            using (var scope = CreateDataPlaneTransactionScope())
             {
                 var succeeded = receive();
                 if (!succeeded || !commit || cancellationToken.IsCancellationRequested) return false;
@@ -4623,8 +4632,23 @@ namespace ServiceBusExplorer
             var serviceBusHelper2 = new ServiceBusHelper2(writeToLog);
             serviceBusHelper2.ProfileEntityPath = serviceBusNamespaceInstance?.EntityPath;
 
-            serviceBusHelper2.ConnectionString = serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra
-                ? GetDataPlaneConnectionString(serviceBusNamespaceInstance) : ConnectionString;
+            if (serviceBusNamespaceInstance?.IsEntra != true)
+            {
+                var profile = serviceBusNamespaceInstance?.ConnectionString ?? ConnectionString;
+                if (!string.IsNullOrWhiteSpace(profile))
+                {
+                    try
+                    {
+                        serviceBusHelper2.ConnectionString = GetDataPlaneConnectionString(profile, IsEmulator);
+                    }
+                    catch (Exception ex) when (ex is FormatException || ex is NotSupportedException)
+                    {
+                        // A management-only profile can still be used to browse the namespace.
+                        serviceBusHelper2.DataPlaneUnavailableReason = ex.Message;
+                    }
+                }
+            }
+            serviceBusHelper2.AdministrationClient = managementClient?.Client;
             if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)
                 serviceBusHelper2.AdministrationConnectionString = GetAdministrationConnectionString(serviceBusNamespaceInstance);
             serviceBusHelper2.TransportType = !IsEmulator && UseAmqpWebSockets
@@ -4634,11 +4658,29 @@ namespace ServiceBusExplorer
             if (serviceBusNamespaceInstance?.IsEntra == true)
             {
                 serviceBusHelper2.FullyQualifiedNamespace = serviceBusNamespaceInstance.FullyQualifiedNamespace;
+                serviceBusHelper2.DataPlaneEndpoint = new Uri(serviceBusNamespaceInstance.Uri);
                 serviceBusHelper2.EntraTokenCredential = EntraCredentialFactory.CreateNewSdkTokenCredential(
                     serviceBusNamespaceInstance.TenantId);
             }
 
             return serviceBusHelper2;
+        }
+
+        public MessagingFactory GetSessionTestFactory(bool requiresSession, bool createNew = false)
+        {
+            if (!requiresSession) return null;
+            return createNew ? CreateMessagingFactory() : MessagingFactory;
+        }
+
+        public static ServiceBusReceiver CreateSubscriptionTestReceiver(ServiceBusClient client, string topic,
+            string subscription, ReceiveMode mode, int prefetchCount, bool deadLetter)
+        {
+            return client.CreateReceiver(topic, subscription, new ServiceBusReceiverOptions
+            {
+                PrefetchCount = prefetchCount,
+                ReceiveMode = mode == ReceiveMode.PeekLock ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete,
+                SubQueue = deadLetter ? SubQueue.DeadLetter : SubQueue.None
+            });
         }
 
         public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
@@ -4864,6 +4906,11 @@ namespace ServiceBusExplorer
             return rows;
         }
 
+        // The legacy AMQP receiver treats a zero timeout as ten seconds. The modern
+        // SDK permits zero only when prefetch is enabled.
+        internal static TimeSpan GetModernReceiveWait(TimeSpan timeout) =>
+            timeout == TimeSpan.Zero ? TimeSpan.FromSeconds(10) : timeout;
+
         public static int ResolveModernReadCount(bool peek, bool all, int count, int topCount) =>
             all && !peek ? int.MaxValue : all ? topCount : count;
 
@@ -4888,7 +4935,7 @@ namespace ServiceBusExplorer
                     }
                     else
                     {
-                        messages = receiver.ReceiveMessagesAsync(batchSize, receiveTimeout)
+                        messages = receiver.ReceiveMessagesAsync(batchSize, GetModernReceiveWait(receiveTimeout))
                             .GetAwaiter().GetResult();
                     }
 
@@ -4899,17 +4946,25 @@ namespace ServiceBusExplorer
 
                     if (!peek && (received != null || receiver.ReceiveMode == ServiceBusReceiveMode.ReceiveAndDelete))
                     {
-                        // The broker already consumed the full batch. Inspect disposable
-                        // copies, keeping every original until the whole batch succeeds.
-                        var originals = messages.Select(ServiceBusReceivedMessageAdapter.ToBrokeredMessage).ToList();
-                        if (messageInspector == null)
+                        // Every message in a returned destructive batch is already gone from
+                        // the broker. Keep independent originals until all inspection succeeds.
+                        var originals = new List<BrokeredMessage>(messages.Count);
+                        Exception conversionFailure = null;
+                        foreach (var native in messages)
                         {
-                            foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
-                            continue;
+                            originals.Add(ServiceBusReceivedMessageAdapter.RetainForDestructiveRead(native, out var error));
+                            if (error != null && conversionFailure == null) conversionFailure = error;
                         }
                         var inspectedBatch = new List<BrokeredMessage>();
                         try
                         {
+                            if (conversionFailure != null)
+                                throw new InvalidOperationException("Some received metadata could not be displayed. Original AMQP messages were retained.", conversionFailure);
+                            if (messageInspector == null)
+                            {
+                                foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
+                                continue;
+                            }
                             for (var index = 0; index < originals.Count; index++)
                             {
                                 // Fresh adaptation provides original public receiver headers
@@ -4924,8 +4979,8 @@ namespace ServiceBusExplorer
                         }
                         catch
                         {
-                            foreach (var inspected in inspectedBatch) inspected.Dispose();
                             foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
+                            foreach (var inspected in inspectedBatch) inspected.Dispose();
                             throw;
                         }
                         foreach (var original in originals) original.Dispose();
@@ -4991,45 +5046,57 @@ namespace ServiceBusExplorer
             }
 
             var retained = new List<string>();
-            var endpointFound = false;
+            UriBuilder endpoint = null;
+            int? runtimePort = null;
+            int? managementPort = null;
             foreach (var part in connectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var separator = part.IndexOf('=');
                 if (separator < 1)
-                {
                     throw new FormatException("Invalid Service Bus connection string setting.");
-                }
 
                 var key = part.Substring(0, separator).Trim();
-                if (new[] { "TransportType", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
+                var value = part.Substring(separator + 1).Trim();
                 if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (endpointFound)
-                    {
-                        throw new FormatException("The emulator connection string contains more than one Endpoint setting.");
-                    }
-                    var endpoint = new UriBuilder(part.Substring(separator + 1).Trim());
-                    if (useDevelopmentEmulator)
-                    {
-                        endpoint.Port = 5672;
-                    }
-                    retained.Add("Endpoint=" + endpoint.Uri.AbsoluteUri);
-                    endpointFound = true;
+                    if (endpoint != null)
+                        throw new FormatException("Specify a single Service Bus endpoint.");
+                    endpoint = new UriBuilder(value);
                 }
-                else
+                else if (key.Equals("ManagementPort", StringComparison.OrdinalIgnoreCase))
                 {
-                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
+                    if (managementPort.HasValue || !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("Specify a single ManagementPort between 1 and 65535.");
+                    managementPort = port;
+                }
+                else if (key.Equals("RuntimePort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (runtimePort.HasValue || !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("Specify a single RuntimePort between 1 and 65535.");
+                    runtimePort = port;
+                }
+                else if (!new[] { "TransportType", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    retained.Add(key + "=" + value);
                 }
             }
 
-            if (!endpointFound)
+            if (endpoint == null)
+                throw new FormatException("The Service Bus connection string must include an Endpoint setting.");
+            if (runtimePort.HasValue)
+                endpoint.Port = runtimePort.Value;
+            else if (useDevelopmentEmulator)
             {
-                throw new FormatException("The emulator connection string must include an Endpoint setting.");
+                // With separate management metadata, an explicit, distinct Endpoint port is the AMQP destination.
+                bool explicitDataPort = managementPort.HasValue && endpoint.Port > 0 && endpoint.Port != 5300 && endpoint.Port != managementPort;
+                bool standardPair = (!managementPort.HasValue || managementPort == 5300) &&
+                    (endpoint.Port == -1 || endpoint.Port == 5672);
+                if (!explicitDataPort && !standardPair)
+                    throw new NotSupportedException("Set RuntimePort to this emulator's mapped AMQP port before using data operations.");
+                if (!explicitDataPort) endpoint.Port = 5672;
             }
 
+            retained.Insert(0, "Endpoint=" + endpoint.Uri.AbsoluteUri);
             return string.Join(";", retained);
         }
 
@@ -5377,6 +5444,8 @@ namespace ServiceBusExplorer
             }
             var parts = serviceBusNamespace.ConnectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             var retained = new List<string>();
+            UriBuilder endpoint = null;
+            int? managementPort = null;
             foreach (var part in parts)
             {
                 var separator = part.IndexOf('=');
@@ -5385,35 +5454,56 @@ namespace ServiceBusExplorer
                     throw new FormatException("Invalid Service Bus connection string setting.");
                 }
                 var key = part.Substring(0, separator).Trim();
-                if (new[] { "TransportType", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                if (new[] { "TransportType", "RuntimePort", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }
-                if (serviceBusNamespace.UseDevelopmentEmulator && key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
+                var value = part.Substring(separator + 1).Trim();
+                if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
                 {
-                    var endpoint = new UriBuilder(part.Substring(separator + 1).Trim());
-                    if (endpoint.Port == -1 || endpoint.Port == 5672)
-                    {
-                        endpoint.Port = 5300;
-                    }
-                    retained.Add("Endpoint=" + endpoint.Uri.AbsoluteUri);
+                    endpoint = new UriBuilder(value);
+                }
+                else if (key.Equals("ManagementPort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("ManagementPort must be between 1 and 65535.");
+                    managementPort = port;
                 }
                 else
                 {
-                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
+                    retained.Add(key + "=" + value);
                 }
             }
+
+            if (endpoint == null) throw new FormatException("A Service Bus endpoint is required.");
+            // An Azure messaging endpoint may name the AMQP listener. Administration uses HTTPS.
+            var defaultPort = serviceBusNamespace.UseDevelopmentEmulator
+                ? (endpoint.Port == -1 || endpoint.Port == 5672 ? 5300 : endpoint.Port)
+                : -1;
+            endpoint.Port = managementPort ?? defaultPort;
+            retained.Insert(0, "Endpoint=" + endpoint.Uri.AbsoluteUri);
             return string.Join(";", retained);
         }
 
-        private static ServiceBusAdministrationClient CreateAdministrationClient(ServiceBusNamespace serviceBusNamespace,
+        internal static ServiceBusAdministrationClient CreateAdministrationClient(ServiceBusNamespace serviceBusNamespace,
             ServiceBusAdministrationClientOptions options)
         {
             if (serviceBusNamespace.ConnectionStringType == ServiceBusNamespaceType.OnPremises)
             {
                 throw new NotSupportedException("Azure.Messaging.ServiceBus administration does not support on-premises Service Bus Server (Windows/STS authentication). Use the previous release for this environment.");
             }
-            return new ServiceBusAdministrationClient(GetAdministrationConnectionString(serviceBusNamespace), options);
+            var connection = GetAdministrationConnectionString(serviceBusNamespace);
+            if (serviceBusNamespace.UseDevelopmentEmulator || string.IsNullOrEmpty(serviceBusNamespace.EntityPath))
+                return new ServiceBusAdministrationClient(connection, options);
+
+            var endpoint = Azure.Messaging.ServiceBus.ServiceBusConnectionStringProperties.Parse(connection).Endpoint;
+            var audience = new UriBuilder(endpoint) { Scheme = Uri.UriSchemeHttps, Port = -1, Path = serviceBusNamespace.EntityPath }.Uri;
+            if (!string.Equals(audience.GetComponents(UriComponents.Path, UriFormat.Unescaped), serviceBusNamespace.EntityPath, StringComparison.Ordinal))
+                throw new ArgumentException("EntityPath must identify a relative Service Bus entity.", nameof(serviceBusNamespace));
+            var keyName = serviceBusNamespace.SharedAccessKeyName;
+            var key = serviceBusNamespace.SharedAccessKey;
+            return EntityScopedSasPolicy.CreateClient(endpoint, options, () =>
+                SharedAccessSignatureTokenProvider.GetSharedAccessSignature(keyName, key, audience.AbsoluteUri, TimeSpan.FromHours(1)));
         }
 
         private static Encoding GetEncoding()

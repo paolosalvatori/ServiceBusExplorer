@@ -26,6 +26,8 @@ using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
 
 using FastColoredTextBoxNS;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
+using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
@@ -237,9 +239,10 @@ namespace ServiceBusExplorer.Forms
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog, QueueType queueType = QueueType.PrimaryQueue) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
+            this.queueType = queueType;
             this.subscriptionWrapper = subscriptionWrapper;
         }
 
@@ -289,9 +292,10 @@ namespace ServiceBusExplorer.Forms
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog, QueueType queueType = QueueType.PrimaryQueue) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
+            this.queueType = queueType;
             this.subscriptionWrapper = subscriptionWrapper;
         }
         #endregion
@@ -326,7 +330,7 @@ namespace ServiceBusExplorer.Forms
             txtMessageText.Focus();
             txtMessageText.SelectionLength = 0;
 
-            if (queueDescription != null || subscriptionWrapper != null)
+            if (queueType == QueueType.Deadletter || queueType == QueueType.TransferDeadletter)
             {
                 chkRemove.Visible = true;
             }
@@ -373,36 +377,12 @@ namespace ServiceBusExplorer.Forms
 
         internal BrokeredMessage BuildMessageForResubmission(BrokeredMessage source)
         {
-            // Display decoding/auto-indentation is not an edit. Preserve original bytes and
-            // broker identity/routing properties unless the user actually changes the text.
-            var outbound = ServiceBusReceivedMessageAdapter.CloneForResubmission(source);
-            if (brokeredMessage != null)
-            {
-                if (!string.Equals(txtMessageText.Text, initialMessageText, StringComparison.Ordinal))
-                {
-                    var stream = new MemoryStream();
-                    if (originalBodyType == BodyType.String)
-                        new CustomDataContractBinarySerializer(typeof(string)).WriteObject(stream, txtMessageText.Text);
-                    else if (originalBodyType == BodyType.ByteArray)
-                        new CustomDataContractBinarySerializer(typeof(byte[])).WriteObject(stream, Encoding.UTF8.GetBytes(txtMessageText.Text));
-                    else
-                    {
-                        var bytes = Encoding.UTF8.GetBytes(txtMessageText.Text);
-                        stream.Write(bytes, 0, bytes.Length);
-                    }
-                    stream.Position = 0;
-                    outbound.SetBodyStream(stream);
-                }
-                outbound.Properties.Clear(); // The editable grid is applied by the submit handler.
-            }
-            if (chkNewMessageId.Checked) outbound.MessageId = Guid.NewGuid().ToString();
-            if (cboSenderInspector.SelectedIndex > 0)
-            {
-                var inspector = Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector;
-                outbound = ServiceBusReceivedMessageAdapter.Inspect(outbound, inspector.BeforeSendMessage) ??
-                    throw new InvalidOperationException("The message inspector returned null.");
-            }
-            return outbound;
+            var editedText = brokeredMessage != null && !string.Equals(txtMessageText.Text, initialMessageText, StringComparison.Ordinal)
+                ? txtMessageText.Text : null;
+            var inspector = cboSenderInspector.SelectedIndex > 0
+                ? (IBrokeredMessageInspector)Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) : null;
+            return ServiceBusMessageAdapter.PrepareForReplay(source, brokeredMessage != null, editedText,
+                originalBodyType, chkNewMessageId.Checked, inspector);
         }
 
         internal long? GetSourceSequenceForRemoval(BrokeredMessage source) =>
@@ -412,6 +392,7 @@ namespace ServiceBusExplorer.Forms
 
         private async void btnSubmit_Click(object sender, EventArgs e)
         {
+            btnSubmit.Enabled = false;
             try
             {
                 using (var form = CreateSelectEntityForm())
@@ -438,7 +419,7 @@ namespace ServiceBusExplorer.Forms
                     foreach (var message in messages)
                     {
                         BrokeredMessage outboundMessage;
-                        if (bodyType == BodyType.Wcf)
+                        if (bodyType == BodyType.Wcf && originalBodyType == BodyType.Wcf && brokeredMessage != null && txtMessageText.Text != initialMessageText)
                         {
                             var wcfUri = serviceBusHelper.IsCloudNamespace ?
                                              new Uri(serviceBusHelper.NamespaceUri, form.Path) :
@@ -453,6 +434,7 @@ namespace ServiceBusExplorer.Forms
                                                                                            false,
                                                                                            false,
                                                                                            wcfUri);
+                            if (chkNewMessageId.Checked) outboundMessage.MessageId = Guid.NewGuid().ToString();
                         }
                         else
                         {
@@ -464,12 +446,12 @@ namespace ServiceBusExplorer.Forms
                         {
                             try
                             {
+                                messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
                                 if (Constants.AlwaysOmittedProperties.Exists(
                                     omitProp => messagePropertyInfo.Key.Equals(omitProp, StringComparison.InvariantCultureIgnoreCase)))
                                 {
                                     continue;
                                 }
-                                messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
                                 if (messagePropertyInfo.Type != StringType && messagePropertyInfo.Value == null)
                                 {
                                     warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyValueCannotBeNull, messagePropertyInfo.Key));
@@ -515,14 +497,15 @@ namespace ServiceBusExplorer.Forms
 
                     stopwatch.Start();
 
+                    var helper = serviceBusHelper.GetServiceBusHelper2();
+                    await using var client = helper.CreateServiceBusClient();
+                    await using var replaySender = client.CreateSender(form.Path);
                     if (chkRemove.Checked)
                     {
+                        await ValidateMoveDestinationAsync(chkNewMessageId.Checked, form.Path, form.Type, helper.CreateAdministrationClient);
                         var messageHandler = CreateDeadLetterMessageHandler();
-
-                        var result = await messageHandler.MoveMessages(form.Path,
-                            sequenceNumbers,
-                            transferDLQ: queueType == QueueType.TransferDeadletter,
-                            outboundMessages);
+                        var result = await messageHandler.MoveMessages(form.Path, sequenceNumbers,
+                            queueType == QueueType.TransferDeadletter, outboundMessages);
 
                         RemovedSequenceNumbers = result.DeletedSequenceNumbers;
 
@@ -557,22 +540,12 @@ namespace ServiceBusExplorer.Forms
                     else
                     {
                         var messageIndex = 0;
-                        var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
-                        if (!serviceBusHelper2.IsEntra)
-                        {
-                            serviceBusHelper2.ConnectionString = ServiceBusHelper.GetDataPlaneConnectionString(
-                                serviceBusHelper.ConnectionString,
-                                serviceBusHelper.IsEmulator);
-                        }
-                        var serviceBusClient = serviceBusHelper2.CreateServiceBusClient();
-                        ServiceBusSender messageSender = null;
                         try
                         {
-                            messageSender = serviceBusClient.CreateSender(form.Path);
                             while (messageIndex < outboundMessages.Count)
                             {
-                                var serviceBusMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[messageIndex]);
-                                await messageSender.SendMessageAsync(serviceBusMessage);
+                                var serviceBusMessage = ServiceBusMessageAdapter.ToReplayMessage(outboundMessages[messageIndex]);
+                                await replaySender.SendMessageAsync(serviceBusMessage);
                                 messageIndex++;
                             }
                         }
@@ -584,21 +557,6 @@ namespace ServiceBusExplorer.Forms
                             MessageBox.Show(messageText, "Not all selected messages were sent",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
-                        finally
-                        {
-                            try
-                            {
-                                if (messageSender != null)
-                                {
-                                    await messageSender.DisposeAsync();
-                                }
-                            }
-                            finally
-                            {
-                                await serviceBusClient.DisposeAsync();
-                            }
-                        }
-
                         stopwatch.Stop();
                         writeToLog(string.Format(MessageSentMessage, messageIndex, form.Path, stopwatch.ElapsedMilliseconds));
                     }
@@ -614,7 +572,28 @@ namespace ServiceBusExplorer.Forms
             catch (Exception ex)
             {
                 HandleException(ex);
+                MessageBox.Show(this, ex.Message, "Resubmission stopped", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            finally
+            {
+                if (!IsDisposed) btnSubmit.Enabled = true;
+            }
+        }
+
+        internal static async Task ValidateMoveDestinationAsync(bool newId, string path, string entityType, Func<ServiceBusAdministrationClient> administration)
+        {
+            if (newId) return;
+            const string guidance = "Select Generate new MessageId or clear Remove message from DLQ.";
+            try
+            {
+                if (entityType == "Queue" && !(await administration().GetQueueAsync(path)).Value.RequiresDuplicateDetection) return;
+                if (entityType == "Topic" && !(await administration().GetTopicAsync(path)).Value.RequiresDuplicateDetection) return;
+            }
+            catch (Exception ex) when (!(ex is OperationCanceledException))
+            {
+                throw new InvalidOperationException("Unable to verify duplicate detection at the destination. " + guidance, ex);
+            }
+            throw new InvalidOperationException("A repeated MessageId could be discarded at the destination. " + guidance);
         }
 
         DeadLetterMessageHandler CreateDeadLetterMessageHandler()
@@ -745,8 +724,11 @@ namespace ServiceBusExplorer.Forms
 
         void InitializeMessageTextControl(BrokeredMessage message)
         {
-            var messageText = this.serviceBusHelper.GetMessageText(message,
-                 MainForm.SingletonMainForm?.UseAscii ?? false, out originalBodyType);
+            string messageText;
+            if (ServiceBusMessageAdapter.TryGetReplayText(message, out messageText))
+                originalBodyType = BodyType.String;
+            else
+                messageText = serviceBusHelper.GetMessageText(message, MainForm.SingletonMainForm?.UseAscii ?? false, out originalBodyType);
 
             if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
             {
@@ -765,7 +747,10 @@ namespace ServiceBusExplorer.Forms
             }
             initialMessageText = txtMessageText.Text;
             if (ServiceBusReceivedMessageAdapter.HasStructuredBody(message))
+            {
+                originalBodyType = BodyType.Stream;
                 grouperMessageText.GroupTitle = "AMQP preview (editing sends UTF-8 Data)";
+            }
         }
 
         #endregion

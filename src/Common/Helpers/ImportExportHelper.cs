@@ -21,6 +21,7 @@
 
 #region References
 
+using MessagingSku = Azure.Messaging.ServiceBus.Administration.MessagingSku;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Management;
@@ -108,6 +109,8 @@ namespace ServiceBusExplorer.Helpers
         private const string SqlExpression = "SqlExpression";
         private const string CorrelationId = "CorrelationId";
         private const string MaxSizeInMegabytes = "MaxSizeInMegabytes";
+        private const string SizeFormatAttribute = "partitionedEntitySize";
+        private const string ConfiguredSize = "configured";
         private const string ForwardTo = "ForwardTo";
         private const string Rights = "Rights";
         private const string Right = "Right";
@@ -179,6 +182,7 @@ namespace ServiceBusExplorer.Helpers
                 return null;
             }
             
+            var standardPartitions = new Lazy<Task<bool>>(() => UsesStandardPartitionSizes(serviceBusHelper));
             using (var memoryStream = new MemoryStream())
             {
                 using (var stringWriter = new StreamWriter(memoryStream, new UTF8Encoding(false)))
@@ -194,6 +198,7 @@ namespace ServiceBusExplorer.Helpers
                         var eventHubList = entityList.Where(e => e is EventHubDescription).Cast<EventHubDescription>();
                         var notificationHubList = entityList.Where(e => e is NotificationHubDescription).Cast<NotificationHubDescription>();
                         xmlWriter.WriteStartElement(EntityList, Namespace);
+                        xmlWriter.WriteAttributeString(SizeFormatAttribute, ConfiguredSize);
                         xmlWriter.WriteAttributeString(NamespaceAttribute, string.IsNullOrWhiteSpace(serviceBusHelper.Namespace) ?
                             Unknown :
                             serviceBusHelper.Namespace);
@@ -205,7 +210,7 @@ namespace ServiceBusExplorer.Helpers
                             {
                                 try
                                 {
-                                    await SerializeEntity(serviceBusHelper, xmlWriter, queue);
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, queue, standardPartitions);
                                 }
                                 catch (Exception ex)
                                 {
@@ -222,7 +227,7 @@ namespace ServiceBusExplorer.Helpers
                             {
                                 try
                                 {
-                                    await SerializeEntity(serviceBusHelper, xmlWriter, topic);
+                                    await SerializeEntity(serviceBusHelper, xmlWriter, topic, standardPartitions);
                                 }
                                 catch (Exception ex)
                                 {
@@ -311,6 +316,7 @@ namespace ServiceBusExplorer.Helpers
                     if (serviceBusHelper.IsEmulator && root.Descendants().Any(element =>
                         new[] { RelayEntity, EventHubEntity, NotificationHubEntity }.Contains(element.Name.LocalName)))
                         throw new NotSupportedException("Emulator import supports queues and topics only; no entities were changed.");
+                    PrepareEntitySizesAndFeatures(serviceBusHelper, root);
                     var ruleElements = root.Descendants().Where(element => element.Name.LocalName == RuleEntity).ToArray();
                     foreach (var rule in ruleElements) ValidateRuleXml(rule);
                     // Parsing and SDK mapping must also succeed before the first mutation.
@@ -327,6 +333,51 @@ namespace ServiceBusExplorer.Helpers
         #endregion
 
         #region Private Methods
+        // Standard reports the sum of sixteen 1–5 GiB partitions. Premium can report
+        // the same numerical capacities, so the size alone cannot identify a tier.
+        private static bool IsAggregatePartitionSize(long size) =>
+            size >= 16 * 1024 && size <= 16 * 5120 && size % (16 * 1024) == 0;
+
+        private static async Task<bool> UsesStandardPartitionSizes(ServiceBusHelper helper)
+        {
+            if (helper.IsEmulator) return false;
+            var client = helper.GetServiceBusHelper2().CreateAdministrationClient();
+            var properties = (await client.GetNamespacePropertiesAsync().ConfigureAwait(false)).Value;
+            var sku = properties.MessagingSku;
+            if (sku == MessagingSku.Basic || sku == MessagingSku.Standard) return true;
+            if (sku == MessagingSku.Premium) return false;
+            throw new NotSupportedException("The namespace tier is required to interpret the partitioned entity size.");
+        }
+
+        private static void PrepareEntitySizesAndFeatures(ServiceBusHelper helper, XElement root)
+        {
+            XNamespace ns = Namespace;
+            var format = (string)root.Attribute(SizeFormatAttribute);
+            if (format != null && format != ConfiguredSize)
+                throw new NotSupportedException("Unrecognized partitioned entity size format. No entities were changed.");
+            var standardPartitions = new Lazy<bool>(() => UsesStandardPartitionSizes(helper).GetAwaiter().GetResult());
+            foreach (var entity in root.Descendants().Where(e => e.Name == ns + QueueEntity || e.Name == ns + TopicEntity))
+            {
+                if (bool.TryParse((string)entity.Element(ns + "EnableExpress"), out var express) && express)
+                    throw new NotSupportedException("Import of EnableExpress is unsupported. No entities were changed.");
+
+                var size = entity.Element(ns + MaxSizeInMegabytes);
+                if (format == null && bool.TryParse((string)entity.Element(ns + "EnablePartitioning"), out var partitioned) &&
+                    partitioned && long.TryParse((string)size, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) &&
+                    IsAggregatePartitionSize(value) && standardPartitions.Value)
+                    size.SetValue(value / 16);
+            }
+        }
+
+        private static bool ReadEnableExpress(object properties)
+        {
+            // The pinned SDK deserializes this wire property but exposes it only internally.
+            var property = properties.GetType().GetProperty("EnableExpress", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (property?.PropertyType != typeof(bool) || !property.CanRead)
+                throw new NotSupportedException("The SDK cannot read EnableExpress for this backup.");
+            return (bool)property.GetValue(properties);
+        }
+
         private void ValidateRuleXml(XElement rule)
         {
             void Reject() => throw new NotSupportedException("Unsupported or lossy XML rule shape. No entities were changed.");
@@ -587,7 +638,7 @@ namespace ServiceBusExplorer.Helpers
         /// <param name="xmlWriter">The XmlWriter object to use.</param>
         /// <param name="entity">The entity to serialize.</param>
         /// <returns>An XML string.</returns>
-        async Task SerializeEntity(ServiceBusHelper serviceBusHelper, XmlWriter xmlWriter, object entity)
+        async Task SerializeEntity(ServiceBusHelper serviceBusHelper, XmlWriter xmlWriter, object entity, Lazy<Task<bool>> standardPartitions = null)
         {
             if (xmlWriter == null ||
                 entity == null)
@@ -595,8 +646,19 @@ namespace ServiceBusExplorer.Helpers
                 return;
             }
             long? maxMessageSize = null;
-            if (entity is QueueInfo queueInfo) { entity = queueInfo.Description; maxMessageSize = queueInfo.MaxMessageSizeInKilobytes; }
-            if (entity is TopicInfo topicInfo) { entity = topicInfo.Description; maxMessageSize = topicInfo.MaxMessageSizeInKilobytes; }
+            bool? express = null;
+            if (entity is QueueInfo queueInfo)
+            {
+                if (queueInfo.Properties != null) express = ReadEnableExpress(queueInfo.Properties);
+                entity = queueInfo.Description;
+                maxMessageSize = queueInfo.MaxMessageSizeInKilobytes;
+            }
+            if (entity is TopicInfo topicInfo)
+            {
+                if (topicInfo.Properties != null) express = ReadEnableExpress(topicInfo.Properties);
+                entity = topicInfo.Description;
+                maxMessageSize = topicInfo.MaxMessageSizeInKilobytes;
+            }
             if (entity is SubscriptionInfo subscriptionInfo) entity = subscriptionInfo.Description;
             if (entity is RuleInfo ruleInfo) entity = ruleInfo.Description;
             if (entity is CorrelationFilter correlation && correlation.Properties.Any(property =>
@@ -620,6 +682,11 @@ namespace ServiceBusExplorer.Helpers
             foreach (var keyValuePair in propertyDictionary)
             {
                 var value = keyValuePair.Value.GetValue(entity, null);
+                if (keyValuePair.Key == "EnableExpress" && express.HasValue) value = express.Value;
+                if (keyValuePair.Key == MaxSizeInMegabytes && value is long size && IsAggregatePartitionSize(size) &&
+                    (entity is QueueDescription { EnablePartitioning: true } || entity is TopicDescription { EnablePartitioning: true }) &&
+                    await standardPartitions.Value.ConfigureAwait(false))
+                    value = size / 16;
                 if (string.Compare(keyValuePair.Key,
                                    ForwardTo,
                                    StringComparison.InvariantCultureIgnoreCase) == 0 &&

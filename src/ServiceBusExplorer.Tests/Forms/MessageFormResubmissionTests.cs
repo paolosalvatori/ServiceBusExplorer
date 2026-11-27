@@ -1,6 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Azure;
+using Azure.Core.Amqp;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
+using ServiceBusExplorer.Tests.Helpers;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Windows.Forms;
@@ -132,6 +138,8 @@ namespace ServiceBusExplorer.Tests.Forms
         [InlineData("Value", true)]
         [InlineData("Sequence", false)]
         [InlineData("Sequence", true)]
+        [InlineData("String", false)]
+        [InlineData("String", true)]
         public void StructuredAmqpEditorPreservesOriginalUntilTextEdited(string kind, bool newId)
         {
             RunSta(() =>
@@ -257,6 +265,115 @@ namespace ServiceBusExplorer.Tests.Forms
                 Assert.False(valid);
                 Assert.Contains(logs, message => message.Contains("cannot be rolled back"));
             });
+        }
+
+        [Fact]
+        public void EditorShowsNativeTextAndPreparesTheCorrectedValueForDelivery()
+        {
+            RunSta(() =>
+            {
+                using var source = ReceivedMessageReplayTests.Receive(new AmqpAnnotatedMessage(AmqpMessageBody.FromValue("original")));
+                using var editor = new MessageForm(source, new ServiceBusHelper((_, __) => { }), (_, __) => { });
+                var text = editor.Controls.Find("txtMessageText", true).Single();
+                Assert.Equal("original", text.Text);
+                text.Text = "corrected";
+                using var prepared = editor.BuildMessageForResubmission(source);
+                var wire = AmqpAnnotatedMessage.FromBytes(ServiceBusMessageAdapter.ToServiceBusMessage(prepared).GetRawAmqpMessage().ToBytes());
+                Assert.True(wire.Body.TryGetValue(out var value));
+                Assert.Equal("corrected", value);
+            });
+        }
+
+        [Fact]
+        public void BulkReplayRemovesReservedPropertiesAndKeepsCustomProperties()
+        {
+            RunSta(() =>
+            {
+                var wire = new AmqpAnnotatedMessage(AmqpMessageBody.FromValue(new byte[] { 1, 2 }));
+                wire.ApplicationProperties["DeadLetterReason"] = "old reason";
+                wire.ApplicationProperties["deadlettererrordescription"] = "old detail";
+                wire.ApplicationProperties["NServiceBus.Transport.Recovery"] = "old recovery";
+                wire.ApplicationProperties["keep"] = 42;
+                using var source = ReceivedMessageReplayTests.Receive(wire);
+                using var editor = new MessageForm(new[] { source }, new ServiceBusHelper((_, __) => { }), (_, __) => { });
+                using var prepared = editor.BuildMessageForResubmission(source);
+                var properties = ServiceBusMessageAdapter.ToServiceBusMessage(prepared).ApplicationProperties;
+                Assert.Single(properties);
+                Assert.Equal(42, properties["keep"]);
+                Assert.Equal(4, source.Properties.Count);
+            });
+        }
+
+        [Theory]
+        [InlineData("Queue", false)]
+        [InlineData("Topic", false)]
+        [InlineData("Queue", true)]
+        [InlineData("Topic", true)]
+        public async Task DestructiveReplayChecksTheActualDestinationUnlessGeneratingANewId(string kind, bool duplicateDetection)
+        {
+            var probe = new DuplicateDetectionProbe(duplicateDetection);
+            if (duplicateDetection)
+                await Assert.ThrowsAsync<InvalidOperationException>(() => MessageForm.ValidateMoveDestinationAsync(false, "orders", kind, () => probe));
+            else
+                await MessageForm.ValidateMoveDestinationAsync(false, "orders", kind, () => probe);
+            Assert.Equal("orders", probe.Queried);
+            await MessageForm.ValidateMoveDestinationAsync(true, "orders", kind, () => throw new Exception("unexpected lookup"));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => MessageForm.ValidateMoveDestinationAsync(false, "orders", null, () => probe));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => MessageForm.ValidateMoveDestinationAsync(false, "orders", kind, () => throw new UnauthorizedAccessException()));
+        }
+
+        private sealed class DuplicateDetectionProbe : ServiceBusAdministrationClient
+        {
+            private readonly bool duplicate;
+            public string Queried { get; private set; }
+
+            internal DuplicateDetectionProbe(bool duplicate) { this.duplicate = duplicate; }
+
+            public override Task<Response<QueueProperties>> GetQueueAsync(string name, CancellationToken token = default)
+            {
+                Queried = name;
+                var properties = ServiceBusModelFactory.QueueProperties(name, requiresDuplicateDetection: duplicate,
+                    lockDuration: TimeSpan.FromMinutes(1), maxSizeInMegabytes: 1024, maxDeliveryCount: 10, userMetadata: "",
+                    defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue,
+                    duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10));
+                return Task.FromResult(Response.FromValue(properties, null));
+            }
+
+            public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken token = default)
+            {
+                Queried = name;
+                var properties = ServiceBusModelFactory.TopicProperties(name, requiresDuplicateDetection: duplicate,
+                    maxSizeInMegabytes: 1024, defaultMessageTimeToLive: TimeSpan.MaxValue,
+                    autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10));
+                return Task.FromResult(Response.FromValue(properties, null));
+            }
+        }
+
+        [Theory]
+        [InlineData("accepted", "send,complete")]
+        [InlineData("rejected", "send,abandon")]
+        [InlineData("cancelled", "send,abandon")]
+        [InlineData("locklost", "send,complete,abandon")]
+        public async Task SettlementFollowsConfirmedDelivery(string result, string expected)
+        {
+            var calls = new System.Collections.Generic.List<string>();
+            Func<Task> send = () =>
+            {
+                calls.Add("send");
+                if (result == "cancelled") return Task.FromCanceled(new CancellationToken(true));
+                if (result == "rejected") return Task.FromException(new InvalidOperationException("rejected"));
+                return Task.CompletedTask;
+            };
+            Func<Task> complete = () =>
+            {
+                calls.Add("complete");
+                return result == "locklost" ? Task.FromException(new InvalidOperationException("expired")) : Task.CompletedTask;
+            };
+            Func<Task> abandon = () => { calls.Add("abandon"); return Task.CompletedTask; };
+            var delivery = DeadLetterMessageHandler.SendAndSettleAsync(send, complete, abandon);
+            if (result == "accepted") await delivery;
+            else await Assert.ThrowsAnyAsync<Exception>(() => delivery);
+            Assert.Equal(expected, string.Join(",", calls));
         }
 
         private static void RunSta(Action action)

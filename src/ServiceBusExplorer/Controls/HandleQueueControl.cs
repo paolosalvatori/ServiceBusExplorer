@@ -532,11 +532,11 @@ namespace ServiceBusExplorer.Controls
 
         #region Private Static Methods
 
-        static bool AreAllSelectedMessageScheduled(DataGridViewSelectedRowCollection selectedRows)
-        {
-            return selectedRows.Cast<DataGridViewRow>()
-                .All(row => (row.DataBoundItem as BrokeredMessage)?.State == MessageState.Scheduled);
-        }
+        internal static bool CanCancelScheduledMessages(IEnumerable<BrokeredMessage?> messages) =>
+            messages.All(message => message != null &&
+                (ServiceBusReceivedMessageAdapter.GetReceivedMetadata(message) is ServiceBusReceivedMessage native
+                    ? native.State == ServiceBusMessageState.Scheduled
+                    : message.State == MessageState.Scheduled));
 
         #endregion
 
@@ -2904,7 +2904,7 @@ namespace ServiceBusExplorer.Controls
             repairAndResubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             resubmitMessageToolStripMenuItem.Visible = !multipleSelectedRows;
             
-            if(AreAllSelectedMessageScheduled(messagesDataGridView.SelectedRows))
+            if (CanCancelScheduledMessages(messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(row => row.DataBoundItem as BrokeredMessage)))
             {
                 SetCancelScheduledMessageToolStripMenuItemText(multipleSelectedRows);
                 cancelScheduledMessageToolStripMenuItem.Visible = true;
