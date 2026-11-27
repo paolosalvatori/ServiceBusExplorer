@@ -72,11 +72,15 @@ access and verifies `http://localhost:5300`. See the upstream
 and [emulator setup documentation](https://learn.microsoft.com/azure/service-bus-messaging/test-locally-with-service-bus-emulator).
 
 The emulator does not expose Event Hubs, Notification Hubs or Relay nodes.
-Management profiles may retain an administration endpoint on a custom port;
-the data-plane connection builder independently selects AMQP port **5672** and
-removes entity-scoped/legacy transport settings. The saved connection string is
-not rewritten. This stage does **not** claim end-to-end emulator support or
-completion of #727.
+The default emulator uses administration port 5300 and AMQP TCP port 5672.
+For a remapped instance, set `RuntimePort` to its published AMQP port, for
+example `Endpoint=sb://localhost:15300/;RuntimePort=15672` in the raw profile.
+With a separate `ManagementPort`, an explicit, distinct `Endpoint` port also
+identifies the data listener. A profile pointing at the HTTP listener, including
+port 5300, allows browsing and requires an explicit AMQP destination before
+sending, purging or cancelling. A bare emulator host uses the standard data port.
+Azure SAS data connections retain `EntityPath` as their signing scope. Explicit
+Azure transport ports are applied to the physical connection.
 No live emulator or Azure namespace was available during validation; mocked
 administration workflows and SDK request construction are covered, not live
 service compatibility or emulator feature availability.
@@ -116,6 +120,11 @@ and their callback contracts still use legacy clients. The old message editor,
 inspectors, and generators also retain `BrokeredMessage` contracts. Cleanup and
 package removal remain out of scope. Event Hubs and Notification Hubs are
 unchanged.
+
+The editor requires a fresh ID for a destructive replay when destination duplicate
+ detection is enabled or cannot be verified. It validates the complete selection
+ before taking locks. Modern DLQ moves keep a single transaction-enabled client for
+ send and completion; a failed delivery is never counted as a settled source.
 
 ### Compatibility decisions for review
 
@@ -193,8 +202,8 @@ performed for send, receive, settlement, or transactional moves.
 
 The modern helper retains distinct administration and data endpoints. Emulator
 resubmission uses AMQP TCP regardless of the WebSockets preference. Unedited
-messages retain their original raw body and sendable identity/routing fields;
-text edits are sent as UTF-8. The new-ID option changes MessageId only.
+messages retain their sendable identity and routing fields. The editor preserves
+AMQP Data and Value body types. The new-ID option changes MessageId only.
 ViaPartitionKey maps to TransactionPartitionKey, but transactional send-via and
 atomic dead-letter moves are not implemented by this resubmission stage.
 The management-stage XML compatibility preflight remains in place.
@@ -238,3 +247,10 @@ no retry or acknowledgment is attempted. Receiver/client cleanup failures also
 retain the result. Callers without a reporting callback receive a
 `PartialMessageReadException` carrying those rows and own their disposal. Peek
 continues to fail without publishing a partial destructive result.
+
+Native AMQP text and binary Values keep their wire type when edited. Other
+Values can be copied when the modern codec reproduces their original section exactly. A body discarded by the legacy
+receiver, including AMQP Sequence, stops replay before settlement. Legacy
+DataContract String and ByteArray edits retain their serialized format. Ordinary
+stream edits use UTF-8. Bulk and single replay exclude prior dead-letter and
+NServiceBus recovery properties.

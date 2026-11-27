@@ -141,6 +141,11 @@ Receive All drains in bounded batches until an empty receive; Peek All retains t
 Moves from partitioned sources or transfer dead-letter queues are explicitly unsupported before client creation; no atomic cross-partition guarantee is claimed. Dead-letter failures report confirmed IDs and warn that unconfirmed outcomes need broker verification. Cleanup attempts every held lock and client independently. Synthetic receiver/sender tests cover a later failure after one successful operation and simultaneous abandonment/disposal errors.
 
 Release cross-build and exact-head Windows CI cover these regressions. Live Azure/emulator transactions, interactive bulk actions, partition routing and lock-expiry behavior are not verified; no live data was accessed and screenshots remain deferred.
+
+- Use a queue-scoped SAS profile to verify the signed data audience and rejection of a different entity. Verify explicit Azure transport ports and independently remapped emulator administration and AMQP listeners. Management-only custom mappings must block data operations.
+- The wire fixtures decode native AMQP through the pinned legacy receiver. They cover untouched Data and Value, corrected text and binary Values, legacy DataContract bodies, reserved recovery properties and refusal when the receiver lost the body.
+- The editor requires a fresh ID for a destructive replay when duplicate detection is enabled or unknown. The settlement tests cover accepted, failed, cancelled and expired-lock operations. Live delivery, lock expiry, duplicate suppression and interactive cancellation still require broker-backed acceptance.
+
 ### Independent review follow-up: connection stage (#910)
 
 The raw transport dropdown updates only TransportType and RuntimePort assignments, preserving matching text in endpoints, entity paths and credentials. The Connect entry path publishes entity selection only on success and restores prior WebSockets/connectivity settings on false returns or exceptions. Synthetic tests exercise the real dropdown and the settings-publication method used by Connect. No live connection, credentials or configuration were used; adapter preparation/rollback is handled in the following management stage.

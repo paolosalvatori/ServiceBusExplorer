@@ -22,8 +22,6 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string TopicDescriptionCannotBeNull = "The topic decsription argument cannot be null.";
         private const string RuleDescriptionCannotBeNull = "The rule description argument cannot be null.";
 
-        private readonly string servicePath = string.Empty;
-
         public ServiceBusSubscription(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager) : base(serviceBusNamespace, namespaceManager.Address)
         {
             ManagementClient = namespaceManager;
@@ -107,20 +105,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <returns>The absolute uri of the subscription.</returns>
         public Uri GetSubscriptionUri(string topicPath, string name)
         {
-            if (IsCloudNamespace())
-            {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, SubscriptionClient.FormatSubscriptionPath(topicPath, name)));
-            }
-            else
-            {
-                var uriBuilder = new UriBuilder
-                {
-                    Host = ManagementClient.Address.Host,
-                    Path = $"{ManagementClient.Address.AbsolutePath}/{SubscriptionClient.FormatSubscriptionPath(topicPath, name)}",
-                    Scheme = "sb",
-                };
-                return uriBuilder.Uri;
-            }
+            return GetEntityUri(SubscriptionClient.FormatSubscriptionPath(topicPath, name));
         }
 
         /// <summary>
@@ -131,20 +116,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <returns>The absolute uri of the deadletter queue.</returns>
         public Uri GetSubscriptionDeadLetterQueueUri(string topicPath, string name)
         {
-            if (IsCloudNamespace())
-            {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, SubscriptionClient.FormatDeadLetterPath(topicPath, name));
-            }
-            else
-            {
-                var uriBuilder = new UriBuilder
-                {
-                    Host = ManagementClient.Address.Host,
-                    Path = $"{ManagementClient.Address.AbsolutePath}/{SubscriptionClient.FormatDeadLetterPath(topicPath, name)}",
-                    Scheme = "sb",
-                };
-                return uriBuilder.Uri;
-            }
+            return GetEntityUri(SubscriptionClient.FormatDeadLetterPath(topicPath, name));
         }
 
         /// <summary>

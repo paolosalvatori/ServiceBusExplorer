@@ -34,16 +34,21 @@ namespace ServiceBusExplorer.Tests.Helpers
                 (_, __) => { }).Should().BeNull();
         }
 
-        [Fact]
-        public void RejectedInvalidConnectionDoesNotReplaceActiveProfileOrClients()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("Endpoint=sb://localhost/;SharedAccessKeyName=replacement;SharedAccessKey=test;TransportType=invalid")]
+        public void RejectedInvalidConnectionDoesNotReplaceActiveProfileOrClients(string connectionString)
         {
             var helper = new ServiceBusHelper((_, __) => { });
             var profile = typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", BindingFlags.Instance | BindingFlags.NonPublic);
             var active = ServiceBusNamespace.GetServiceBusNamespace("active", EmulatorConnectionString.Replace("UseDevelopmentEmulator=true", "UseDevelopmentEmulator=false"), (_, __) => { });
             profile.SetValue(helper, active);
+            helper.SharedAccessKeyName = active.SharedAccessKeyName;
+            helper.SharedAccessKey = active.SharedAccessKey;
             var fields = typeof(ServiceBusHelper).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
             var before = Array.ConvertAll(fields, field => field.GetValue(helper));
-            Action connect = () => helper.Connect(null);
+            Action connect = () => helper.Connect(connectionString == null ? null :
+                ServiceBusNamespace.GetServiceBusNamespace("replacement", connectionString, (_, __) => { }));
             connect.Should().Throw<ArgumentException>();
             profile.GetValue(helper).Should().BeSameAs(active);
             for (var index = 0; index < fields.Length; index++)

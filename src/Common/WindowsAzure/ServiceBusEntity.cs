@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceBus;
+﻿using System;
+using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Enums;
 using ServiceBusExplorer.Helpers;
@@ -80,6 +81,25 @@ namespace ServiceBusExplorer.WindowsAzure
         protected void Log(string message)
         {
             WriteToLog?.Invoke(message);
+        }
+
+        protected Uri GetEntityUri(string entityPath)
+        {
+            if (ServiceBusNamespace.UseDevelopmentEmulator)
+            {
+                var endpoint = new UriBuilder(ServiceBusNamespace.Uri) { Scheme = Scheme };
+                endpoint.Path = endpoint.Path.TrimEnd('/') + "/" + entityPath.TrimStart('/');
+                return endpoint.Uri;
+            }
+            if (IsCloudNamespace())
+                return ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, entityPath);
+
+            return new UriBuilder
+            {
+                Host = namespaceAddress.Host,
+                Path = namespaceAddress.AbsolutePath + "/" + entityPath,
+                Scheme = "sb"
+            }.Uri;
         }
 
         protected bool IsCloudNamespace()

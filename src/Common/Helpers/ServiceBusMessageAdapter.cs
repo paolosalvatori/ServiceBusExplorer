@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 
 using Azure;
 using Azure.Core.Amqp;
@@ -29,6 +30,36 @@ namespace ServiceBusExplorer.Helpers
 
             return serviceBusMessage;
         }
+
+        public static bool TryGetReplayText(BrokeredMessage message, out string text) => MessageReplayBody.TryGetText(message, out text);
+
+        public static BrokeredMessage PrepareForReplay(BrokeredMessage source, bool replaceProperties, string editedText,
+            BodyType originalType, bool newId, IBrokeredMessageInspector inspector)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            var outbound = ServiceBusReceivedMessageAdapter.CloneForResubmission(source);
+            try
+            {
+                if (editedText != null) MessageReplayBody.Edit(outbound, editedText, originalType);
+                if (replaceProperties) outbound.Properties.Clear();
+                if (inspector != null)
+                {
+                    // An inspector can return a replacement that still owns or wraps this clone's stream.
+                    outbound = ServiceBusReceivedMessageAdapter.Inspect(outbound, inspector.BeforeSendMessage) ?? throw new InvalidOperationException("The message inspector returned null.");
+                }
+                foreach (var key in outbound.Properties.Keys.Where(key => Constants.AlwaysOmittedProperties.Contains(key, StringComparer.OrdinalIgnoreCase)).ToArray())
+                    outbound.Properties.Remove(key);
+                if (newId) outbound.MessageId = Guid.NewGuid().ToString();
+                return outbound;
+            }
+            catch
+            {
+                outbound.Dispose();
+                throw;
+            }
+        }
+
+        public static ServiceBusMessage ToReplayMessage(BrokeredMessage message) => ToServiceBusMessage(message);
 
         public static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message) => ToServiceBusMessage(message, false);
 
@@ -68,7 +99,7 @@ namespace ServiceBusExplorer.Helpers
                 catch (System.Runtime.Serialization.SerializationException) { }
                 catch (System.Xml.XmlException) { }
             }
-            if (serviceBusMessage == null) serviceBusMessage = new ServiceBusMessage(new BinaryData(body));
+            if (serviceBusMessage == null) serviceBusMessage = new ServiceBusMessage(new AmqpAnnotatedMessage(MessageReplayBody.Read(message)));
             var initial = ServiceBusReceivedMessageAdapter.GetIncompleteHeaders(message);
             if (initial == null) serviceBusMessage.ApplicationProperties.Clear();
             else
