@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.ServiceBus.Messaging;
+using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.UIHelpers
 {
@@ -19,9 +19,13 @@ namespace ServiceBusExplorer.UIHelpers
             this.canDisplay = canDisplay;
         }
 
-        // GetMessageSessions returns a browsable handle with its own SDK operation timeout.
-        internal Task ShowAsync(MessageSession selected) =>
-            ReadAsync(selected == null ? null : new Func<Task<Stream>>(selected.GetStateAsync));
+        // Listing is lock-free; only explicit selection reads state with a short-lived receiver.
+        internal Task ReadModernAsync(SessionInfo selected, Func<string, Task<byte[]>> readState) =>
+            ReadAsync(selected == null ? null : new Func<Task<Stream>>(async () =>
+            {
+                var state = await readState(selected.SessionId);
+                return state == null ? null : new MemoryStream(state, false);
+            }));
 
         internal async Task ReadAsync(Func<Task<Stream>> readSelectedState)
         {

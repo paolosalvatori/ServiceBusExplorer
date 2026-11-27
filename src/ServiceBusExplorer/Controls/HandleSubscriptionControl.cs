@@ -44,6 +44,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 #endregion
@@ -198,7 +199,7 @@ namespace ServiceBusExplorer.Controls
         private DateTime? deadletterFilterToDate;
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
-        private SortableBindingList<MessageSession> sessionBindingList;
+        private SortableBindingList<SessionInfo> sessionBindingList;
         private bool buttonsMoved;
         private readonly bool duplicateExistingSubscription;
         private Button btnCopyMessageBody;
@@ -301,32 +302,27 @@ namespace ServiceBusExplorer.Controls
             writeToLog("Transfer dead-letter browsing for subscriptions is not supported by this view. No messages were read.");
         }
 
-        public void GetMessageSessions()
+        private bool listingSessions;
+
+        public async Task GetMessageSessions()
         {
+            if (listingSessions) return;
+            listingSessions = true;
+            await sessionStateView.ReadAsync(null);
             try
             {
-                mainTabControl.SuspendDrawing();
-                mainTabControl.SuspendLayout();
-                tabPageSessions.SuspendDrawing();
-                tabPageSessions.SuspendLayout();
-
-                var subscriptionClient =
-                    serviceBusHelper.MessagingFactory.CreateSubscriptionClient(
-                        subscriptionWrapper.SubscriptionDescription.TopicPath,
-                        subscriptionWrapper.SubscriptionDescription.Name,
-                        ReceiveMode.PeekLock);
-                var sessionEnumerable = subscriptionClient.GetMessageSessions();
-                if (sessionEnumerable == null)
-                {
-                    return;
-                }
                 Cursor.Current = Cursors.WaitCursor;
+
+                txtSessionState.Text = string.Empty;
+                sessionPropertyGrid.SelectedObject = null;
+                var messageSessions = await serviceBusHelper.GetMessageSessionsFromModernDataPlane(
+                    subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, CancellationToken.None);
+                if (IsDisposed) return;
                 if (mainTabControl.TabPages[SessionsTabPage] == null)
                 {
                     EnablePage(SessionsTabPage);
                 }
-                var messageSessions = sessionEnumerable as MessageSession[] ?? sessionEnumerable.ToArray();
-                sessionBindingList = new SortableBindingList<MessageSession>(messageSessions)
+                sessionBindingList = new SortableBindingList<SessionInfo>(messageSessions)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -336,6 +332,8 @@ namespace ServiceBusExplorer.Controls
                     subscriptionWrapper.SubscriptionDescription.Name));
                 sessionsBindingSource.DataSource = sessionBindingList;
                 sessionsDataGridView.DataSource = sessionsBindingSource;
+                sessionsDataGridView.ClearSelection();
+                sessionsDataGridView.CurrentCell = null;
 
                 sessionsSplitContainer.SplitterDistance = sessionsSplitContainer.Width -
                                                           GrouperMessagePropertiesWith -
@@ -354,10 +352,7 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
-                mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
-                tabPageSessions.ResumeLayout();
-                tabPageSessions.ResumeDrawing();
+                listingSessions = false;
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -1722,9 +1717,9 @@ namespace ServiceBusExplorer.Controls
             GetMessages();
         }
 
-        private void btnSessions_Click(object sender, EventArgs e)
+        private async void btnSessions_Click(object sender, EventArgs e)
         {
-            GetMessageSessions();
+            await GetMessageSessions();
         }
 
         private void messagesDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -1754,11 +1749,18 @@ namespace ServiceBusExplorer.Controls
 
         private async void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var sessions = sessionsBindingSource.DataSource as BindingList<MessageSession>;
+            if (listingSessions) return;
+            var sessions = sessionsBindingSource.DataSource as BindingList<SessionInfo>;
             var selected = sessions != null && e.RowIndex >= 0 && e.RowIndex < sessions.Count ? sessions[e.RowIndex] : null;
-            var read = sessionStateView.ShowAsync(selected);
             sessionPropertyGrid.SelectedObject = selected;
-            await read;
+            await sessionStateView.ReadModernAsync(selected, async sessionId =>
+            {
+                using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout)))
+                {
+                    return await serviceBusHelper.GetSessionStateFromModernDataPlane(
+                        subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, sessionId, timeout.Token);
+                }
+            });
         }
 
         private void grouperMessageList_CustomPaint(PaintEventArgs e)

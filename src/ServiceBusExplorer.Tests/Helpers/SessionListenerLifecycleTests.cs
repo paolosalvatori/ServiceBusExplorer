@@ -414,7 +414,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Same(failure, Assert.Single(errors));
             Assert.Equal(string.Empty, text);
             text = "clear on deselect";
-            await view.ShowAsync(null);
+            await view.ReadAsync(null);
             Assert.Equal(string.Empty, text);
         }
 

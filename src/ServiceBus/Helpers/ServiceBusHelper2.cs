@@ -118,9 +118,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public virtual ServiceBusAdministrationClient CreateAdministrationClient()
         {
             if (AdministrationClient != null) return AdministrationClient;
+            // Match the main management connection. SDK 7.21 changed its default;
+            // SKU/entity probes must retain the same API version, including on emulator.
+            var options = new ServiceBusAdministrationClientOptions(
+                ServiceBusAdministrationClientOptions.ServiceVersion.V2021_05);
             return IsEntra
-                ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
-                : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);
+                ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential, options)
+                : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString, options);
         }
 
         public async Task<bool> IsPremiumNamespace()
