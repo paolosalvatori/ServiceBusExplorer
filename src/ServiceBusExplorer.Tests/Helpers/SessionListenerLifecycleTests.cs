@@ -332,7 +332,9 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Empty(disposed);
             worker.SetResult(true);
             Assert.True(await restart);
-            Assert.Empty((List<ServiceBusSender>)type.GetField("messageSenderCollection", flags).GetValue(panel));
+            // Cleanup invalidates the cache so the next start constructs fresh senders.
+            Assert.Null(type.GetField("messageSenderCollection", flags).GetValue(panel));
+            Assert.Empty(senders);
             Assert.Empty(clients);
             Assert.Equal(new[] { "client" }, disposed);
         }
