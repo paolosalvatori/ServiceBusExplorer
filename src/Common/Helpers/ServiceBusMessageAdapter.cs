@@ -30,7 +30,9 @@ namespace ServiceBusExplorer.Helpers
             return serviceBusMessage;
         }
 
-        public static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message)
+        public static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message) => ToServiceBusMessage(message, false);
+
+        internal static ServiceBusMessage ToServiceBusMessage(BrokeredMessage message, bool sendStringValue)
         {
             if (message == null)
             {
@@ -49,27 +51,47 @@ namespace ServiceBusExplorer.Helpers
                 body = buffer.ToArray();
             }
 
-            var serviceBusMessage = ServiceBusReceivedMessageAdapter.CreatePreservedMessage(message, body) ??
-                new ServiceBusMessage(new BinaryData(body));
-            serviceBusMessage.ApplicationProperties.Clear();
-            serviceBusMessage.MessageId = message.MessageId;
-            serviceBusMessage.SessionId = message.SessionId;
-            serviceBusMessage.CorrelationId = message.CorrelationId;
-            serviceBusMessage.ContentType = message.ContentType;
-            serviceBusMessage.Subject = message.Label;
-            serviceBusMessage.PartitionKey = message.PartitionKey;
-            serviceBusMessage.TransactionPartitionKey = message.ViaPartitionKey;
-            serviceBusMessage.To = message.To;
-            serviceBusMessage.ReplyTo = message.ReplyTo;
-            serviceBusMessage.ReplyToSessionId = message.ReplyToSessionId;
-            serviceBusMessage.TimeToLive = message.TimeToLive;
-            serviceBusMessage.ScheduledEnqueueTime = new DateTimeOffset(
-                    DateTime.SpecifyKind(message.ScheduledEnqueueTimeUtc, DateTimeKind.Utc));
+            var serviceBusMessage = ServiceBusReceivedMessageAdapter.CreatePreservedMessage(message, body);
+            if (serviceBusMessage == null && sendStringValue)
+            {
+                // A sender inspector can replace a typed String with an arbitrary stream.
+                // Read the current bytes so that an inspector's body edit wins.
+                try
+                {
+                    using (var stream = new MemoryStream(body, false))
+                    {
+                        var text = (string)new CustomDataContractBinarySerializer(typeof(string)).ReadObject(stream);
+                        if (text != null)
+                            serviceBusMessage = new ServiceBusMessage(new AmqpAnnotatedMessage(AmqpMessageBody.FromValue(text)));
+                    }
+                }
+                catch (System.Runtime.Serialization.SerializationException) { }
+                catch (System.Xml.XmlException) { }
+            }
+            if (serviceBusMessage == null) serviceBusMessage = new ServiceBusMessage(new BinaryData(body));
+            var initial = ServiceBusReceivedMessageAdapter.GetIncompleteHeaders(message);
+            if (initial == null) serviceBusMessage.ApplicationProperties.Clear();
+            else
+                foreach (var key in initial.Properties.Keys)
+                    if (!message.Properties.ContainsKey(key)) serviceBusMessage.ApplicationProperties.Remove(key);
+
+            if (initial == null || message.MessageId != initial.MessageId) serviceBusMessage.MessageId = message.MessageId;
+            if (initial == null || message.SessionId != initial.SessionId) serviceBusMessage.SessionId = message.SessionId;
+            if (initial == null || message.CorrelationId != initial.CorrelationId) serviceBusMessage.CorrelationId = message.CorrelationId;
+            if (initial == null || message.ContentType != initial.ContentType) serviceBusMessage.ContentType = message.ContentType;
+            if (initial == null || message.Label != initial.Label) serviceBusMessage.Subject = message.Label;
+            if (initial == null || message.PartitionKey != initial.PartitionKey) serviceBusMessage.PartitionKey = message.PartitionKey;
+            if (initial == null || message.ViaPartitionKey != initial.ViaPartitionKey) serviceBusMessage.TransactionPartitionKey = message.ViaPartitionKey;
+            if (initial == null || message.To != initial.To) serviceBusMessage.To = message.To;
+            if (initial == null || message.ReplyTo != initial.ReplyTo) serviceBusMessage.ReplyTo = message.ReplyTo;
+            if (initial == null || message.ReplyToSessionId != initial.ReplyToSessionId) serviceBusMessage.ReplyToSessionId = message.ReplyToSessionId;
+            if (initial == null || message.TimeToLive != initial.TimeToLive) serviceBusMessage.TimeToLive = message.TimeToLive;
+            if (initial == null || message.ScheduledEnqueueTimeUtc != initial.ScheduledEnqueueTimeUtc)
+                serviceBusMessage.ScheduledEnqueueTime = new DateTimeOffset(DateTime.SpecifyKind(message.ScheduledEnqueueTimeUtc, DateTimeKind.Utc));
 
             foreach (var property in message.Properties)
-            {
-                serviceBusMessage.ApplicationProperties.Add(property.Key, property.Value);
-            }
+                if (initial == null || !initial.Properties.TryGetValue(property.Key, out var old) || !Equals(old, property.Value))
+                    serviceBusMessage.ApplicationProperties[property.Key] = property.Value;
 
             return serviceBusMessage;
         }

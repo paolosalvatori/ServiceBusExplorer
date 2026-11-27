@@ -2342,13 +2342,16 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentNullException(BrokeredMessageCannotBeNull);
             }
-            var outboundMessage = ServiceBusReceivedMessageAdapter.CloneForResubmission(messageTemplate);
+            BrokeredMessage outboundMessage;
             if (bodyType == BodyType.String)
             {
-                using (var reader = new StreamReader(outboundMessage.GetBody<Stream>()))
-                {
+                using (var template = messageTemplate.Clone())
+                using (var reader = new StreamReader(template.GetBody<Stream>()))
                     outboundMessage = new BrokeredMessage(reader.ReadToEnd());
-                }
+            }
+            else
+            {
+                outboundMessage = ServiceBusReceivedMessageAdapter.CloneForResubmission(messageTemplate);
             }
 
             outboundMessage.MessageId = updateMessageId ? Guid.NewGuid().ToString() : messageTemplate.MessageId;
@@ -2390,7 +2393,10 @@ namespace ServiceBusExplorer
             }
             if (messageInspector != null)
             {
-                outboundMessage = ServiceBusReceivedMessageAdapter.Inspect(outboundMessage, messageInspector.BeforeSendMessage);
+                // The String branch created a new outbound message with no received identity.
+                outboundMessage = bodyType == BodyType.String
+                    ? messageInspector.BeforeSendMessage(outboundMessage) ?? throw new InvalidOperationException("The message inspector returned no message.")
+                    : ServiceBusReceivedMessageAdapter.Inspect(outboundMessage, messageInspector.BeforeSendMessage);
             }
             return outboundMessage;
         }
@@ -2625,14 +2631,14 @@ namespace ServiceBusExplorer
                         {
                             if (outboundMessages.Count == 1)
                             {
-                                var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0]);
+                                var sdkMessage = ServiceBusMessageAdapter.ToServiceBusMessage(outboundMessages[0], bodyType == BodyType.String);
                                 var stopwatch = Stopwatch.StartNew();
                                 messageSender.SendMessageAsync(sdkMessage, cancellationTokenSource.Token)
                                     .GetAwaiter().GetResult();
                                 record(1, stopwatch.ElapsedMilliseconds);
                             }
                             else
-                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token, record);
+                                SendServiceBusBatch(messageSender, outboundMessages, cancellationTokenSource.Token, record, bodyType == BodyType.String);
                         }
                         finally
                         {
@@ -2674,15 +2680,23 @@ namespace ServiceBusExplorer
             return ok;
         }
 
-        public static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged)
+        public static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged) =>
+            SendServiceBusBatch(sender, messages, cancellationToken, acknowledged, false);
+
+        private static void SendServiceBusBatch(ServiceBusSender sender, IList<BrokeredMessage> messages, CancellationToken cancellationToken, Action<int, long> acknowledged, bool sendStringValue)
         {
             ServiceBusMessageBatch batch = sender.CreateMessageBatchAsync(cancellationToken).GetAwaiter().GetResult();
             try
             {
+                ServiceBusMessage previous = null;
                 foreach (var brokeredMessage in messages)
                 {
-                    var message = ServiceBusMessageAdapter.ToServiceBusMessage(brokeredMessage);
-                    if (batch.TryAddMessage(message))
+                    var message = ServiceBusMessageAdapter.ToServiceBusMessage(brokeredMessage, sendStringValue);
+                    bool sameRoute = previous == null ||
+                        (previous.PartitionKey == message.PartitionKey && previous.SessionId == message.SessionId &&
+                         previous.TransactionPartitionKey == message.TransactionPartitionKey);
+                    previous = message;
+                    if (sameRoute && batch.TryAddMessage(message))
                     {
                         continue;
                     }
@@ -3297,16 +3311,16 @@ namespace ServiceBusExplorer
                     {
                         messages = messageReceiver.ReceiveMessagesAsync(
                             batchSize,
-                            TimeSpan.FromSeconds(timeout),
+                            GetModernReceiveWait(TimeSpan.FromSeconds(timeout)),
                             cancellationTokenSource.Token).GetAwaiter().GetResult();
                         completed = messages == null || messages.Count == 0;
                     }
                     else
                     {
                         ServiceBusReceivedMessage receivedMessage;
-                        if (readingDeferredMessages && messageDeferProvider.Count > 0 &&
-                            messageDeferProvider.Dequeue(out var sequenceNumber))
+                        if (readingDeferredMessages)
                         {
+                            if (!messageDeferProvider.Dequeue(out var sequenceNumber)) break;
                             receivedMessage = messageReceiver.ReceiveDeferredMessageAsync(
                                 sequenceNumber,
                                 cancellationTokenSource.Token).GetAwaiter().GetResult();
@@ -3314,7 +3328,7 @@ namespace ServiceBusExplorer
                         else
                         {
                             receivedMessage = messageReceiver.ReceiveMessageAsync(
-                                TimeSpan.FromSeconds(timeout),
+                                GetModernReceiveWait(TimeSpan.FromSeconds(timeout)),
                                 cancellationTokenSource.Token).GetAwaiter().GetResult();
                         }
 
@@ -3361,8 +3375,9 @@ namespace ServiceBusExplorer
                                 compatibilityMessage = ServiceBusReceivedMessageAdapter.Inspect(compatibilityMessage, messageInspector.AfterReceiveMessage);
                             }
 
-                            var matched = filter != null && filter.Match(compatibilityMessage);
-                            var deferredMessage = defer && !readingDeferredMessages && matched;
+                            var mayDefer = defer && !readingDeferredMessages;
+                            var matched = (mayDefer || moveToDeadLetterQueue) && filter != null && filter.Match(compatibilityMessage);
+                            var deferredMessage = mayDefer && matched;
                             var movedToDeadLetterQueue = !deferredMessage && moveToDeadLetterQueue && matched;
                             var settlementStopwatch = Stopwatch.StartNew();
                             if (deferredMessage)
@@ -4593,9 +4608,12 @@ namespace ServiceBusExplorer
             if (updateStatistics != null) PublishConfirmedProgress(updateStatistics, 1, elapsed, DirectionType.Receive);
         }
 
+        public static System.Transactions.TransactionScope CreateDataPlaneTransactionScope() =>
+            new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled);
+
         public static bool ExecuteReceiveTransaction(Func<bool> receive, bool commit, CancellationToken cancellationToken)
         {
-            using (var scope = new System.Transactions.TransactionScope())
+            using (var scope = CreateDataPlaneTransactionScope())
             {
                 var succeeded = receive();
                 if (!succeeded || !commit || cancellationToken.IsCancellationRequested) return false;
@@ -4625,6 +4643,23 @@ namespace ServiceBusExplorer
             }
 
             return serviceBusHelper2;
+        }
+
+        public MessagingFactory GetSessionTestFactory(bool requiresSession, bool createNew = false)
+        {
+            if (!requiresSession) return null;
+            return createNew ? CreateMessagingFactory() : MessagingFactory;
+        }
+
+        public static ServiceBusReceiver CreateSubscriptionTestReceiver(ServiceBusClient client, string topic,
+            string subscription, ReceiveMode mode, int prefetchCount, bool deadLetter)
+        {
+            return client.CreateReceiver(topic, subscription, new ServiceBusReceiverOptions
+            {
+                PrefetchCount = prefetchCount,
+                ReceiveMode = mode == ReceiveMode.PeekLock ? ServiceBusReceiveMode.PeekLock : ServiceBusReceiveMode.ReceiveAndDelete,
+                SubQueue = deadLetter ? SubQueue.DeadLetter : SubQueue.None
+            });
         }
 
         public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
@@ -4702,6 +4737,11 @@ namespace ServiceBusExplorer
             return rows;
         }
 
+        // The legacy AMQP receiver treats a zero timeout as ten seconds. The modern
+        // SDK permits zero only when prefetch is enabled.
+        internal static TimeSpan GetModernReceiveWait(TimeSpan timeout) =>
+            timeout == TimeSpan.Zero ? TimeSpan.FromSeconds(10) : timeout;
+
         public static int ResolveModernReadCount(bool peek, bool all, int count, int topCount) =>
             all && !peek ? int.MaxValue : all ? topCount : count;
 
@@ -4726,7 +4766,7 @@ namespace ServiceBusExplorer
                     }
                     else
                     {
-                        messages = receiver.ReceiveMessagesAsync(batchSize, receiveTimeout)
+                        messages = receiver.ReceiveMessagesAsync(batchSize, GetModernReceiveWait(receiveTimeout))
                             .GetAwaiter().GetResult();
                     }
 
@@ -4739,10 +4779,18 @@ namespace ServiceBusExplorer
                     {
                         // Every message in a returned destructive batch is already gone from
                         // the broker. Keep independent originals until all inspection succeeds.
-                        var originals = messages.Select(ServiceBusReceivedMessageAdapter.ToBrokeredMessage).ToList();
+                        var originals = new List<BrokeredMessage>(messages.Count);
+                        Exception conversionFailure = null;
+                        foreach (var native in messages)
+                        {
+                            originals.Add(ServiceBusReceivedMessageAdapter.RetainForDestructiveRead(native, out var error));
+                            if (error != null && conversionFailure == null) conversionFailure = error;
+                        }
                         var inspectedBatch = new List<BrokeredMessage>();
                         try
                         {
+                            if (conversionFailure != null)
+                                throw new InvalidOperationException("Some received metadata could not be displayed. Original AMQP messages were retained.", conversionFailure);
                             if (messageInspector != null)
                                 foreach (var message in messages)
                                 {
@@ -4758,8 +4806,8 @@ namespace ServiceBusExplorer
                         }
                         catch
                         {
-                            foreach (var inspected in inspectedBatch) inspected.Dispose();
                             foreach (var original in originals) { brokeredMessages.Add(original); received?.Invoke(original); }
+                            foreach (var inspected in inspectedBatch) inspected.Dispose();
                             throw;
                         }
                         if (messageInspector != null)

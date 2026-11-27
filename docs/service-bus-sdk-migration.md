@@ -97,13 +97,11 @@ This increment moves queue/topic test senders, non-session message-browser
 peek and receive operations, and non-session queue/subscription test receivers
 to `ServiceBusSender` and `ServiceBusReceiver`. Message browsing still exposes
 the established `BrokeredMessage` contract to inspectors and UI code through a
-compatibility adapter. Application properties and sendable system properties
-are copied; read-only receive metadata (sequence numbers, lock token, delivery
-count, enqueue/expiry times, dead-letter details and state) is exposed under
-`ServiceBusExplorer.SystemProperties.*` keys. A conflicting application key
-fails explicitly instead of hiding either value. When legacy
-`BrokeredMessage` cannot represent a modern metadata combination, the native
-value remains in that metadata map.
+compatibility adapter. Application properties retain their original names and values.
+The adapter maps representable broker headers, including state, to the corresponding
+`BrokeredMessage` properties. Inspectors can read the original SDK message and its
+receive-only fields with `ServiceBusReceivedMessageAdapter.GetReceivedMetadata(row)`.
+That accessor returns null for a legacy-only row.
 
 Dead-letter deletion uses SDK receiver settlement. Moving selected DLQ messages
 uses a single SDK client with cross-entity transactions enabled and an ambient
@@ -164,12 +162,9 @@ unchanged.
   still have an ambiguous service outcome, so the operation is not retried as a
   new send. Live acceptance against the emulator and supported Azure tiers is
   a prerequisite for claiming this path is service-verified.
-- **Received metadata keys:** SDK-only receive metadata is kept in application
-  properties under the `ServiceBusExplorer.SystemProperties.*` namespace so
-  existing inspectors can read it. The adapter throws if a received
-  application property already uses that prefix. Review whether this reserved
-  namespace and explicit collision failure are acceptable for existing
-  extensions.
+- **Received metadata:** use the native accessor for the source sequence, lock,
+  delivery and dead-letter details. Names beginning with
+  `ServiceBusExplorer.SystemProperties.` are ordinary application properties.
 
 ### Validation
 

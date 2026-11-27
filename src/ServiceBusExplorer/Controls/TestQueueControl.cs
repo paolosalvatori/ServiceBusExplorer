@@ -963,6 +963,7 @@ namespace ServiceBusExplorer.Controls
                                     return currentIndex++;
                                 }
                             };
+                            var runSenders = messageSenderCollection;
                             Action<int, IEnumerable<BrokeredMessage>, IEnumerable<String>> senderAction = (taskId, messageTemplateEnumerable, messageTextEnumerable) =>
                             {
                                 try
@@ -972,9 +973,9 @@ namespace ServiceBusExplorer.Controls
 
                                     if (checkBoxSenderUseTransaction.Checked)
                                     {
-                                        using (var scope = new TransactionScope())
+                                        using (var scope = ServiceBusHelper.CreateDataPlaneTransactionScope())
                                         {
-                                            ok = controlHelper.ServiceBusHelper.SendMessages(messageSenderCollection[taskId],
+                                            ok = controlHelper.ServiceBusHelper.SendMessages(runSenders[taskId],
                                                                                queueDescription.Path,
                                                                                messageTemplateEnumerable,
                                                                                getMessageNumber,
@@ -1011,7 +1012,7 @@ namespace ServiceBusExplorer.Controls
                                     }
                                     else
                                     {
-                                        ok = controlHelper.ServiceBusHelper.SendMessages(messageSenderCollection[taskId],
+                                        ok = controlHelper.ServiceBusHelper.SendMessages(runSenders[taskId],
                                                                            queueDescription.Path,
                                                                            messageTemplateEnumerable,
                                                                            getMessageNumber,
@@ -1446,30 +1447,7 @@ namespace ServiceBusExplorer.Controls
             senderCancellationTokenSource?.Cancel();
             receiverCancellationTokenSource?.Cancel();
 
-            foreach (var client in senderClients)
-            {
-                try
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    HandleException(ex);
-                }
-            }
-            senderClients.Clear();
-            foreach (var client in receiverClients)
-            {
-                try
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    HandleException(ex);
-                }
-            }
-            receiverClients.Clear();
+            await TestControlHelper.StopClients(ref messageSenderCollection, senderClients, receiverClients, HandleException);
 
             // always cleans up the factories
             // clean up factories if the checkbox is checked.

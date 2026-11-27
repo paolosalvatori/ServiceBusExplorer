@@ -16,6 +16,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         internal static ServiceBusReceivedMessage Message(string kind)
         {
             var body = kind == "Data" ? AmqpMessageBody.FromData(new[] { new ReadOnlyMemory<byte>(new byte[] { 0, 255 }), new ReadOnlyMemory<byte>(new byte[] { 42 }) })
+                : kind == "String" ? AmqpMessageBody.FromValue("Unicode ü string")
                 : kind == "Value" ? AmqpMessageBody.FromValue(new Dictionary<string, object> { ["number"] = 42, ["bytes"] = new byte[] { 0, 255 } })
                 : AmqpMessageBody.FromSequence(new[] { (IList<object>)new List<object> { "text", 42, new byte[] { 0, 255 } }, new List<object> { true } });
             var raw = new AmqpAnnotatedMessage(body);

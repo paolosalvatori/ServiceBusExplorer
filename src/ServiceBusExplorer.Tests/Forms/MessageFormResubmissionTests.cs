@@ -132,6 +132,8 @@ namespace ServiceBusExplorer.Tests.Forms
         [InlineData("Value", true)]
         [InlineData("Sequence", false)]
         [InlineData("Sequence", true)]
+        [InlineData("String", false)]
+        [InlineData("String", true)]
         public void StructuredAmqpEditorPreservesOriginalUntilTextEdited(string kind, bool newId)
         {
             RunSta(() =>

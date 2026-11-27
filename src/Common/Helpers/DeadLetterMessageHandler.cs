@@ -127,7 +127,7 @@ namespace ServiceBusExplorer.Helpers
                 do
                 {
                     var message = await messageReceiver.ReceiveMessageAsync(
-                        TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
+                        ServiceBusHelper.GetModernReceiveWait(TimeSpan.FromSeconds(receiveTimeoutInSeconds))).ConfigureAwait(false);
                     if (message == null)
                     {
                         done = true;
@@ -224,7 +224,7 @@ namespace ServiceBusExplorer.Helpers
                 do
                 {
                     var message = await messageReceiver.ReceiveMessageAsync(
-                        TimeSpan.FromSeconds(receiveTimeoutInSeconds)).ConfigureAwait(false);
+                        ServiceBusHelper.GetModernReceiveWait(TimeSpan.FromSeconds(receiveTimeoutInSeconds))).ConfigureAwait(false);
 
                     if (message != null)
                     {

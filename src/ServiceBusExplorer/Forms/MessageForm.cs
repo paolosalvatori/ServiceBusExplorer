@@ -765,7 +765,10 @@ namespace ServiceBusExplorer.Forms
             }
             initialMessageText = txtMessageText.Text;
             if (ServiceBusReceivedMessageAdapter.HasStructuredBody(message))
+            {
+                originalBodyType = BodyType.Stream;
                 grouperMessageText.GroupTitle = "AMQP preview (editing sends UTF-8 Data)";
+            }
         }
 
         #endregion
