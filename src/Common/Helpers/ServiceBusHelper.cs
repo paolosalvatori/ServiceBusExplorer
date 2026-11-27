@@ -940,22 +940,11 @@ namespace ServiceBusExplorer
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsEmulator ? namespaceUri.Host : IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
-                // Event Hubs data-plane clients are created through Azure.Messaging.EventHubs.
-                if (IsEventHubNamespace || IsEmulator)
-                {
-                    MessagingFactory = null;
-                }
-                else if (isEntra)
-                {
-                    MessagingFactory = MessagingFactory.Create(namespaceUri, entraTokenProvider);
-                }
-                else
-                {
-                    MessagingFactory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
-                }
-                WriteToLogIf(traceEnabled, IsEmulator
-                    ? "Emulator management connected. Legacy data-plane operations are unavailable until migration stage 3."
-                    : MessageFactorySuccessfullyCreated);
+                // All application Service Bus data-plane entry points now create modern
+                // clients on demand. Retain the lazy legacy factory API for compatibility,
+                // but do not construct a legacy transport just to connect management.
+                MessagingFactory = null;
+                WriteToLogIf(traceEnabled, "Management connected. Messaging clients are created on demand.");
                 return true;
             });
             return func();
