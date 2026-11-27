@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -9,6 +11,9 @@ using System.Windows.Forms;
 using Azure.Messaging.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Forms;
+using ServiceBusExplorer.UIHelpers;
+using ServiceBusExplorer.UIHelpers.Theming;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using Xunit;
@@ -299,6 +304,178 @@ namespace ServiceBusExplorer.Tests.Helpers
                 await Task.CompletedTask;
             });
         }
+
+        [Theory]
+        [InlineData("queue")]
+        [InlineData("topic")]
+        public async Task NaturalSendRestartDiscardsPreviousClientsAndSendersAfterWorkersDrain(string kind)
+        {
+            var type = kind == "queue" ? typeof(TestQueueControl) : typeof(TestTopicControl);
+            // Supply the run state directly so the real restart/drain can be tested without a window or connection.
+            var panel = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
+            var main = (MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(MainForm));
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            void SetRunField(string name, object value) => type.GetField(name, flags).SetValue(panel, value);
+            var senders = new List<ServiceBusSender> { new Sender() };
+            var disposed = new List<string>();
+            var clients = new List<ServiceBusClient> { new Client(disposed) };
+            var worker = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            SetRunField("messageSenderCollection", senders);
+            SetRunField("senderClients", clients);
+            SetRunField("receiverClients", new List<ServiceBusClient>());
+            SetRunField("pendingOperations", new List<Task> { worker.Task });
+            SetRunField("controlHelper", new TestControlHelper(main, (_, __) => { }, null, null, null));
+
+            var restart = (Task<bool>)type.GetMethod("PrepareStartAsync", flags).Invoke(panel, null);
+            Assert.False(restart.IsCompleted);
+            Assert.Single(senders);
+            Assert.Empty(disposed);
+            worker.SetResult(true);
+            Assert.True(await restart);
+            Assert.Empty((List<ServiceBusSender>)type.GetField("messageSenderCollection", flags).GetValue(panel));
+            Assert.Empty(clients);
+            Assert.Equal(new[] { "client" }, disposed);
+        }
+
+        [Theory]
+        [InlineData("Queue")]
+        [InlineData("Topic")]
+        [InlineData("Subscription")]
+        public void ReplacingAnUnusedMainFormTestPanelKeepsTheSharedLogRunning(string kind)
+        {
+            RunUi(async (form, listener) =>
+            {
+                // Only supply the hosting and log fields; the configuration-loading constructor is unnecessary.
+                var main = (MainForm)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(MainForm));
+                var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                void SetMain(string name, object value) => typeof(MainForm).GetField(name, flags).SetValue(main, value);
+                using var host = new HeaderPanel();
+                form.Controls.Add(host);
+                ThemeManager.SetHostedBackground(host);
+                using var logCancellation = new CancellationTokenSource();
+                using var log = new BlockingCollection<string>();
+                SetMain("panelMain", host);
+                SetMain("panelLog", host);
+                SetMain("serviceBusHelper", new ServiceBusHelper((_, __) => { }));
+                SetMain("cancellationTokenSource", logCancellation);
+                SetMain("logCollection", log);
+                SetMain("logTask", Task.CompletedTask);
+                var topic = new TopicInfo("synthetic");
+                var sub = new SubscriptionInfo(topic.Path, "sub");
+                var args = kind == "Queue" ? new object[] { new QueueInfo("synthetic"), true }
+                    : kind == "Topic" ? new object[] { topic, new List<SubscriptionInfo> { sub }, true }
+                    : new object[] { new SubscriptionWrapper(sub, topic), true };
+                typeof(MainForm).GetMethod("Test" + kind, flags).Invoke(main, args);
+                var panel = Assert.IsAssignableFrom<UserControl>(Assert.Single(host.Controls));
+                Assert.Equal("Test" + kind + "Control", panel.GetType().Name);
+                var helper = (TestControlHelper)panel.GetType().GetField("controlHelper", flags).GetValue(panel);
+
+                ThemeManager.ReplaceHostedContent(host, () => new Panel(), null);
+                await (Task)panel.GetType().GetMethod("ShutdownAsync", flags).Invoke(panel, null);
+                Assert.True(panel.IsDisposed);
+                Assert.False(logCancellation.IsCancellationRequested);
+                Assert.Null(helper.StartLog);
+                helper.WriteToLog("still running");
+                Assert.Contains("still running", log);
+            });
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task BrowsedStateUsesTheSelectedReadAndIgnoresStaleResults(bool oldReadFails)
+        {
+            var text = "previous row";
+            var errors = new List<Exception>();
+            var view = new SessionStateView(value => text = value, errors.Add, () => true);
+            var first = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var next = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var old = view.ReadAsync(() => first.Task);
+            Assert.Equal(string.Empty, text);
+            var current = view.ReadAsync(() => next.Task);
+            await Task.Yield();
+            Assert.False(current.IsCompleted);
+
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes("selected row"));
+            next.SetResult(stream);
+            await current;
+            Assert.Equal("selected row", text);
+            Assert.False(stream.CanRead);
+            if (oldReadFails) first.SetException(new InvalidOperationException("stale failure"));
+            else first.SetResult(new MemoryStream(Encoding.UTF8.GetBytes("stale state")));
+            await old;
+            Assert.Equal("selected row", text);
+            Assert.Empty(errors);
+
+            var failure = new InvalidOperationException("current failure");
+            await view.ReadAsync(() => Task.FromException<Stream>(failure));
+            Assert.Same(failure, Assert.Single(errors));
+            Assert.Equal(string.Empty, text);
+            text = "clear on deselect";
+            await view.ShowAsync(null);
+            Assert.Equal(string.Empty, text);
+        }
+
+        [Fact]
+        public async Task ClosingStateViewDiscardsPendingReadAndDisposesItsStream()
+        {
+            var open = true;
+            var displayed = new List<string>();
+            var errors = new List<Exception>();
+            var view = new SessionStateView(displayed.Add, errors.Add, () => open);
+            var pending = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var read = view.ReadAsync(() => pending.Task);
+            open = false;
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes("closed row"));
+            pending.SetResult(stream);
+            await read;
+            Assert.False(stream.CanRead);
+            Assert.Equal(new[] { string.Empty }, displayed);
+            Assert.Empty(errors);
+        }
+
+        [Fact]
+        public async Task InspectorFailureReachesTheProcessorAndIsLoggedOnce()
+        {
+            var log = new List<string>();
+            var listener = CallbackListener(log);
+            Set(listener, "receiverBrokeredMessageInspector", new FailedInspector());
+            var completed = false;
+            var failure = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                listener.ProcessReceivedMessageAsync(Message(), () => { completed = true; return Task.CompletedTask; },
+                    CancellationToken.None, true));
+            Assert.False(completed);
+            Assert.Empty(log);
+            await listener.OnProcessorErrorAsync(ProcessorError(failure, CancellationToken.None));
+            Assert.Equal("Exception: inspector failed", Assert.Single(log));
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ProcessorCancellationIsSilentOnlyDuringStop(bool stopping)
+        {
+            var log = new List<string>();
+            var listener = CallbackListener(log);
+            await listener.OnProcessorErrorAsync(ProcessorError(
+                new OperationCanceledException("operation cancelled"), new CancellationToken(stopping)));
+            if (stopping) Assert.Empty(log);
+            else Assert.Equal("Exception: operation cancelled", Assert.Single(log));
+        }
+
+        private static ListenerControl CallbackListener(List<string> log)
+        {
+            // These callback paths use only the inspector and logger, so they need no native window.
+            var listener = (ListenerControl)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(ListenerControl));
+            Set(listener, "writeToLog", new WriteToLogDelegate((entry, _) => log.Add(entry)));
+            return listener;
+        }
+
+        private static ProcessErrorEventArgs ProcessorError(Exception failure, CancellationToken token) =>
+            new ProcessErrorEventArgs(failure, ServiceBusErrorSource.ProcessMessageCallback,
+                "namespace.example", "queue", "processor", token);
+
+        private sealed class Sender : ServiceBusSender { }
 
         private static Control CreateManualControl(string kind)
         {

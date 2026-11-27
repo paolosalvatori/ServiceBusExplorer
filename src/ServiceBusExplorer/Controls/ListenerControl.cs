@@ -1241,12 +1241,6 @@ namespace ServiceBusExplorer.Controls
                     sessionMessageCounts.AddOrUpdate(message.SessionId, 1, (_, count) => count + 1);
                 }
             }
-            catch (Exception ex)
-            {
-                // Returning successfully lets an auto-completing processor acknowledge the message.
-                try { HandleException(ex); } catch { }
-                throw;
-            }
             finally
             {
                 if (!ReferenceEquals(message, adaptedMessage))
@@ -1257,9 +1251,10 @@ namespace ServiceBusExplorer.Controls
             }
         }
 
-        private Task OnProcessorErrorAsync(ProcessErrorEventArgs args)
+        internal Task OnProcessorErrorAsync(ProcessErrorEventArgs args)
         {
-            if (args.Exception != null && !(args.Exception is OperationCanceledException))
+            if (args.Exception != null &&
+                !(args.Exception is OperationCanceledException && args.CancellationToken.IsCancellationRequested))
             {
                 HandleException(args.Exception);
             }

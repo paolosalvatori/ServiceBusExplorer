@@ -11,6 +11,41 @@ namespace ServiceBusExplorer.Tests.Helpers
 {
     public class SessionReadinessTests
     {
+        [Theory]
+        [InlineData("empty", false, int.MaxValue, null)]
+        [InlineData("whitespace", false, int.MaxValue, "subscription")]
+        [InlineData("whitespace", true, 5, null)]
+        [InlineData("whitespace", true, 0, "subscription")]
+        [InlineData("too-long", false, 1, null)]
+        public void InvalidExplicitSessionIsRejectedBeforeAnyClientIsCreated(string kind, bool peek, int count, string subscription)
+        {
+            var sessionId = kind == "empty" ? string.Empty : kind == "too-long" ? new string('a', 129) : " \t\u2003";
+            var helper = new Helper(new Client());
+            var error = Assert.Throws<ArgumentException>(() => helper.GetMessagesFromModernSessionDataPlane(
+                "entity", subscription, sessionId, peek, count, null, TimeSpan.Zero, null));
+
+            Assert.Equal("sessionId", error.ParamName);
+            Assert.Equal(0, helper.ClientCreations);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void NamedSessionIsPassedToTheReceiverUnchanged(bool maximumLength)
+        {
+            var sessionId = maximumLength ? new string('a', 128) : " selected ";
+            var client = new Client();
+            var rows = new Helper(client).GetMessagesFromModernSessionDataPlane(
+                "queue", null, sessionId, false, int.MaxValue, null, TimeSpan.FromSeconds(1), null);
+            try
+            {
+                Assert.Single(rows);
+                Assert.Equal(sessionId, client.SelectedId);
+                Assert.Equal(1, client.Accepts);
+            }
+            finally { rows.ForEach(row => row.Dispose()); }
+        }
+
         [Fact]
         public void EntityWidePeekNeverAcceptsOrLocksASession()
         {
@@ -349,7 +384,12 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             private readonly ServiceBusClient client;
             public Helper(ServiceBusClient client) : base((_, __) => { }) { this.client = client; }
-            public override ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false) => client;
+            public int ClientCreations { get; private set; }
+            public override ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+            {
+                ClientCreations++;
+                return client;
+            }
         }
         private static void AssertReceivedHeaders(Microsoft.ServiceBus.Messaging.BrokeredMessage message)
         {
@@ -388,6 +428,7 @@ namespace ServiceBusExplorer.Tests.Helpers
         private class Client : ServiceBusClient
         {
             public int Accepts, Peeks;
+            public string SelectedId;
             public bool Disposed;
             public List<Session> Sessions = new List<Session>();
             public override ServiceBusReceiver CreateReceiver(string queueName, ServiceBusReceiverOptions options = null) { Peeks++; return new PeekReceiver(); }
@@ -396,7 +437,11 @@ namespace ServiceBusExplorer.Tests.Helpers
                 if (++Accepts > 2) throw new ServiceBusException("No sessions", ServiceBusFailureReason.ServiceTimeout);
                 var session = new Session(Accepts); Sessions.Add(session); return Task.FromResult<ServiceBusSessionReceiver>(session);
             }
-            public override Task<ServiceBusSessionReceiver> AcceptSessionAsync(string queueName, string sessionId, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default) => AcceptNextSessionAsync(queueName, options, cancellationToken);
+            public override Task<ServiceBusSessionReceiver> AcceptSessionAsync(string queueName, string sessionId, ServiceBusSessionReceiverOptions options = null, CancellationToken cancellationToken = default)
+            {
+                SelectedId = sessionId;
+                return AcceptNextSessionAsync(queueName, options, cancellationToken);
+            }
             public override ValueTask DisposeAsync() { Disposed = true; return default; }
         }
     }

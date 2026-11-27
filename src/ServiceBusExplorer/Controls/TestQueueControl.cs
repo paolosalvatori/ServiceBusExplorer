@@ -1397,6 +1397,7 @@ namespace ServiceBusExplorer.Controls
             try { await WorkerOperationDrain.DrainAsync(pendingOperations.ToArray()); }
             catch (Exception ex) { try { HandleException(ex); } catch { } }
             pendingOperations.Clear();
+            messageSenderCollection?.Clear();
 
             foreach (var client in senderClients)
             {

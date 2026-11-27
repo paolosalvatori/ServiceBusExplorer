@@ -2646,7 +2646,7 @@ namespace ServiceBusExplorer
                     if (senderThinkTime && more && !cancellationTokenSource.IsCancellationRequested)
                     {
                         WriteToLog(string.Format(SleepingFor, thinkTime));
-                        Thread.Sleep(thinkTime);
+                        cancellationTokenSource.Token.WaitHandle.WaitOne(thinkTime);
                     }
                 }
             }
@@ -3468,7 +3468,7 @@ namespace ServiceBusExplorer
                     if (receiverThinkTime && !completed && !cancellationTokenSource.IsCancellationRequested)
                     {
                         WriteToLog(string.Format(SleepingFor, thinkTime));
-                        Thread.Sleep(thinkTime);
+                        cancellationTokenSource.Token.WaitHandle.WaitOne(thinkTime);
                     }
                 }
             }
@@ -4653,54 +4653,6 @@ namespace ServiceBusExplorer
             return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
         }
 
-        public virtual async Task<byte[]> GetSessionStateFromModernDataPlane(
-            string entityPath,
-            string subscriptionName,
-            string sessionId,
-            CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(entityPath))
-            {
-                throw new ArgumentException("An entity path is required.", nameof(entityPath));
-            }
-            if (string.IsNullOrWhiteSpace(sessionId))
-            {
-                throw new ArgumentException("A session identifier is required.", nameof(sessionId));
-            }
-
-            var client = CreateServiceBusClient();
-            ServiceBusSessionReceiver receiver = null;
-            try
-            {
-                var options = new ServiceBusSessionReceiverOptions
-                {
-                    ReceiveMode = ServiceBusReceiveMode.PeekLock
-                };
-                receiver = string.IsNullOrWhiteSpace(subscriptionName)
-                    ? await client.AcceptSessionAsync(entityPath, sessionId, options, cancellationToken)
-                        .ConfigureAwait(false)
-                    : await client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, cancellationToken)
-                        .ConfigureAwait(false);
-
-                var state = await receiver.GetSessionStateAsync(cancellationToken).ConfigureAwait(false);
-                return state?.ToArray();
-            }
-            finally
-            {
-                try
-                {
-                    if (receiver != null)
-                    {
-                        await receiver.DisposeAsync().ConfigureAwait(false);
-                    }
-                }
-                finally
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
-            }
-        }
-
         public ServiceBusSessionReceiver AcceptNextSessionFromModernDataPlane(
             ServiceBusClient client,
             string entityPath,
@@ -4751,6 +4703,14 @@ namespace ServiceBusExplorer
             }
         }
 
+        public static void ValidateSessionSelector(string sessionId)
+        {
+            if (sessionId != null && (string.IsNullOrWhiteSpace(sessionId) || sessionId.Length > 128))
+            {
+                throw new ArgumentException("A session ID must contain a non-whitespace character and be at most 128 characters long.", nameof(sessionId));
+            }
+        }
+
         public List<BrokeredMessage> GetMessagesFromModernSessionDataPlane(
             string entityPath,
             string subscriptionName,
@@ -4765,6 +4725,7 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentException("An entity path is required.", nameof(entityPath));
             }
+            ValidateSessionSelector(sessionId);
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
@@ -4774,7 +4735,7 @@ namespace ServiceBusExplorer
                 return new List<BrokeredMessage>();
             }
 
-            if (peek && string.IsNullOrWhiteSpace(sessionId))
+            if (peek && sessionId == null)
                 return GetMessagesFromModernDataPlane(entityPath, subscriptionName, SubQueue.None,
                     true, count, fromSequenceNumber, receiveTimeout, messageInspector);
 
@@ -4797,7 +4758,7 @@ namespace ServiceBusExplorer
                         {
                             try
                             {
-                                receiver = string.IsNullOrWhiteSpace(sessionId)
+                                receiver = sessionId == null
                                     ? (string.IsNullOrWhiteSpace(subscriptionName)
                                         ? client.AcceptNextSessionAsync(entityPath, options, acceptCancellation.Token)
                                         : client.AcceptNextSessionAsync(entityPath, subscriptionName, options, acceptCancellation.Token)).GetAwaiter().GetResult()
@@ -4811,7 +4772,7 @@ namespace ServiceBusExplorer
                         var batch = ReadMessagesFromModernReceiver(receiver, peek, count - messages.Count,
                             fromSequenceNumber, receiveTimeout, messageInspector, message => messages.Add(message));
                         // A selected session is read once; avoid repeatedly accepting an empty session.
-                        if (!string.IsNullOrWhiteSpace(sessionId) || peek || batch.Count == 0) break;
+                        if (sessionId != null || peek || batch.Count == 0) break;
                     }
                     catch (Exception ex) { failure = ex; }
                     finally

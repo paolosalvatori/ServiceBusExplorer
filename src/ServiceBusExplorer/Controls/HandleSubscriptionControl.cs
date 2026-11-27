@@ -43,7 +43,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -212,6 +211,8 @@ namespace ServiceBusExplorer.Controls
         {
             this.writeToLog = writeToLog;
             this.serviceBusHelper = serviceBusHelper;
+            sessionStateView = new SessionStateView(text => txtSessionState.Text = text, HandleException,
+                () => !IsDisposed && !Disposing);
             this.subscriptionWrapper = subscriptionWrapper;
             this.duplicateExistingSubscription = duplicateExistingSubscription;
 
@@ -1749,55 +1750,15 @@ namespace ServiceBusExplorer.Controls
         {
         }
 
-        private int sessionStateRequest;
+        private readonly SessionStateView sessionStateView;
 
         private async void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var request = ++sessionStateRequest;
-            txtSessionState.Text = string.Empty;
-            var bindingList = sessionsBindingSource.DataSource as BindingList<MessageSession>;
-            if (bindingList == null || e.RowIndex < 0 || e.RowIndex >= bindingList.Count)
-            {
-                return;
-            }
-            var messageSession = bindingList[e.RowIndex];
-            sessionPropertyGrid.SelectedObject = messageSession;
-            try
-            {
-                byte[] sessionState;
-                using (var cancellationTokenSource = new CancellationTokenSource(
-                    TimeSpan.FromSeconds(MainForm.SingletonMainForm.ReceiveTimeout)))
-                {
-                    sessionState = await serviceBusHelper.GetSessionStateFromModernDataPlane(
-                        subscriptionWrapper.SubscriptionDescription.TopicPath,
-                        subscriptionWrapper.SubscriptionDescription.Name,
-                        messageSession.SessionId,
-                        cancellationTokenSource.Token);
-                }
-                if (!IsDisposed && request == sessionStateRequest)
-                {
-                    using (var stream = sessionState == null
-                        ? null
-                        : new MemoryStream(sessionState))
-                    {
-                        if (stream == null)
-                        {
-                            txtSessionState.Text = string.Empty;
-                        }
-                        else
-                        {
-                            using (var reader = new StreamReader(stream))
-                            {
-                                txtSessionState.Text = reader.ReadToEnd();
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!IsDisposed && request == sessionStateRequest) HandleException(ex);
-            }
+            var sessions = sessionsBindingSource.DataSource as BindingList<MessageSession>;
+            var selected = sessions != null && e.RowIndex >= 0 && e.RowIndex < sessions.Count ? sessions[e.RowIndex] : null;
+            var read = sessionStateView.ShowAsync(selected);
+            sessionPropertyGrid.SelectedObject = selected;
+            await read;
         }
 
         private void grouperMessageList_CustomPaint(PaintEventArgs e)
