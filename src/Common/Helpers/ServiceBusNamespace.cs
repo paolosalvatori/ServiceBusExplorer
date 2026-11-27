@@ -287,7 +287,7 @@ namespace ServiceBusExplorer.Helpers
                 return null;
             }
 
-            var isUserCreated = !(key == "CustomConnectionString" || key == "SASConnectionString");
+            var isUserCreated = IsUserCreatedKey(key);
             var toLower = connectionString.ToLower();
 
             var parameters = connectionString.Split([';'], StringSplitOptions.RemoveEmptyEntries)
@@ -326,6 +326,39 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return null;
+        }
+
+        public static bool IsUserCreatedKey(string key) =>
+            key != "CustomConnectionString" && key != "SASConnectionString";
+
+        public static ServiceBusConnectionStringBuilder CreateLegacyConnectionStringBuilder(string connectionString)
+        {
+            // The legacy SDK reads the transport enum case-sensitively and includes a terminal
+            // delimiter in the preceding value. Adapt its input without changing the saved profile.
+            var parts = connectionString.Split(';');
+            var last = Array.FindLastIndex(parts, part => !string.IsNullOrWhiteSpace(part));
+            var count = parts.Length;
+            for (var i = 0; i <= last; i++)
+            {
+                var separator = parts[i].IndexOf('=');
+                if (separator <= 0 || !string.Equals(parts[i].Substring(0, separator).Trim(),
+                        ConnectionStringTransportType, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                var value = parts[i].Substring(separator + 1).Trim();
+                if (!Enum.TryParse<TransportType>(value, true, out var transport) ||
+                    !Enum.IsDefined(typeof(TransportType), transport))
+                {
+                    throw new ArgumentException("The Service Bus transport type is invalid.");
+                }
+                parts[i] = "TransportType=" + transport;
+                if (i == last)
+                {
+                    count = last + 1;
+                }
+            }
+            return new ServiceBusConnectionStringBuilder(string.Join(";", parts, 0, count));
         }
 
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
@@ -654,21 +687,20 @@ namespace ServiceBusExplorer.Helpers
 
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);           
 
-            if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || 
-                string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
+            if (!parameters.TryGetValue(ConnectionStringSharedAccessKeyName, out var sharedAccessKeyName) ||
+                string.IsNullOrWhiteSpace(sharedAccessKeyName))
             {
                 staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
+                return null;
             }
 
-            var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
-
-            if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
+            if (!parameters.TryGetValue(ConnectionStringSharedAccessKey, out var sharedAccessKey) ||
+                string.IsNullOrWhiteSpace(sharedAccessKey))
             {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
-                    ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+                return null;
             }
 
-            var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
             var settings = new MessagingFactorySettings();
             var transportType = settings.TransportType;
 

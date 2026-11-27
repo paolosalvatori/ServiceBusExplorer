@@ -61,7 +61,6 @@ namespace ServiceBusExplorer
     using System.IO.Compression;
     using System.Web.UI.WebControls;
     using Abstractions;
-    using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
     {
@@ -432,22 +431,11 @@ namespace ServiceBusExplorer
             }
         }
 
-        private string ConnectionStringWithoutEntityPath
+        private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return null;
-                }
-
-                var builder = new ServiceBusConnectionStringBuilder(connectionString)
-                {
-                    EntityPath = string.Empty
-                };
-
-                return builder.ToString();
-            }
+            var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            builder.EntityPath = string.Empty;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -650,7 +638,7 @@ namespace ServiceBusExplorer
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
-                factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                factory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
             }
             else
             {
@@ -753,6 +741,9 @@ namespace ServiceBusExplorer
             {
                 throw new ArgumentException(ServiceBusConnectionStringCannotBeNull);
             }
+
+            if (!isEntra && !serviceBusNamespace.UseDevelopmentEmulator)
+                GetConnectionStringWithoutEntityPath(serviceBusNamespace.ConnectionString);
 
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
@@ -896,7 +887,7 @@ namespace ServiceBusExplorer
                 {
                     IsEventHubNamespace = false;
                     entraTokenProvider = null;
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
 
                 // Set retry count
@@ -958,7 +949,7 @@ namespace ServiceBusExplorer
                 }
                 else
                 {
-                    MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                    MessagingFactory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
                 WriteToLogIf(traceEnabled, IsEmulator
                     ? "Emulator management connected. Legacy data-plane operations are unavailable until migration stage 3."
@@ -4090,6 +4081,7 @@ namespace ServiceBusExplorer
                     }
                 }
             }
+            serviceBusHelper2.AdministrationClient = managementClient?.Client;
             if (serviceBusNamespaceInstance != null && !serviceBusNamespaceInstance.IsEntra)
                 serviceBusHelper2.AdministrationConnectionString = GetAdministrationConnectionString(serviceBusNamespaceInstance);
             serviceBusHelper2.TransportType = !IsEmulator && UseAmqpWebSockets
@@ -4522,6 +4514,8 @@ namespace ServiceBusExplorer
             }
             var parts = serviceBusNamespace.ConnectionString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             var retained = new List<string>();
+            UriBuilder endpoint = null;
+            int? managementPort = null;
             foreach (var part in parts)
             {
                 var separator = part.IndexOf('=');
@@ -4530,35 +4524,56 @@ namespace ServiceBusExplorer
                     throw new FormatException("Invalid Service Bus connection string setting.");
                 }
                 var key = part.Substring(0, separator).Trim();
-                if (new[] { "TransportType", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
+                if (new[] { "TransportType", "RuntimePort", "EntityPath", "AuthMode", "TenantId" }.Contains(key, StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }
-                if (serviceBusNamespace.UseDevelopmentEmulator && key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
+                var value = part.Substring(separator + 1).Trim();
+                if (key.Equals("Endpoint", StringComparison.OrdinalIgnoreCase))
                 {
-                    var endpoint = new UriBuilder(part.Substring(separator + 1).Trim());
-                    if (endpoint.Port == -1 || endpoint.Port == 5672)
-                    {
-                        endpoint.Port = 5300;
-                    }
-                    retained.Add("Endpoint=" + endpoint.Uri.AbsoluteUri);
+                    endpoint = new UriBuilder(value);
+                }
+                else if (key.Equals("ManagementPort", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var port) || port < 1 || port > 65535)
+                        throw new FormatException("ManagementPort must be between 1 and 65535.");
+                    managementPort = port;
                 }
                 else
                 {
-                    retained.Add(key + "=" + part.Substring(separator + 1).Trim());
+                    retained.Add(key + "=" + value);
                 }
             }
+
+            if (endpoint == null) throw new FormatException("A Service Bus endpoint is required.");
+            // An Azure messaging endpoint may name the AMQP listener. Administration uses HTTPS.
+            var defaultPort = serviceBusNamespace.UseDevelopmentEmulator
+                ? (endpoint.Port == -1 || endpoint.Port == 5672 ? 5300 : endpoint.Port)
+                : -1;
+            endpoint.Port = managementPort ?? defaultPort;
+            retained.Insert(0, "Endpoint=" + endpoint.Uri.AbsoluteUri);
             return string.Join(";", retained);
         }
 
-        private static ServiceBusAdministrationClient CreateAdministrationClient(ServiceBusNamespace serviceBusNamespace,
+        internal static ServiceBusAdministrationClient CreateAdministrationClient(ServiceBusNamespace serviceBusNamespace,
             ServiceBusAdministrationClientOptions options)
         {
             if (serviceBusNamespace.ConnectionStringType == ServiceBusNamespaceType.OnPremises)
             {
                 throw new NotSupportedException("Azure.Messaging.ServiceBus administration does not support on-premises Service Bus Server (Windows/STS authentication). Use the previous release for this environment.");
             }
-            return new ServiceBusAdministrationClient(GetAdministrationConnectionString(serviceBusNamespace), options);
+            var connection = GetAdministrationConnectionString(serviceBusNamespace);
+            if (serviceBusNamespace.UseDevelopmentEmulator || string.IsNullOrEmpty(serviceBusNamespace.EntityPath))
+                return new ServiceBusAdministrationClient(connection, options);
+
+            var endpoint = Azure.Messaging.ServiceBus.ServiceBusConnectionStringProperties.Parse(connection).Endpoint;
+            var audience = new UriBuilder(endpoint) { Scheme = Uri.UriSchemeHttps, Port = -1, Path = serviceBusNamespace.EntityPath }.Uri;
+            if (!string.Equals(audience.GetComponents(UriComponents.Path, UriFormat.Unescaped), serviceBusNamespace.EntityPath, StringComparison.Ordinal))
+                throw new ArgumentException("EntityPath must identify a relative Service Bus entity.", nameof(serviceBusNamespace));
+            var keyName = serviceBusNamespace.SharedAccessKeyName;
+            var key = serviceBusNamespace.SharedAccessKey;
+            return EntityScopedSasPolicy.CreateClient(endpoint, options, () =>
+                SharedAccessSignatureTokenProvider.GetSharedAccessSignature(keyName, key, audience.AbsoluteUri, TimeSpan.FromHours(1)));
         }
 
         private static Encoding GetEncoding()

@@ -41,6 +41,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         // Keep the original scope available to management-only UI probes.
         public string ProfileEntityPath { get; set; }
         public Uri DataPlaneEndpoint { get; set; }
+        public ServiceBusAdministrationClient AdministrationClient { get; set; }
         public string DataPlaneUnavailableReason { get; set; }
         public ServiceBusTransportType TransportType { get; set; }
 
@@ -116,6 +117,7 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         /// </summary>
         public virtual ServiceBusAdministrationClient CreateAdministrationClient()
         {
+            if (AdministrationClient != null) return AdministrationClient;
             return IsEntra
                 ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
                 : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);

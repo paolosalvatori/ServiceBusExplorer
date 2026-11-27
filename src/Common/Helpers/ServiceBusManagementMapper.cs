@@ -517,27 +517,11 @@ namespace ServiceBusExplorer.Helpers
 
         private static Legacy.EntityStatus ToLegacyStatus(Admin.EntityStatus status)
         {
-            if (status == Admin.EntityStatus.Active)
-            {
-                return Legacy.EntityStatus.Active;
-            }
-
-            if (status == Admin.EntityStatus.Disabled)
-            {
-                return Legacy.EntityStatus.Disabled;
-            }
-
-            if (status == Admin.EntityStatus.SendDisabled)
-            {
-                return Legacy.EntityStatus.SendDisabled;
-            }
-
-            if (status == Admin.EntityStatus.ReceiveDisabled)
-            {
-                return Legacy.EntityStatus.ReceiveDisabled;
-            }
-
-            throw Unsupported("Entity status " + status);
+            // The service can return more states than the four an operator may write.
+            var name = status.ToString();
+            return Enum.TryParse(name, true, out Legacy.EntityStatus result) &&
+                string.Equals(Enum.GetName(typeof(Legacy.EntityStatus), result), name, StringComparison.OrdinalIgnoreCase)
+                ? result : Legacy.EntityStatus.Unknown;
         }
 
         private static Admin.RuleFilter ToAdminFilter(Legacy.Filter filter)

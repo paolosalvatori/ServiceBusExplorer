@@ -18,8 +18,6 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string TopicRenamed = "The topic {0} has been successfully renamed to {1}.";
         private const string TopicUpdated = "The topic {0} has been successfully updated.";
 
-        private readonly string servicePath = string.Empty;
-
         public ServiceBusTopic(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager)
             : base(serviceBusNamespace, namespaceManager.Address)
         {
@@ -94,20 +92,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <returns>The absolute uri of the topic.</returns>
         public Uri GetTopicUri(string topicPath)
         {
-            if (IsCloudNamespace())
-            {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, topicPath));
-            }
-            else
-            {
-                var uriBuilder = new UriBuilder
-                {
-                    Host = ManagementClient.Address.Host,
-                    Path = $"{ManagementClient.Address.AbsolutePath}/{topicPath}",
-                    Scheme = "sb",
-                };
-                return uriBuilder.Uri;
-            }
+            return GetEntityUri(topicPath);
         }
 
         /// <summary>

@@ -18,8 +18,6 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string QueueRenamed = "The queue {0} has been successfully renamed to {1}.";
         private const string QueueUpdated = "The queue {0} has been successfully updated.";
      
-        private readonly string servicePath = string.Empty;      
-
         public ServiceBusQueue(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager)
             : base(serviceBusNamespace, namespaceManager.Address)
         {
@@ -92,20 +90,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <returns>The absolute uri of the queue.</returns>
         public Uri GetQueueUri(string queuePath)
         {
-            if (IsCloudNamespace())
-            {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, queuePath));
-            }
-            else
-            {
-                var uriBuilder = new UriBuilder
-                {
-                    Host = ManagementClient.Address.Host,
-                    Path = $"{ManagementClient.Address.AbsolutePath}/{queuePath}",
-                    Scheme = "sb",
-                };
-                return uriBuilder.Uri;
-            }
+            return GetEntityUri(queuePath);
         }
 
         /// <summary>
@@ -115,20 +100,7 @@ namespace ServiceBusExplorer.WindowsAzure
         /// <returns>the absolute uri of the deadletter queue.</returns>
         public Uri GetQueueDeadLetterQueueUri(string queuePath)
         {
-            if (IsCloudNamespace())
-            {
-                return Microsoft.ServiceBus.ServiceBusEnvironment.CreateServiceUri(Scheme, Namespace, string.Concat(servicePath, QueueClient.FormatDeadLetterPath(queuePath)));
-            }
-            else
-            {
-                var uriBuilder = new UriBuilder
-                {
-                    Host = ManagementClient.Address.Host,
-                    Path = $"{ManagementClient.Address.AbsolutePath}/{QueueClient.FormatDeadLetterPath(queuePath)}",
-                    Scheme = "sb",
-                };
-                return uriBuilder.Uri;
-            }
+            return GetEntityUri(QueueClient.FormatDeadLetterPath(queuePath));
         }
 
         /// <summary>

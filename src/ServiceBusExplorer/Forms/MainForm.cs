@@ -336,8 +336,7 @@ namespace ServiceBusExplorer.Forms
             savedConnectionsToolStripMenuItem.DropDown.Closed += SavedConnectionsDropDown_Closed;
             configFileUse = TwoFilesConfiguration.GetCurrentConfigFileUse();
 
-            GetServiceBusNamespacesFromConfiguration();
-            GetServiceBusNamespaceFromEnvironmentVariable();
+            LoadSavedConnections(EnvironmentConnectionString);
             GetBrokeredMessageInspectorsFromConfiguration();
             GetEventDataInspectorsFromConfiguration();
             GetBrokeredMessageGeneratorsFromConfiguration();
@@ -345,7 +344,6 @@ namespace ServiceBusExplorer.Forms
             GetServiceBusNamespaceSettingsFromConfiguration();
             ThemeManager.RegisterComponents(components);
             ReadEventHubPartitionCheckpointFile();
-            UpdateSavedConnectionsMenu();
             DisplayNewVersionInformation();
             InitializeDashboard();
 
@@ -820,12 +818,7 @@ namespace ServiceBusExplorer.Forms
 
                 if (lastConfigFileUse != configFileUse)
                 {
-                    // Refresh the ServiceBus namespaces
-                    GetServiceBusNamespacesFromConfiguration();
-                    GetServiceBusNamespaceFromEnvironmentVariable();
-
-                    // Then update the shortcut menus
-                    UpdateSavedConnectionsMenu();
+                    LoadSavedConnections(EnvironmentConnectionString);
                 }
 
                 lstLog.Font = new Font(lstLog.Font.FontFamily, (float)optionForm.MainSettings.LogFontSize);
@@ -4107,14 +4100,22 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void GetServiceBusNamespaceFromEnvironmentVariable()
+        private static string EnvironmentConnectionString =>
+            Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
+
+        internal void LoadSavedConnections(string environmentConnectionString)
         {
-            var connectionString = Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
-            if (!string.IsNullOrWhiteSpace(connectionString))
+            GetServiceBusNamespacesFromConfiguration();
+            if (!string.IsNullOrWhiteSpace(environmentConnectionString))
             {
                 const string key = @"HKEY_CURRENT_USER\Environment connection string";
-                serviceBusHelper.ServiceBusNamespaces.Add(key, ServiceBusNamespace.GetServiceBusNamespace(key, connectionString, StaticWriteToLog));
+                var profile = ServiceBusNamespace.GetServiceBusNamespace(key, environmentConnectionString, WriteToLog);
+                if (profile != null)
+                {
+                    serviceBusHelper.ServiceBusNamespaces[key] = profile;
+                }
             }
+            UpdateSavedConnectionsMenu();
         }
 
         private void GetBrokeredMessageInspectorsFromConfiguration()
@@ -4868,7 +4869,7 @@ namespace ServiceBusExplorer.Forms
                                     HandleNodeMouseClick(eventHubListNode);
                                 }
                             }
-                            catch (Exception ex) when (FilterOutException(ex))
+                            catch (Exception ex) when (IsEntityCategoryFailure(ex))
                             {
                                 if (ex is AggregateException)
                                 {
@@ -4911,7 +4912,7 @@ namespace ServiceBusExplorer.Forms
                                     // This is where we end up if there are no Notification Hubs in the namespace
                                     serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
-                                catch (Exception ex) when (FilterOutException(ex))
+                                catch (Exception ex) when (IsEntityCategoryFailure(ex))
                                 {
                                     if (ex is AggregateException)
                                     {
@@ -4955,7 +4956,7 @@ namespace ServiceBusExplorer.Forms
                                     HandleNodeMouseClick(relayServiceListNode);
                                 }
                             }
-                            catch (Exception ex) when (FilterOutException(ex))
+                            catch (Exception ex) when (IsEntityCategoryFailure(ex))
                             {
                                 if (ex is AggregateException)
                                 {
@@ -5002,7 +5003,7 @@ namespace ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(queueListNode);
                             }
                         }
-                        catch (Exception ex) when (FilterOutException(ex))
+                        catch (Exception ex) when (IsEntityCategoryFailure(ex))
                         {
                             if (ex is AggregateException)
                             {
@@ -5048,7 +5049,7 @@ namespace ServiceBusExplorer.Forms
                                 HandleNodeMouseClick(topicListNode);
                             }
                         }
-                        catch (Exception ex) when (FilterOutException(ex))
+                        catch (Exception ex) when (IsEntityCategoryFailure(ex))
                         {
                             if (ex is AggregateException)
                             {
@@ -5091,15 +5092,21 @@ namespace ServiceBusExplorer.Forms
                 Cursor.Current = Cursors.Default;
             }
 
-            bool FilterOutException(Exception ex)
-            {
-                if (ex is AggregateException && ((AggregateException)ex).InnerExceptions.Count == 1)
-                {
-                    ex = ((AggregateException)ex).InnerExceptions.First();
-                }
-                if (EntraCredentialFactory.IsTokenAcquisitionFailure(ex)) return false;
-                return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException || ex is MessagingException || ex is TimeoutException;
-            }
+        }
+
+        internal static bool IsEntityCategoryFailure(Exception ex)
+        {
+            if (ex is AggregateException aggregate)
+                return aggregate.InnerExceptions.Count > 0 && aggregate.InnerExceptions.All(IsEntityCategoryFailure);
+            if (EntraCredentialFactory.IsTokenAcquisitionFailure(ex)) return false;
+            if (ex is TimeoutException) return true;
+            for (var cause = ex; cause != null; cause = cause.InnerException)
+                if (cause is OperationCanceledException) return false;
+
+            return ex is ArgumentException || ex is WebException || ex is UnauthorizedAccessException ||
+                ex is MessagingException || ex is Azure.Messaging.ServiceBus.ServiceBusException ||
+                ex is Azure.RequestFailedException || ex is NotSupportedException ||
+                (ex is InvalidOperationException && ex.InnerException is Azure.RequestFailedException);
         }
 
         private void ResetEventGridConnection()
