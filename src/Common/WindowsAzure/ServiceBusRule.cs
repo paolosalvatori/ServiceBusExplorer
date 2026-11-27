@@ -136,10 +136,8 @@ namespace ServiceBusExplorer.WindowsAzure
         {
             if (messagingFactory == null || messagingFactory.IsClosed)
             {
-                var builder = new ServiceBusConnectionStringBuilder(ServiceBusNamespace.ConnectionString)
-                {
-                    EntityPath = string.Empty
-                };
+                var builder = Helpers.ServiceBusNamespace.CreateLegacyConnectionStringBuilder(ServiceBusNamespace.ConnectionString);
+                builder.EntityPath = string.Empty;
                 messagingFactory = MessagingFactory.CreateFromConnectionString(builder.ToString());
             }
 

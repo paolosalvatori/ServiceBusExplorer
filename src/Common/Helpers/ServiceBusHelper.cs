@@ -57,7 +57,6 @@ namespace ServiceBusExplorer
     using System.IO.Compression;
     using System.Web.UI.WebControls;
     using Abstractions;
-    using ServiceBusConnectionStringBuilder = Microsoft.ServiceBus.ServiceBusConnectionStringBuilder;
 
     public enum BodyType
     {
@@ -423,22 +422,11 @@ namespace ServiceBusExplorer
             }
         }
 
-        private string ConnectionStringWithoutEntityPath
+        private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return null;
-                }
-
-                var builder = new ServiceBusConnectionStringBuilder(connectionString)
-                {
-                    EntityPath = string.Empty
-                };
-
-                return builder.ToString();
-            }
+            var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            builder.EntityPath = string.Empty;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -637,7 +625,7 @@ namespace ServiceBusExplorer
             }
             else if (!string.IsNullOrEmpty(ConnectionString))
             {
-                factory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
+                factory = MessagingFactory.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
             }
             else
             {
@@ -747,6 +735,7 @@ namespace ServiceBusExplorer
                 throw new NotSupportedException(ServiceBusEmulatorNotYetSupported);
             }
 
+            var legacyConnection = isEntra ? null : GetConnectionStringWithoutEntityPath(serviceBusNamespace.ConnectionString);
             if (!TestNamespaceHostIsContactable(serviceBusNamespace))
             {
                 var endpoint = isEntra ? serviceBusNamespace.Uri : serviceBusNamespace.ConnectionString;
@@ -755,29 +744,33 @@ namespace ServiceBusExplorer
 
             var func = (() =>
             {
-                if (isEntra)
+                var (manager, provider, eventHub) = isEntra
+                    ? ConnectEntra(serviceBusNamespace)
+                    : (Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(legacyConnection), (TokenProvider)null, false);
+
+                if (manager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
                 {
-                    // Commit the candidate only after the management probe and its sign-in succeed.
-                    (namespaceManager, entraTokenProvider, IsEventHubNamespace) = ConnectEntra(serviceBusNamespace);
+                    manager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
+                                                                                             defaultServiceBusRetryExponential.MaximumBackoff,
+                                                                                             RetryHelper.RetryCount);
                 }
+
+                // Finish SDK validation and sign-in before replacing any part of the active connection.
+                MessagingFactory factory = null;
+                if (!eventHub)
+                {
+                    factory = isEntra ? MessagingFactory.Create(manager.Address, provider)
+                                      : MessagingFactory.CreateFromConnectionString(legacyConnection);
+                }
+                namespaceManager = manager;
+                entraTokenProvider = provider;
+                IsEventHubNamespace = eventHub;
                 serviceBusNamespaceInstance = serviceBusNamespace;
                 connectionString = serviceBusNamespace.ConnectionString;
                 currentSharedAccessKey = serviceBusNamespace.SharedAccessKey;
                 currentSharedAccessKeyName = serviceBusNamespace.SharedAccessKeyName;
-                if (!isEntra)
-                {
-                    IsEventHubNamespace = false;
-                    entraTokenProvider = null;
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
-                }
-
-                // Set retry count
-                if (namespaceManager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
-                {
-                    namespaceManager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
-                                                                                            defaultServiceBusRetryExponential.MaximumBackoff,
-                                                                                            RetryHelper.RetryCount);
-                }
+                MessagingFactory = factory;
+                notificationHubNamespaceManager = null;
 
                 // Notification Hubs don't support Entra token-provider auth
                 if (!isEntra)
@@ -816,19 +809,6 @@ namespace ServiceBusExplorer
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
                 ns = IsCloudNamespace ? namespaceUri.Host.Split('.')[0] : namespaceUri.Segments[namespaceUri.Segments.Length - 1];
 
-                // Event Hubs data-plane clients are created through Azure.Messaging.EventHubs.
-                if (IsEventHubNamespace)
-                {
-                    MessagingFactory = null;
-                }
-                else if (isEntra)
-                {
-                    MessagingFactory = MessagingFactory.Create(namespaceUri, entraTokenProvider);
-                }
-                else
-                {
-                    MessagingFactory = MessagingFactory.CreateFromConnectionString(ConnectionStringWithoutEntityPath);
-                }
                 WriteToLogIf(traceEnabled, MessageFactorySuccessfullyCreated);
                 return true;
             });

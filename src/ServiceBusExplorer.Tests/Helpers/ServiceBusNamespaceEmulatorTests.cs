@@ -34,17 +34,21 @@ namespace ServiceBusExplorer.Tests.Helpers
                 (_, __) => { }).Should().BeNull();
         }
 
-        [Fact]
-        public void RejectedEmulatorDoesNotReplaceActiveProfileOrClients()
+        [Theory]
+        [InlineData(EmulatorConnectionString, typeof(NotSupportedException))]
+        [InlineData("Endpoint=sb://localhost/;SharedAccessKeyName=replacement;SharedAccessKey=test;TransportType=invalid", typeof(ArgumentException))]
+        public void RejectedConnectionDoesNotReplaceActiveProfileOrClients(string connectionString, Type exceptionType)
         {
             var helper = new ServiceBusHelper((_, __) => { });
             var profile = typeof(ServiceBusHelper).GetField("serviceBusNamespaceInstance", BindingFlags.Instance | BindingFlags.NonPublic);
             var active = ServiceBusNamespace.GetServiceBusNamespace("active", EmulatorConnectionString.Replace("UseDevelopmentEmulator=true", "UseDevelopmentEmulator=false"), (_, __) => { });
             profile.SetValue(helper, active);
+            helper.SharedAccessKeyName = active.SharedAccessKeyName;
+            helper.SharedAccessKey = active.SharedAccessKey;
             var fields = typeof(ServiceBusHelper).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
             var before = Array.ConvertAll(fields, field => field.GetValue(helper));
-            Action connect = () => helper.Connect(ServiceBusNamespace.GetServiceBusNamespace("emulator", EmulatorConnectionString, (_, __) => { }));
-            connect.Should().Throw<NotSupportedException>();
+            Action connect = () => helper.Connect(ServiceBusNamespace.GetServiceBusNamespace("replacement", connectionString, (_, __) => { }));
+            Assert.Throws(exceptionType, connect);
             profile.GetValue(helper).Should().BeSameAs(active);
             for (var index = 0; index < fields.Length; index++)
                 fields[index].GetValue(helper).Should().Be(before[index]);
