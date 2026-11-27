@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
 using Xunit;
+
 namespace ServiceBusExplorer.Tests.Helpers
 {
     public class ModernSessionStateViewTests
@@ -28,6 +29,42 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Empty(errors);
             await view.ReadModernAsync(null, _ => throw new InvalidOperationException("unexpected read"));
             Assert.Equal(string.Empty, text);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task RevisitedSessionSharesOnlyTheOutstandingRead(bool readFails)
+        {
+            string text = null;
+            var errors = new List<Exception>();
+            var reads = new List<string>();
+            var view = new SessionStateView(value => text = value, errors.Add, () => true);
+            var first = new TaskCompletionSource<byte[]>();
+            var other = new TaskCompletionSource<byte[]>();
+            Task<byte[]> Read(string id)
+            {
+                reads.Add(id);
+                return id == "A" ? first.Task : other.Task;
+            }
+
+            var original = view.ReadModernAsync(new SessionInfo("A"), Read);
+            var different = view.ReadModernAsync(new SessionInfo("a"), Read);
+            var revisited = view.ReadModernAsync(new SessionInfo("A"), Read);
+            Assert.Equal(new[] { "A", "a" }, reads);
+
+            var failure = new InvalidOperationException("state unavailable");
+            if (readFails) first.SetException(failure);
+            else first.SetResult(Encoding.UTF8.GetBytes("current"));
+            await Task.WhenAll(original, revisited);
+            other.SetResult(Encoding.UTF8.GetBytes("stale"));
+            await different;
+
+            Assert.Equal(readFails ? string.Empty : "current", text);
+            if (readFails) Assert.Same(failure, Assert.Single(errors));
+            else Assert.Empty(errors);
+            await view.ReadModernAsync(new SessionInfo("A"), _ => Task.FromResult(Encoding.UTF8.GetBytes("fresh")));
+            Assert.Equal("fresh", text);
         }
 
         [Fact]

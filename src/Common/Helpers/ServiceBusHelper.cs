@@ -39,6 +39,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using Azure.Core.Amqp;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Producer;
@@ -4696,38 +4697,109 @@ namespace ServiceBusExplorer
             foreach (var row in rows)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                var tracked = ServiceBusReceivedMessageAdapter.GetReceivedMetadata(row) != null;
                 var bodyType = BodyType.Stream;
-                if (ServiceBusReceivedMessageAdapter.GetReceivedMetadata(row) == null)
+                if (!tracked)
                     GetMessageText(row, useAscii, out bodyType);
-                var wcfUri = bodyType == BodyType.Wcf
-                    ? (IsCloudNamespace ? new Uri(NamespaceUri, entityPath) : new UriBuilder
-                    {
-                        Host = NamespaceUri.Host,
-                        Path = $"{NamespaceUri.AbsolutePath}/{entityPath}",
-                        Scheme = "sb"
-                    }.Uri) : null;
                 using (var converted = bodyType == BodyType.Wcf
-                    ? CreateMessageForWcfReceiver(row, 0, false, false, wcfUri)
+                    ? CreateMessageForWcfReceiver(row, 0, false, false, GetReplayAddress(entityPath))
                     : ServiceBusMessageAdapter.PrepareForReplay(row, false, null, bodyType, false, null))
                 {
-                    messages.Add(ServiceBusMessageAdapter.ToServiceBusMessage(converted));
+                    var outbound = ServiceBusMessageAdapter.ToServiceBusMessage(converted);
+                    if (tracked) RetargetTrackedEnvelope(outbound, entityPath);
+                    messages.Add(outbound);
                 }
             }
             if (messages.Count == 0) return 0;
             var client = CreateServiceBusClient();
+            ServiceBusSender sender = null;
             try
             {
-                var sender = client.CreateSender(entityPath);
-                try
-                {
-                    // Preserve the existing single-batch operation: an oversized batch
-                    // fails rather than silently introducing partially committed batches.
-                    await sender.SendMessagesAsync(messages, cancellationToken).ConfigureAwait(false);
-                    return messages.Count;
-                }
-                finally { await sender.DisposeAsync().ConfigureAwait(false); }
+                sender = client.CreateSender(entityPath);
+                // Preserve the existing single-batch operation: an oversized batch
+                // fails rather than silently introducing partially committed batches.
+                await sender.SendMessagesAsync(messages, cancellationToken).ConfigureAwait(false);
+                return messages.Count;
             }
-            finally { await client.DisposeAsync().ConfigureAwait(false); }
+            finally
+            {
+                if (sender != null) await DisposeReplayResourceAsync(sender, "sender").ConfigureAwait(false);
+                await DisposeReplayResourceAsync(client, "client").ConfigureAwait(false);
+            }
+        }
+
+        private Uri GetReplayAddress(string entityPath) => IsCloudNamespace
+            ? new Uri(NamespaceUri, entityPath)
+            : new UriBuilder
+            {
+                Host = NamespaceUri.Host,
+                Path = $"{NamespaceUri.AbsolutePath.TrimEnd('/')}/{entityPath}",
+                Scheme = DefaultScheme
+            }.Uri;
+
+        private void RetargetTrackedEnvelope(ServiceBusMessage outbound, string entityPath)
+        {
+            // Value and Sequence bodies can have a text preview that is unrelated to their wire format.
+            if (outbound.GetRawAmqpMessage().Body.BodyType != AmqpMessageBodyType.Data) return;
+            var body = outbound.Body;
+            using var input = body.ToStream();
+            MessageEncoder encoder;
+            Message envelope;
+            try
+            {
+                encoder = GetReplayEnvelopeEncoder(body);
+                if (encoder == null) return;
+                envelope = encoder.ReadMessage(input, MaxBufferSize);
+            }
+            catch (Exception ex) when (ex is XmlException || ex is CommunicationException ||
+                ex is FormatException || ex is ArgumentException || ex is EndOfStreamException)
+            {
+                // Arbitrary AMQP Data is replayable even when it is not a WCF envelope.
+                return;
+            }
+
+            using (envelope)
+            {
+                var originalTo = envelope.Headers.To;
+                if (originalTo == null) return;
+                var peer = GetReplayAddress(entityPath);
+                if (originalTo == peer) return;
+
+                envelope.Headers.To = peer;
+                using var output = new MemoryStream();
+                encoder.WriteMessage(envelope, output);
+                outbound.Body = new BinaryData(output.ToArray());
+            }
+        }
+
+        private static MessageEncoder GetReplayEnvelopeEncoder(BinaryData body)
+        {
+            var bytes = body.ToMemory().Span;
+            if (bytes.IsEmpty) return null;
+            var first = bytes[0];
+            // UTF-8/UTF-16 XML starts with markup, whitespace, a leading zero or a byte-order mark.
+            // The WCF decoder still has to recognize the envelope before any bytes are replaced.
+            if (first == '<' || char.IsWhiteSpace((char)first) || first == 0 ||
+                first == 0xef || first == 0xfe || first == 0xff)
+            {
+                using var xml = new XmlTextReader(body.ToStream()) { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null };
+                if (!xml.IsStartElement("Envelope", "http://www.w3.org/2003/05/soap-envelope")) return null;
+                return new TextMessageEncodingBindingElement(MessageVersion.Default, xml.Encoding)
+                    .CreateMessageEncoderFactory().Encoder;
+            }
+
+            return new BinaryMessageEncodingBindingElement().CreateMessageEncoderFactory().Encoder;
+        }
+
+        private async Task DisposeReplayResourceAsync(IAsyncDisposable resource, string name)
+        {
+            try { await resource.DisposeAsync().ConfigureAwait(false); }
+            catch (Exception ex)
+            {
+                // The UI logger can already be disposed when a listener finishes closing.
+                try { WriteToLog($"Listener replay {name} cleanup failed: {ex.Message}"); }
+                catch { }
+            }
         }
 
         public virtual async Task<List<SessionInfo>> GetMessageSessionsFromModernDataPlane(
