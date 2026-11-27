@@ -1,4 +1,7 @@
-﻿#region Copyright
+﻿using QueueDescription = ServiceBusExplorer.Helpers.QueueInfo;
+using TopicDescription = ServiceBusExplorer.Helpers.TopicInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+#region Copyright
 //=======================================================================================
 // Microsoft Azure Customer Advisory Team
 //
@@ -22,6 +25,9 @@
 #region Using Directives
 
 using FastColoredTextBoxNS;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
+using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
@@ -90,6 +96,8 @@ namespace ServiceBusExplorer.Forms
         readonly ServiceBusHelper serviceBusHelper;
         readonly WriteToLogDelegate writeToLog;
         readonly BindingSource bindingSource = new BindingSource();
+        private string initialMessageText;
+        private BodyType originalBodyType;
         readonly QueueDescription queueDescription; // Might be null
         readonly SubscriptionWrapper subscriptionWrapper; // Might be null
         #endregion
@@ -143,7 +151,7 @@ namespace ServiceBusExplorer.Forms
             this.writeToLog = writeToLog;
             InitializeComponent();
 
-            cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
+            cboBodyType.SelectedIndex = (int)(MainForm.SingletonMainForm?.MessageBodyType ?? BodyType.Stream);
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
             InitializeMessageTextControl(brokeredMessage);
@@ -231,9 +239,10 @@ namespace ServiceBusExplorer.Forms
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, BrokeredMessage brokeredMessage,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog, QueueType queueType = QueueType.PrimaryQueue) :
             this(brokeredMessage, serviceBusHelper, writeToLog)
         {
+            this.queueType = queueType;
             this.subscriptionWrapper = subscriptionWrapper;
         }
 
@@ -258,7 +267,7 @@ namespace ServiceBusExplorer.Forms
             cboSenderInspector.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             FormBorderStyle = FormBorderStyle.FixedDialog;
 
-            cboBodyType.SelectedIndex = (int)MainForm.SingletonMainForm.MessageBodyType;
+            cboBodyType.SelectedIndex = (int)(MainForm.SingletonMainForm?.MessageBodyType ?? BodyType.Stream);
 
             // Get Brokered Message Inspector classes
             cboSenderInspector.Items.Add(SelectBrokeredMessageInspector);
@@ -283,9 +292,10 @@ namespace ServiceBusExplorer.Forms
         }
 
         public MessageForm(SubscriptionWrapper subscriptionWrapper, IEnumerable<BrokeredMessage> brokeredMessages,
-            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog) :
+            ServiceBusHelper serviceBusHelper, WriteToLogDelegate writeToLog, QueueType queueType = QueueType.PrimaryQueue) :
             this(brokeredMessages, serviceBusHelper, writeToLog)
         {
+            this.queueType = queueType;
             this.subscriptionWrapper = subscriptionWrapper;
         }
         #endregion
@@ -320,7 +330,7 @@ namespace ServiceBusExplorer.Forms
             txtMessageText.Focus();
             txtMessageText.SelectionLength = 0;
 
-            if (queueDescription != null || subscriptionWrapper != null)
+            if (queueType == QueueType.Deadletter || queueType == QueueType.TransferDeadletter)
             {
                 chkRemove.Visible = true;
             }
@@ -365,8 +375,24 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        internal BrokeredMessage BuildMessageForResubmission(BrokeredMessage source)
+        {
+            var editedText = brokeredMessage != null && !string.Equals(txtMessageText.Text, initialMessageText, StringComparison.Ordinal)
+                ? txtMessageText.Text : null;
+            var inspector = cboSenderInspector.SelectedIndex > 0
+                ? (IBrokeredMessageInspector)Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) : null;
+            return ServiceBusMessageAdapter.PrepareForReplay(source, brokeredMessage != null, editedText,
+                originalBodyType, chkNewMessageId.Checked, inspector);
+        }
+
+        internal long? GetSourceSequenceForRemoval(BrokeredMessage source) =>
+            chkRemove.Checked
+                ? ServiceBusReceivedMessageAdapter.GetSourceSequenceNumber(source)
+                : (long?)null;
+
         private async void btnSubmit_Click(object sender, EventArgs e)
         {
+            btnSubmit.Enabled = false;
             try
             {
                 using (var form = CreateSelectEntityForm())
@@ -385,7 +411,6 @@ namespace ServiceBusExplorer.Forms
                     {
                         bodyType = BodyType.Stream;
                     }
-                    var messageSender = serviceBusHelper.MessagingFactory.CreateMessageSender(form.Path);
                     var messages = brokeredMessages != null ?
                                     new List<BrokeredMessage>(brokeredMessages) :
                                     new List<BrokeredMessage>(new[] { brokeredMessage });
@@ -394,14 +419,14 @@ namespace ServiceBusExplorer.Forms
                     foreach (var message in messages)
                     {
                         BrokeredMessage outboundMessage;
-                        if (bodyType == BodyType.Wcf)
+                        if (bodyType == BodyType.Wcf && originalBodyType == BodyType.Wcf && brokeredMessage != null && txtMessageText.Text != initialMessageText)
                         {
                             var wcfUri = serviceBusHelper.IsCloudNamespace ?
-                                             new Uri(serviceBusHelper.NamespaceUri, messageSender.Path) :
+                                             new Uri(serviceBusHelper.NamespaceUri, form.Path) :
                                              new UriBuilder
                                              {
                                                  Host = serviceBusHelper.NamespaceUri.Host,
-                                                 Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
+                                                 Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{form.Path}",
                                                  Scheme = "sb"
                                              }.Uri;
                             outboundMessage = serviceBusHelper.CreateMessageForWcfReceiver(message.Clone(txtMessageText.Text, messagesSplitContainer.Visible),
@@ -409,64 +434,24 @@ namespace ServiceBusExplorer.Forms
                                                                                            false,
                                                                                            false,
                                                                                            wcfUri);
+                            if (chkNewMessageId.Checked) outboundMessage.MessageId = Guid.NewGuid().ToString();
                         }
                         else
                         {
-                            if (brokeredMessage != null)
-                            {
-                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                outboundMessage = bodyType == BodyType.ByteArray ?
-                                                  brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text, messagesSplitContainer.Visible) :
-                                                  brokeredMessage.Clone(txtMessageText.Text, messagesSplitContainer.Visible);
-                            }
-                            else
-                            {
-                                var messageText = serviceBusHelper.GetMessageText(message,
-                                    MainForm.SingletonMainForm.UseAscii, out bodyType);
-
-                                // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                switch (bodyType)
-                                {
-                                    case BodyType.ByteArray:
-                                        outboundMessage = message.CloneWithByteArrayBodyType(messageText,
-                                                                        messagesSplitContainer.Visible);
-                                        break;
-
-                                    case BodyType.String:
-                                        outboundMessage = message.Clone(message.GetBody<string>(),
-                                                                        messagesSplitContainer.Visible);
-                                        break;
-
-                                    default:
-                                        outboundMessage = message.Clone(message.GetBody<Stream>(),
-                                                                        messagesSplitContainer.Visible);
-                                        break;
-                                }
-                            }
-
-                            outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
-                                                                                           0,
-                                                                                           chkNewMessageId.Checked,
-                                                                                           false,
-                                                                                           bodyType,
-                                                                                           cboSenderInspector.SelectedIndex > 0 ?
-                                                                                           Activator.CreateInstance(serviceBusHelper.BrokeredMessageInspectors[cboSenderInspector.Text]) as IBrokeredMessageInspector :
-                                                                                           null);
+                            outboundMessage = BuildMessageForResubmission(message);
                         }
-
-                        sequenceNumbers.Add(message.SequenceNumber);
 
                         var warningCollection = new ConcurrentBag<string>();
                         foreach (var messagePropertyInfo in bindingSource.Cast<MessagePropertyInfo>())
                         {
                             try
                             {
+                                messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
                                 if (Constants.AlwaysOmittedProperties.Exists(
                                     omitProp => messagePropertyInfo.Key.Equals(omitProp, StringComparison.InvariantCultureIgnoreCase)))
                                 {
                                     continue;
                                 }
-                                messagePropertyInfo.Key = messagePropertyInfo.Key.Trim();
                                 if (messagePropertyInfo.Type != StringType && messagePropertyInfo.Value == null)
                                 {
                                     warningCollection.Add(string.Format(CultureInfo.CurrentUICulture, PropertyValueCannotBeNull, messagePropertyInfo.Key));
@@ -490,6 +475,8 @@ namespace ServiceBusExplorer.Forms
                         }
                         if (warningCollection.Count <= 0)
                         {
+                            var sequence = GetSourceSequenceForRemoval(message);
+                            if (sequence.HasValue) sequenceNumbers.Add(sequence.Value);
                             outboundMessages.Add(outboundMessage);
                             continue;
                         }
@@ -506,25 +493,25 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
-                    var sent = outboundMessages.Count;
                     var stopwatch = new Stopwatch();
 
                     stopwatch.Start();
 
+                    var helper = serviceBusHelper.GetServiceBusHelper2();
+                    await using var client = helper.CreateServiceBusClient();
+                    await using var replaySender = client.CreateSender(form.Path);
                     if (chkRemove.Checked)
                     {
+                        await ValidateMoveDestinationAsync(chkNewMessageId.Checked, form.Path, form.Type, helper.CreateAdministrationClient);
                         var messageHandler = CreateDeadLetterMessageHandler();
-
-                        var result = await messageHandler.MoveMessages(messageSender,
-                            sequenceNumbers,
-                            transferDLQ: queueType == QueueType.TransferDeadletter,
-                            outboundMessages);
+                        var result = await messageHandler.MoveMessages(form.Path, sequenceNumbers,
+                            queueType == QueueType.TransferDeadletter, outboundMessages);
 
                         RemovedSequenceNumbers = result.DeletedSequenceNumbers;
 
                         stopwatch.Stop();
 
-                        if (result.TimedOut)
+                        if (result.TimedOut || result.Failure != null || result.DeletedSequenceNumbers.Count != outboundMessages.Count)
                         {
                             var messageText = messageHandler.GetFailureExplanation(result, outboundMessages.Count, delete: false);
                             writeToLog(messageText);
@@ -535,12 +522,12 @@ namespace ServiceBusExplorer.Forms
                         else
                         {
                             writeToLog(string.Format(MessageMovedMessage, result.DeletedSequenceNumbers.Count,
-                                messageSender.Path, stopwatch.ElapsedMilliseconds));
+                                form.Path, stopwatch.ElapsedMilliseconds));
                         }
 
                         if (null != queueDescription)
                         {
-                            if (!messageSender.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
+                            if (!form.Path.Equals(queueDescription.Path, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(queueDescription.Path);
                             }
@@ -557,7 +544,9 @@ namespace ServiceBusExplorer.Forms
                         {
                             while (messageIndex < outboundMessages.Count)
                             {
-                                await messageSender.SendAsync(outboundMessages[messageIndex++]);
+                                var serviceBusMessage = ServiceBusMessageAdapter.ToReplayMessage(outboundMessages[messageIndex]);
+                                await replaySender.SendMessageAsync(serviceBusMessage);
+                                messageIndex++;
                             }
                         }
                         catch (Exception exception)
@@ -568,12 +557,11 @@ namespace ServiceBusExplorer.Forms
                             MessageBox.Show(messageText, "Not all selected messages were sent",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
-
                         stopwatch.Stop();
-                        writeToLog(string.Format(MessageSentMessage, sent, messageSender.Path, stopwatch.ElapsedMilliseconds));
+                        writeToLog(string.Format(MessageSentMessage, messageIndex, form.Path, stopwatch.ElapsedMilliseconds));
                     }
 
-                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(messageSender.Path);
+                    await MainForm.SingletonMainForm.RefreshServiceBusEntityNode(form.Path);
 
                     if (brokeredMessages != null)
                     {
@@ -584,7 +572,28 @@ namespace ServiceBusExplorer.Forms
             catch (Exception ex)
             {
                 HandleException(ex);
+                MessageBox.Show(this, ex.Message, "Resubmission stopped", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            finally
+            {
+                if (!IsDisposed) btnSubmit.Enabled = true;
+            }
+        }
+
+        internal static async Task ValidateMoveDestinationAsync(bool newId, string path, string entityType, Func<ServiceBusAdministrationClient> administration)
+        {
+            if (newId) return;
+            const string guidance = "Select Generate new MessageId or clear Remove message from DLQ.";
+            try
+            {
+                if (entityType == "Queue" && !(await administration().GetQueueAsync(path)).Value.RequiresDuplicateDetection) return;
+                if (entityType == "Topic" && !(await administration().GetTopicAsync(path)).Value.RequiresDuplicateDetection) return;
+            }
+            catch (Exception ex) when (!(ex is OperationCanceledException))
+            {
+                throw new InvalidOperationException("Unable to verify duplicate detection at the destination. " + guidance, ex);
+            }
+            throw new InvalidOperationException("A repeated MessageId could be discarded at the destination. " + guidance);
         }
 
         DeadLetterMessageHandler CreateDeadLetterMessageHandler()
@@ -715,8 +724,11 @@ namespace ServiceBusExplorer.Forms
 
         void InitializeMessageTextControl(BrokeredMessage message)
         {
-            var messageText = this.serviceBusHelper.GetMessageText(message,
-                 MainForm.SingletonMainForm.UseAscii, out _);
+            string messageText;
+            if (ServiceBusMessageAdapter.TryGetReplayText(message, out messageText))
+                originalBodyType = BodyType.String;
+            else
+                messageText = serviceBusHelper.GetMessageText(message, MainForm.SingletonMainForm?.UseAscii ?? false, out originalBodyType);
 
             if (chkAutoindent.Checked && JsonSerializerHelper.IsJson(messageText))
             {
@@ -732,6 +744,12 @@ namespace ServiceBusExplorer.Forms
             {
                 txtMessageText.Language = Language.Custom;
                 txtMessageText.Text = messageText;
+            }
+            initialMessageText = txtMessageText.Text;
+            if (ServiceBusReceivedMessageAdapter.HasStructuredBody(message))
+            {
+                originalBodyType = BodyType.Stream;
+                grouperMessageText.GroupTitle = "AMQP preview (editing sends UTF-8 Data)";
             }
         }
 

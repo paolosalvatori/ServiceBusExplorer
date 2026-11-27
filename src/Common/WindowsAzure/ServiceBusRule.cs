@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RuleDescription = ServiceBusExplorer.Helpers.RuleInfo;
+using SubscriptionDescription = ServiceBusExplorer.Helpers.SubscriptionInfo;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -17,12 +19,13 @@ namespace ServiceBusExplorer.WindowsAzure
         private const string RuleCreated = "The {0} rule for the {1} subscription has been successfully created.";
         private const string RuleDeleted = "The {0} rule for the {1} subscription has been successfully deleted.";
 
-        private MessagingFactory messagingFactory;
-
-        public ServiceBusRule(ServiceBusNamespace serviceBusNamespace, NamespaceManager namespaceManager)
-            : base(serviceBusNamespace, namespaceManager)
+        public ServiceBusRule(ServiceBusNamespace serviceBusNamespace, ServiceBusManagementClient namespaceManager)
+            : base(serviceBusNamespace, namespaceManager.Address)
         {
+            ManagementClient = namespaceManager;
         }
+
+        private ServiceBusManagementClient ManagementClient { get; }
 
         protected override EntityType EntityType => EntityType.Rule;
 
@@ -37,9 +40,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(SubscriptionDescriptionCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetRules(subscription.TopicPath, subscription.Name), WriteToLog);
+                return RetryHelper.RetryFunc(() => ManagementClient.GetRules(subscription.TopicPath, subscription.Name), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -60,9 +63,9 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(NameCannotBeNull);
             }
-            if (NamespaceManager != null)
+            if (ManagementClient != null)
             {
-                return RetryHelper.RetryFunc(() => NamespaceManager.GetRules(topicPath, name), WriteToLog);
+                return RetryHelper.RetryFunc(() => ManagementClient.GetRules(topicPath, name), WriteToLog);
             }
             throw new ApplicationException(ServiceBusIsDisconnected);
         }
@@ -83,12 +86,7 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(RuleDescriptionCannotBeNull);
             }
-            var subscriptionClient = GetMessagingFactory().CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                               subscriptionDescription.Name);
-            RetryHelper.RetryAction(() => subscriptionClient.AddRule(ruleDescription), WriteToLog);
-            var func = (() => NamespaceManager.GetRules(subscriptionDescription.TopicPath, subscriptionDescription.Name));
-            var rules = RetryHelper.RetryFunc(func, WriteToLog);
-            var rule = rules.FirstOrDefault(r => r.Name == ruleDescription.Name);
+            var rule = ManagementClient.CreateRule(subscriptionDescription.TopicPath, subscriptionDescription.Name, ruleDescription);
             Log(string.Format(CultureInfo.CurrentCulture, RuleCreated, ruleDescription.Name, subscriptionDescription.Name));
             OnCreated(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType));
             return rule;
@@ -125,25 +123,10 @@ namespace ServiceBusExplorer.WindowsAzure
             {
                 throw new ArgumentException(RuleCannotBeNull);
             }
-            var subscriptionClient = GetMessagingFactory().CreateSubscriptionClient(subscriptionDescription.TopicPath,
-                                                                               subscriptionDescription.Name);
-            RetryHelper.RetryAction(() => subscriptionClient.RemoveRule(rule.Name), WriteToLog);
-            Log(string.Format(CultureInfo.CurrentCulture, RuleDeleted, rule.Name, subscriptionClient.Name));
+            ManagementClient.DeleteRule(subscriptionDescription.TopicPath, subscriptionDescription.Name, rule.Name);
+            Log(string.Format(CultureInfo.CurrentCulture, RuleDeleted, rule.Name, subscriptionDescription.Name));
             OnDeleted(new ServiceBusHelperEventArgs(new RuleWrapper(rule, subscriptionDescription), EntityType.Rule));
         }
 
-        private MessagingFactory GetMessagingFactory()
-        {
-            if (messagingFactory == null || messagingFactory.IsClosed)
-            {
-                var builder = new ServiceBusConnectionStringBuilder(ServiceBusNamespace.ConnectionString)
-                {
-                    EntityPath = string.Empty
-                };
-                messagingFactory = MessagingFactory.CreateFromConnectionString(builder.ToString());
-            }
-
-            return messagingFactory;
-        }
     }
 }

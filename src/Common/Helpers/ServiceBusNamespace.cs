@@ -97,6 +97,7 @@ namespace ServiceBusExplorer.Helpers
         const string ConnectionStringEntityPath = "entitypath";
         const string ConnectionStringAuthMode = "authmode";
         const string ConnectionStringTenantId = "tenantid";
+        const string ConnectionStringUseDevelopmentEmulator = "usedevelopmentemulator";
         // Wire value, not display text. Saved namespaces persist "AuthMode=AAD", so this string and
         // the AuthMode=AAD in the EntraConnectionString*Format constants must not be renamed to
         // "entra" or every existing saved Entra connection stops being recognised.
@@ -286,15 +287,15 @@ namespace ServiceBusExplorer.Helpers
                 return null;
             }
 
-            var isUserCreated = !(key == "CustomConnectionString" || key == "SASConnectionString");
+            var isUserCreated = IsUserCreatedKey(key);
             var toLower = connectionString.ToLower();
 
             var parameters = connectionString.Split([';'], StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => s.IndexOf('=') > 0)
-                .GroupBy(s => s.Substring(0, s.IndexOf('=')).ToLower())
+                .GroupBy(s => s.Substring(0, s.IndexOf('=')).Trim().ToLowerInvariant())
                 .ToDictionary(
                     g => g.Key, 
-                    g => g.Last().Substring(g.Last().IndexOf('=') + 1));
+                    g => g.Last().Substring(g.Last().IndexOf('=') + 1).Trim());
 
 
             if (toLower.Contains(ConnectionStringEndpoint) &&
@@ -325,6 +326,39 @@ namespace ServiceBusExplorer.Helpers
             }
 
             return null;
+        }
+
+        public static bool IsUserCreatedKey(string key) =>
+            key != "CustomConnectionString" && key != "SASConnectionString";
+
+        public static ServiceBusConnectionStringBuilder CreateLegacyConnectionStringBuilder(string connectionString)
+        {
+            // The legacy SDK reads the transport enum case-sensitively and includes a terminal
+            // delimiter in the preceding value. Adapt its input without changing the saved profile.
+            var parts = connectionString.Split(';');
+            var last = Array.FindLastIndex(parts, part => !string.IsNullOrWhiteSpace(part));
+            var count = parts.Length;
+            for (var i = 0; i <= last; i++)
+            {
+                var separator = parts[i].IndexOf('=');
+                if (separator <= 0 || !string.Equals(parts[i].Substring(0, separator).Trim(),
+                        ConnectionStringTransportType, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                var value = parts[i].Substring(separator + 1).Trim();
+                if (!Enum.TryParse<TransportType>(value, true, out var transport) ||
+                    !Enum.IsDefined(typeof(TransportType), transport))
+                {
+                    throw new ArgumentException("The Service Bus transport type is invalid.");
+                }
+                parts[i] = "TransportType=" + transport;
+                if (i == last)
+                {
+                    count = last + 1;
+                }
+            }
+            return new ServiceBusConnectionStringBuilder(string.Join(";", parts, 0, count));
         }
 
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
@@ -518,6 +552,13 @@ namespace ServiceBusExplorer.Helpers
         /// and has no SAS connection string.
         /// </summary>
         public bool IsEntra => AuthMode == ServiceBusAuthMode.Entra;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the connection string targets the
+        /// Service Bus emulator (UseDevelopmentEmulator=true). Emulator endpoints are
+        /// plain host names or IP addresses, not fully qualified Azure namespaces.
+        /// </summary>
+        public bool UseDevelopmentEmulator { get; set; }
         #endregion
 
         #region Private Methods
@@ -633,23 +674,33 @@ namespace ServiceBusExplorer.Helpers
                               parameters[ConnectionStringStsEndpoint] :
                               null;
 
+            if (!System.Uri.TryCreate(endpoint, UriKind.Absolute, out var endpointUri) ||
+                string.IsNullOrEmpty(endpointUri.Host) ||
+                // The legacy SDK registers an sb URI parser that can hide explicit port zero.
+                // Validate the same authority with the standard HTTP parser as well.
+                !System.Uri.TryCreate("http" + endpoint.Substring(endpoint.IndexOf(':')), UriKind.Absolute, out var portUri) ||
+                portUri.Port == 0)
+            {
+                staticWriteToLog("The Service Bus endpoint or port is invalid.");
+                return null;
+            }
+
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);           
 
-            if (!parameters.ContainsKey(ConnectionStringSharedAccessKeyName) || 
-                string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKeyName]))
+            if (!parameters.TryGetValue(ConnectionStringSharedAccessKeyName, out var sharedAccessKeyName) ||
+                string.IsNullOrWhiteSpace(sharedAccessKeyName))
             {
                 staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyNameIsInvalid, key));
+                return null;
             }
 
-            var sharedAccessKeyName = parameters[ConnectionStringSharedAccessKeyName];
-
-            if (!parameters.ContainsKey(ConnectionStringSharedAccessKey) || string.IsNullOrWhiteSpace(parameters[ConnectionStringSharedAccessKey]))
+            if (!parameters.TryGetValue(ConnectionStringSharedAccessKey, out var sharedAccessKey) ||
+                string.IsNullOrWhiteSpace(sharedAccessKey))
             {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, 
-                    ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+                staticWriteToLog(string.Format(CultureInfo.CurrentCulture, ServiceBusNamespaceSharedAccessKeyIsInvalid, key));
+                return null;
             }
 
-            var sharedAccessKey = parameters[ConnectionStringSharedAccessKey];
             var settings = new MessagingFactorySettings();
             var transportType = settings.TransportType;
 
@@ -665,9 +716,16 @@ namespace ServiceBusExplorer.Helpers
                 entityPath = parameters[ConnectionStringEntityPath];
             }
 
+            var useDevelopmentEmulator = parameters.ContainsKey(ConnectionStringUseDevelopmentEmulator) &&
+                bool.TryParse(parameters[ConnectionStringUseDevelopmentEmulator], out var emulator) && emulator;
+
             return new ServiceBusNamespace(ServiceBusNamespaceType.Cloud, connectionString, endpoint, ns, null,
                 sharedAccessKeyName, sharedAccessKey, stsEndpoint, transportType, true,
-                entityPath, isUserCreated);
+                entityPath, isUserCreated)
+            {
+                UseDevelopmentEmulator = useDevelopmentEmulator,
+                Namespace = useDevelopmentEmulator ? endpointUri.Host : ns
+            };
         }
 
         static string GetNamespaceNameFromEndpoint(string endpoint, WriteToLogDelegate staticWriteToLog, 

@@ -94,6 +94,24 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Equal("invalid synthetic json", File.ReadAllText(FilePath));
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async System.Threading.Tasks.Task FileDisabledCheckpointingRetainsLeasesWithoutPersisting(bool existingFile)
+        {
+            if (existingFile) File.WriteAllText(FilePath, "untouched synthetic file");
+            var lease = new Lease { PartitionId = "0", SequenceNumber = 4, Offset = "4" };
+            EventProcessorCheckpointHelper.SetLease("synthetic", "hub", "$Default", "0", lease);
+            await EventProcessorCheckpointHelper.CheckpointAsync("synthetic", "hub", "$Default", lease, "5");
+            Assert.Equal("5", EventProcessorCheckpointHelper.GetLease("synthetic", "hub", "$Default", "0").Offset);
+            EventProcessorCheckpointHelper.WriteCheckpoints();
+            if (existingFile) Assert.Equal("untouched synthetic file", File.ReadAllText(FilePath));
+            else Assert.False(File.Exists(FilePath));
+            Assert.False((bool)Field("canWriteCheckpoints").GetValue(null));
+            EventProcessorCheckpointHelper.SetLease("synthetic", "hub", "$Default", "0", null);
+            Assert.Null(EventProcessorCheckpointHelper.GetLease("synthetic", "hub", "$Default", "0").Offset);
+        }
+
         [Fact]
         public void NeverLoadedFileIsNotOverwritten()
         {

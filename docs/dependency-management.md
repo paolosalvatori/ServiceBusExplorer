@@ -52,7 +52,7 @@ their dependencies. Do not place credentials in repository files; use the approv
 credential provider. A machine/user feed alone does not override the repository's
 `clear` and wildcard source mapping.
 
-## Integrating package changes from #908 and #929
+## Integrating landed package changes
 
 Git's textual merge is insufficient: a versioned PackageReference fails CPM with
 NU1008, while retaining an old central version may break the incoming source.
@@ -61,6 +61,7 @@ The following reconciliation is included now that both PRs are in the base branc
 | Incoming work | Central package version | Project reconciliation |
 |---|---|---|
 | #908 | Microsoft.Azure.NotificationHubs **4.2.0** | Remove `Version` from that reference in Common, NotificationHubs and ServiceBusExplorer projects. |
+| #910–#914 | Azure.Messaging.ServiceBus **7.20.1** | Preserve the modern Service Bus implementation and keep its project reference versionless. |
 | #929 | Azure.Identity.Broker **1.7.0** | Add the central entry and remove `Version` from its Common reference. Preserve its explicit AnyCPU application target. |
 
 Keep all incoming application changes; do not resolve a project conflict by

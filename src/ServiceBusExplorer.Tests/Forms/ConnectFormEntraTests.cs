@@ -18,7 +18,7 @@ using Xunit;
 namespace ServiceBusExplorer.Tests.Forms
 {
     [Collection("Entra credential cache")]
-    public class ConnectFormEntraTests
+    public partial class ConnectFormEntraTests
     {
         private const string ControlNameServiceBusNamespace = "cboServiceBusNamespace";
         private const string ControlNameAuthMode = "cboAuthMode";
@@ -85,6 +85,145 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
+        [Fact]
+        public void SavedEmulatorRoundTripPreservesFlagEndpointAndCredentials()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string value = "Endpoint=sb://127.0.0.1:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic;UseDevelopmentEmulator=true;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                helper.ServiceBusNamespaces["Saved emulator"] = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", value, (_, __) => { });
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Saved emulator";
+                    GetTextBox(form, ControlNameUri).Text.Should().Be(value);
+                    InvokePrivateMethod(form, "BuildCurrentConnectionString");
+                    form.ConnectionString.Should().Be(value);
+                    var restored = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", form.ConnectionString, (_, __) => { });
+                    restored.UseDevelopmentEmulator.Should().BeTrue();
+                    restored.Namespace.Should().Be("127.0.0.1");
+                }
+            });
+        }
+
+        [Fact]
+        public void LoadingPaddedTransportDoesNotRewriteSavedProfile()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string value = "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic==;UseDevelopmentEmulator=true; TransportType = Amqp ; RuntimePort =5671;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                var profile = ServiceBusNamespace.GetServiceBusNamespace("Padded", value, (_, __) => { });
+                helper.ServiceBusNamespaces["Padded"] = profile;
+                using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Padded";
+                GetComboBox(form, ControlNameTransportType).SelectedItem.Should().Be(TransportType.Amqp);
+                GetTextBox(form, ControlNameUri).Text.Should().Be(value);
+                profile.ConnectionString.Should().Be(value);
+                GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.NetMessaging;
+                GetTextBox(form, ControlNameUri).Text.Should().Contain(" TransportType =NetMessaging;");
+                GetTextBox(form, ControlNameUri).Text.Should().Contain("SharedAccessKey=synthetic==;");
+                GetTextBox(form, ControlNameUri).Text.Should().Contain(" RuntimePort =9354;");
+                profile.ConnectionString.Should().Be(value);
+            });
+        }
+
+        [Theory]
+        [InlineData(TransportType.Amqp, TransportType.NetMessaging)]
+        [InlineData(TransportType.NetMessaging, TransportType.Amqp)]
+        public void DuplicatePaddedSettingsUseLastValueWithoutMutatingSavedText(TransportType first, TransportType last)
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                var value = "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic==;UseDevelopmentEmulator=true; TransportType =" + first +
+                    "; TRANSPORTTYPE = " + last + " ;RuntimePort=1111; RuntimePort =5671;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                var profile = ServiceBusNamespace.GetServiceBusNamespace("Duplicates", value, (_, __) => { });
+                profile.TransportType.Should().Be(last);
+                helper.ServiceBusNamespaces["Duplicates"] = profile;
+                using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Duplicates";
+                GetComboBox(form, ControlNameTransportType).SelectedItem.Should().Be(last);
+                GetTextBox(form, ControlNameUri).Text.Should().Be(value);
+                profile.ConnectionString.Should().Be(value);
+                var parsed = InvokeStaticPrivateMethod<System.Collections.Generic.Dictionary<string, string>>(typeof(ConnectForm), "ParseConnectionStringParts", value);
+                parsed["transporttype"].Should().Be(last.ToString());
+                parsed["runtimeport"].Should().Be("5671");
+                GetComboBox(form, ControlNameTransportType).SelectedItem = first;
+                var edited = GetTextBox(form, ControlNameUri).Text;
+                edited.Should().Contain(" TransportType =" + first + ";");
+                edited.Should().Contain(" TRANSPORTTYPE =" + first + ";");
+                var effective = ServiceBusNamespace.GetServiceBusNamespace("Edited", edited, (_, __) => { });
+                effective.TransportType.Should().Be(first);
+                var changed = InvokeStaticPrivateMethod<System.Collections.Generic.Dictionary<string, string>>(typeof(ConnectForm), "ParseConnectionStringParts", edited);
+                changed["runtimeport"].Should().Be(first == TransportType.Amqp ? "5671" : "9354");
+                edited.Should().Contain("SharedAccessKey=synthetic==;");
+                profile.ConnectionString.Should().Be(value);
+            });
+        }
+
+        [Fact]
+        public void AcceptingDialogStagesFiltersWithoutChangingActiveFilters()
+        {
+            RunOnStaThread(() =>
+            {
+                var before = new[] { FilterExpressionHelper.QueueFilterExpression, FilterExpressionHelper.TopicFilterExpression, FilterExpressionHelper.SubscriptionFilterExpression };
+                try
+                {
+                    FilterExpressionHelper.QueueFilterExpression = "old queue";
+                    FilterExpressionHelper.TopicFilterExpression = "old topic";
+                    FilterExpressionHelper.SubscriptionFilterExpression = "old subscription";
+                    ResetManualConnectionState();
+                    var helper = new ServiceBusHelper((_, __) => { });
+                    helper.ServiceBusNamespaces["Synthetic"] = ServiceBusNamespace.GetServiceBusNamespace("Synthetic", "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic;UseDevelopmentEmulator=true", (_, __) => { });
+                    using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Synthetic";
+                    GetTextBox(form, "txtQueueFilterExpression").Text = "new queue";
+                    GetTextBox(form, "txtTopicFilterExpression").Text = "new topic";
+                    GetTextBox(form, "txtSubscriptionFilterExpression").Text = "new subscription";
+                    typeof(ConnectForm).GetMethod("btnOk_Click", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, new object[] { null, EventArgs.Empty });
+                    form.DialogResult.Should().Be(System.Windows.Forms.DialogResult.OK);
+                    form.QueueFilterExpression.Should().Be("new queue");
+                    form.TopicFilterExpression.Should().Be("new topic");
+                    form.SubscriptionFilterExpression.Should().Be("new subscription");
+                    FilterExpressionHelper.QueueFilterExpression.Should().Be("old queue");
+                    FilterExpressionHelper.TopicFilterExpression.Should().Be("old topic");
+                    FilterExpressionHelper.SubscriptionFilterExpression.Should().Be("old subscription");
+                }
+                finally
+                {
+                    FilterExpressionHelper.QueueFilterExpression = before[0];
+                    FilterExpressionHelper.TopicFilterExpression = before[1];
+                    FilterExpressionHelper.SubscriptionFilterExpression = before[2];
+                }
+            });
+        }
+
+        [Fact]
+        public void TransportDropdownDoesNotRewriteOtherConnectionValues()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                const string value = "Endpoint=sb://NetMessaging9354:5672;SharedAccessKeyName=name;SharedAccessKey=NetMessaging9354==;UseDevelopmentEmulator=true;TransportType=NetMessaging;RuntimePort=9354;";
+                var helper = new ServiceBusHelper((_, __) => { });
+                helper.ServiceBusNamespaces["Saved emulator"] = ServiceBusNamespace.GetServiceBusNamespace("Saved emulator", value, (_, __) => { });
+                using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
+                {
+                    GetComboBox(form, ControlNameServiceBusNamespace).SelectedItem = "Saved emulator";
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
+                    var updated = GetTextBox(form, ControlNameUri).Text;
+                    updated.Should().Contain("Endpoint=sb://NetMessaging9354:5672");
+                    updated.Should().Contain("SharedAccessKey=NetMessaging9354==");
+                    updated.Should().Contain("TransportType=Amqp");
+                    updated.Should().Contain("RuntimePort=5671");
+                }
+            });
+        }
+
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -123,9 +262,11 @@ namespace ServiceBusExplorer.Tests.Forms
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ConnectButton_DismissedSignInPreservesActiveSettings(bool browserOnly)
+        [InlineData(false, false, "localhost")]
+        [InlineData(true, false, "localhost")]
+        [InlineData(false, true, "localhost")]
+        [InlineData(true, true, LocalSas)]
+        public void ConnectButton_DismissedSignInPreservesActiveSettings(bool browserOnly, bool savedEmulator, string endpoint)
         {
             RunOnStaThread(() =>
             {
@@ -146,12 +287,17 @@ namespace ServiceBusExplorer.Tests.Forms
                     EntraCredentialFactory.UseSystemBrowserOnly = browserOnly;
                     ServiceBusHelperEntraTests.CacheCredential("interactiveBrowserCredentials", tenant, browserOnly ? unexpected : credential);
                     ServiceBusHelperEntraTests.CacheCredential("systemBrowserCredentials", tenant, browserOnly ? credential : unexpected);
+                    if (savedEmulator)
+                    {
+                        helper.ServiceBusNamespaces[SavedProfileKey] = ServiceBusNamespace.GetServiceBusNamespace(
+                            SavedProfileKey, SavedEmulator, (_, __) => { });
+                    }
                     using (var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null))
                     {
                         form.Show();
-                        GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = 1;
+                        GetComboBox(form, ControlNameServiceBusNamespace).SelectedIndex = savedEmulator ? 2 : 1;
                         GetComboBox(form, ControlNameAuthMode).SelectedIndex = 1;
-                        GetTextBox(form, ControlNameUri).Text = "localhost";
+                        GetTextBox(form, ControlNameUri).Text = endpoint;
                         GetComboBox(form, ControlNameTenantIds).Text = tenant;
                         GetTextBox(form, "txtQueueFilterExpression").Text = "submitted filter";
                         GetComboBox(form, "cboConnectivityMode").SelectedItem = previousMode == Microsoft.ServiceBus.ConnectivityMode.Http
@@ -162,7 +308,7 @@ namespace ServiceBusExplorer.Tests.Forms
                         form.DialogResult.Should().Be(DialogResult.OK);
                         form.ServiceBusNamespaceInstance.TenantId.Should().Be(tenant);
                         new Uri(form.ServiceBusNamespaceInstance.Uri).IsLoopback.Should().BeTrue();
-                        var failure = Record.Exception(() => form.ConnectToNamespace());
+                        var failure = Record.Exception(() => form.TryConnectToNamespace(out _));
                         failure.Should().NotBeNull();
                         failure.GetBaseException().Should().BeSameAs(cause);
                         credential.Calls.Should().Be(1);

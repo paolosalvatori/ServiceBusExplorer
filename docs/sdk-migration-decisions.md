@@ -29,3 +29,19 @@ control disposal closes it once all readers finish. Checkpoint batches use the
 configured maximum batch size or a five-second interval, including idle reads.
 Only successfully processed events advance the pending position. The existing
 checkpoint store remains in memory until application-close persistence.
+
+## Service Bus sessions and processors (#727)
+
+Session browsing/receiving and continuous listeners use
+`ServiceBusSessionReceiver`, `ServiceBusProcessor`, and the session-aware
+processor. The UI's legacy `MessageSession` object remains for session-list
+enumeration and property-grid compatibility because Azure.Messaging.ServiceBus
+7.20.1 does not expose session-ID enumeration. Probing by accepting sessions
+would acquire session locks and could disrupt other consumers, so it is not
+used as a substitute. Session state is read from the modern receiver without
+changing its bytes.
+
+Review whether a future release should keep the legacy session-list operation,
+replace that UI with a session-ID entry flow, or adopt another service-supported
+enumeration mechanism if one becomes available. This stage does not remove the
+legacy package or callback adapter classes.
