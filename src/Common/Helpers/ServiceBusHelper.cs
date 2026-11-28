@@ -683,12 +683,12 @@ namespace ServiceBusExplorer
                         : Azure.Messaging.EventHubs.EventHubsTransportType.AmqpTcp
                 }
             };
-            var modernHelper = GetServiceBusHelper2();
-            if (modernHelper.IsEntra)
+            var profile = serviceBusNamespaceInstance;
+            if (profile?.IsEntra == true)
             {
-                return new EventHubProducerClient(modernHelper.FullyQualifiedNamespace,
+                return new EventHubProducerClient(profile.FullyQualifiedNamespace,
                                                   path,
-                                                  modernHelper.EntraTokenCredential,
+                                                  EntraCredentialFactory.CreateNewSdkTokenCredential(profile.TenantId),
                                                   options);
             }
 
@@ -717,13 +717,13 @@ namespace ServiceBusExplorer
                         : Azure.Messaging.EventHubs.EventHubsTransportType.AmqpTcp
                 }
             };
-            var modernHelper = GetServiceBusHelper2();
-            if (modernHelper.IsEntra)
+            var profile = serviceBusNamespaceInstance;
+            if (profile?.IsEntra == true)
             {
                 return new EventHubConsumerClient(consumerGroup,
-                                                  modernHelper.FullyQualifiedNamespace,
+                                                  profile.FullyQualifiedNamespace,
                                                   path,
-                                                  modernHelper.EntraTokenCredential,
+                                                  EntraCredentialFactory.CreateNewSdkTokenCredential(profile.TenantId),
                                                   options);
             }
 
@@ -1036,6 +1036,30 @@ namespace ServiceBusExplorer
             return LegacyEventHub.GetEventHub(path);
         }
 
+        public Task<EventHubDescription> GetEventHubAsync(string path) => LegacyEventHub.GetEventHubAsync(path);
+
+        public Task UpdateEventHubStatusAsync(EventHubDescription description) =>
+            LegacyEventHub.UpdateEventHubAsync(description);
+
+        public async Task<IEnumerable<EventHubDescription>> GetVisibleEventHubsAsync()
+        {
+            var path = EntityPath;
+            var hubs = LegacyEventHub;
+            if (string.IsNullOrWhiteSpace(path))
+                return await hubs.GetEventHubsAsync().ConfigureAwait(false);
+
+            try
+            {
+                var hub = await hubs.GetEventHubAsync(path).ConfigureAwait(false);
+                return hub == null ? Enumerable.Empty<EventHubDescription>() : new[] { hub };
+            }
+            catch (MessagingException ex) when (!EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
+            {
+                WriteToLog(string.Format(CultureInfo.CurrentCulture, "No event hub found matching EntityPath '{0}': {1}", path, ex.Message));
+                return Enumerable.Empty<EventHubDescription>();
+            }
+        }
+
         /// <summary>
         /// Creates a new event hub in the service namespace with the given name.
         /// </summary>
@@ -1129,6 +1153,9 @@ namespace ServiceBusExplorer
         {
             return LegacyConsumerGroup.GetConsumerGroup(eventHubPath, name);
         }
+
+        public Task<ConsumerGroupDescription> GetConsumerGroupAsync(string eventHubPath, string name) =>
+            LegacyConsumerGroup.GetConsumerGroupAsync(eventHubPath, name);
 
         /// <summary>
         /// Retrieves the collection of consumer groups of the event hub passed as a parameter.

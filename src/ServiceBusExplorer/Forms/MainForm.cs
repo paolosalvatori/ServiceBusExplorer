@@ -3022,7 +3022,7 @@ namespace ServiceBusExplorer.Forms
                             if (changeStatusForm.ShowDialog() == DialogResult.OK)
                             {
                                 eventHubDescription.Status = desiredStatus;
-                                await serviceBusHelper.NamespaceManager.UpdateEventHubAsync(eventHubDescription);
+                                await serviceBusHelper.UpdateEventHubStatusAsync(eventHubDescription);
                                 await RefreshSelectedEntity();
                                 changeStatusEventHubMenuItem.Text = eventHubDescription.Status == EntityStatus.Active
                                                                      ? DisableEventHub
@@ -3466,18 +3466,14 @@ namespace ServiceBusExplorer.Forms
                     // Partition Node
                     if (serviceBusTreeView.SelectedNode.Tag is PartitionDescription)
                     {
-                        var partitionDescription = (PartitionDescription)serviceBusTreeView.SelectedNode.Tag;
-                        var consumerGroup = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
-                        var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
-                        var partition = serviceBusHelper.GetPartition(partitionDescription.EventHubPath, consumerGroupName, partitionDescription.PartitionId);
+                        var partition = ReadPartitionNode(serviceBusTreeView.SelectedNode, serviceBusHelper.GetPartition);
                         if (partition != null)
                         {
-                            serviceBusTreeView.SelectedNode.Tag = partitionDescription;
                             var control = panelMain.Controls[0] as HandlePartitionControl;
                             if (control != null)
                             {
                                 control.RefreshData(partition);
-                                WriteToLog(string.Format(PartitionRetrievedFormat, partitionDescription.PartitionId, partitionDescription.EventHubPath), false);
+                                WriteToLog(string.Format(PartitionRetrievedFormat, partition.PartitionId, partition.EventHubPath), false);
                             }
                         }
                         return;
@@ -4006,12 +4002,9 @@ namespace ServiceBusExplorer.Forms
                     AddImportAndSeparatorMenuItems(list);
                     actionsToolStripMenuItem.DropDownItems.AddRange(list.ToArray());
                     panelMain.HeaderText = string.Format(ViewPartitionFormat, partitionDescription.PartitionId);
-                    var consumerGroup = node.Parent.Parent.Tag as ConsumerGroupDescription;
-                    var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
-                    partitionDescription = serviceBusHelper.GetPartition(partitionDescription.EventHubPath,
-                                                                         consumerGroupName,
-                                                                         partitionDescription.PartitionId);
-                    ShowPartition(partitionDescription);
+                    var partition = ReadPartitionNode(node, serviceBusHelper.GetPartition);
+                    if (partition != null)
+                        ShowPartition(partition);
                     return;
                 }
 
@@ -4827,27 +4820,7 @@ namespace ServiceBusExplorer.Forms
                         {
                             try
                             {
-
-                                IEnumerable<EventHubDescription> eventHubs;
-                                if (!string.IsNullOrWhiteSpace(serviceBusHelper.EntityPath))
-                                {
-                                    try
-                                    {
-                                        var singleHub = await serviceBusHelper.NamespaceManager.GetEventHubAsync(serviceBusHelper.EntityPath);
-                                        eventHubs = singleHub != null ? new[] { singleHub } : Enumerable.Empty<EventHubDescription>();
-                                    }
-                                    catch (MessagingException ex) when (!EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
-                                    {
-                                        WriteToLog(string.Format(CultureInfo.CurrentCulture,
-                                            "No event hub found matching EntityPath '{0}': {1}",
-                                            serviceBusHelper.EntityPath, ex.Message));
-                                        eventHubs = Enumerable.Empty<EventHubDescription>();
-                                    }
-                                }
-                                else
-                                {
-                                    eventHubs = await serviceBusHelper.NamespaceManager.GetEventHubsAsync();
-                                }
+                                var eventHubs = await serviceBusHelper.GetVisibleEventHubsAsync();
                                 Cursor.Current = Cursors.WaitCursor;
                                 eventHubListNode.Nodes.Clear();
                                 if (eventHubs != null)
@@ -5777,24 +5750,21 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        internal static PartitionDescription ReadPartitionNode(TreeNode node,
+            Func<string, string, string, PartitionDescription> readPartition)
+        {
+            var identity = (PartitionDescription)node.Tag;
+            var group = node.Parent?.Parent?.Tag as ConsumerGroupDescription;
+            return readPartition(identity.EventHubPath, group?.Name, identity.PartitionId);
+        }
+
         private void ShowPartition(PartitionDescription partition)
         {
             try
             {
                 var partitionControl = ThemeManager.ReplaceHostedContent(
                     panelMain,
-                    () =>
-                    {
-                        if (string.IsNullOrWhiteSpace(partition.LastEnqueuedOffset))
-                        {
-                            var consumerGroup = serviceBusTreeView.SelectedNode.Parent.Parent.Tag as ConsumerGroupDescription;
-                            var consumerGroupName = consumerGroup != null ? consumerGroup.Name : null;
-                            partition = serviceBusHelper.GetPartition(partition.EventHubPath,
-                                                                      consumerGroupName,
-                                                                      partition.PartitionId);
-                        }
-                        return new HandlePartitionControl(WriteToLog, serviceBusHelper, partition);
-                    },
+                    () => new HandlePartitionControl(WriteToLog, serviceBusHelper, partition),
                     control =>
                     {
                         control.Location = new Point(1, panelLog.HeaderHeight + 1);

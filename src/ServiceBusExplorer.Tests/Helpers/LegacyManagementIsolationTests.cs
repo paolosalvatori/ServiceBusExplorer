@@ -34,6 +34,23 @@ namespace ServiceBusExplorer.Tests.Helpers
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
+        public async Task RuntimeMetadataAndSendClientsUseSelectedHubWithoutOpeningLegacyManagement(bool entra)
+        {
+            var helper = Connect(entra);
+            await using var consumer = helper.CreateEventHubConsumerClient("hub", "analytics");
+            await using var producer = helper.CreateEventHubProducerClient("hub");
+
+            Assert.Equal("localhost", consumer.FullyQualifiedNamespace);
+            Assert.Equal(consumer.FullyQualifiedNamespace, producer.FullyQualifiedNamespace);
+            Assert.Equal("hub", producer.EventHubName);
+            Assert.Equal(producer.EventHubName, consumer.EventHubName);
+            Assert.Equal("analytics", consumer.ConsumerGroup);
+            Assert.False(((Lazy<NamespaceManager>)Field(helper, "legacyNamespaceManager")).IsValueCreated);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
         public void EventHubGroupAndPartitionEntryPointsRetainNamesAndShareManager(bool entra)
         {
             var helper = Connect(entra);

@@ -5,17 +5,18 @@ replace Event Hubs management or remove that package. Service Bus queue, topic,
 subscription and rule adapters still use Azure.Messaging.ServiceBus. Connecting
 only those features does not construct a legacy NamespaceManager or messaging
 transport. The existing public NamespaceManager property initializes the legacy
-manager on explicit use, including direct Event Hubs calls in the UI.
+manager on explicit use. The Event Hubs tree and editors now use feature adapters
+for discovery, status changes, and reloads after an unsuccessful edit.
 
 ## Existing feature inventory
 
 | Entry point | Operations and backend |
 | --- | --- |
-| MainForm.ShowEntities, HandleEventHubControl refresh | NamespaceManager GetEventHubsAsync / GetEventHubAsync; entity-scoped profiles keep their single-hub lookup |
+| MainForm.ShowEntities, HandleEventHubControl refresh | The hub adapter lists namespace profiles or reads one named hub for entity-scoped profiles. A failed scoped read never triggers a namespace list. |
 | MainForm update and ServiceBusHelper Event Hub methods | NamespaceManager create, get, update, delete and bulk delete, with existing EventHubDescription mappings |
 | HandleConsumerGroupControl and ServiceBusConsumerGroup | NamespaceManager get/list/create/update/delete groups, preserving hub path, group name, metadata and existing retry/error handling |
-| ServiceBusPartition | Read one partition, or read hub partition IDs then metadata per partition; no independent partition CRUD |
-| ServiceBusHelper producer/consumer factories, Event Hubs send/listener controls | Azure.Messaging.EventHubs runtime clients, SAS connection string or Entra TokenCredential; unchanged |
+| ServiceBusPartition | Selecting or refreshing a partition reads its full metadata once, including when its last offset is empty. The consumer-group grid reads current hub IDs and full details for each partition. |
+| Send and listener controls | The modern Event Hubs clients take the selected SAS connection string or tenant credential directly, without constructing the Service Bus queue/topic helper. |
 | CLI startup and WinForms Connect | Shared ServiceBusHelper.Connect preparation/publication, then existing UI entity selection/loading; unchanged |
 
 Relay management still uses the legacy manager on demand. Notification Hubs uses
@@ -46,7 +47,7 @@ Emulators expose no legacy manager and reject explicit legacy entity requests.
 
 | Option | Parity and decision |
 | --- | --- |
-| Azure.Messaging.EventHubs runtime properties | Supports SAS and Entra; hub properties, partition IDs and partition runtime metadata are available. Does not implement namespace-wide hub or consumer-group CRUD. A later read-only slice needs explicit mapping of every displayed legacy metadata field. |
+| Azure.Messaging.EventHubs runtime properties | Supports SAS and Entra; hub properties, partition IDs and partition runtime metadata are available. Does not implement namespace-wide hub or consumer-group CRUD. Explorer also displays partition size and incoming/outgoing bytes per second. The modern partition model lacks all three, so the detail view and grid retain their full management descriptions. |
 | Azure.ResourceManager.EventHubs | Management CRUD requires Azure resource identity and Entra/ARM authorization. Namespace SAS credentials alone cannot be substituted. Offer only as an explicitly chosen management mode, never a silent replacement. |
 | Namespace REST / Atom adapter | Microsoft documents hub and group operations with SAS/Bearer headers. The classic documentation also carries a retirement warning. Confirm applicability/support for current namespaces before adopting it; test entity scopes, escaping, pagination, metadata/property ordering, updates, token audience, cancellation, error classification and retries. Consumer-group update semantics need explicit verification. |
 | Retain isolated legacy management | Selected for this stage. Preserves existing working SAS and Entra behavior while keeping Service Bus-only connections independent of manager construction. Package removal remains incomplete. |
@@ -54,6 +55,8 @@ Emulators expose no legacy manager and reject explicit legacy entity requests.
 Primary references (reviewed 2026-11-28):
 
 - [Modern runtime client API](https://learn.microsoft.com/dotnet/api/azure.messaging.eventhubs.consumer.eventhubconsumerclient)
+- [Modern partition runtime properties](https://learn.microsoft.com/en-us/dotnet/api/azure.messaging.eventhubs.partitionproperties)
+- [Fields in the partition management response](https://learn.microsoft.com/en-us/rest/api/eventhub/list-partition-runtime-metadata)
 - [Current ARM consumer-group CRUD API](https://learn.microsoft.com/en-us/rest/api/eventhub/consumer-groups/create-or-update?view=rest-eventhub-2026-01-01)
 - [Namespace REST common headers and lifecycle warning](https://learn.microsoft.com/en-us/rest/api/eventhub/event-hubs-management-rest)
 - [Namespace REST create hub](https://learn.microsoft.com/en-us/rest/api/eventhub/create-event-hub)
@@ -72,7 +75,7 @@ Run on Windows with .NET Framework 4.7.2:
 
 ```powershell
 dotnet build src/ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj -c Release
-dotnet test src/ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~LegacyManagementIsolationTests|FullyQualifiedName~ConnectionPreparationTests|FullyQualifiedName~ServiceBusHelperEntraTests"
+dotnet test src/ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~EventHubDiscoveryTests|FullyQualifiedName~EventHubPartitionNodeTests|FullyQualifiedName~LegacyManagementIsolationTests|FullyQualifiedName~ConnectionPreparationTests|FullyQualifiedName~ServiceBusHelperEntraTests"
 ```
 
 These are synthetic checks, not live SAS/Entra acceptance. Before merging, run the
