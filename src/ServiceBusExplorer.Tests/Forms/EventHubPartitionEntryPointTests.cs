@@ -33,6 +33,9 @@ namespace ServiceBusExplorer.Tests.Forms
                 using var actions = new ToolStripMenuItem();
                 using var iot = new ToolStripMenuItem();
                 using var listener = new ToolStripMenuItem();
+                using var renameQueue = new ToolStripMenuItem();
+                using var renameTopic = new ToolStripMenuItem();
+                using var logList = new ListBox();
                 var main = CreateProfileTestMainForm(log);
                 try
                 {
@@ -49,6 +52,9 @@ namespace ServiceBusExplorer.Tests.Forms
                     SetMainField(main, "createIoTHubListenerMenuItem", iot);
                     SetMainField(main, "createEventHubListenerMenuItem", listener);
                     SetMainField(main, "partitionContextMenuStrip", menu);
+                    SetMainField(main, "renameQueueMenuItem", renameQueue);
+                    SetMainField(main, "renameTopicMenuItem", renameTopic);
+                    SetMainField(main, "lstLog", logList);
                     host.Controls.Add(pane);
                     host.Controls.Add(tree);
                     host.Show();
@@ -61,6 +67,7 @@ namespace ServiceBusExplorer.Tests.Forms
                     tree.SelectedNode = hub;
                     typeof(MainForm).GetMethod("serviceBusTreeView_NodeMouseClick", BindingFlags.Instance | BindingFlags.NonPublic)
                         .Invoke(main, new object[] { tree, new TreeNodeMouseClickEventArgs(partition, MouseButtons.Left, 1, 0, 0) });
+                    Assert.Empty(log.ToArray());
                     Assert.Equal(1, reads.Calls);
                     var control = Assert.Single(pane.Controls.OfType<HandlePartitionControl>());
                     var values = (ListView)Assert.Single(control.Controls.Find("propertyListView", true));
@@ -86,7 +93,9 @@ namespace ServiceBusExplorer.Tests.Forms
             {
                 Assert.Equal(("orders", "analytics", "2"), (path, group, id));
                 var description = new PartitionDescription(path, id);
-                typeof(PartitionDescription).GetProperty("EndSequenceNumber").SetValue(description, (long)++Calls);
+                // The legacy SDK exposes runtime metrics through read-only public properties.
+                typeof(PartitionDescription).GetProperty("InternalEndSequenceNumber", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(description, (long)++Calls);
                 Assert.True(string.IsNullOrEmpty(description.LastEnqueuedOffset));
                 return description;
             }
