@@ -24,6 +24,20 @@ its separate SDK manager; its existing URI wrapper now initializes lazily too.
 No WCF Relay transport, public message inspector/generator interface, legacy
 message serialization, or cold-connect/tree behavior changes are included.
 
+## Manage one Event Hub through Azure Resource Manager
+
+Choose **File → Manage Event Hub via ARM**. Paste the Event Hub resource ID from Azure Portal. It includes the subscription, resource group, namespace and hub:
+
+```text
+/subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.EventHub/namespaces/{namespace}/eventhubs/{hub}
+```
+
+In a fresh Explorer window, enter the tenant ID for the subscription. With an existing Entra connection, Explorer uses its tenant credential and requires the resource ID to match the connected namespace and any configured entity path. This mode supports Azure public cloud. Use a fresh window to open an ARM resource while keeping a SAS or Event Grid connection active elsewhere.
+
+The window reads this hub and its consumer groups. Select a row to edit its metadata, or enter a group name to create or update it. The confirmation identifies the full destination. Confirming an empty value clears the metadata. ARM uses a create-or-update operation, so it can recreate a group that was deleted after the last refresh.
+
+Access requires the existing identity to have the appropriate ARM permissions on the resource. A denied operation stays in the ARM window. Hub configuration, authorization rules, deletes and full partition metrics remain in the existing management workflow.
+
 ## Authentication and lifecycle
 
 SAS manager construction retains the same normalized namespace connection string,
@@ -48,7 +62,7 @@ Emulators expose no legacy manager and reject explicit legacy entity requests.
 | Option | Parity and decision |
 | --- | --- |
 | Azure.Messaging.EventHubs runtime properties | Supports SAS and Entra; hub properties, partition IDs and partition runtime metadata are available. Does not implement namespace-wide hub or consumer-group CRUD. Explorer also displays partition size and incoming/outgoing bytes per second. The modern partition model lacks all three, so the detail view and grid retain their full management descriptions. |
-| Azure.ResourceManager.EventHubs | Management CRUD requires Azure resource identity and Entra/ARM authorization. Namespace SAS credentials alone cannot be substituted. Offer only as an explicitly chosen management mode, never a silent replacement. |
+| Azure.ResourceManager.EventHubs | Management CRUD requires Azure resource identity and Entra/ARM authorization. Namespace SAS credentials alone cannot be substituted. The separate ARM window supports GET for one explicit hub, paged consumer-group reads and confirmed metadata upsert. |
 | Namespace REST / Atom adapter | Microsoft documents hub and group operations with SAS/Bearer headers. The classic documentation also carries a retirement warning. Confirm applicability/support for current namespaces before adopting it; test entity scopes, escaping, pagination, metadata/property ordering, updates, token audience, cancellation, error classification and retries. Consumer-group update semantics need explicit verification. |
 | Retain isolated legacy management | Selected for this stage. Preserves existing working SAS and Entra behavior while keeping Service Bus-only connections independent of manager construction. Package removal remains incomplete. |
 
@@ -61,6 +75,8 @@ Primary references (reviewed 2026-11-28):
 - [Namespace REST common headers and lifecycle warning](https://learn.microsoft.com/en-us/rest/api/eventhub/event-hubs-management-rest)
 - [Namespace REST create hub](https://learn.microsoft.com/en-us/rest/api/eventhub/create-event-hub)
 - [Namespace REST create group](https://learn.microsoft.com/en-us/rest/api/eventhub/create-consumer-group)
+
+The ARM window uses the stable `Azure.ResourceManager.EventHubs` 1.3.0 SDK and its 2026-01-01 API. The identity requests an ARM token for the management endpoint. [SDK package](https://www.nuget.org/packages/Azure.ResourceManager.EventHubs/1.3.0) · [Consumer-group operations](https://learn.microsoft.com/en-us/rest/api/eventhub/consumer-groups?view=rest-eventhub-2026-01-01) · [Event Hubs role actions](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/analytics#azure-event-hubs-data-owner)
 
 ## Validation handoff
 
@@ -75,7 +91,7 @@ Run on Windows with .NET Framework 4.7.2:
 
 ```powershell
 dotnet build src/ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj -c Release
-dotnet test src/ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~EventHubDiscoveryTests|FullyQualifiedName~EventHubPartitionNodeTests|FullyQualifiedName~LegacyManagementIsolationTests|FullyQualifiedName~ConnectionPreparationTests|FullyQualifiedName~ServiceBusHelperEntraTests"
+dotnet test src/ServiceBusExplorer.Tests/ServiceBusExplorer.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~EventHubArmManagementTests|FullyQualifiedName~EventHubArmFormTests|FullyQualifiedName~EventHubDiscoveryTests|FullyQualifiedName~EventHubPartitionNodeTests|FullyQualifiedName~LegacyManagementIsolationTests|FullyQualifiedName~ConnectionPreparationTests|FullyQualifiedName~ServiceBusHelperEntraTests"
 ```
 
 These are synthetic checks, not live SAS/Entra acceptance. Before merging, run the

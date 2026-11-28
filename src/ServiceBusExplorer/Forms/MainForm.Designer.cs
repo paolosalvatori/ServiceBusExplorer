@@ -37,6 +37,7 @@ namespace ServiceBusExplorer.Forms
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectUsingSASToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectUsingEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageArmEventHubMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logOutFromEntraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savedConnectionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparatorMain = new System.Windows.Forms.ToolStripSeparator();
@@ -463,6 +464,7 @@ namespace ServiceBusExplorer.Forms
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.connectUsingSASToolStripMenuItem,
             this.connectUsingEntraToolStripMenuItem,
+            this.manageArmEventHubMenuItem,
             this.savedConnectionsToolStripMenuItem,
             this.toolStripSeparator80,
             this.logOutFromEntraToolStripMenuItem,
@@ -486,6 +488,12 @@ namespace ServiceBusExplorer.Forms
             this.connectUsingEntraToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.connectUsingEntraToolStripMenuItem.Text = "Connect to Event &Grid";
             this.connectUsingEntraToolStripMenuItem.Click += new System.EventHandler(this.connectUsingEntraToolStripMenuItem_Click);
+            //
+            // manageArmEventHubMenuItem
+            //
+            this.manageArmEventHubMenuItem.Name = "manageArmEventHubMenuItem";
+            this.manageArmEventHubMenuItem.Text = "Manage Event Hub via &ARM…";
+            this.manageArmEventHubMenuItem.Click += new System.EventHandler(this.manageArmEventHubMenuItem_Click);
             //
             // logOutFromEntraToolStripMenuItem
             //
@@ -3724,6 +3732,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ToolStripMenuItem duplicateQueueMenuItem;
         private System.Windows.Forms.ToolStripMenuItem connectUsingSASToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem connectUsingEntraToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem manageArmEventHubMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logOutFromEntraToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator80;
     }

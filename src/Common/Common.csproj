@@ -25,6 +25,8 @@
 
     <PackageReference Include="Azure.Identity.Broker" />
 
+    <PackageReference Include="Azure.ResourceManager.EventHubs" />
+
     <PackageReference Include="WindowsAzure.ServiceBus" />
   </ItemGroup>
   <ItemGroup>

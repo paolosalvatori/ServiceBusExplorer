@@ -696,6 +696,30 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        private void manageArmEventHubMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (rootNode?.Tag is EventGridNamespaceResource || (serviceBusHelper.NamespaceUri != null && !serviceBusHelper.IsEntra))
+                {
+                    MessageBox.Show(this, "Open a new Explorer window or connect with Entra to manage an Event Hub via ARM.",
+                        "Event Hubs management", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+                var labels = new List<string> { "Event Hub resource ID (Azure public cloud)" };
+                if (!serviceBusHelper.IsEntra) labels.Add("Microsoft Entra tenant ID");
+                using (var input = new ParameterForm("Open Event Hub in Azure Resource Manager", labels,
+                    labels.Select(_ => string.Empty).ToList(), labels.Select(_ => false).ToList()))
+                {
+                    if (input.ShowDialog(this) != DialogResult.OK) return;
+                    var management = serviceBusHelper.OpenArmEventHub(input.ParameterValues[0], input.ParameterValues.ElementAtOrDefault(1));
+                    using (var form = new EventHubArmForm(management))
+                        form.ShowDialog(this);
+                }
+            }
+            catch (Exception ex) { HandleException(ex); }
+        }
+
         async void connectUsingEntraToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try

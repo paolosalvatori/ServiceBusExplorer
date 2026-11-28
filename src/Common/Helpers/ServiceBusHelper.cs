@@ -666,6 +666,9 @@ namespace ServiceBusExplorer
             return factory;
         }
 
+        public EventHubArmManagement OpenArmEventHub(string resourceId, string tenantId) =>
+            new EventHubArmManagement(resourceId, serviceBusNamespaceInstance, tenantId, EntraCredentialFactory.CreateNewSdkTokenCredential);
+
         public EventHubProducerClient CreateEventHubProducerClient(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
