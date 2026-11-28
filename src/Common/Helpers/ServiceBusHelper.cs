@@ -144,6 +144,7 @@ namespace ServiceBusExplorer
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
         private Lazy<NamespaceManager> legacyNamespaceManager;
+        private ServiceBusHelper legacyEventOwner;
         private ServiceBusManagementClient managementClient;
         private Func<ServiceBusAdministrationClient, Task> serviceBusAudienceProbe = static client =>
             client.QueueExistsAsync("$__scope_probe__$");
@@ -196,36 +197,40 @@ namespace ServiceBusExplorer
         public ServiceBusHelper(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper)
         {
             this.writeToLog = writeToLog;
-            MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
-            connectionString = serviceBusHelper.ConnectionString;
-            serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
-            entraTokenProvider = serviceBusHelper.entraTokenProvider;
-            namespaceManager = serviceBusHelper.namespaceManager;
-            legacyNamespaceManager = serviceBusHelper.legacyNamespaceManager;
-            managementClient = serviceBusHelper.managementClient;
-            notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
-            MessagingFactory = serviceBusHelper.messagingFactory;
-            Namespace = serviceBusHelper.Namespace;
-            NamespaceUri = serviceBusHelper.NamespaceUri;
-            MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
-            Scheme = serviceBusHelper.Scheme;
-            ServiceBusNamespaces = serviceBusHelper.ServiceBusNamespaces;
-            BrokeredMessageInspectors = serviceBusHelper.BrokeredMessageInspectors;
-            EventDataInspectors = serviceBusHelper.EventDataInspectors;
-            BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
-            EventDataGenerators = serviceBusHelper.EventDataGenerators;
-            TraceEnabled = serviceBusHelper.TraceEnabled;
-            SharedAccessKey = serviceBusHelper.SharedAccessKey;
-            SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
-            serviceBusQueue = serviceBusHelper.serviceBusQueue;
-            serviceBusTopic = serviceBusHelper.serviceBusTopic;
-            serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
-            serviceBusRule = serviceBusHelper.serviceBusRule;
-            serviceBusRelay = serviceBusHelper.serviceBusRelay;
-            serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
-            serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
-            serviceBusConsumerGroup = serviceBusHelper.serviceBusConsumerGroup;
-            serviceBusPartition = serviceBusHelper.serviceBusPartition;
+            lock (serviceBusHelper)
+            {
+                legacyEventOwner = serviceBusHelper.legacyEventOwner ?? serviceBusHelper;
+                MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
+                connectionString = serviceBusHelper.ConnectionString;
+                serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
+                entraTokenProvider = serviceBusHelper.entraTokenProvider;
+                namespaceManager = serviceBusHelper.namespaceManager;
+                legacyNamespaceManager = serviceBusHelper.legacyNamespaceManager;
+                managementClient = serviceBusHelper.managementClient;
+                notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
+                MessagingFactory = serviceBusHelper.messagingFactory;
+                Namespace = serviceBusHelper.Namespace;
+                NamespaceUri = serviceBusHelper.NamespaceUri;
+                MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
+                Scheme = serviceBusHelper.Scheme;
+                ServiceBusNamespaces = serviceBusHelper.ServiceBusNamespaces;
+                BrokeredMessageInspectors = serviceBusHelper.BrokeredMessageInspectors;
+                EventDataInspectors = serviceBusHelper.EventDataInspectors;
+                BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
+                EventDataGenerators = serviceBusHelper.EventDataGenerators;
+                TraceEnabled = serviceBusHelper.TraceEnabled;
+                SharedAccessKey = serviceBusHelper.SharedAccessKey;
+                SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
+                serviceBusQueue = serviceBusHelper.serviceBusQueue;
+                serviceBusTopic = serviceBusHelper.serviceBusTopic;
+                serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
+                serviceBusRule = serviceBusHelper.serviceBusRule;
+                serviceBusRelay = serviceBusHelper.serviceBusRelay;
+                serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
+                serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
+                serviceBusConsumerGroup = serviceBusHelper.serviceBusConsumerGroup;
+                serviceBusPartition = serviceBusHelper.serviceBusPartition;
+            }
         }
         #endregion
 
@@ -438,6 +443,8 @@ namespace ServiceBusExplorer
         private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
             var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            if (builder.OperationTimeout <= TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("OperationTimeout", "OperationTimeout must be positive.");
             builder.EntityPath = string.Empty;
             return builder.ToString();
         }
@@ -789,29 +796,33 @@ namespace ServiceBusExplorer
 
         private void PublishConnection(ServiceBusHelper replacement)
         {
-            serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
-            connectionString = replacement.connectionString;
-            currentSharedAccessKey = replacement.currentSharedAccessKey;
-            currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
-            namespaceUri = replacement.namespaceUri;
-            connectionStringType = replacement.connectionStringType;
-            ns = replacement.ns;
-            IsEventHubNamespace = replacement.IsEventHubNamespace;
-            namespaceManager = replacement.namespaceManager;
-            legacyNamespaceManager = replacement.legacyNamespaceManager;
-            notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
-            entraTokenProvider = replacement.entraTokenProvider;
-            managementClient = replacement.managementClient;
-            messagingFactory = replacement.messagingFactory;
-            serviceBusQueue = replacement.serviceBusQueue;
-            serviceBusTopic = replacement.serviceBusTopic;
-            serviceBusSubscription = replacement.serviceBusSubscription;
-            serviceBusRule = replacement.serviceBusRule;
-            serviceBusRelay = replacement.serviceBusRelay;
-            serviceBusNotificationHub = replacement.serviceBusNotificationHub;
-            serviceBusEventHub = replacement.serviceBusEventHub;
-            serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
-            serviceBusPartition = replacement.serviceBusPartition;
+            lock (this)
+            {
+                legacyEventOwner = null;
+                serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
+                connectionString = replacement.connectionString;
+                currentSharedAccessKey = replacement.currentSharedAccessKey;
+                currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
+                namespaceUri = replacement.namespaceUri;
+                connectionStringType = replacement.connectionStringType;
+                ns = replacement.ns;
+                IsEventHubNamespace = replacement.IsEventHubNamespace;
+                namespaceManager = replacement.namespaceManager;
+                legacyNamespaceManager = replacement.legacyNamespaceManager;
+                notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
+                entraTokenProvider = replacement.entraTokenProvider;
+                managementClient = replacement.managementClient;
+                messagingFactory = replacement.messagingFactory;
+                serviceBusQueue = replacement.serviceBusQueue;
+                serviceBusTopic = replacement.serviceBusTopic;
+                serviceBusSubscription = replacement.serviceBusSubscription;
+                serviceBusRule = replacement.serviceBusRule;
+                serviceBusRelay = replacement.serviceBusRelay;
+                serviceBusNotificationHub = replacement.serviceBusNotificationHub;
+                serviceBusEventHub = replacement.serviceBusEventHub;
+                serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
+                serviceBusPartition = replacement.serviceBusPartition;
+            }
         }
 
         private bool InitializeConnection(ServiceBusNamespace serviceBusNamespace)
@@ -5653,18 +5664,19 @@ namespace ServiceBusExplorer
                 var manager = NamespaceManager;
                 if (manager == null)
                     throw new InvalidOperationException("Legacy entity management is unavailable for this connection.");
-                entity = CreateServiceBusEntity((sbn, _) => initialization(sbn, manager));
+                entity = CreateServiceBusEntity((sbn, _) => initialization(sbn, manager), legacyEventOwner);
                 return entity;
             }
         }
 
-        private T CreateServiceBusEntity<T>(Func<ServiceBusNamespace, NamespaceManager, T> initialization) where T : IServiceBusEntity
+        private T CreateServiceBusEntity<T>(Func<ServiceBusNamespace, NamespaceManager, T> initialization, ServiceBusHelper eventOwner = null) where T : IServiceBusEntity
         {
+            eventOwner = eventOwner ?? this;
             T entity = initialization(serviceBusNamespaceInstance, namespaceManager);
             entity.Scheme = scheme;
-            entity.OnCreate += args => OnCreate?.Invoke(args);
-            entity.OnDelete += args => OnDelete?.Invoke(args);
-            entity.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+            entity.OnCreate += args => eventOwner.OnCreate?.Invoke(args);
+            entity.OnDelete += args => eventOwner.OnDelete?.Invoke(args);
+            entity.WriteToLog = (message, async) => eventOwner.WriteToLogIf(eventOwner.traceEnabled, message, async);
             return entity;
         }
 
