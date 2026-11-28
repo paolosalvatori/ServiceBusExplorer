@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.UIHelpers
@@ -67,6 +68,15 @@ namespace ServiceBusExplorer.UIHelpers
                         if (IsCurrent()) display(text);
                     }
                 }
+            }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.SessionCannotBeLocked)
+            {
+                if (IsCurrent()) display("Session is locked by another receiver. Select it again after release.");
+            }
+            catch (Exception ex) when (ex is TimeoutException ||
+                ex is ServiceBusException serviceBus && serviceBus.Reason == ServiceBusFailureReason.ServiceTimeout)
+            {
+                if (IsCurrent()) display("Session state inspection timed out. Select the session again to retry.");
             }
             catch (Exception ex)
             {

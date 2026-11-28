@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Azure.Messaging.ServiceBus;
 using System.Threading.Tasks;
 using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.UIHelpers;
@@ -65,6 +66,24 @@ namespace ServiceBusExplorer.Tests.Helpers
             else Assert.Empty(errors);
             await view.ReadModernAsync(new SessionInfo("A"), _ => Task.FromResult(Encoding.UTF8.GetBytes("fresh")));
             Assert.Equal("fresh", text);
+        }
+
+        [Theory]
+        [InlineData(ServiceBusFailureReason.SessionCannotBeLocked, "locked by another receiver")]
+        [InlineData(ServiceBusFailureReason.ServiceTimeout, "timed out")]
+        public async Task BusyAndTimeoutAreNonfatalAndReselectingReadsFreshState(ServiceBusFailureReason reason, string status)
+        {
+            string text = null;
+            var errors = new List<Exception>();
+            var view = new SessionStateView(value => text = value, errors.Add, () => true);
+            var selection = new SessionInfo("selected");
+            await view.ReadModernAsync(selection, _ => Task.FromException<byte[]>(new ServiceBusException("broker", reason)));
+            Assert.Contains(status, text);
+            await view.ReadModernAsync(selection, _ => Task.FromException<byte[]>(new TimeoutException()));
+            Assert.Contains("timed out", text);
+            await view.ReadModernAsync(selection, _ => Task.FromResult(Encoding.UTF8.GetBytes("available")));
+            Assert.Equal("available", text);
+            Assert.Empty(errors);
         }
 
         [Fact]
