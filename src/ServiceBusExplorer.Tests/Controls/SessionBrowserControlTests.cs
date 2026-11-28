@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Azure.Messaging.ServiceBus;
 using ServiceBusExplorer.Controls;
 using ServiceBusExplorer.Forms;
 using ServiceBusExplorer.Helpers;
@@ -48,7 +49,7 @@ namespace ServiceBusExplorer.Tests.Controls
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void RowSelectionUsesSdkTimeoutEvenWhenReceiveTimeoutIsZero(bool subscription)
+        public void RowSelectionIsIndependentOfReceiveTimeoutAndSharesPendingReads(bool subscription)
         {
             RunUi(subscription, async (control, helper) =>
             {
@@ -71,6 +72,29 @@ namespace ServiceBusExplorer.Tests.Controls
                 Assert.Equal(helper.ListSubscription, helper.ReadSubscription);
 
                 await CompleteReadAndCheckDisplay(state, pending, "state A");
+            });
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void LockedSelectionShowsStatusAndCanReadAgainAfterRelease(bool subscription)
+        {
+            RunUi(subscription, async (control, helper) =>
+            {
+                await Refresh(control);
+                var grid = Find<DataGridView>(control, "sessionsDataGridView");
+                var state = Find<TextBox>(control, "txtSessionState");
+                helper.Read = _ => Task.FromException<byte[]>(new ServiceBusException("held", ServiceBusFailureReason.SessionCannotBeLocked));
+                grid.CurrentCell = grid.Rows[0].Cells[0];
+                Assert.Contains("locked by another receiver", state.Text);
+                Assert.DoesNotContain(helper.Logs, line => line.Contains("held"));
+
+                helper.Read = id => Task.FromResult(Encoding.UTF8.GetBytes("released " + id));
+                await Refresh(control);
+                grid.CurrentCell = grid.Rows[0].Cells[0];
+                Assert.Equal("released A", state.Text);
+                Assert.Equal(new[] { "A", "A" }, helper.ReadIds);
             });
         }
 

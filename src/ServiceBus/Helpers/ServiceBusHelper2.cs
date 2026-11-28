@@ -98,11 +98,15 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
         /// </summary>
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
-        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false) =>
+            CreateServiceBusClient(enableCrossEntityTransactions, null);
+
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions, ServiceBusRetryOptions retryOptions)
         {
             if (DataPlaneUnavailableReason != null) throw new NotSupportedException(DataPlaneUnavailableReason);
             var endpoint = IsEntra ? DataPlaneEndpoint : ServiceBusConnectionStringProperties.Parse(ConnectionString).Endpoint;
             var options = new ServiceBusClientOptions { TransportType = TransportType, EnableCrossEntityTransactions = enableCrossEntityTransactions };
+            if (retryOptions != null) options.RetryOptions = retryOptions;
             if (endpoint != null && !endpoint.IsDefaultPort)
                 options.CustomEndpointAddress = endpoint;
 

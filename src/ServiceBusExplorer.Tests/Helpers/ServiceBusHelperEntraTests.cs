@@ -923,6 +923,23 @@ namespace ServiceBusExplorer.Tests.Helpers
             }
         }
 
+        [Fact]
+        public async Task ManualListenerUsesExplicitSasOnFreshHelper()
+        {
+            var helper = new ServiceBusHelper((_, __) => { });
+            Assert.Null(helper.ConnectionString);
+            const string connection = "Endpoint=sb://manual.servicebus.windows.net/;SharedAccessKeyName=listen;SharedAccessKey=dGVzdA==;EntityPath=orders";
+            var consumer = helper.CreateEventHubConsumerClient("orders", "workers", connection);
+            try
+            {
+                Assert.Equal("manual.servicebus.windows.net", consumer.FullyQualifiedNamespace);
+                Assert.Equal("orders", consumer.EventHubName);
+                Assert.Equal("workers", consumer.ConsumerGroup);
+                Assert.Null(helper.ConnectionString);
+            }
+            finally { await consumer.DisposeAsync(); }
+        }
+
         static T GetPrivateField<T>(object instance, string fieldName)
         {
             var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
