@@ -4684,7 +4684,10 @@ namespace ServiceBusExplorer
             });
         }
 
-        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false) =>
+            CreateServiceBusClient(enableCrossEntityTransactions, null);
+
+        private ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions, ServiceBusRetryOptions retryOptions)
         {
             var serviceBusHelper2 = GetServiceBusHelper2();
             if (!serviceBusHelper2.IsEntra)
@@ -4693,7 +4696,7 @@ namespace ServiceBusExplorer
                     ConnectionString,
                     IsEmulator);
             }
-            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
+            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions, retryOptions);
         }
 
         public virtual async Task<List<SessionInfo>> GetMessageSessionsFromModernDataPlane(
@@ -4724,37 +4727,10 @@ namespace ServiceBusExplorer
             ValidateSessionSelector(sessionId);
             cancellationToken.ThrowIfCancellationRequested();
 
-            var client = CreateServiceBusClient();
-            ServiceBusSessionReceiver receiver = null;
-            try
-            {
-                var options = new ServiceBusSessionReceiverOptions
-                {
-                    ReceiveMode = ServiceBusReceiveMode.PeekLock
-                };
-                receiver = string.IsNullOrWhiteSpace(subscriptionName)
-                    ? await client.AcceptSessionAsync(entityPath, sessionId, options, cancellationToken)
-                        .ConfigureAwait(false)
-                    : await client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, cancellationToken)
-                        .ConfigureAwait(false);
-
-                var state = await receiver.GetSessionStateAsync(cancellationToken).ConfigureAwait(false);
-                return state?.ToArray();
-            }
-            finally
-            {
-                try
-                {
-                    if (receiver != null)
-                    {
-                        await receiver.DisposeAsync().ConfigureAwait(false);
-                    }
-                }
-                finally
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
-            }
+            var timeout = TimeSpan.FromSeconds(5);
+            var client = CreateServiceBusClient(false, new ServiceBusRetryOptions { MaxRetries = 0, TryTimeout = timeout });
+            return await SessionBrowser.ReadStateAsync(client, entityPath, subscriptionName, sessionId, timeout,
+                cancellationToken).ConfigureAwait(false);
         }
 
         public ServiceBusSessionReceiver AcceptNextSessionFromModernDataPlane(

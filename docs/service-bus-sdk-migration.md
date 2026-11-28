@@ -270,3 +270,15 @@ receiver, including AMQP Sequence, stops replay before settlement. Legacy
 DataContract String and ByteArray edits retain their serialized format. Ordinary
 stream edits use UTF-8. Bulk and single replay exclude prior dead-letter and
 NServiceBus recovery properties.
+
+### Browsing sessions
+
+**Get Message Sessions** on a queue or subscription lists session IDs with active
+messages or persisted state using the modern AMQP client. Listing and populating
+the grid do not acquire locks. Selecting a row explicitly accepts that one session
+to read its state and releases the receiver afterward. Another receiver can hold
+the session during listing. In that case, inspecting its state displays a busy
+status. After release, refresh the list and select the row again. Inspection has a five-second total
+wait and no SDK retries. A timeout leaves the browser available for another
+selection while the SDK finishes cleanup. Namespace administration retains API
+version 2021-05 independently of the AMQP session discovery operation.
