@@ -792,11 +792,6 @@ namespace ServiceBusExplorer.Helpers
 
             if (!endpoint.Contains("://"))
                 endpoint = "sb://" + endpoint;
-            if (!System.Uri.TryCreate(endpoint, UriKind.Absolute, out var address) || string.IsNullOrEmpty(address.Host))
-            {
-                staticWriteToLog($"Skipping {key}: the Entra namespace endpoint is invalid.");
-                return null;
-            }
 
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);
 
