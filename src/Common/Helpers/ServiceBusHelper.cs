@@ -839,7 +839,8 @@ namespace ServiceBusExplorer
 
                 // Reset connection-scoped state so reconnects don't carry over stale values.
                 IsEventHubNamespace = false;
-                var administrationOptions = new ServiceBusAdministrationClientOptions();
+                // Preserve the pre-upgrade API for cloud and emulator management.
+                var administrationOptions = new ServiceBusAdministrationClientOptions(ServiceBusAdministrationClientOptions.ServiceVersion.V2021_05);
                 administrationOptions.Retry.MaxRetries = RetryHelper.RetryCount;
                 var administrationClient = isEntra
                     ? new ServiceBusAdministrationClient(serviceBusNamespace.FullyQualifiedNamespace,
@@ -4683,7 +4684,10 @@ namespace ServiceBusExplorer
             });
         }
 
-        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false) =>
+            CreateServiceBusClient(enableCrossEntityTransactions, null);
+
+        private ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions, ServiceBusRetryOptions retryOptions)
         {
             var serviceBusHelper2 = GetServiceBusHelper2();
             if (!serviceBusHelper2.IsEntra)
@@ -4692,7 +4696,41 @@ namespace ServiceBusExplorer
                     ConnectionString,
                     IsEmulator);
             }
-            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
+            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions, retryOptions);
+        }
+
+        public virtual async Task<List<SessionInfo>> GetMessageSessionsFromModernDataPlane(
+            string entityPath, string subscriptionName, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            cancellationToken.ThrowIfCancellationRequested();
+            return await SessionBrowser.ListAsync(CreateServiceBusClient(), entityPath,
+                subscriptionName, cancellationToken).ConfigureAwait(false);
+        }
+
+        public virtual async Task<byte[]> GetSessionStateFromModernDataPlane(
+            string entityPath,
+            string subscriptionName,
+            string sessionId,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(entityPath))
+            {
+                throw new ArgumentException("An entity path is required.", nameof(entityPath));
+            }
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                throw new ArgumentException("A session identifier is required.", nameof(sessionId));
+            }
+
+            ValidateSessionSelector(sessionId);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var timeout = TimeSpan.FromSeconds(5);
+            var client = CreateServiceBusClient(false, new ServiceBusRetryOptions { MaxRetries = 0, TryTimeout = timeout });
+            return await SessionBrowser.ReadStateAsync(client, entityPath, subscriptionName, sessionId, timeout,
+                cancellationToken).ConfigureAwait(false);
         }
 
         public ServiceBusSessionReceiver AcceptNextSessionFromModernDataPlane(
