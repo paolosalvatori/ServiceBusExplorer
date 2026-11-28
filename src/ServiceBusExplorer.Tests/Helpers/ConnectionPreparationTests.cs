@@ -9,6 +9,21 @@ namespace ServiceBusExplorer.Tests.Helpers
     [Collection("Connection settings publication")]
     public class ConnectionPreparationTests
     {
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ManagementConnectDoesNotCreateLegacyMessagingTransport(bool emulator)
+        {
+            var helper = new ServiceBusHelper((_, __) => { });
+            var connection = "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic" +
+                (emulator ? ";UseDevelopmentEmulator=true" : "");
+            var profile = ServiceBusNamespace.GetServiceBusNamespace("local", connection, (_, __) => { });
+            Assert.True(helper.Connect(profile));
+            Assert.Null(typeof(ServiceBusHelper).GetField("messagingFactory", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(helper));
+            Assert.NotNull(typeof(ServiceBusHelper).GetField("managementClient", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(helper));
+            Assert.Equal(emulator, helper.IsEmulator);
+        }
+
         [Fact]
         public void FailureAfterLocalDnsResolutionPreservesPublishedProfileAndAdapters()
         {

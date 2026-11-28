@@ -760,49 +760,22 @@ namespace ServiceBusExplorer.Controls
                     entityPath = form.Path;
                 }
 
-                var sent = 0;
-                var messageSender = await serviceBusHelper.MessagingFactory.CreateMessageSenderAsync(entityPath);
-                var messages = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>().Select(r =>
-                {
-                    var message = r.DataBoundItem as BrokeredMessage;
-                    serviceBusHelper.GetMessageText(message, MainForm.SingletonMainForm.UseAscii, out var bodyType);
-                    if (bodyType == BodyType.Wcf)
-                    {
-                        var wcfUri = serviceBusHelper.IsCloudNamespace
-                            ? new Uri(serviceBusHelper.NamespaceUri, messageSender.Path)
-                            : new UriBuilder
-                            {
-                                Host = serviceBusHelper.NamespaceUri.Host,
-                                Path = $"{serviceBusHelper.NamespaceUri.AbsolutePath}/{messageSender.Path}",
-                                Scheme = "sb"
-                            }.Uri;
-                        return serviceBusHelper.CreateMessageForWcfReceiver(message,
-                            0,
-                            false,
-                            false,
-                            wcfUri);
-                    }
-
-                    return serviceBusHelper.CreateMessageForApiReceiver(message,
-                        0,
-                        false,
-                        false,
-                        bodyType,
-                        null);
-                });
-                IEnumerable<BrokeredMessage> brokeredMessages = messages as IList<BrokeredMessage> ?? messages.ToList();
-                if (brokeredMessages.Any())
-                {
-                    sent = brokeredMessages.Count();
-                    await messageSender.SendBatchAsync(brokeredMessages);
-                }
-
-                writeToLog(string.Format(MessageSentMessage, sent, entityPath));
+                await ResubmitSelectedMessagesToAsync(entityPath, MainForm.SingletonMainForm.UseAscii);
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
+        }
+
+        // Both resubmit menu entries reach this continuation after destination selection.
+        internal async Task ResubmitSelectedMessagesToAsync(string entityPath, bool useAscii)
+        {
+            var rows = messagesDataGridView.SelectedRows.Cast<DataGridViewRow>()
+                .Select(row => (BrokeredMessage)row.DataBoundItem).ToList();
+            var sent = await serviceBusHelper.ResubmitMessagesAsync(entityPath, rows, useAscii,
+                CancellationToken.None);
+            writeToLog(string.Format(MessageSentMessage, sent, entityPath));
         }
 
         private void pictFindMessages_Click(object sender, EventArgs e)
