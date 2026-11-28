@@ -564,7 +564,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 try
                 {
-                    eventHubDescription = await serviceBusHelper.NamespaceManager.GetEventHubAsync(eventHubDescription.Path);
+                    eventHubDescription = await serviceBusHelper.GetEventHubAsync(eventHubDescription.Path);
                 }
                 catch (Exception ex)
                 {

@@ -44,6 +44,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 #endregion
@@ -86,10 +87,6 @@ namespace ServiceBusExplorer.Controls
         private const string Label = "Label";
         private const string EnqueuedTimeUtc = "EnqueuedTimeUtc";
         private const string ExpiresAtUtc = "ExpiresAtUtc";
-        private const string SessionId = "SessionId";
-        private const string Path = "Path";
-        private const string Mode = "Mode";
-        private const string BatchFlushInterval = "BatchFlushInterval";
 
         //***************************
         // Messages
@@ -198,7 +195,7 @@ namespace ServiceBusExplorer.Controls
         private DateTime? deadletterFilterToDate;
         private SortableBindingList<BrokeredMessage> messageBindingList;
         private SortableBindingList<BrokeredMessage> deadletterBindingList;
-        private SortableBindingList<MessageSession> sessionBindingList;
+        private SortableBindingList<SessionInfo> sessionBindingList;
         private bool buttonsMoved;
         private readonly bool duplicateExistingSubscription;
         private Button btnCopyMessageBody;
@@ -301,32 +298,31 @@ namespace ServiceBusExplorer.Controls
             writeToLog("Transfer dead-letter browsing for subscriptions is not supported by this view. No messages were read.");
         }
 
-        public void GetMessageSessions()
+        private CancellationTokenSource sessionDiscovery;
+        private bool bindingSessions;
+
+        public async Task GetMessageSessions()
         {
+            if (sessionDiscovery != null || IsDisposed || Disposing) return;
+            using var discovery = new CancellationTokenSource();
+            sessionDiscovery = discovery;
             try
             {
-                mainTabControl.SuspendDrawing();
-                mainTabControl.SuspendLayout();
-                tabPageSessions.SuspendDrawing();
-                tabPageSessions.SuspendLayout();
-
-                var subscriptionClient =
-                    serviceBusHelper.MessagingFactory.CreateSubscriptionClient(
-                        subscriptionWrapper.SubscriptionDescription.TopicPath,
-                        subscriptionWrapper.SubscriptionDescription.Name,
-                        ReceiveMode.PeekLock);
-                var sessionEnumerable = subscriptionClient.GetMessageSessions();
-                if (sessionEnumerable == null)
-                {
-                    return;
-                }
                 Cursor.Current = Cursors.WaitCursor;
+
+                var messageSessions = await serviceBusHelper.GetMessageSessionsFromModernDataPlane(
+                    subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, discovery.Token);
+                if (discovery.IsCancellationRequested) return;
+
+                // Rebinding can raise RowEnter before the grid is deselected.
+                bindingSessions = true;
+                await sessionStateView.ReadAsync(null);
+                sessionPropertyGrid.SelectedObject = null;
                 if (mainTabControl.TabPages[SessionsTabPage] == null)
                 {
                     EnablePage(SessionsTabPage);
                 }
-                var messageSessions = sessionEnumerable as MessageSession[] ?? sessionEnumerable.ToArray();
-                sessionBindingList = new SortableBindingList<MessageSession>(messageSessions)
+                sessionBindingList = new SortableBindingList<SessionInfo>(messageSessions)
                 {
                     AllowEdit = false,
                     AllowNew = false,
@@ -347,17 +343,17 @@ namespace ServiceBusExplorer.Controls
                 {
                     mainTabControl.SelectTab(SessionsTabPage);
                 }
+                sessionsDataGridView.ClearSelection();
+                sessionsDataGridView.CurrentCell = null;
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                if (!discovery.IsCancellationRequested) HandleException(ex);
             }
             finally
             {
-                mainTabControl.ResumeLayout();
-                mainTabControl.ResumeDrawing();
-                tabPageSessions.ResumeLayout();
-                tabPageSessions.ResumeDrawing();
+                bindingSessions = false;
+                sessionDiscovery = null;
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -553,41 +549,12 @@ namespace ServiceBusExplorer.Controls
             sessionsDataGridView.AutoGenerateColumns = false;
             sessionsDataGridView.AutoSize = true;
 
-            // Create the SessionId column
-            textBoxColumn = new DataGridViewTextBoxColumn
+            sessionsDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
-                DataPropertyName = SessionId,
-                Name = SessionId,
-                Width = 120
-            };
-            sessionsDataGridView.Columns.Add(textBoxColumn);
-
-            // Create the Path column
-            textBoxColumn = new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = Path,
-                Name = Path,
-                Width = 120
-            };
-            sessionsDataGridView.Columns.Add(textBoxColumn);
-
-            // Create the Mode column
-            textBoxColumn = new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = Mode,
-                Name = Mode,
-                Width = 120
-            };
-            sessionsDataGridView.Columns.Add(textBoxColumn);
-
-            // Create the BatchFlushInterval column
-            textBoxColumn = new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = BatchFlushInterval,
-                Name = BatchFlushInterval,
-                Width = 120
-            };
-            sessionsDataGridView.Columns.Add(textBoxColumn);
+                DataPropertyName = nameof(SessionInfo.SessionId),
+                Name = nameof(SessionInfo.SessionId),
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
 
             // Set the selection background color for all the cells.
             sessionsDataGridView.DefaultCellStyle.SelectionBackColor = Color.FromArgb(92, 125, 150);
@@ -1655,7 +1622,7 @@ namespace ServiceBusExplorer.Controls
                 return;
             }
             var dataGridView = sender as DataGridView;
-            if (dataGridView == null || dataGridView.Columns.Count == 0)
+            if (dataGridView == null || dataGridView.ColumnCount < 2)
             {
                 return;
             }
@@ -1692,23 +1659,6 @@ namespace ServiceBusExplorer.Controls
                     dataGridView.Columns[4].Width = columnWidth + (width - (columnWidth * 4)) + 10;
                     dataGridView.Columns[5].Width = columnWidth + 10;
                 }
-                if (dataGridView == sessionsDataGridView &&
-                    dataGridView.ColumnCount == 4)
-                {
-                    var width = dataGridView.Width - dataGridView.RowHeadersWidth;
-                    var verticalScrollbar = dataGridView.Controls.OfType<VScrollBar>().First();
-                    if (verticalScrollbar != null && verticalScrollbar.Visible)
-                    {
-                        width -= verticalScrollbar.Width;
-                    }
-                    const int columnNumber = 4;
-                    var columnWidth = width / columnNumber;
-                    for (var i = 0; i < 3; i++)
-                    {
-                        dataGridView.Columns[i].Width = columnWidth;
-                    }
-                    dataGridView.Columns[3].Width = columnWidth + (width - (columnWidth * columnNumber));
-                }
             }
             finally
             {
@@ -1722,9 +1672,9 @@ namespace ServiceBusExplorer.Controls
             GetMessages();
         }
 
-        private void btnSessions_Click(object sender, EventArgs e)
+        private async void btnSessions_Click(object sender, EventArgs e)
         {
-            GetMessageSessions();
+            await GetMessageSessions();
         }
 
         private void messagesDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -1754,11 +1704,13 @@ namespace ServiceBusExplorer.Controls
 
         private async void sessionsDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            var sessions = sessionsBindingSource.DataSource as BindingList<MessageSession>;
+            if (bindingSessions || IsDisposed || Disposing) return;
+            var sessions = sessionsBindingSource.DataSource as BindingList<SessionInfo>;
             var selected = sessions != null && e.RowIndex >= 0 && e.RowIndex < sessions.Count ? sessions[e.RowIndex] : null;
-            var read = sessionStateView.ShowAsync(selected);
             sessionPropertyGrid.SelectedObject = selected;
-            await read;
+            await sessionStateView.ReadModernAsync(selected, sessionId =>
+                serviceBusHelper.GetSessionStateFromModernDataPlane(
+                    subscriptionWrapper.SubscriptionDescription.TopicPath, subscriptionWrapper.SubscriptionDescription.Name, sessionId, CancellationToken.None));
         }
 
         private void grouperMessageList_CustomPaint(PaintEventArgs e)
@@ -2451,6 +2403,7 @@ namespace ServiceBusExplorer.Controls
             {
                 if (disposing)
                 {
+                    sessionDiscovery?.Cancel();
                     components?.Dispose();
                 }
 
