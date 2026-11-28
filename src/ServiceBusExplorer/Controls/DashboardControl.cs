@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using ServiceBusExplorer.UIHelpers.Theming;
 
 namespace ServiceBusExplorer.Controls
@@ -29,7 +30,9 @@ namespace ServiceBusExplorer.Controls
         private Func<IEnumerable<TopicDescription>> getTopics;
         private Func<string, IEnumerable<SubscriptionDescription>> getSubscriptions;
         private Action<string> writeToLog;
-        private int isLoading;
+        // Initialized and published on the UI thread. Each worker captures only its connection's loaders.
+        private System.Threading.CancellationTokenSource connectionLifetime = new System.Threading.CancellationTokenSource();
+        private bool isLoading;
         private List<DashboardRow> allRows = new List<DashboardRow>();
         private CheckBox syncWithTreeViewCheckBox;
 
@@ -56,6 +59,16 @@ namespace ServiceBusExplorer.Controls
             Func<string, IEnumerable<SubscriptionDescription>> getSubscriptionsFunc,
             Action<string> log)
         {
+            connectionLifetime.Cancel();
+            connectionLifetime.Dispose();
+            connectionLifetime = new System.Threading.CancellationTokenSource();
+            isLoading = false;
+            allRows.Clear();
+            dataGridView.Rows.Clear();
+            bool available = getQueuesFunc != null || getTopicsFunc != null;
+            refreshButton.Enabled = autoRefreshCheckBox.Enabled = available;
+            UpdateAutoRefresh();
+            statusLabel.Text = available ? string.Empty : "No queues or topics selected";
             getQueues = getQueuesFunc;
             getTopics = getTopicsFunc;
             getSubscriptions = getSubscriptionsFunc;
@@ -253,18 +266,16 @@ namespace ServiceBusExplorer.Controls
 
         private void AutoRefreshCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            intervalComboBox.Enabled = autoRefreshCheckBox.Checked;
-            autoRefreshTimer.Enabled = autoRefreshCheckBox.Checked;
-            warningPanel.Visible = autoRefreshCheckBox.Checked;
-            if (autoRefreshCheckBox.Checked)
-            {
-                autoRefreshTimer.Interval = GetIntervalMs();
-                autoRefreshTimer.Start();
-            }
-            else
-            {
-                autoRefreshTimer.Stop();
-            }
+            UpdateAutoRefresh();
+        }
+
+        private void UpdateAutoRefresh()
+        {
+            var enabled = autoRefreshCheckBox.Enabled && autoRefreshCheckBox.Checked;
+            intervalComboBox.Enabled = enabled;
+            warningPanel.Visible = enabled;
+            autoRefreshTimer.Interval = GetIntervalMs();
+            autoRefreshTimer.Enabled = enabled;
         }
 
         private void IntervalComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -289,6 +300,7 @@ namespace ServiceBusExplorer.Controls
 
         private async System.Threading.Tasks.Task RequestRefreshAsync()
         {
+            if (getQueues == null && getTopics == null) return;
             if (OnRefreshRequested != null)
             {
                 await OnRefreshRequested();
@@ -301,21 +313,26 @@ namespace ServiceBusExplorer.Controls
 
         public async System.Threading.Tasks.Task LoadDataAsync()
         {
-            if (getQueues == null || getTopics == null || getSubscriptions == null) return;
-            if (System.Threading.Interlocked.CompareExchange(ref isLoading, 1, 0) != 0) return;
+            if (isLoading || (getQueues == null && getTopics == null)) return;
+            var token = connectionLifetime.Token;
+            var loadQueues = getQueues;
+            var loadTopics = getTopics;
+            var loadSubscriptions = getSubscriptions;
+            isLoading = true;
             refreshButton.Enabled = false;
             statusLabel.Text = "Loading...";
 
             try
             {
                 var errors = new List<string>();
-                var rows = await System.Threading.Tasks.Task.Run(() =>
+                var rows = await Task.Run(() =>
                 {
                     var result = new List<DashboardRow>();
 
                     try
                     {
-                        var queues = getQueues();
+                        token.ThrowIfCancellationRequested();
+                        var queues = loadQueues?.Invoke();
                         if (queues != null)
                         {
                             foreach (var q in queues)
@@ -332,21 +349,23 @@ namespace ServiceBusExplorer.Controls
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!token.IsCancellationRequested)
                     {
                         errors.Add($"Dashboard: Error loading queues: {ex.Message}");
                     }
 
                     try
                     {
-                        var topics = getTopics();
+                        token.ThrowIfCancellationRequested();
+                        var topics = loadTopics?.Invoke();
                         if (topics != null)
                         {
                             foreach (var t in topics)
                             {
                                 try
                                 {
-                                    var subscriptions = getSubscriptions(t.Path);
+                                    token.ThrowIfCancellationRequested();
+                                    var subscriptions = loadSubscriptions(t.Path);
                                     if (subscriptions != null)
                                     {
                                         foreach (var s in subscriptions)
@@ -363,20 +382,22 @@ namespace ServiceBusExplorer.Controls
                                         }
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception ex) when (!token.IsCancellationRequested)
                                 {
                                     errors.Add($"Dashboard: Error loading subscriptions for {t.Path}: {ex.Message}");
                                 }
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!token.IsCancellationRequested)
                     {
                         errors.Add($"Dashboard: Error loading topics: {ex.Message}");
                     }
 
                     return result;
                 });
+
+                if (token.IsCancellationRequested) return;
 
                 // Log errors on UI thread (after await resumes on UI context)
                 foreach (var error in errors)
@@ -388,6 +409,10 @@ namespace ServiceBusExplorer.Controls
                 PopulateGrid(rows);
                 statusLabel.Text = $"Last refresh: {DateTime.Now:HH:mm:ss} — {rows.Count} items";
             }
+            catch (Exception) when (token.IsCancellationRequested)
+            {
+                // A connection switch superseded this refresh.
+            }
             catch (Exception ex)
             {
                 statusLabel.Text = $"Error: {ex.Message}";
@@ -395,8 +420,11 @@ namespace ServiceBusExplorer.Controls
             }
             finally
             {
-                refreshButton.Enabled = true;
-                System.Threading.Interlocked.Exchange(ref isLoading, 0);
+                if (!token.IsCancellationRequested)
+                {
+                    refreshButton.Enabled = true;
+                    isLoading = false;
+                }
             }
         }
 
@@ -578,8 +606,10 @@ namespace ServiceBusExplorer.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && !IsDisposed)
             {
+                connectionLifetime.Cancel();
+                connectionLifetime.Dispose();
                 autoRefreshTimer?.Stop();
                 autoRefreshTimer?.Dispose();
                 contextMenu?.Dispose();

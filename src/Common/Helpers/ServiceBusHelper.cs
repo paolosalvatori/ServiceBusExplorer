@@ -195,6 +195,8 @@ namespace ServiceBusExplorer
         {
             this.writeToLog = writeToLog;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
+            connectionStringType = serviceBusHelper.connectionStringType;
+            IsEventHubNamespace = serviceBusHelper.IsEventHubNamespace;
             connectionString = serviceBusHelper.ConnectionString;
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
             entraTokenProvider = serviceBusHelper.entraTokenProvider;
@@ -729,6 +731,9 @@ namespace ServiceBusExplorer
                                               path,
                                               options);
         }
+
+        public virtual Task<IEnumerable<EventHubDescription>> ListEventHubsForDiscoveryAsync() =>
+            NamespaceManager.GetEventHubsAsync();
 
         /// <summary>
         /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.

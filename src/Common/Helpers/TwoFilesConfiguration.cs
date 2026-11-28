@@ -145,6 +145,12 @@ namespace ServiceBusExplorer.Helpers
         #region Public instance methods
         public string GetStringValue(string AppSettingKey, string defaultValue = "")
         {
+            return GetStringValue(AppSettingKey, out _, defaultValue);
+        }
+
+        internal string GetStringValue(string AppSettingKey, out ConfigFileUse source, string defaultValue = "")
+        {
+            source = ConfigFileUse.None;
             string result = null;
 
             if (userConfiguration != null && UseUserConfig())
@@ -153,6 +159,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrEmpty(result))
                 {
+                    source = ConfigFileUse.UserConfig;
                     return result;
                 }
             }
@@ -163,6 +170,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrEmpty(result))
                 {
+                    source = ConfigFileUse.ApplicationConfig;
                     return result;
                 }
             }
@@ -344,7 +352,10 @@ namespace ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public Hashtable GetHashtableFromSection(string sectionName)
+        public Hashtable GetHashtableFromSection(string sectionName) =>
+            GetHashtableFromSection(sectionName, null);
+
+        public Hashtable GetHashtableFromSection(string sectionName, Action<Configuration, string> readEntrySetting)
         {
             Hashtable sectionValues = null;
 
@@ -354,7 +365,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (null != sectionInApp)
                 {
-                    sectionValues = GetHashtableFromConfigurationSection(sectionInApp);
+                    sectionValues = GetHashtableFromConfigurationSection(sectionInApp, applicationConfiguration, readEntrySetting);
                 }
             }
 
@@ -364,7 +375,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (null != sectionInUser)
                 {
-                    var sectionValuesInUserConfig = GetHashtableFromConfigurationSection(sectionInUser);
+                    var sectionValuesInUserConfig = GetHashtableFromConfigurationSection(sectionInUser, userConfiguration, readEntrySetting);
 
                     // If sectionValues has not been set previously or configFileUse is set to read 
                     // just the user config then return what we got.
@@ -409,7 +420,11 @@ namespace ServiceBusExplorer.Helpers
             return (null != resultStringApp);
         }
 
-        public void AddEntryToDictionarySection(string sectionName, string key, string value)
+        public void AddEntryToDictionarySection(string sectionName, string key, string value) =>
+            AddEntryToDictionarySection(sectionName, key, value, null);
+
+        public void AddEntryToDictionarySection(string sectionName, string key, string value,
+            Action<Configuration> updateSettings)
         {
             AquireUserConfigurationIfNeeded();
 
@@ -437,10 +452,12 @@ namespace ServiceBusExplorer.Helpers
 
             if (UseUserConfig())
             {
+                updateSettings?.Invoke(userConfiguration);
                 userConfiguration.Save();
             }
             else
             {
+                updateSettings?.Invoke(applicationConfiguration);
                 applicationConfiguration.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection(sectionName);
             }
@@ -448,7 +465,11 @@ namespace ServiceBusExplorer.Helpers
 
         // It tries to update the section in both of the files
         public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey,
-            string newValue, WriteToLogDelegate writeToLog)
+            string newValue, WriteToLogDelegate writeToLog) =>
+            UpdateEntryInDictionarySection(sectionName, key, newKey, newValue, writeToLog, null);
+
+        public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey,
+            string newValue, WriteToLogDelegate writeToLog, Action<Configuration> updateSettings)
         {
             bool updatedUser = false;
             bool updatedApp = false;
@@ -462,6 +483,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (updatedUser)
                 {
+                    updateSettings?.Invoke(userConfiguration);
                     userConfiguration.Save();
                 }
             }
@@ -476,6 +498,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (updatedApp)
                 {
+                    updateSettings?.Invoke(applicationConfiguration);
                     applicationConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);
                     ConfigurationManager.RefreshSection(sectionName);
                 }
@@ -488,7 +511,11 @@ namespace ServiceBusExplorer.Helpers
         }
 
         public void RemoveEntryFromDictionarySection(string sectionName, string key,
-            WriteToLogDelegate writeToLog)
+            WriteToLogDelegate writeToLog) =>
+            RemoveEntryFromDictionarySection(sectionName, key, writeToLog, null);
+
+        public void RemoveEntryFromDictionarySection(string sectionName, string key,
+            WriteToLogDelegate writeToLog, Action<Configuration> updateSettings)
         {
             bool removedUser = false;
             bool removedApp = false;
@@ -502,6 +529,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (removedUser)
                 {
+                    updateSettings?.Invoke(userConfiguration);
                     userConfiguration.Save();
                 }
             }
@@ -516,6 +544,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (removedApp)
                 {
+                    updateSettings?.Invoke(applicationConfiguration);
                     applicationConfiguration.Save(ConfigurationSaveMode.Modified, forceSaveAll: true);
                     ConfigurationManager.RefreshSection(sectionName);
                 }
@@ -570,6 +599,12 @@ namespace ServiceBusExplorer.Helpers
                 var stringValue = Convert.ToString(value, CultureInfo.InvariantCulture);
                 SetValueInAppropriateConfigurations(AppSettingKey, stringValue);
             }
+        }
+
+        internal void SaveStringSetting(string key, string value)
+        {
+            SetValue(key, value);
+            (UseUserConfig() ? userConfiguration : applicationConfiguration).Save(ConfigurationSaveMode.Modified);
         }
 
         public void Save()
@@ -651,7 +686,8 @@ namespace ServiceBusExplorer.Helpers
                                        "The setting is therefore ignored.");
         }
 
-        static Hashtable GetHashtableFromConfigurationSection(ConfigurationSection section)
+        static Hashtable GetHashtableFromConfigurationSection(ConfigurationSection section, Configuration file,
+            Action<Configuration, string> readEntrySetting)
         {
             var xml = section.SectionInformation.GetRawXml();
             Hashtable sectionValues = null;
@@ -665,6 +701,11 @@ namespace ServiceBusExplorer.Helpers
                     .Create(null, null, section: doc.DocumentElement ?? throw new InvalidDataException("A configuration file is invalid"));
             }
 
+            if (readEntrySetting != null && sectionValues != null)
+            {
+                foreach (string key in sectionValues.Keys)
+                    readEntrySetting(file, key);
+            }
             return sectionValues;
         }
 

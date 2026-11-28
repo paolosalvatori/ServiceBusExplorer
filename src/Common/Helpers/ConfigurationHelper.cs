@@ -24,12 +24,14 @@ using ServiceBusExplorer.Helpers;
 using ServiceBusExplorer.Utilities.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 
 namespace ServiceBusExplorer.Common.Helpers
 {
     public static class ConfigurationHelper
     {
+        internal const string NamespaceServiceSettingPrefix = "NamespaceService.";
         static readonly string SERVICEBUS_SECTION_NAME = "serviceBusNamespaces";
 
         static readonly List<string> entities = new List<string> { Constants.QueueEntities, Constants.TopicEntities,
@@ -41,25 +43,47 @@ namespace ServiceBusExplorer.Common.Helpers
         #region Public methods
 
         public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
-            WriteToLogDelegate writeToLog)
+            WriteToLogDelegate writeToLog) =>
+            UpdateServiceBusNamespace(configFileUse, key, newKey, newValue, writeToLog, null);
+
+        public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
+            WriteToLogDelegate writeToLog, NamespaceSelection selection)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog);
+            configuration.UpdateEntryInDictionarySection(SERVICEBUS_SECTION_NAME, key, newKey, newValue, writeToLog, file =>
+            {
+                var value = newValue == null ? file.AppSettings.Settings[NamespaceServiceSettingPrefix + key]?.Value : selection?.ToSetting();
+                SetNamespaceSelection(file, key, null);
+                SetNamespaceSelection(file, newKey, value);
+            });
         }
 
-        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog)
+        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog) =>
+            AddServiceBusNamespace(configFileUse, key, value, writeToLog, null);
+
+        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog,
+            NamespaceSelection selection)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value);
+            configuration.AddEntryToDictionarySection(SERVICEBUS_SECTION_NAME, key, value,
+                file => SetNamespaceSelection(file, key, selection?.ToSetting()));
         }
 
         public static void RemoveServiceBusNamespace(ConfigFileUse configFileUse, string key, WriteToLogDelegate writeToLog)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
-            configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog);
+            configuration.RemoveEntryFromDictionarySection(SERVICEBUS_SECTION_NAME, key, writeToLog,
+                file => SetNamespaceSelection(file, key, null));
+        }
+
+        private static void SetNamespaceSelection(Configuration file, string key, string value)
+        {
+            var settings = file.AppSettings.Settings;
+            settings.Remove(NamespaceServiceSettingPrefix + key);
+            if (value != null) settings.Add(NamespaceServiceSettingPrefix + key, value);
         }
 
         public static MainSettings GetMainProperties(ConfigFileUse configFileUse,

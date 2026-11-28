@@ -362,54 +362,53 @@ namespace ServiceBusExplorer.Helpers
         }
 
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
-            (TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog)
-        {
-            var hashtable = configuration.GetHashtableFromSection(ServiceBusNamespaces);
+            (TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog) =>
+            GetMessagingNamespaces(configuration, writeToLog, null);
 
-            if (hashtable == null || hashtable.Count == 0)
-            {
-                writeToLog(ServiceBusNamespacesNotConfigured);
-            }
+        public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces(
+            TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog, string environmentConnectionString)
+        {
+            // Read metadata from the same file as each credential. A user entry may shadow an application entry.
+            var settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var hashtable = configuration.GetHashtableFromSection(ServiceBusNamespaces, (file, key) =>
+                settings[key] = file.AppSettings.Settings[Common.Helpers.ConfigurationHelper.NamespaceServiceSettingPrefix + key]?.Value);
 
             var serviceBusNamespaces = new Dictionary<string, ServiceBusNamespace>();
 
-            if (hashtable == null)
+            foreach (string key in hashtable?.Keys.Cast<string>() ?? Enumerable.Empty<string>())
             {
-                return serviceBusNamespaces;
-            }
-
-            var e = hashtable.GetEnumerator();
-
-            while (e.MoveNext())
-            {
-                if (!(e.Key is string) || !(e.Value is string))
-                {
-                    continue;
-                }
-
-                var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace((string)e.Key, (string)e.Value, writeToLog);
-
-                if (serviceBusNamespace != null)
-                {
-                    serviceBusNamespaces.Add((string)e.Key, serviceBusNamespace);
-                }
+                var profile = GetServiceBusNamespace(key, (string)hashtable[key], writeToLog);
+                if (profile == null) continue;
+                if (!profile.IsEntra) profile.Selection = NamespaceSelection.FromSetting(settings[key]);
+                serviceBusNamespaces.Add(key, profile);
             }
 
             var microsoftServiceBusConnectionString =
-                configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString);
+                configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString, out var settingSource);
 
-            if (!string.IsNullOrWhiteSpace(microsoftServiceBusConnectionString))
-            {
-                var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(ConfigurationParameters.MicrosoftServiceBusConnectionString, microsoftServiceBusConnectionString, writeToLog);
-
-                if (serviceBusNamespace != null)
-                {
-                    serviceBusNamespaces.
-                        Add(ConfigurationParameters.MicrosoftServiceBusConnectionString, serviceBusNamespace);
-                }
-            }
-
+            AddExternal(ConfigurationParameters.MicrosoftServiceBusConnectionString, microsoftServiceBusConnectionString, settingSource.ToString());
+            AddExternal(@"HKEY_CURRENT_USER\Environment connection string", environmentConnectionString, "Environment");
+            if (serviceBusNamespaces.Count == 0) writeToLog(ServiceBusNamespacesNotConfigured);
             return serviceBusNamespaces;
+
+            void AddExternal(string key, string value, string source)
+            {
+                if (string.IsNullOrWhiteSpace(value)) return;
+                var profile = GetServiceBusNamespace(key, value, writeToLog);
+                if (profile == null) return;
+                // A replacement credential can refer to another namespace. Keep the choice with its
+                // source and endpoint, without persisting the connection string or its credentials.
+                if (!System.Uri.TryCreate(profile.Uri, UriKind.Absolute, out var endpoint) ||
+                    string.IsNullOrEmpty(endpoint.Host))
+                {
+                    writeToLog($"Skipping {key}: the namespace endpoint is invalid.");
+                    return;
+                }
+                profile.externalSelectionKey = $"ExternalNamespaceService.{source}.{endpoint.IdnHost}:{endpoint.Port}{endpoint.AbsolutePath}";
+                if (!profile.IsEntra)
+                    profile.Selection = NamespaceSelection.FromSetting(configuration.GetStringValue(profile.externalSelectionKey));
+                serviceBusNamespaces[key] = profile;
+            }
         }
 
         public static void SaveConnectionString(TwoFilesConfiguration configuration,
@@ -559,6 +558,36 @@ namespace ServiceBusExplorer.Helpers
         /// plain host names or IP addresses, not fully qualified Azure namespaces.
         /// </summary>
         public bool UseDevelopmentEmulator { get; set; }
+
+        private string externalSelectionKey;
+        public bool HasExternalCredentials => externalSelectionKey != null;
+        public NamespaceSelection Selection { get; set; }
+
+        public void SaveExternalSelection(TwoFilesConfiguration configuration, NamespaceSelection selection)
+        {
+            if (!HasExternalCredentials) throw new InvalidOperationException("This profile has no external credential source.");
+            if (selection == null) throw new ArgumentNullException(nameof(selection));
+            configuration.SaveStringSetting(externalSelectionKey, selection.ToSetting());
+            Selection = selection;
+        }
+
+        public NamespaceSelection KnownSelection => UseDevelopmentEmulator && Selection?.Service != NamespaceService.Custom
+            ? new NamespaceSelection(NamespaceService.ServiceBus)
+            : Selection;
+
+        public NamespaceService GetDiscoveryService(bool isEventHubNamespace) => IsEntra
+            ? (isEventHubNamespace ? NamespaceService.EventHubs : NamespaceService.ServiceBus)
+            : (KnownSelection ?? throw new InvalidOperationException("Choose a namespace service before connecting.")).Service;
+
+        public IReadOnlyList<string> GetDiscoveryEntities(bool isEventHubNamespace, bool isCloudNamespace)
+        {
+            var selection = IsEntra
+                ? new NamespaceSelection(GetDiscoveryService(isEventHubNamespace))
+                : KnownSelection ?? throw new InvalidOperationException("Choose a namespace service before connecting.");
+            // The emulator and Service Bus for Windows Server support queues and topics.
+            return isCloudNamespace && !UseDevelopmentEmulator ? selection.Entities : Array.AsReadOnly(selection.Entities
+                .Where(group => group == Constants.QueueEntities || group == Constants.TopicEntities).ToArray());
+        }
         #endregion
 
         #region Private Methods
@@ -762,11 +791,7 @@ namespace ServiceBusExplorer.Helpers
             }
 
             if (!endpoint.Contains("://"))
-            {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture,
-                    ServiceBusNamespaceEndpointPrefixedWithSb, endpoint));
                 endpoint = "sb://" + endpoint;
-            }
 
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);
 
