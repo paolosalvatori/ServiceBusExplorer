@@ -8,6 +8,7 @@ using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using ServiceBusExplorer.Helpers;
+using ServiceBusExplorer.Enums;
 using Xunit;
 
 namespace ServiceBusExplorer.Tests.Helpers
@@ -125,6 +126,91 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Fact]
+        public async Task ReconnectPublishesAfterPendingLegacyInitialization()
+        {
+            var helper = Connect(false);
+            var original = SyntheticManager();
+            using var entered = new ManualResetEventSlim();
+            using var release = new ManualResetEventSlim();
+            var gated = new Lazy<NamespaceManager>(() =>
+            {
+                entered.Set();
+                if (!release.Wait(TimeSpan.FromSeconds(8))) throw new TimeoutException();
+                return original;
+            });
+            typeof(ServiceBusHelper).GetField("legacyNamespaceManager", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(helper, gated);
+            var first = Task.Run(() => helper.NamespaceManager);
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+            var replacement = ServiceBusNamespace.GetServiceBusNamespace("second",
+                SasProfile(5673).ConnectionString + ";ManagementPort=4443", (_, __) => { });
+            var prepared = new ServiceBusHelper((_, __) => { });
+            Assert.True(prepared.Connect(replacement));
+            var replacementManager = SyntheticManager();
+            SetManagerFactory(prepared, () => replacementManager);
+            var publish = typeof(ServiceBusHelper).GetMethod("PublishConnection", BindingFlags.Instance | BindingFlags.NonPublic);
+            using var started = new ManualResetEventSlim();
+            var publisher = new Thread(() => { started.Set(); publish.Invoke(helper, new object[] { prepared }); });
+            publisher.Start();
+            try
+            {
+                Assert.True(started.Wait(TimeSpan.FromSeconds(5)));
+                Assert.True(SpinWait.SpinUntil(() => !publisher.IsAlive ||
+                    (publisher.ThreadState & ThreadState.WaitSleepJoin) != 0, TimeSpan.FromSeconds(5)));
+                Assert.True(publisher.IsAlive, "Publication must wait for the in-flight initializer.");
+            }
+            finally { release.Set(); }
+            Assert.True(publisher.Join(TimeSpan.FromSeconds(5)));
+            var old = await first;
+            Assert.NotSame(old, helper.NamespaceManager);
+            Assert.Same(replacementManager, helper.NamespaceManager);
+            Assert.Same(original, old);
+        }
+
+        [Fact]
+        public void ZeroTimeoutCannotReplaceConnectedAdapters()
+        {
+            var helper = Connect(false);
+            var previous = helper.ConnectionString;
+            var manager = Field(helper, "legacyNamespaceManager");
+            var queue = Field(helper, "serviceBusQueue");
+            var invalid = ServiceBusNamespace.GetServiceBusNamespace("invalid",
+                SasProfile(5673).ConnectionString + ";OperationTimeout=00:00:00", (_, __) => { });
+            Assert.ThrowsAny<ArgumentException>(() => helper.Connect(invalid));
+            Assert.Same(manager, Field(helper, "legacyNamespaceManager"));
+            Assert.Same(queue, Field(helper, "serviceBusQueue"));
+            Assert.Equal(previous, helper.ConnectionString);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void CopiedEventHubAdapterAlwaysForwardsToOriginal(bool initializeFirst)
+        {
+            var source = Connect(false);
+            SetManagerFactory(source, SyntheticManager);
+            if (initializeFirst) source.GetEventHubUri("orders");
+            var copy = new ServiceBusHelper((_, __) => { }, source);
+            var created = 0;
+            var deleted = 0;
+            source.OnCreate += _ => created++;
+            source.OnDelete += _ => deleted++;
+            copy.OnCreate += _ => throw new InvalidOperationException("unexpected copy event");
+            copy.OnDelete += _ => throw new InvalidOperationException("unexpected copy event");
+            copy.GetEventHubUri("orders");
+            var adapter = Field(copy, "serviceBusEventHub");
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            foreach (var method in new[] { "OnCreated", "OnDeleted" })
+            {
+                var emit = System.Linq.Enumerable.Single(adapter.GetType().BaseType.GetMethods(flags),
+                    m => m.Name == method && !m.IsGenericMethod);
+                emit.Invoke(adapter, new object[] { new ServiceBusHelperEventArgs("orders", EntityType.EventHub) });
+            }
+            Assert.Equal(1, created);
+            Assert.Equal(1, deleted);
+        }
+
+        [Fact]
         public void EmulatorDoesNotExposeLegacyManagement()
         {
             var helper = new ServiceBusHelper((_, __) => { });
@@ -179,6 +265,19 @@ namespace ServiceBusExplorer.Tests.Helpers
 
         private static ServiceBusNamespace SasProfile(int port) => ServiceBusNamespace.GetServiceBusNamespace("local",
             "Endpoint=sb://localhost:" + port + ";SharedAccessKeyName=name;SharedAccessKey=synthetic;EntityPath=hub;TransportType=Amqp", (_, __) => { });
+
+        // These identity-only fakes are never used for network operations.
+        private static NamespaceManager SyntheticManager()
+        {
+            var manager = (NamespaceManager)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(NamespaceManager));
+            typeof(NamespaceManager).GetField("<Addresses>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(manager, new[] { new Uri("sb://localhost/") });
+            return manager;
+        }
+
+        private static void SetManagerFactory(ServiceBusHelper helper, Func<NamespaceManager> create) =>
+            typeof(ServiceBusHelper).GetField("legacyNamespaceManager", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(helper, new Lazy<NamespaceManager>(create));
 
         private static object Field(ServiceBusHelper helper, string name) => typeof(ServiceBusHelper)
             .GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(helper);

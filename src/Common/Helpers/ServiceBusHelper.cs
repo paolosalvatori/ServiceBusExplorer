@@ -144,6 +144,7 @@ namespace ServiceBusExplorer
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
         private Lazy<NamespaceManager> legacyNamespaceManager;
+        private ServiceBusHelper legacyEventOwner;
         private ServiceBusManagementClient managementClient;
         private Func<ServiceBusAdministrationClient, Task> serviceBusAudienceProbe = static client =>
             client.QueueExistsAsync("$__scope_probe__$");
@@ -196,36 +197,40 @@ namespace ServiceBusExplorer
         public ServiceBusHelper(WriteToLogDelegate writeToLog, ServiceBusHelper serviceBusHelper)
         {
             this.writeToLog = writeToLog;
-            MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
-            connectionString = serviceBusHelper.ConnectionString;
-            serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
-            entraTokenProvider = serviceBusHelper.entraTokenProvider;
-            namespaceManager = serviceBusHelper.namespaceManager;
-            legacyNamespaceManager = serviceBusHelper.legacyNamespaceManager;
-            managementClient = serviceBusHelper.managementClient;
-            notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
-            MessagingFactory = serviceBusHelper.messagingFactory;
-            Namespace = serviceBusHelper.Namespace;
-            NamespaceUri = serviceBusHelper.NamespaceUri;
-            MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
-            Scheme = serviceBusHelper.Scheme;
-            ServiceBusNamespaces = serviceBusHelper.ServiceBusNamespaces;
-            BrokeredMessageInspectors = serviceBusHelper.BrokeredMessageInspectors;
-            EventDataInspectors = serviceBusHelper.EventDataInspectors;
-            BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
-            EventDataGenerators = serviceBusHelper.EventDataGenerators;
-            TraceEnabled = serviceBusHelper.TraceEnabled;
-            SharedAccessKey = serviceBusHelper.SharedAccessKey;
-            SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
-            serviceBusQueue = serviceBusHelper.serviceBusQueue;
-            serviceBusTopic = serviceBusHelper.serviceBusTopic;
-            serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
-            serviceBusRule = serviceBusHelper.serviceBusRule;
-            serviceBusRelay = serviceBusHelper.serviceBusRelay;
-            serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
-            serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
-            serviceBusConsumerGroup = serviceBusHelper.serviceBusConsumerGroup;
-            serviceBusPartition = serviceBusHelper.serviceBusPartition;
+            lock (serviceBusHelper)
+            {
+                legacyEventOwner = serviceBusHelper.legacyEventOwner ?? serviceBusHelper;
+                MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
+                connectionString = serviceBusHelper.ConnectionString;
+                serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
+                entraTokenProvider = serviceBusHelper.entraTokenProvider;
+                namespaceManager = serviceBusHelper.namespaceManager;
+                legacyNamespaceManager = serviceBusHelper.legacyNamespaceManager;
+                managementClient = serviceBusHelper.managementClient;
+                notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
+                MessagingFactory = serviceBusHelper.messagingFactory;
+                Namespace = serviceBusHelper.Namespace;
+                NamespaceUri = serviceBusHelper.NamespaceUri;
+                MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
+                Scheme = serviceBusHelper.Scheme;
+                ServiceBusNamespaces = serviceBusHelper.ServiceBusNamespaces;
+                BrokeredMessageInspectors = serviceBusHelper.BrokeredMessageInspectors;
+                EventDataInspectors = serviceBusHelper.EventDataInspectors;
+                BrokeredMessageGenerators = serviceBusHelper.BrokeredMessageGenerators;
+                EventDataGenerators = serviceBusHelper.EventDataGenerators;
+                TraceEnabled = serviceBusHelper.TraceEnabled;
+                SharedAccessKey = serviceBusHelper.SharedAccessKey;
+                SharedAccessKeyName = serviceBusHelper.SharedAccessKeyName;
+                serviceBusQueue = serviceBusHelper.serviceBusQueue;
+                serviceBusTopic = serviceBusHelper.serviceBusTopic;
+                serviceBusSubscription = serviceBusHelper.serviceBusSubscription;
+                serviceBusRule = serviceBusHelper.serviceBusRule;
+                serviceBusRelay = serviceBusHelper.serviceBusRelay;
+                serviceBusNotificationHub = serviceBusHelper.serviceBusNotificationHub;
+                serviceBusEventHub = serviceBusHelper.serviceBusEventHub;
+                serviceBusConsumerGroup = serviceBusHelper.serviceBusConsumerGroup;
+                serviceBusPartition = serviceBusHelper.serviceBusPartition;
+            }
         }
         #endregion
 
@@ -438,6 +443,8 @@ namespace ServiceBusExplorer
         private static string GetConnectionStringWithoutEntityPath(string connectionString)
         {
             var builder = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(connectionString);
+            if (builder.OperationTimeout <= TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("OperationTimeout", "OperationTimeout must be positive.");
             builder.EntityPath = string.Empty;
             return builder.ToString();
         }
@@ -789,29 +796,33 @@ namespace ServiceBusExplorer
 
         private void PublishConnection(ServiceBusHelper replacement)
         {
-            serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
-            connectionString = replacement.connectionString;
-            currentSharedAccessKey = replacement.currentSharedAccessKey;
-            currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
-            namespaceUri = replacement.namespaceUri;
-            connectionStringType = replacement.connectionStringType;
-            ns = replacement.ns;
-            IsEventHubNamespace = replacement.IsEventHubNamespace;
-            namespaceManager = replacement.namespaceManager;
-            legacyNamespaceManager = replacement.legacyNamespaceManager;
-            notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
-            entraTokenProvider = replacement.entraTokenProvider;
-            managementClient = replacement.managementClient;
-            messagingFactory = replacement.messagingFactory;
-            serviceBusQueue = replacement.serviceBusQueue;
-            serviceBusTopic = replacement.serviceBusTopic;
-            serviceBusSubscription = replacement.serviceBusSubscription;
-            serviceBusRule = replacement.serviceBusRule;
-            serviceBusRelay = replacement.serviceBusRelay;
-            serviceBusNotificationHub = replacement.serviceBusNotificationHub;
-            serviceBusEventHub = replacement.serviceBusEventHub;
-            serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
-            serviceBusPartition = replacement.serviceBusPartition;
+            lock (this)
+            {
+                legacyEventOwner = null;
+                serviceBusNamespaceInstance = replacement.serviceBusNamespaceInstance;
+                connectionString = replacement.connectionString;
+                currentSharedAccessKey = replacement.currentSharedAccessKey;
+                currentSharedAccessKeyName = replacement.currentSharedAccessKeyName;
+                namespaceUri = replacement.namespaceUri;
+                connectionStringType = replacement.connectionStringType;
+                ns = replacement.ns;
+                IsEventHubNamespace = replacement.IsEventHubNamespace;
+                namespaceManager = replacement.namespaceManager;
+                legacyNamespaceManager = replacement.legacyNamespaceManager;
+                notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
+                entraTokenProvider = replacement.entraTokenProvider;
+                managementClient = replacement.managementClient;
+                messagingFactory = replacement.messagingFactory;
+                serviceBusQueue = replacement.serviceBusQueue;
+                serviceBusTopic = replacement.serviceBusTopic;
+                serviceBusSubscription = replacement.serviceBusSubscription;
+                serviceBusRule = replacement.serviceBusRule;
+                serviceBusRelay = replacement.serviceBusRelay;
+                serviceBusNotificationHub = replacement.serviceBusNotificationHub;
+                serviceBusEventHub = replacement.serviceBusEventHub;
+                serviceBusConsumerGroup = replacement.serviceBusConsumerGroup;
+                serviceBusPartition = replacement.serviceBusPartition;
+            }
         }
 
         private bool InitializeConnection(ServiceBusNamespace serviceBusNamespace)
@@ -4708,7 +4719,10 @@ namespace ServiceBusExplorer
             });
         }
 
-        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public virtual ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false) =>
+            CreateServiceBusClient(enableCrossEntityTransactions, null);
+
+        private ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions, ServiceBusRetryOptions retryOptions)
         {
             var serviceBusHelper2 = GetServiceBusHelper2();
             if (!serviceBusHelper2.IsEntra)
@@ -4717,7 +4731,7 @@ namespace ServiceBusExplorer
                     ConnectionString,
                     IsEmulator);
             }
-            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions);
+            return serviceBusHelper2.CreateServiceBusClient(enableCrossEntityTransactions, retryOptions);
         }
 
         public virtual async Task<int> ResubmitMessagesAsync(string entityPath,
@@ -4771,58 +4785,110 @@ namespace ServiceBusExplorer
                 Scheme = DefaultScheme
             }.Uri;
 
+        // Service Bus Premium supports AMQP messages up to 100 MiB. Bound optional WCF
+        // processing independently of both the service tier and the configured batch size.
+        private const int MaxReplayEnvelopeBytes = 100 * 1024 * 1024;
+
         private void RetargetTrackedEnvelope(ServiceBusMessage outbound, string entityPath)
         {
-            // Value and Sequence bodies can have a text preview that is unrelated to their wire format.
             if (outbound.GetRawAmqpMessage().Body.BodyType != AmqpMessageBodyType.Data) return;
             var body = outbound.Body;
+            if (body.ToMemory().Length > MaxReplayEnvelopeBytes) return;
             using var input = body.ToStream();
-            MessageEncoder encoder;
-            Message envelope;
+            Message envelope = null;
+            BinaryData rewritten = null;
             try
             {
-                encoder = GetReplayEnvelopeEncoder(body);
-                if (encoder == null) return;
-                envelope = encoder.ReadMessage(input, MaxBufferSize);
-            }
-            catch (Exception ex) when (ex is XmlException || ex is CommunicationException ||
-                ex is FormatException || ex is ArgumentException || ex is EndOfStreamException)
-            {
-                // Arbitrary AMQP Data is replayable even when it is not a WCF envelope.
-                return;
-            }
+                MessageEncoder encoder;
+                Uri originalTo;
+                try
+                {
+                    encoder = GetReplayEnvelopeEncoder(body);
+                    if (encoder == null) return;
+                    envelope = encoder.ReadMessage(input, MaxBufferSize);
+                    originalTo = envelope.Headers.To;
+                }
+                catch (Exception ex) when (IsReplayCodecFailure(ex)) { return; }
 
-            using (envelope)
-            {
-                var originalTo = envelope.Headers.To;
                 if (originalTo == null) return;
                 var peer = GetReplayAddress(entityPath);
                 if (originalTo == peer) return;
+                try
+                {
+                    // WCF reads the body lazily while writing the new envelope. Keep the
+                    // original AMQP sections until the complete bounded encode succeeds.
+                    envelope.Headers.To = peer;
+                    using var output = new ReplayEnvelopeStream();
+                    encoder.WriteMessage(envelope, output);
+                    rewritten = new BinaryData(new ReadOnlyMemory<byte>(output.GetBuffer(), 0, (int)output.Length));
+                }
+                catch (Exception ex) when (IsReplayCodecFailure(ex)) { return; }
+            }
+            finally
+            {
+                try { envelope?.Close(); }
+                catch (Exception ex) when (IsReplayCodecFailure(ex)) { rewritten = null; }
+            }
+            if (rewritten != null) outbound.Body = rewritten;
+        }
 
-                envelope.Headers.To = peer;
-                using var output = new MemoryStream();
-                encoder.WriteMessage(envelope, output);
-                outbound.Body = new BinaryData(output.ToArray());
+        private sealed class ReplayEnvelopeStream : MemoryStream
+        {
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                CheckSize(count);
+                base.Write(buffer, offset, count);
+            }
+
+            public override void WriteByte(byte value)
+            {
+                CheckSize(1);
+                base.WriteByte(value);
+            }
+
+            private void CheckSize(int count)
+            {
+                if (count > MaxReplayEnvelopeBytes - Position)
+                    throw new System.ServiceModel.QuotaExceededException("The rewritten WCF envelope exceeds the replay size limit.");
             }
         }
+
+        // A failed optional codec probe must not reject an otherwise replayable AMQP body.
+        private static bool IsReplayCodecFailure(Exception ex) =>
+            !(ex is OutOfMemoryException || ex is StackOverflowException || ex is AccessViolationException ||
+              ex is AppDomainUnloadedException || ex is ThreadAbortException || ex is OperationCanceledException);
 
         private static MessageEncoder GetReplayEnvelopeEncoder(BinaryData body)
         {
             var bytes = body.ToMemory().Span;
             if (bytes.IsEmpty) return null;
             var first = bytes[0];
-            // UTF-8/UTF-16 XML starts with markup, whitespace, a leading zero or a byte-order mark.
-            // The WCF decoder still has to recognize the envelope before any bytes are replaced.
+            XmlDictionaryReaderQuotas quotas;
+            MessageEncodingBindingElement binding;
             if (first == '<' || char.IsWhiteSpace((char)first) || first == 0 ||
                 first == 0xef || first == 0xfe || first == 0xff)
             {
                 using var xml = new XmlTextReader(body.ToStream()) { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null };
                 if (!xml.IsStartElement("Envelope", "http://www.w3.org/2003/05/soap-envelope")) return null;
-                return new TextMessageEncodingBindingElement(MessageVersion.Default, xml.Encoding)
-                    .CreateMessageEncoderFactory().Encoder;
+                var text = new TextMessageEncodingBindingElement(MessageVersion.Default, xml.Encoding);
+                quotas = text.ReaderQuotas;
+                binding = text;
+            }
+            else
+            {
+                // NBFX attribute records and the gap after its element records cannot
+                // start a document. This skips common opaque JSON, gzip and protobuf.
+                if ((first >= 0x04 && first <= 0x3f) || (first >= 0x78 && first <= 0x7f)) return null;
+                var binary = new BinaryMessageEncodingBindingElement();
+                quotas = binary.ReaderQuotas;
+                binding = binary;
             }
 
-            return new BinaryMessageEncodingBindingElement().CreateMessageEncoderFactory().Encoder;
+            // Large text and byte-array values can use the full received payload. Keep
+            // the decoder's depth, name-table and per-read limits and the header limit.
+            quotas.MaxStringContentLength = Math.Max(quotas.MaxStringContentLength, bytes.Length);
+            quotas.MaxArrayLength = Math.Max(quotas.MaxArrayLength, bytes.Length);
+            return binding.CreateMessageEncoderFactory().Encoder;
         }
 
         private async Task DisposeReplayResourceAsync(IAsyncDisposable resource, string name)
@@ -4864,37 +4930,10 @@ namespace ServiceBusExplorer
             ValidateSessionSelector(sessionId);
             cancellationToken.ThrowIfCancellationRequested();
 
-            var client = CreateServiceBusClient();
-            ServiceBusSessionReceiver receiver = null;
-            try
-            {
-                var options = new ServiceBusSessionReceiverOptions
-                {
-                    ReceiveMode = ServiceBusReceiveMode.PeekLock
-                };
-                receiver = string.IsNullOrWhiteSpace(subscriptionName)
-                    ? await client.AcceptSessionAsync(entityPath, sessionId, options, cancellationToken)
-                        .ConfigureAwait(false)
-                    : await client.AcceptSessionAsync(entityPath, subscriptionName, sessionId, options, cancellationToken)
-                        .ConfigureAwait(false);
-
-                var state = await receiver.GetSessionStateAsync(cancellationToken).ConfigureAwait(false);
-                return state?.ToArray();
-            }
-            finally
-            {
-                try
-                {
-                    if (receiver != null)
-                    {
-                        await receiver.DisposeAsync().ConfigureAwait(false);
-                    }
-                }
-                finally
-                {
-                    await client.DisposeAsync().ConfigureAwait(false);
-                }
-            }
+            var timeout = TimeSpan.FromSeconds(5);
+            var client = CreateServiceBusClient(false, new ServiceBusRetryOptions { MaxRetries = 0, TryTimeout = timeout });
+            return await SessionBrowser.ReadStateAsync(client, entityPath, subscriptionName, sessionId, timeout,
+                cancellationToken).ConfigureAwait(false);
         }
 
         public ServiceBusSessionReceiver AcceptNextSessionFromModernDataPlane(
@@ -5652,18 +5691,19 @@ namespace ServiceBusExplorer
                 var manager = NamespaceManager;
                 if (manager == null)
                     throw new InvalidOperationException("Legacy entity management is unavailable for this connection.");
-                entity = CreateServiceBusEntity((sbn, _) => initialization(sbn, manager));
+                entity = CreateServiceBusEntity((sbn, _) => initialization(sbn, manager), legacyEventOwner);
                 return entity;
             }
         }
 
-        private T CreateServiceBusEntity<T>(Func<ServiceBusNamespace, NamespaceManager, T> initialization) where T : IServiceBusEntity
+        private T CreateServiceBusEntity<T>(Func<ServiceBusNamespace, NamespaceManager, T> initialization, ServiceBusHelper eventOwner = null) where T : IServiceBusEntity
         {
+            eventOwner = eventOwner ?? this;
             T entity = initialization(serviceBusNamespaceInstance, namespaceManager);
             entity.Scheme = scheme;
-            entity.OnCreate += args => OnCreate?.Invoke(args);
-            entity.OnDelete += args => OnDelete?.Invoke(args);
-            entity.WriteToLog = (message, async) => WriteToLogIf(traceEnabled, message, async);
+            entity.OnCreate += args => eventOwner.OnCreate?.Invoke(args);
+            entity.OnDelete += args => eventOwner.OnDelete?.Invoke(args);
+            entity.WriteToLog = (message, async) => eventOwner.WriteToLogIf(eventOwner.traceEnabled, message, async);
             return entity;
         }
 
