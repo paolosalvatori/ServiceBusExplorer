@@ -195,6 +195,8 @@ namespace ServiceBusExplorer
         {
             this.writeToLog = writeToLog;
             MessageDeferProviderType = serviceBusHelper.MessageDeferProviderType;
+            connectionStringType = serviceBusHelper.connectionStringType;
+            IsEventHubNamespace = serviceBusHelper.IsEventHubNamespace;
             connectionString = serviceBusHelper.ConnectionString;
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
             entraTokenProvider = serviceBusHelper.entraTokenProvider;

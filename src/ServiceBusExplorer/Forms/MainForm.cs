@@ -258,6 +258,8 @@ namespace ServiceBusExplorer.Forms
         private BlockingCollection<string> logCollection = new BlockingCollection<string>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Task logTask;
+        private ServiceBusHelper discoveryHelper;
+        private IReadOnlyList<string> activeEntities = Array.Empty<string>();
         private List<TreeNode> treeNodesToLazyLoad = new List<TreeNode>();
         private EventGridLibrary eventGridLibrary;
         private CancellationTokenSource eventGridRefresh;
@@ -352,11 +354,7 @@ namespace ServiceBusExplorer.Forms
 
         private void InitializeDashboard()
         {
-            dashboardControl.Initialize(
-                () => serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression, ServerTimeout),
-                () => serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression, ServerTimeout),
-                topicPath => serviceBusHelper.GetSubscriptions(topicPath),
-                msg => WriteToLog(msg));
+            dashboardControl.Initialize(null, null, null, msg => WriteToLog(msg));
             dashboardControl.OnRowSelected = DashboardRowSelected;
             dashboardControl.OnRowDoubleClicked = (name, type) =>
             {
@@ -367,6 +365,50 @@ namespace ServiceBusExplorer.Forms
             dashboardControl.OnRefreshRowRequested = DashboardRefreshRowAsync;
             dashboardControl.OnRefreshRequested = async () => await ShowEntities(EntityType.All);
             dashboardControl.OnSyncWithTreeViewChanged = () => dashboardControl.ApplyFilter(filterTreeViewTextBox.Text);
+        }
+
+        private void SetDiscoveryConnection(ServiceBusHelper connection, IReadOnlyList<string> entities)
+        {
+            discoveryHelper = connection;
+            activeEntities = entities;
+            rootNode = null;
+            currentNode = null;
+            _pendingSelectionName = null;
+            _pendingSelectionType = null;
+            treeViewFilterHelper.Clear();
+            var queues = connection != null && entities.Contains(Constants.QueueEntities);
+            var topics = connection != null && entities.Contains(Constants.TopicEntities);
+            dashboardControl.Initialize(
+                queues ? () => connection.GetQueues(FilterExpressionHelper.QueueFilterExpression, ServerTimeout) : (Func<IEnumerable<QueueDescription>>)null,
+                topics ? () => connection.GetTopics(FilterExpressionHelper.TopicFilterExpression, ServerTimeout) : (Func<IEnumerable<TopicDescription>>)null,
+                topics ? connection.GetSubscriptions : (Func<string, IEnumerable<SubscriptionDescription>>)null,
+                msg => WriteToLog(msg));
+        }
+
+        private async Task ActivateNamespace(ServiceBusNamespace profile)
+        {
+            // Entra's existing audience check completes during Connect. SAS only has explicit service metadata.
+            var connection = new ServiceBusHelper(WriteToLog, serviceBusHelper);
+            ResetEventGridConnection();
+            SetDiscoveryConnection(connection, profile.GetDiscoveryEntities(connection.IsEventHubNamespace, connection.IsCloudNamespace));
+            SetTitle(profile.Namespace, "Service Bus");
+            panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
+            foreach (var control in panelMain.Controls.OfType<UserControl>().ToArray())
+                control.Dispose();
+            panelMain.Controls.Clear();
+            SetEmptyMainPanelBackground(panelMain);
+            await ShowEntities(EntityType.All);
+        }
+
+        private async Task OpenNamespace(string key, ServiceBusNamespace profile)
+        {
+            if (profile == null) return;
+            if (!profile.IsEntra && profile.KnownSelection == null)
+            {
+                await OpenConnectDialog(key, profile.ConnectionString);
+                return;
+            }
+            if (serviceBusHelper.Connect(profile)) await ActivateNamespace(profile);
         }
 
         internal static void SetEmptyMainPanelBackground(Control panel)
@@ -441,11 +483,6 @@ namespace ServiceBusExplorer.Forms
         {
             DashboardRowSelected(name, type);
             await RefreshSelectedEntity();
-        }
-
-        private async void RefreshDashboard()
-        {
-            await dashboardControl.LoadDataAsync();
         }
 
         void DisplayNewVersionInformation()
@@ -575,18 +612,8 @@ namespace ServiceBusExplorer.Forms
         {
             try
             {
-                var serviceBusNamespace = serviceBusHelper.ServiceBusNamespaces[(sender as ToolStripMenuItem).Tag.ToString()];
-                if (!serviceBusHelper.Connect(serviceBusNamespace)) return;
-                ResetEventGridConnection();
-                SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-
-                foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                {
-                    userControl.Dispose();
-                }
-                panelMain.Controls.Clear();
-                SetEmptyMainPanelBackground(panelMain);
-                await ShowEntities(EntityType.All);
+                var key = (string)((ToolStripMenuItem)sender).Tag;
+                await OpenNamespace(key, serviceBusHelper.ServiceBusNamespaces[key]);
             }
             catch (Exception ex)
             {
@@ -663,10 +690,16 @@ namespace ServiceBusExplorer.Forms
 
         async void connectUsingSASToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            await OpenConnectDialog();
+        }
+
+        private async Task OpenConnectDialog(string key = null, string rawConnection = null)
+        {
             try
             {
-                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse, this.EntraTenantIds))
+                using (var connectForm = new ConnectForm(serviceBusHelper, configFileUse, EntraTenantIds))
                 {
+                    if (key != null || rawConnection != null) connectForm.SelectProfile(key, rawConnection);
                     if (connectForm.ShowDialog() != DialogResult.OK)
                     {
                         UpdateSavedConnectionsMenu();
@@ -675,19 +708,7 @@ namespace ServiceBusExplorer.Forms
                     UpdateSavedConnectionsMenu();
 
                     if (!connectForm.TryConnectToNamespace(out var serviceBusNamespace)) return;
-                    SelectedEntities = new List<string>(connectForm.SelectedEntities);
-                    ResetEventGridConnection();
-
-                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
-                    panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
-
-                    foreach (var userControl in panelMain.Controls.OfType<UserControl>())
-                    {
-                        userControl.Dispose();
-                    }
-                    panelMain.Controls.Clear();
-                    SetEmptyMainPanelBackground(panelMain);
-                    await ShowEntities(EntityType.All);
+                    await ActivateNamespace(serviceBusNamespace);
                 }
             }
             catch (Exception ex)
@@ -710,7 +731,6 @@ namespace ServiceBusExplorer.Forms
 
                     UpdateSavedConnectionsMenu();
 
-                    SelectedEntities = connectForm.SelectedEntities;
                     NamespaceName = connectForm.NamespaceName;
                     ResourceGroupName = connectForm.ResourceGroup;
 
@@ -720,6 +740,7 @@ namespace ServiceBusExplorer.Forms
                         connectForm.RetryTimeout,
                         connectForm.CustomId,
                         WriteToLog);
+                    SetDiscoveryConnection(null, connectForm.SelectedEntities.ToList().AsReadOnly());
 
                     SetTitle(connectForm.NamespaceName, "Event Grid");
                     panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Event Grid");
@@ -3649,11 +3670,17 @@ namespace ServiceBusExplorer.Forms
 
         public async Task RefreshServiceBusEntityNode(string path)
         {
-            var serviceBusHelper2 = serviceBusHelper.GetServiceBusHelper2();
+            var connection = discoveryHelper;
+            if (connection == null) return;
+            var queues = activeEntities.Contains(Constants.QueueEntities);
+            var topics = activeEntities.Contains(Constants.TopicEntities);
+            if (!queues && !topics) return;
+            var serviceBusHelper2 = connection.GetServiceBusHelper2();
 
-            if (await serviceBusHelper2.IsQueue(path))
+            if (queues && await serviceBusHelper2.IsQueue(path))
             {
-                var queueDescription = serviceBusHelper.GetQueue(path);
+                if (connection != discoveryHelper) return;
+                var queueDescription = connection.GetQueue(path);
                 var queueListNode = FindNode(Constants.QueueEntities, rootNode);
                 var queueNode = FindNode(path, queueListNode);
 
@@ -3661,9 +3688,11 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
 
-            if (await serviceBusHelper2.IsTopic(path))
+            if (connection != discoveryHelper) return;
+            if (topics && await serviceBusHelper2.IsTopic(path))
             {
-                var topicDescription = serviceBusHelper.GetTopic(path);
+                if (connection != discoveryHelper) return;
+                var topicDescription = connection.GetTopic(path);
                 var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                 var topicNode = FindNode(path, topicListNode);
 
@@ -3671,7 +3700,7 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
 
-            WriteToLog($"{path} is neither a queue nor a topic so there was no update in the tree view.");
+            if (connection == discoveryHelper) WriteToLog($"No selected queue or topic matched {path}.");
         }
         #endregion
 
@@ -4760,32 +4789,33 @@ namespace ServiceBusExplorer.Forms
         // ReSharper disable once FunctionComplexityOverflow
         private async Task ShowEntities(EntityType entityType)
         {
+            var connection = discoveryHelper;
             var updating = false;
 
             try
             {
-                if (serviceBusHelper != null && serviceBusHelper.NamespaceUri != null)
+                if (connection != null && connection.NamespaceUri != null)
                 {
+                    var all = entityType == EntityType.All;
+                    var loadQueues = (all || entityType == EntityType.Queue) && activeEntities.Contains(Constants.QueueEntities);
+                    var loadTopics = (all || entityType == EntityType.Topic) && activeEntities.Contains(Constants.TopicEntities);
+                    var loadEventHubs = (all || entityType == EntityType.EventHub) && activeEntities.Contains(Constants.EventHubEntities);
+                    var loadNotificationHubs = (all || entityType == EntityType.NotificationHub) && activeEntities.Contains(Constants.NotificationHubEntities);
+                    var loadRelays = (all || entityType == EntityType.Relay) && activeEntities.Contains(Constants.RelayEntities);
+                    var loadCloudEntities = loadEventHubs || loadNotificationHubs || loadRelays;
+                    if (!all && !loadQueues && !loadTopics && !loadCloudEntities) return;
+
                     Cursor.Current = Cursors.WaitCursor;
-                    serviceBusTreeView.SuspendDrawing();
-                    serviceBusTreeView.SuspendLayout();
-                    serviceBusTreeView.BeginUpdate();
                     treeNodesToLazyLoad = new List<TreeNode>();
                     var queueListNode = FindNode(Constants.QueueEntities, rootNode);
                     var topicListNode = FindNode(Constants.TopicEntities, rootNode);
                     var eventHubListNode = FindNode(Constants.EventHubEntities, rootNode);
                     var notificationHubListNode = FindNode(Constants.NotificationHubEntities, rootNode);
                     var relayServiceListNode = FindNode(Constants.RelayEntities, rootNode);
-                    var isEntra = serviceBusHelper.IsEntra;
-                    var loadQueues = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.QueueEntities);
-                    var loadTopics = !serviceBusHelper.IsEventHubNamespace && SelectedEntities.Contains(Constants.TopicEntities);
-                    var loadEventHubs = !serviceBusHelper.IsEmulator && SelectedEntities.Contains(Constants.EventHubEntities) && (!isEntra || serviceBusHelper.IsEventHubNamespace);
-                    var loadNotificationHubs = !serviceBusHelper.IsEmulator && !isEntra && SelectedEntities.Contains(Constants.NotificationHubEntities);
-                    var loadRelays = !serviceBusHelper.IsEmulator && !isEntra && SelectedEntities.Contains(Constants.RelayEntities);
-                    if (entityType == EntityType.All)
+                    if (all)
                     {
                         serviceBusTreeView.Nodes.Clear();
-                        rootNode = serviceBusTreeView.Nodes.Add(serviceBusHelper.NamespaceUri.AbsoluteUri, serviceBusHelper.NamespaceUri.AbsoluteUri, AzureIconIndex, AzureIconIndex);
+                        rootNode = serviceBusTreeView.Nodes.Add(connection.NamespaceUri.AbsoluteUri, connection.NamespaceUri.AbsoluteUri, AzureIconIndex, AzureIconIndex);
                         rootNode.ContextMenuStrip = rootContextMenuStrip;
                         if (loadQueues)
                         {
@@ -4798,8 +4828,7 @@ namespace ServiceBusExplorer.Forms
                             topicListNode.ContextMenuStrip = topicsContextMenuStrip;
                         }
 
-                        // NOTE: Relays are not actually supported by Service Bus for Windows Server
-                        if (serviceBusHelper.IsCloudNamespace)
+                        if (loadCloudEntities)
                         {
                             if (loadEventHubs)
                             {
@@ -4818,36 +4847,35 @@ namespace ServiceBusExplorer.Forms
                             }
                         }
                     }
-                    updating = true;
-                    if (serviceBusHelper.IsCloudNamespace)
+                    if (loadCloudEntities)
                     {
-                        if (loadEventHubs &&
-                            (entityType == EntityType.All ||
-                            entityType == EntityType.EventHub))
+                        if (loadEventHubs)
                         {
                             try
                             {
 
                                 IEnumerable<EventHubDescription> eventHubs;
-                                if (!string.IsNullOrWhiteSpace(serviceBusHelper.EntityPath))
+                                if (!string.IsNullOrWhiteSpace(connection.EntityPath))
                                 {
                                     try
                                     {
-                                        var singleHub = await serviceBusHelper.NamespaceManager.GetEventHubAsync(serviceBusHelper.EntityPath);
+                                        var singleHub = await connection.NamespaceManager.GetEventHubAsync(connection.EntityPath);
                                         eventHubs = singleHub != null ? new[] { singleHub } : Enumerable.Empty<EventHubDescription>();
                                     }
                                     catch (MessagingException ex) when (!EntraCredentialFactory.IsTokenAcquisitionFailure(ex))
                                     {
+                                        if (connection != discoveryHelper) return;
                                         WriteToLog(string.Format(CultureInfo.CurrentCulture,
                                             "No event hub found matching EntityPath '{0}': {1}",
-                                            serviceBusHelper.EntityPath, ex.Message));
+                                            connection.EntityPath, ex.Message));
                                         eventHubs = Enumerable.Empty<EventHubDescription>();
                                     }
                                 }
                                 else
                                 {
-                                    eventHubs = await serviceBusHelper.NamespaceManager.GetEventHubsAsync();
+                                    eventHubs = await connection.NamespaceManager.GetEventHubsAsync();
                                 }
+                                if (connection != discoveryHelper) return;
                                 Cursor.Current = Cursors.WaitCursor;
                                 eventHubListNode.Nodes.Clear();
                                 if (eventHubs != null)
@@ -4871,6 +4899,7 @@ namespace ServiceBusExplorer.Forms
                             }
                             catch (Exception ex) when (IsEntityCategoryFailure(ex))
                             {
+                                if (connection != discoveryHelper) return;
                                 if (ex is AggregateException)
                                 {
                                     ex = ((AggregateException)ex).InnerExceptions.First();
@@ -4879,15 +4908,14 @@ namespace ServiceBusExplorer.Forms
                                 serviceBusTreeView.Nodes.Remove(eventHubListNode);
                             }
                         }
-                        if (loadNotificationHubs &&
-                            (entityType == EntityType.All ||
-                            entityType == EntityType.NotificationHub))
+                        if (loadNotificationHubs)
                         {
-                            if (serviceBusHelper.NotificationHubNamespaceManager != null)
+                            if (connection.NotificationHubNamespaceManager != null)
                             {
                                 try
                                 {
-                                    var notificationHubs = await serviceBusHelper.NotificationHubNamespaceManager.GetNotificationHubsAsync();
+                                    var notificationHubs = await connection.NotificationHubNamespaceManager.GetNotificationHubsAsync();
+                                    if (connection != discoveryHelper) return;
                                     notificationHubListNode.Nodes.Clear();
                                     if (notificationHubs != null)
                                     {
@@ -4909,11 +4937,13 @@ namespace ServiceBusExplorer.Forms
                                 }
                                 catch (ArgumentException)
                                 {
+                                    if (connection != discoveryHelper) return;
                                     // This is where we end up if there are no Notification Hubs in the namespace
                                     serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                                 }
                                 catch (Exception ex) when (IsEntityCategoryFailure(ex))
                                 {
+                                    if (connection != discoveryHelper) return;
                                     if (ex is AggregateException)
                                     {
                                         ex = ((AggregateException)ex).InnerExceptions.First();
@@ -4927,13 +4957,11 @@ namespace ServiceBusExplorer.Forms
                                 serviceBusTreeView.Nodes.Remove(notificationHubListNode);
                             }
                         }
-                        if (loadRelays &&
-                            (entityType == EntityType.All ||
-                            entityType == EntityType.Relay))
+                        if (loadRelays)
                         {
                             try
                             {
-                                var relayServices = serviceBusHelper.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
+                                var relayServices = connection.GetRelays(MainForm.SingletonMainForm.ServerTimeout);
 
                                 relayServiceListNode.Text = Constants.RelayEntities;
 
@@ -4968,17 +4996,20 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
 
-                    if (loadQueues &&
-                        (entityType == EntityType.All ||
-                         entityType == EntityType.Queue))
+                    // A slow asynchronous hub request must not keep a replacement tree suspended.
+                    serviceBusTreeView.SuspendDrawing();
+                    serviceBusTreeView.SuspendLayout();
+                    serviceBusTreeView.BeginUpdate();
+                    updating = true;
+                    if (loadQueues)
                     {
                         try
                         {
-                            var queues = serviceBusHelper.GetQueues(FilterExpressionHelper.QueueFilterExpression,
+                            var queues = connection.GetQueues(FilterExpressionHelper.QueueFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
-                            if (!queues.Any() && !string.IsNullOrEmpty(serviceBusHelper.EntityPath))
+                            if (!queues.Any() && !string.IsNullOrEmpty(connection.EntityPath))
                             {
-                                WriteToLog($"EntityPath '{serviceBusHelper.EntityPath}' is not a queue.");
+                                WriteToLog($"EntityPath '{connection.EntityPath}' is not a queue.");
                             }
                             queueListNode.Text = string.Format("{0} {1}", queues.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.QueueFilterExpression)
                                 ? Constants.QueueEntities
@@ -5013,17 +5044,15 @@ namespace ServiceBusExplorer.Forms
                             serviceBusTreeView.Nodes.Remove(queueListNode);
                         }
                     }
-                    if (loadTopics &&
-                        (entityType == EntityType.All ||
-                         entityType == EntityType.Topic))
+                    if (loadTopics)
                     {
                         try
                         {
-                            var topics = serviceBusHelper.GetTopics(FilterExpressionHelper.TopicFilterExpression,
+                            var topics = connection.GetTopics(FilterExpressionHelper.TopicFilterExpression,
                                 MainForm.SingletonMainForm.ServerTimeout);
-                            if (!topics.Any() && !string.IsNullOrEmpty(serviceBusHelper.EntityPath))
+                            if (!topics.Any() && !string.IsNullOrEmpty(connection.EntityPath))
                             {
-                                WriteToLog($"EntityPath '{serviceBusHelper.EntityPath}' is not a topic.");
+                                WriteToLog($"EntityPath '{connection.EntityPath}' is not a topic.");
                             }
                             topicListNode.Text = string.Format("{0} {1}", topics.Count(), string.IsNullOrWhiteSpace(FilterExpressionHelper.TopicFilterExpression)
                                 ? Constants.TopicEntities
@@ -5066,18 +5095,18 @@ namespace ServiceBusExplorer.Forms
                     relayServiceListNode?.Expand();
 
                     rootNode.Expand();
-                    if (entityType != EntityType.All)
+                    if (!all)
                         return;
 
                     serviceBusTreeView.SelectedNode = rootNode;
                     serviceBusTreeView.SelectedNode.EnsureVisible();
                     HandleNodeMouseClick(rootNode);
-                    RefreshDashboard();
                 }
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                if (connection == discoveryHelper) HandleException(ex);
+                return;
             }
             finally
             {
@@ -5087,11 +5116,12 @@ namespace ServiceBusExplorer.Forms
                     serviceBusTreeView.ResumeLayout();
                     serviceBusTreeView.EndUpdate();
                     serviceBusTreeView.Refresh();
-                    InvalidateTreeViewFilter();
+                    if (connection == discoveryHelper) InvalidateTreeViewFilter();
                 }
                 Cursor.Current = Cursors.Default;
             }
 
+            if (connection != null && connection == discoveryHelper) await dashboardControl.LoadDataAsync();
         }
 
         internal static bool IsEntityCategoryFailure(Exception ex)
@@ -5174,7 +5204,7 @@ namespace ServiceBusExplorer.Forms
                         }
                     }
 
-                    if (!SelectedEntities.Contains(Constants.TopicEntities))
+                    if (!activeEntities.Contains(Constants.TopicEntities))
                     {
                         return;
                     }
@@ -7451,23 +7481,14 @@ namespace ServiceBusExplorer.Forms
                         WriteToLog(string.Format(NoNamespaceWithKeyMessageFormat, argumentValue));
                         return;
                     }
-                    var ns = item.Value;
-                    if (ns != null)
-                    {
-                        serviceBusHelper.Connect(ns);
-                        SetTitle(ns.Namespace, "Service Bus");
-                    }
+                    await OpenNamespace(item.Key, item.Value);
                 }
                 if (string.Compare(argumentName, "/c", StringComparison.InvariantCultureIgnoreCase) == 0 ||
                     string.Compare(argumentName, "-c", StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
                     var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace("Manual", argumentValue, StaticWriteToLog);
-                    serviceBusHelper.Connect(serviceBusNamespace);
-                    SetTitle(serviceBusNamespace.Namespace, "Service Bus");
+                    await OpenNamespace(null, serviceBusNamespace);
                 }
-                panelMain.Controls.Clear();
-                SetEmptyMainPanelBackground(panelMain);
-                await ShowEntities(EntityType.All);
             }
             catch (Exception ex)
             {

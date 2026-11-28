@@ -105,6 +105,8 @@ namespace ServiceBusExplorer.Forms
         private bool ignoreSelectedIndexChange;
         private bool updatingTransportSelection;
         private bool ignoreAuthModeChange;
+        private bool settingService;
+        private bool emulatorSelected;
 
         #endregion
 
@@ -152,31 +154,14 @@ namespace ServiceBusExplorer.Forms
             var settings = new MessagingFactorySettings();
             SetTransportSelection(settings.TransportType);
 
-            cboServiceBusNamespace.SelectedIndex = connectionStringIndex > 0 ? connectionStringIndex : 0;
-
             txtQueueFilterExpression.Text = FilterExpressionHelper.QueueFilterExpression;
             txtTopicFilterExpression.Text = FilterExpressionHelper.TopicFilterExpression;
             txtSubscriptionFilterExpression.Text = FilterExpressionHelper.SubscriptionFilterExpression;
-            btnOk.Enabled = cboServiceBusNamespace.SelectedIndex > 1 ||
-                            (cboServiceBusNamespace.Text == EnterConnectionString &&
-                             !string.IsNullOrWhiteSpace(connectionString));
-
             foreach (var item in ConfigurationHelper.Entities)
-            {
                 cboSelectedEntities.Items.Add(item);
-            }
 
-            var selectedEntities = MainForm.SingletonMainForm?.SelectedEntities ?? new List<string>();
-
-            foreach (var item in selectedEntities)
-            {
-                cboSelectedEntities.CheckBoxItems[item].Checked = true;
-            }
-
-            toolTip.SetToolTip(cboSelectedEntities, SelectedEntitiesTooltip);
-
-            cboServiceBusNamespace_SelectedIndexChanged(cboServiceBusNamespace, EventArgs.Empty);
-            validation_TextChanged(this, EventArgs.Empty);
+            cboServiceBusNamespace.SelectedIndex = connectionStringIndex > 0 && connectionStringIndex < cboServiceBusNamespace.Items.Count
+                ? connectionStringIndex : 0;
 
             if (entraTenantIds != null)
             {
@@ -253,13 +238,73 @@ namespace ServiceBusExplorer.Forms
                     };
                 }
 
-                return cboSelectedEntities.CheckBoxItems.Where(i => i.Checked).Select(i => i.Text).ToList();
+                return CurrentSelection?.Entities.ToList() ?? new List<string>();
             }
         }
 
         #endregion
 
         #region Event Handlers
+
+        private RadioButton CreateServiceRadio(NamespaceService service, string label)
+        {
+            var radio = new RadioButton
+            {
+                Name = "radio" + service,
+                Text = label,
+                Tag = service,
+                AutoSize = true,
+                ForeColor = SystemColors.ControlText
+            };
+            radio.CheckedChanged += (sender, args) =>
+            {
+                if (!settingService && radio.Checked)
+                {
+                    UpdateSelectedEntitiesUi(false);
+                    validation_TextChanged(sender, args);
+                }
+            };
+            return radio;
+        }
+
+        private NamespaceService? SelectedService => (NamespaceService?)serviceChoices.Controls.OfType<RadioButton>()
+            .FirstOrDefault(radio => radio.Checked)?.Tag;
+
+        private NamespaceSelection CurrentSelection => SelectedService is NamespaceService service
+            ? new NamespaceSelection(service, cboSelectedEntities.CheckBoxItems.Where(item => item.Checked).Select(item => item.Text))
+            : null;
+
+        private void SetService(NamespaceService? service)
+        {
+            settingService = true;
+            try
+            {
+                foreach (var radio in serviceChoices.Controls.OfType<RadioButton>())
+                    radio.Checked = (NamespaceService)radio.Tag == service;
+            }
+            finally { settingService = false; }
+        }
+
+        private void SetEmulatorChoices(bool emulator)
+        {
+            emulatorSelected = emulator;
+            foreach (var radio in serviceChoices.Controls.OfType<RadioButton>())
+            {
+                var service = (NamespaceService)radio.Tag;
+                radio.Enabled = !emulator || service == NamespaceService.ServiceBus || service == NamespaceService.Custom;
+            }
+        }
+
+        internal void SelectProfile(string key, string rawConnection = null)
+        {
+            if (key != null)
+                cboServiceBusNamespace.SelectedItem = key;
+            else
+            {
+                cboServiceBusNamespace.SelectedIndex = 1;
+                PopulateManualConnectionFields(rawConnection);
+            }
+        }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
@@ -268,6 +313,7 @@ namespace ServiceBusExplorer.Forms
 
         private void btnOk_Click(object sender, EventArgs e)
         {
+            if (!btnOk.Enabled) return;
             BuildCurrentConnectionString();
             if (string.IsNullOrWhiteSpace(ConnectionString))
             {
@@ -291,6 +337,12 @@ namespace ServiceBusExplorer.Forms
         {
             candidate = ServiceBusNamespaceInstance ?? ServiceBusNamespace.GetServiceBusNamespace(
                 Key ?? "Manual", ConnectionString, MainForm.StaticWriteToLog);
+            if (candidate == null || candidate.IsEntra != (SelectedAuthMode == ServiceBusAuthMode.Entra)) return false;
+            if (!candidate.IsEntra)
+            {
+                candidate.Selection = CurrentSelection;
+                if (candidate.Selection == null) return false;
+            }
             var namespaceToConnect = candidate;
             return MainForm.ConnectAndPublishSettings(() => serviceBusHelper.Connect(namespaceToConnect),
                 ConnectivityMode, UseAmqpWebSockets, QueueFilterExpression, TopicFilterExpression, SubscriptionFilterExpression);
@@ -382,6 +434,16 @@ namespace ServiceBusExplorer.Forms
 
         private void UpdateSelectedEntitiesUi(bool isEntra)
         {
+            serviceChoices.Visible = !isEntra;
+            var custom = SelectedService == NamespaceService.Custom;
+            var selection = CurrentSelection;
+            cboSelectedEntities.Visible = isEntra || custom;
+            lblSelectedEntities.Visible = isEntra || selection != null;
+            lblSelectedEntities.Text = isEntra || custom ? "Selected Entities:" : string.Join(", ", selection?.Entities ?? Array.Empty<string>());
+            var enableFilters = isEntra || custom || SelectedService == NamespaceService.ServiceBus;
+            txtQueueFilterExpression.Enabled = btnOpenQueueFilterForm.Enabled = btnClearQueueFilterExpression.Enabled = enableFilters;
+            txtTopicFilterExpression.Enabled = btnOpenTopicFilterForm.Enabled = btnClearTopicFilterExpression.Enabled = enableFilters;
+            txtSubscriptionFilterExpression.Enabled = btnOpenSubscriptionFilterForm.Enabled = btnClearSubscriptionFilterExpression.Enabled = enableFilters;
             toolTip.SetToolTip(cboSelectedEntities, isEntra ? EntraSelectedEntitiesTooltip : SelectedEntitiesTooltip);
             cboSelectedEntities.Enabled = !isEntra;
             cboSelectedEntities._CheckBoxComboBoxListControl.SynchroniseControlsWithComboBoxItems();
@@ -574,7 +636,7 @@ namespace ServiceBusExplorer.Forms
 
         private void validation_TextChanged(object sender, EventArgs e)
         {
-            GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
+            GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out var profile);
 
             if (cboServiceBusNamespace.SelectedIndex == 0)
             {
@@ -592,13 +654,23 @@ namespace ServiceBusExplorer.Forms
 
             if (UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint))
             {
-                btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text);
+                var parameters = ParseConnectionStringParts(txtUri.Text);
+                var emulator = parameters.TryGetValue("UseDevelopmentEmulator", out var flag) && bool.TryParse(flag, out var enabled) && enabled;
+                if (emulator != emulatorSelected)
+                {
+                    SetEmulatorChoices(emulator);
+                    if (emulator)
+                        SetService(profile?.Selection?.Service == NamespaceService.Custom ? NamespaceService.Custom : NamespaceService.ServiceBus);
+                    else if (SelectedService == NamespaceService.ServiceBus)
+                        SetService(null);
+                    UpdateSelectedEntitiesUi(false);
+                }
+                btnOk.Enabled = SelectedService.HasValue && !string.IsNullOrWhiteSpace(txtUri.Text);
                 if (string.IsNullOrWhiteSpace(txtUri.Text))
                 {
                     return;
                 }
 
-                var parameters = ParseConnectionStringParts(txtUri.Text);
                 if (!parameters.ContainsKey(ConnectionStringTransportType))
                 {
                     SetTransportSelection(TransportType.NetMessaging);
@@ -630,7 +702,7 @@ namespace ServiceBusExplorer.Forms
                 }
                 else
                 {
-                    btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text) &&
+                    btnOk.Enabled = SelectedService.HasValue && !string.IsNullOrWhiteSpace(txtUri.Text) &&
                                 !string.IsNullOrWhiteSpace(txtIssuerName.Text) &&
                                 !string.IsNullOrWhiteSpace(txtIssuerSecret.Text);
                 }
@@ -645,6 +717,13 @@ namespace ServiceBusExplorer.Forms
             }
 
             GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out var selectedNamespace);
+
+            SetEmulatorChoices(false);
+            SetService(selectedNamespace?.Selection?.Service);
+            var customEntities = selectedNamespace?.Selection?.Service == NamespaceService.Custom
+                ? selectedNamespace.Selection.Entities : MainForm.SingletonMainForm?.SelectedEntities ?? ConfigurationHelper.Entities;
+            foreach (var entity in ConfigurationHelper.Entities)
+                cboSelectedEntities.CheckBoxItems[entity].Checked = customEntities.Contains(entity);
 
             btnRename.Visible = false;
             btnDelete.Visible = false;
@@ -796,7 +875,6 @@ namespace ServiceBusExplorer.Forms
 
             if (UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint))
             {
-                btnOk.Enabled = !string.IsNullOrWhiteSpace(txtUri.Text);
                 if (string.IsNullOrEmpty(txtUri.Text))
                 {
                     return;
@@ -816,7 +894,7 @@ namespace ServiceBusExplorer.Forms
         private void ConnectForm_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = e.KeyChar == '\r';
-            if (e.Handled && cboServiceBusNamespace.SelectedIndex > 0)
+            if (e.Handled && btnOk.Enabled)
             {
                 btnOk_Click(sender, null);
             }
@@ -911,6 +989,7 @@ namespace ServiceBusExplorer.Forms
 
         private void grouperFilters_CustomPaint(PaintEventArgs e)
         {
+            if (!cboSelectedEntities.Visible) return;
             e.Graphics.DrawRectangle(new Pen(SystemColors.ActiveBorder, 1),
                 cboSelectedEntities.Location.X - 1,
                 cboSelectedEntities.Location.Y - 1,
@@ -962,6 +1041,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
 
+                profile.Selection = isEntra ? null : CurrentSelection;
                 var host = profile.FullyQualifiedNamespace;
                 if (!profile.IsEntra && !profile.UseDevelopmentEmulator)
                 {
@@ -1014,11 +1094,11 @@ namespace ServiceBusExplorer.Forms
                 {
                     if (isNewServiceBusNamespace)
                     {
-                        ConfigurationHelper.AddServiceBusNamespace(configFileUse, key, value, MainForm.StaticWriteToLog);
+                        ConfigurationHelper.AddServiceBusNamespace(configFileUse, key, value, MainForm.StaticWriteToLog, profile.Selection);
                     }
                     else
                     {
-                        ConfigurationHelper.UpdateServiceBusNamespace(configFileUse, key, key, value, MainForm.StaticWriteToLog);
+                        ConfigurationHelper.UpdateServiceBusNamespace(configFileUse, key, key, value, MainForm.StaticWriteToLog, profile.Selection);
                     }
                 }
                 catch (ArgumentNullException ex)

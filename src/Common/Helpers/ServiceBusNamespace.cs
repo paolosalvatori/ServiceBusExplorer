@@ -364,7 +364,10 @@ namespace ServiceBusExplorer.Helpers
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
             (TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog)
         {
-            var hashtable = configuration.GetHashtableFromSection(ServiceBusNamespaces);
+            // Read metadata from the same file as each credential. A user entry may shadow an application entry.
+            var settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var hashtable = configuration.GetHashtableFromSection(ServiceBusNamespaces, (file, key) =>
+                settings[key] = file.AppSettings.Settings[Common.Helpers.ConfigurationHelper.NamespaceServiceSettingPrefix + key]?.Value);
 
             if (hashtable == null || hashtable.Count == 0)
             {
@@ -378,21 +381,12 @@ namespace ServiceBusExplorer.Helpers
                 return serviceBusNamespaces;
             }
 
-            var e = hashtable.GetEnumerator();
-
-            while (e.MoveNext())
+            foreach (string key in hashtable.Keys)
             {
-                if (!(e.Key is string) || !(e.Value is string))
-                {
-                    continue;
-                }
-
-                var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace((string)e.Key, (string)e.Value, writeToLog);
-
-                if (serviceBusNamespace != null)
-                {
-                    serviceBusNamespaces.Add((string)e.Key, serviceBusNamespace);
-                }
+                var profile = GetServiceBusNamespace(key, (string)hashtable[key], writeToLog);
+                if (profile == null) continue;
+                if (!profile.IsEntra) profile.Selection = NamespaceSelection.FromSetting(settings[key]);
+                serviceBusNamespaces.Add(key, profile);
             }
 
             var microsoftServiceBusConnectionString =
@@ -559,6 +553,22 @@ namespace ServiceBusExplorer.Helpers
         /// plain host names or IP addresses, not fully qualified Azure namespaces.
         /// </summary>
         public bool UseDevelopmentEmulator { get; set; }
+
+        public NamespaceSelection Selection { get; set; }
+
+        public NamespaceSelection KnownSelection => UseDevelopmentEmulator && Selection?.Service != NamespaceService.Custom
+            ? new NamespaceSelection(NamespaceService.ServiceBus)
+            : Selection;
+
+        public IReadOnlyList<string> GetDiscoveryEntities(bool isEventHubNamespace, bool isCloudNamespace)
+        {
+            var selection = IsEntra
+                ? new NamespaceSelection(isEventHubNamespace ? NamespaceService.EventHubs : NamespaceService.ServiceBus)
+                : KnownSelection ?? throw new InvalidOperationException("Choose a namespace service before connecting.");
+            // The emulator and Service Bus for Windows Server support queues and topics.
+            return isCloudNamespace && !UseDevelopmentEmulator ? selection.Entities : Array.AsReadOnly(selection.Entities
+                .Where(group => group == Constants.QueueEntities || group == Constants.TopicEntities).ToArray());
+        }
         #endregion
 
         #region Private Methods

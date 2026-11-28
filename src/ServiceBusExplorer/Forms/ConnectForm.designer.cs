@@ -20,6 +20,7 @@
 #endregion
 
 using ServiceBusExplorer.Controls;
+using ServiceBusExplorer.Helpers;
 
 namespace ServiceBusExplorer.Forms
 {
@@ -79,6 +80,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperConfigFileUse = new ServiceBusExplorer.Controls.Grouper();
             this.lblConfigFileUse = new System.Windows.Forms.Label();
             this.grouperFilters = new ServiceBusExplorer.Controls.Grouper();
+            this.serviceChoices = new System.Windows.Forms.FlowLayoutPanel();
             this.lblSelectedEntities = new System.Windows.Forms.Label();
             this.cboSelectedEntities = new ServiceBusExplorer.Controls.CheckBoxComboBox();
             this.lblSubscriptionFilterExpression = new System.Windows.Forms.Label();
@@ -115,11 +117,11 @@ namespace ServiceBusExplorer.Forms
             this.btnOk.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOk.Location = new System.Drawing.Point(616, 443);
+            this.btnOk.Location = new System.Drawing.Point(616, 497);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(72, 24);
             this.btnOk.TabIndex = 7;
-            this.btnOk.Text = "OK";
+            this.btnOk.Text = "Connect";
             this.btnOk.UseVisualStyleBackColor = false;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             this.btnOk.MouseEnter += new System.EventHandler(this.button_MouseEnter);
@@ -134,7 +136,7 @@ namespace ServiceBusExplorer.Forms
             this.btnCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(696, 443);
+            this.btnCancel.Location = new System.Drawing.Point(696, 497);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(72, 24);
             this.btnCancel.TabIndex = 8;
@@ -155,7 +157,7 @@ namespace ServiceBusExplorer.Forms
             this.btnClearSubscriptionFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearSubscriptionFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearSubscriptionFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
-            this.btnClearSubscriptionFilterExpression.Location = new System.Drawing.Point(328, 190);
+            this.btnClearSubscriptionFilterExpression.Location = new System.Drawing.Point(328, 244);
             this.btnClearSubscriptionFilterExpression.Name = "btnClearSubscriptionFilterExpression";
             this.btnClearSubscriptionFilterExpression.Size = new System.Drawing.Size(24, 21);
             this.btnClearSubscriptionFilterExpression.TabIndex = 13;
@@ -178,7 +180,7 @@ namespace ServiceBusExplorer.Forms
             this.btnClearTopicFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearTopicFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearTopicFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
-            this.btnClearTopicFilterExpression.Location = new System.Drawing.Point(328, 142);
+            this.btnClearTopicFilterExpression.Location = new System.Drawing.Point(328, 196);
             this.btnClearTopicFilterExpression.Name = "btnClearTopicFilterExpression";
             this.btnClearTopicFilterExpression.Size = new System.Drawing.Size(24, 21);
             this.btnClearTopicFilterExpression.TabIndex = 9;
@@ -201,7 +203,7 @@ namespace ServiceBusExplorer.Forms
             this.btnClearQueueFilterExpression.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearQueueFilterExpression.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearQueueFilterExpression.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(125)))), ((int)(((byte)(150)))));
-            this.btnClearQueueFilterExpression.Location = new System.Drawing.Point(328, 94);
+            this.btnClearQueueFilterExpression.Location = new System.Drawing.Point(328, 148);
             this.btnClearQueueFilterExpression.Name = "btnClearQueueFilterExpression";
             this.btnClearQueueFilterExpression.Size = new System.Drawing.Size(24, 21);
             this.btnClearQueueFilterExpression.TabIndex = 5;
@@ -222,7 +224,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenSubscriptionFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenSubscriptionFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenSubscriptionFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenSubscriptionFilterForm.Location = new System.Drawing.Point(296, 190);
+            this.btnOpenSubscriptionFilterForm.Location = new System.Drawing.Point(296, 244);
             this.btnOpenSubscriptionFilterForm.Name = "btnOpenSubscriptionFilterForm";
             this.btnOpenSubscriptionFilterForm.Size = new System.Drawing.Size(24, 21);
             this.btnOpenSubscriptionFilterForm.TabIndex = 12;
@@ -239,7 +241,7 @@ namespace ServiceBusExplorer.Forms
             this.txtSubscriptionFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 190);
+            this.txtSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 244);
             this.txtSubscriptionFilterExpression.Name = "txtSubscriptionFilterExpression";
             this.txtSubscriptionFilterExpression.Size = new System.Drawing.Size(272, 20);
             this.txtSubscriptionFilterExpression.TabIndex = 11;
@@ -254,7 +256,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenTopicFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenTopicFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenTopicFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenTopicFilterForm.Location = new System.Drawing.Point(296, 142);
+            this.btnOpenTopicFilterForm.Location = new System.Drawing.Point(296, 196);
             this.btnOpenTopicFilterForm.Name = "btnOpenTopicFilterForm";
             this.btnOpenTopicFilterForm.Size = new System.Drawing.Size(24, 21);
             this.btnOpenTopicFilterForm.TabIndex = 8;
@@ -275,7 +277,7 @@ namespace ServiceBusExplorer.Forms
             this.btnOpenQueueFilterForm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnOpenQueueFilterForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenQueueFilterForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnOpenQueueFilterForm.Location = new System.Drawing.Point(296, 94);
+            this.btnOpenQueueFilterForm.Location = new System.Drawing.Point(296, 148);
             this.btnOpenQueueFilterForm.Name = "btnOpenQueueFilterForm";
             this.btnOpenQueueFilterForm.Size = new System.Drawing.Size(24, 21);
             this.btnOpenQueueFilterForm.TabIndex = 4;
@@ -292,7 +294,7 @@ namespace ServiceBusExplorer.Forms
             this.txtQueueFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtQueueFilterExpression.Location = new System.Drawing.Point(16, 94);
+            this.txtQueueFilterExpression.Location = new System.Drawing.Point(16, 148);
             this.txtQueueFilterExpression.Multiline = true;
             this.txtQueueFilterExpression.Name = "txtQueueFilterExpression";
             this.txtQueueFilterExpression.Size = new System.Drawing.Size(272, 20);
@@ -304,7 +306,7 @@ namespace ServiceBusExplorer.Forms
             this.txtTopicFilterExpression.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTopicFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.txtTopicFilterExpression.Location = new System.Drawing.Point(16, 142);
+            this.txtTopicFilterExpression.Location = new System.Drawing.Point(16, 196);
             this.txtTopicFilterExpression.Name = "txtTopicFilterExpression";
             this.txtTopicFilterExpression.Size = new System.Drawing.Size(272, 20);
             this.txtTopicFilterExpression.TabIndex = 7;
@@ -378,7 +380,7 @@ namespace ServiceBusExplorer.Forms
             this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Location = new System.Drawing.Point(536, 443);
+            this.btnSave.Location = new System.Drawing.Point(536, 497);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(72, 24);
             this.btnSave.TabIndex = 6;
@@ -397,7 +399,7 @@ namespace ServiceBusExplorer.Forms
             this.btnRename.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnRename.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnRename.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRename.Location = new System.Drawing.Point(16, 443);
+            this.btnRename.Location = new System.Drawing.Point(16, 497);
             this.btnRename.Name = "btnRename";
             this.btnRename.Size = new System.Drawing.Size(72, 24);
             this.btnRename.TabIndex = 4;
@@ -414,7 +416,7 @@ namespace ServiceBusExplorer.Forms
             this.btnDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDelete.Location = new System.Drawing.Point(94, 443);
+            this.btnDelete.Location = new System.Drawing.Point(94, 497);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(72, 24);
             this.btnDelete.TabIndex = 5;
@@ -436,7 +438,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperConfigFileUse.ForeColor = System.Drawing.Color.White;
             this.grouperConfigFileUse.GroupImage = null;
             this.grouperConfigFileUse.GroupTitle = "Configuration File for Connections and Settings";
-            this.grouperConfigFileUse.Location = new System.Drawing.Point(16, 344);
+            this.grouperConfigFileUse.Location = new System.Drawing.Point(16, 398);
             this.grouperConfigFileUse.Name = "grouperConfigFileUse";
             this.grouperConfigFileUse.Padding = new System.Windows.Forms.Padding(20);
             this.grouperConfigFileUse.PaintGroupBox = true;
@@ -465,6 +467,17 @@ namespace ServiceBusExplorer.Forms
             this.grouperFilters.BackgroundGradientMode = ServiceBusExplorer.Controls.Grouper.GroupBoxGradientMode.None;
             this.grouperFilters.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(180)))), ((int)(((byte)(209)))));
             this.grouperFilters.BorderThickness = 1F;
+            this.serviceChoices.Name = "serviceChoices";
+            this.serviceChoices.AccessibleName = "Namespace service";
+            this.serviceChoices.Location = new System.Drawing.Point(13, 23);
+            this.serviceChoices.Size = new System.Drawing.Size(342, 52);
+            this.serviceChoices.TabIndex = 0;
+            this.serviceChoices.Controls.Add(CreateServiceRadio(NamespaceService.ServiceBus, "Service Bus"));
+            this.serviceChoices.Controls.Add(CreateServiceRadio(NamespaceService.EventHubs, "Event Hubs"));
+            this.serviceChoices.Controls.Add(CreateServiceRadio(NamespaceService.NotificationHubs, "Notification Hubs"));
+            this.serviceChoices.Controls.Add(CreateServiceRadio(NamespaceService.Relay, "Relay"));
+            this.serviceChoices.Controls.Add(CreateServiceRadio(NamespaceService.Custom, "Custom / legacy"));
+            this.grouperFilters.Controls.Add(this.serviceChoices);
             this.grouperFilters.Controls.Add(this.lblSelectedEntities);
             this.grouperFilters.Controls.Add(this.cboSelectedEntities);
             this.grouperFilters.Controls.Add(this.btnClearSubscriptionFilterExpression);
@@ -483,7 +496,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperFilters.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.grouperFilters.ForeColor = System.Drawing.Color.White;
             this.grouperFilters.GroupImage = null;
-            this.grouperFilters.GroupTitle = "Filter Expressions";
+            this.grouperFilters.GroupTitle = "Namespace service and filters";
             this.grouperFilters.Location = new System.Drawing.Point(16, 104);
             this.grouperFilters.Name = "grouperFilters";
             this.grouperFilters.Padding = new System.Windows.Forms.Padding(20);
@@ -492,7 +505,7 @@ namespace ServiceBusExplorer.Forms
             this.grouperFilters.ShadowColor = System.Drawing.Color.DarkGray;
             this.grouperFilters.ShadowControl = false;
             this.grouperFilters.ShadowThickness = 1;
-            this.grouperFilters.Size = new System.Drawing.Size(368, 228);
+            this.grouperFilters.Size = new System.Drawing.Size(368, 282);
             this.grouperFilters.TabIndex = 1;
             this.grouperFilters.CustomPaint += new System.Action<System.Windows.Forms.PaintEventArgs>(this.grouperFilters_CustomPaint);
             // 
@@ -500,7 +513,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblSelectedEntities.AutoSize = true;
             this.lblSelectedEntities.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 30);
+            this.lblSelectedEntities.Location = new System.Drawing.Point(16, 84);
             this.lblSelectedEntities.Name = "lblSelectedEntities";
             this.lblSelectedEntities.Size = new System.Drawing.Size(89, 13);
             this.lblSelectedEntities.TabIndex = 0;
@@ -514,7 +527,7 @@ namespace ServiceBusExplorer.Forms
             this.cboSelectedEntities.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSelectedEntities.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboSelectedEntities.FormattingEnabled = true;
-            this.cboSelectedEntities.Location = new System.Drawing.Point(16, 46);
+            this.cboSelectedEntities.Location = new System.Drawing.Point(16, 100);
             this.cboSelectedEntities.Name = "cboSelectedEntities";
             this.cboSelectedEntities.Size = new System.Drawing.Size(336, 21);
             this.cboSelectedEntities.TabIndex = 1;
@@ -523,7 +536,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblSubscriptionFilterExpression.AutoSize = true;
             this.lblSubscriptionFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 174);
+            this.lblSubscriptionFilterExpression.Location = new System.Drawing.Point(16, 228);
             this.lblSubscriptionFilterExpression.Name = "lblSubscriptionFilterExpression";
             this.lblSubscriptionFilterExpression.Size = new System.Drawing.Size(147, 13);
             this.lblSubscriptionFilterExpression.TabIndex = 10;
@@ -533,7 +546,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblQueueFilterExpression.AutoSize = true;
             this.lblQueueFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblQueueFilterExpression.Location = new System.Drawing.Point(16, 78);
+            this.lblQueueFilterExpression.Location = new System.Drawing.Point(16, 132);
             this.lblQueueFilterExpression.Name = "lblQueueFilterExpression";
             this.lblQueueFilterExpression.Size = new System.Drawing.Size(121, 13);
             this.lblQueueFilterExpression.TabIndex = 2;
@@ -543,7 +556,7 @@ namespace ServiceBusExplorer.Forms
             // 
             this.lblTopicFilterExpression.AutoSize = true;
             this.lblTopicFilterExpression.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblTopicFilterExpression.Location = new System.Drawing.Point(16, 126);
+            this.lblTopicFilterExpression.Location = new System.Drawing.Point(16, 180);
             this.lblTopicFilterExpression.Name = "lblTopicFilterExpression";
             this.lblTopicFilterExpression.Size = new System.Drawing.Size(116, 13);
             this.lblTopicFilterExpression.TabIndex = 6;
@@ -769,7 +782,7 @@ namespace ServiceBusExplorer.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(228)))), ((int)(((byte)(242)))));
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(784, 477);
+            this.ClientSize = new System.Drawing.Size(784, 531);
             this.Controls.Add(this.grouperConfigFileUse);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnRename);
@@ -835,6 +848,7 @@ namespace ServiceBusExplorer.Forms
         private System.Windows.Forms.ComboBox cboConnectivityMode;
         private System.Windows.Forms.ComboBox cboTransportType;
         private System.Windows.Forms.Label lblTransportType;
+        private System.Windows.Forms.FlowLayoutPanel serviceChoices;
         private System.Windows.Forms.Label lblSelectedEntities;
         private CheckBoxComboBox cboSelectedEntities;
         private System.Windows.Forms.Button btnSave;
