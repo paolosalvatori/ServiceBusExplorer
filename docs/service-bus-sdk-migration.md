@@ -204,6 +204,21 @@ message conversion, `ViaPartitionKey` mapping, received SDK metadata, and
 reserved-key collisions. No live Service Bus integration acceptance has been
 performed for send, receive, settlement, or transactional moves.
 
+## Remaining legacy SDK dependencies
+
+Queue and topic management use the modern administration client. Sending,
+receiving, settling, browsing sessions and listener resubmission use the modern
+messaging client. Connecting leaves the legacy messaging factory uninitialized.
+Its public factory/receiver/sender helpers remain available to external callers.
+
+| Feature | Remaining dependency |
+| --- | --- |
+| Shared connection setup | Non-emulator connections prepare a legacy namespace manager for other service categories. Selecting Event Hubs or Relay can issue legacy management requests even at a Service Bus address. |
+| SAS and Entra | SAS messaging retains the entity path. Namespace administration removes it from the client connection string and uses the profile's original scope for entity lookup. This does not grant additional claims. Entra uses the Service Bus audience for messaging and distinguishes the Event Hubs audience during connection setup. |
+| Event Hubs | Hub, consumer-group and partition management still use legacy management APIs. Data-plane producers and consumers use the Event Hubs SDK. |
+| Relay and Notification Hubs | Relay management and WCF Relay retain their legacy types. Notification Hubs management uses its own SDK, with legacy URI and connection plumbing. |
+| Message files and extensions | The editable message model, legacy serializers, inspector and generator interfaces still depend on `BrokeredMessage`. Removing the package requires preserving binary plugin compatibility and persisted body formats or defining a migration for them. |
+
 ## Decisions to review
 
 - On-premises Service Bus Server (Windows auth, STS/runtime/management ports)
