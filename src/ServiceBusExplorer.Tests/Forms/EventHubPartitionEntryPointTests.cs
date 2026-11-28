@@ -27,6 +27,9 @@ namespace ServiceBusExplorer.Tests.Forms
                 using var pane = new HeaderPanel();
                 using var logPane = new HeaderPanel();
                 using var menu = new ContextMenuStrip();
+                using var tabs = new TabControl();
+                using var explorer = new TabPage();
+                tabs.TabPages.Add(explorer);
                 using var actions = new ToolStripMenuItem();
                 using var iot = new ToolStripMenuItem();
                 using var listener = new ToolStripMenuItem();
@@ -37,6 +40,8 @@ namespace ServiceBusExplorer.Tests.Forms
                     var reads = new CountingPartition();
                     typeof(ServiceBusHelper).GetField("serviceBusPartition", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(helper, reads);
                     SetMainField(main, "serviceBusHelper", helper);
+                    SetMainField(main, "mainTabControl", tabs);
+                    SetMainField(main, "tabPageExplorer", explorer);
                     SetMainField(main, "panelMain", pane);
                     SetMainField(main, "panelLog", logPane);
                     SetMainField(main, "serviceBusTreeView", tree);
