@@ -901,6 +901,7 @@ namespace ServiceBusExplorer
                     var endpoint = new Uri(serviceBusNamespace.Uri);
                     var provider = entraTokenProvider;
                     var legacyConnectionString = isEntra ? null : GetConnectionStringWithoutEntityPath(ConnectionString);
+                    if (!isEntra) LegacyManagementConnectionSettings.Validate(legacyConnectionString);
                     var retries = RetryHelper.RetryCount;
                     legacyNamespaceManager = new Lazy<NamespaceManager>(() =>
                     {

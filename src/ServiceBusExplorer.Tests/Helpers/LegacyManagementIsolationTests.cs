@@ -21,8 +21,8 @@ namespace ServiceBusExplorer.Tests.Helpers
         public void ConnectAndQueueTopicUrisDoNotInitializeLegacyManagement(bool entra)
         {
             var helper = Connect(entra);
-            Assert.EndsWith("/orders", helper.GetQueueUri("orders").AbsoluteUri);
-            Assert.EndsWith("/events", helper.GetTopicUri("events").AbsoluteUri);
+            Assert.EndsWith("/orders/", helper.GetQueueUri("orders").AbsoluteUri);
+            Assert.EndsWith("/events/", helper.GetTopicUri("events").AbsoluteUri);
             Assert.Null(Field(helper, "namespaceManager"));
             Assert.False(((Lazy<NamespaceManager>)Field(helper, "legacyNamespaceManager")).IsValueCreated);
             foreach (var field in new[] { "serviceBusEventHub", "serviceBusConsumerGroup", "serviceBusPartition", "serviceBusRelay", "serviceBusNotificationHub", "messagingFactory" })
@@ -38,12 +38,12 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var helper = Connect(entra);
             helper.Scheme = "https";
-            Assert.EndsWith("/hub", helper.GetEventHubUri("hub").AbsoluteUri);
+            Assert.EndsWith("/hub/", helper.GetEventHubUri("hub").AbsoluteUri);
             var manager = helper.NamespaceManager;
             Assert.NotNull(manager);
             Assert.Equal("https", helper.GetEventHubUri("hub").Scheme);
             Assert.Contains("$Default", helper.GetConsumerGroupUri("hub", "$Default").AbsoluteUri);
-            Assert.EndsWith("/0", helper.GetPartitionUri("hub", "$Default", "0").AbsoluteUri);
+            Assert.EndsWith("/0/", helper.GetPartitionUri("hub", "$Default", "0").AbsoluteUri);
             Assert.Same(manager, helper.NamespaceManager);
             Assert.NotNull(Field(helper, "serviceBusEventHub"));
             Assert.NotNull(Field(helper, "serviceBusConsumerGroup"));
@@ -90,10 +90,20 @@ namespace ServiceBusExplorer.Tests.Helpers
         {
             var helper = Connect(false);
             var copy = new ServiceBusHelper((_, __) => { }, helper);
-            Assert.True(helper.Connect(SasProfile(5673)));
+            var nextProfile = ServiceBusNamespace.GetServiceBusNamespace("next",
+                SasProfile(5673).ConnectionString + ";ManagementPort=4443", (_, __) => { });
+            Assert.True(helper.Connect(nextProfile));
             Assert.Null(Field(helper, "namespaceManager"));
-            Assert.Equal(5672, copy.NamespaceManager.Address.Port);
-            Assert.Equal(5673, helper.NamespaceManager.Address.Port);
+            // NamespaceManager normalizes an Endpoint port unless ManagementPort is supplied.
+            // Compare to the pre-isolation SDK construction and retain the runtime profile ports.
+            var first = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(SasProfile(5672).ConnectionString);
+            var second = ServiceBusNamespace.CreateLegacyConnectionStringBuilder(nextProfile.ConnectionString);
+            first.EntityPath = second.EntityPath = string.Empty;
+            Assert.Equal(NamespaceManager.CreateFromConnectionString(first.ToString()).Address, copy.NamespaceManager.Address);
+            Assert.Equal(NamespaceManager.CreateFromConnectionString(second.ToString()).Address, helper.NamespaceManager.Address);
+            Assert.Equal(4443, helper.NamespaceManager.Address.Port);
+            Assert.Contains(":5672", copy.ConnectionString);
+            Assert.Contains(":5673", helper.ConnectionString);
             Assert.NotSame(copy.NamespaceManager, helper.NamespaceManager);
         }
 
@@ -118,11 +128,15 @@ namespace ServiceBusExplorer.Tests.Helpers
                 return Task.FromResult(Response.FromValue(value, null));
             }
             public override Task<Response<QueueProperties>> GetQueueAsync(string name, CancellationToken token = default) =>
-                Result(ServiceBusModelFactory.QueueProperties(name));
+                Result(ServiceBusModelFactory.QueueProperties(name, lockDuration: TimeSpan.FromMinutes(1),
+                    maxSizeInMegabytes: 1024, defaultMessageTimeToLive: TimeSpan.MaxValue,
+                    autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), maxDeliveryCount: 10));
             public override Task<Response<QueueRuntimeProperties>> GetQueueRuntimePropertiesAsync(string name, CancellationToken token = default) =>
                 Result(ServiceBusModelFactory.QueueRuntimeProperties(name));
             public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken token = default) =>
-                Result(ServiceBusModelFactory.TopicProperties(name));
+                Result(ServiceBusModelFactory.TopicProperties(name, maxSizeInMegabytes: 1024,
+                    defaultMessageTimeToLive: TimeSpan.MaxValue, autoDeleteOnIdle: TimeSpan.MaxValue,
+                    duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10)));
             public override Task<Response<TopicRuntimeProperties>> GetTopicRuntimePropertiesAsync(string name, CancellationToken token = default) =>
                 Result(ServiceBusModelFactory.TopicRuntimeProperties(name));
             public override AsyncPageable<SubscriptionRuntimeProperties> GetSubscriptionsRuntimePropertiesAsync(string topic, CancellationToken token = default)
