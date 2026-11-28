@@ -385,14 +385,28 @@ namespace ServiceBusExplorer.Forms
                 msg => WriteToLog(msg));
         }
 
+        internal static string GetNamespaceServiceTitle(NamespaceService service)
+        {
+            switch (service)
+            {
+                case NamespaceService.ServiceBus: return "Service Bus";
+                case NamespaceService.EventHubs: return "Event Hubs";
+                case NamespaceService.NotificationHubs: return "Notification Hubs";
+                case NamespaceService.Relay: return "Relay";
+                case NamespaceService.Custom: return "Custom";
+                default: throw new ArgumentOutOfRangeException(nameof(service));
+            }
+        }
+
         private async Task ActivateNamespace(ServiceBusNamespace profile)
         {
             // Entra's existing audience check completes during Connect. SAS only has explicit service metadata.
             var connection = new ServiceBusHelper(WriteToLog, serviceBusHelper);
             ResetEventGridConnection();
             SetDiscoveryConnection(connection, profile.GetDiscoveryEntities(connection.IsEventHubNamespace, connection.IsCloudNamespace));
-            SetTitle(profile.Namespace, "Service Bus");
-            panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, "Service Bus");
+            var service = GetNamespaceServiceTitle(profile.GetDiscoveryService(connection.IsEventHubNamespace));
+            SetTitle(profile.Namespace, service);
+            panelTreeView.HeaderText = string.Format(NamespaceTypeFormat, service);
             foreach (var control in panelMain.Controls.OfType<UserControl>().ToArray())
                 control.Dispose();
             panelMain.Controls.Clear();
@@ -4859,7 +4873,7 @@ namespace ServiceBusExplorer.Forms
                                 }
                                 else
                                 {
-                                    eventHubs = await connection.NamespaceManager.GetEventHubsAsync();
+                                    eventHubs = await connection.ListEventHubsForDiscoveryAsync();
                                 }
                                 if (connection != discoveryHelper) return;
                                 Cursor.Current = Cursors.WaitCursor;

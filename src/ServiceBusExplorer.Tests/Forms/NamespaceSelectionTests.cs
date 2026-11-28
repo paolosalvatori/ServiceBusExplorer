@@ -266,8 +266,23 @@ namespace ServiceBusExplorer.Tests.Forms
             });
         }
 
-        [Fact]
-        public void TreeAndDashboardUseTheSameGroupsAcrossSwitches()
+        private sealed class PendingEventHubDiscovery : ServiceBusHelper
+        {
+            internal readonly TaskCompletionSource<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.EventHubDescription>> Pending =
+                new TaskCompletionSource<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.EventHubDescription>>();
+            internal int Calls;
+            internal PendingEventHubDiscovery() : base((_, __) => { }) { }
+            public override Task<System.Collections.Generic.IEnumerable<Microsoft.ServiceBus.Messaging.EventHubDescription>> ListEventHubsForDiscoveryAsync()
+            {
+                Calls++;
+                return Pending.Task;
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void TreeAndDashboardIgnoreLateDiscoveryAfterNamespaceSwitch(bool lateFailure)
         {
             RunOnStaThread(() =>
             {
@@ -308,9 +323,21 @@ namespace ServiceBusExplorer.Tests.Forms
                     void Select(NamespaceService service) => bind.Invoke(main, new object[] { helper, new NamespaceSelection(service).Entities });
                     void Load(EntityType type) => CompleteOnUi((Task)refresh.Invoke(main, new object[] { type }));
 
+                    var previous = new PendingEventHubDiscovery { NamespaceUri = new Uri("sb://previous.servicebus.windows.net/") };
+                    bind.Invoke(main, new object[] { previous, new NamespaceSelection(NamespaceService.EventHubs).Entities });
+                    var outstanding = (Task)refresh.Invoke(main, new object[] { EntityType.All });
+                    Assert.Equal(1, previous.Calls);
+                    Assert.False(outstanding.IsCompleted);
                     Select(NamespaceService.ServiceBus);
                     Load(EntityType.All);
                     Assert.Equal(new[] { "Queues", "Topics" }, tree.Nodes[0].Nodes.Cast<TreeNode>().Select(node => node.Name));
+                    var activeRoot = tree.Nodes[0];
+                    if (lateFailure) previous.Pending.SetException(new InvalidOperationException("late failure"));
+                    else previous.Pending.SetResult(new[] { new Microsoft.ServiceBus.Messaging.EventHubDescription("old-hub") });
+                    CompleteOnUi(outstanding);
+                    Assert.Same(activeRoot, tree.Nodes[0]);
+                    Assert.Same(activeRoot, tree.SelectedNode);
+                    Assert.Empty(tree.Nodes.Find("old-hub", true));
                     Assert.Empty(log);
                     Assert.Equal(new[] { "GetQueues", "GetTopics", "GetQueues", "GetTopics" }, calls.ToArray());
                     Select(NamespaceService.Relay);

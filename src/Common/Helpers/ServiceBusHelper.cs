@@ -732,6 +732,9 @@ namespace ServiceBusExplorer
                                               options);
         }
 
+        public virtual Task<IEnumerable<EventHubDescription>> ListEventHubsForDiscoveryAsync() =>
+            NamespaceManager.GetEventHubsAsync();
+
         /// <summary>
         /// Connects the ServiceBusHelper object to service bus namespace contained in the ServiceBusNamespaces dictionary.
         /// </summary>

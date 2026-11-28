@@ -19,6 +19,63 @@ namespace ServiceBusExplorer.Tests.Forms
         private const string EnvironmentKey = @"HKEY_CURRENT_USER\Environment connection string";
 
         [Fact]
+        public void StructuredTransportEditUpdatesDefaultPortOnConnectAndSave() =>
+            WithProfileConfiguration(CheckDefaultPorts, storedProfile: LocalSas + ";TransportType=NetMessaging;RuntimePort=9354;ManagementPort=14443");
+
+        private static void CheckDefaultPorts()
+        {
+            RunOnStaThread(() =>
+            {
+                ResetManualConnectionState();
+                using var log = new BlockingCollection<string>();
+                CreateProfileTestMainForm(log);
+                var config = TwoFilesConfiguration.Create(ConfigFileUse.ApplicationConfig);
+                var helper = new ServiceBusHelper((_, __) => { });
+                helper.ServiceBusNamespaces = ServiceBusNamespace.GetMessagingNamespaces(config, (_, __) => { });
+                foreach (var button in new[] { "btnOk", "btnSave" })
+                {
+                    using var form = new ConnectForm(helper, ConfigFileUse.ApplicationConfig, null);
+                    form.Show();
+                    form.SelectProfile(SavedProfileKey);
+                    FindControl<RadioButton>(form, "radioServiceBus").PerformClick();
+                    GetComboBox(form, ControlNameTransportType).SelectedItem = TransportType.Amqp;
+                    FindControl<Button>(form, button).PerformClick();
+                    var value = button == "btnOk" ? form.ConnectionString : ServiceBusNamespace.GetMessagingNamespaces(
+                        TwoFilesConfiguration.Create(ConfigFileUse.ApplicationConfig), (_, __) => { })[SavedProfileKey].ConnectionString;
+                    Assert.Contains("RuntimePort=5671", value);
+                    Assert.Contains("ManagementPort=14443", value);
+                }
+            });
+        }
+
+        [Fact]
+        public void MalformedExternalEntraProfileDoesNotHideSavedConnections() =>
+            WithProfileConfiguration(CheckInvalidExternal, storedProfile: LocalSas, legacySetting: LocalSas);
+
+        private static void CheckInvalidExternal()
+        {
+            var warnings = new System.Collections.Generic.List<string>();
+            var config = TwoFilesConfiguration.Create(ConfigFileUse.ApplicationConfig);
+            var original = ServiceBusNamespace.GetMessagingNamespaces(config, (_, __) => { }, null);
+            var profiles = ServiceBusNamespace.GetMessagingNamespaces(config,
+                (msg, _) => warnings.Add(msg), "Endpoint=sb://invalid host/;AuthMode=AAD");
+            Assert.Equal(original.Keys.OrderBy(k => k), profiles.Keys.OrderBy(k => k));
+            Assert.Contains(ConfigurationParameters.MicrosoftServiceBusConnectionString, profiles.Keys);
+            Assert.DoesNotContain(EnvironmentKey, profiles.Keys);
+            Assert.Contains(warnings, w => w.Contains("invalid") && w.Contains(EnvironmentKey));
+            Assert.DoesNotContain(warnings, w => w.Contains("invalid host"));
+        }
+
+        [Theory]
+        [InlineData(NamespaceService.ServiceBus, "Service Bus")]
+        [InlineData(NamespaceService.EventHubs, "Event Hubs")]
+        [InlineData(NamespaceService.NotificationHubs, "Notification Hubs")]
+        [InlineData(NamespaceService.Relay, "Relay")]
+        [InlineData(NamespaceService.Custom, "Custom")]
+        public void NamespaceHeadingUsesSelectedService(NamespaceService service, string expected) =>
+            Assert.Equal(expected, MainForm.GetNamespaceServiceTitle(service));
+
+        [Fact]
         public void SavedSasPortsSurviveConnectAndSaveWithFieldEdits() =>
             WithProfileConfiguration(CheckSavedPorts, storedProfile: PortProfile);
 

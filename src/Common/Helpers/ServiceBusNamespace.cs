@@ -398,7 +398,12 @@ namespace ServiceBusExplorer.Helpers
                 if (profile == null) return;
                 // A replacement credential can refer to another namespace. Keep the choice with its
                 // source and endpoint, without persisting the connection string or its credentials.
-                var endpoint = new Uri(profile.Uri);
+                if (!System.Uri.TryCreate(profile.Uri, UriKind.Absolute, out var endpoint) ||
+                    string.IsNullOrEmpty(endpoint.Host))
+                {
+                    writeToLog($"Skipping {key}: the namespace endpoint is invalid.");
+                    return;
+                }
                 profile.externalSelectionKey = $"ExternalNamespaceService.{source}.{endpoint.IdnHost}:{endpoint.Port}{endpoint.AbsolutePath}";
                 if (!profile.IsEntra)
                     profile.Selection = NamespaceSelection.FromSetting(configuration.GetStringValue(profile.externalSelectionKey));
@@ -570,10 +575,14 @@ namespace ServiceBusExplorer.Helpers
             ? new NamespaceSelection(NamespaceService.ServiceBus)
             : Selection;
 
+        public NamespaceService GetDiscoveryService(bool isEventHubNamespace) => IsEntra
+            ? (isEventHubNamespace ? NamespaceService.EventHubs : NamespaceService.ServiceBus)
+            : (KnownSelection ?? throw new InvalidOperationException("Choose a namespace service before connecting.")).Service;
+
         public IReadOnlyList<string> GetDiscoveryEntities(bool isEventHubNamespace, bool isCloudNamespace)
         {
             var selection = IsEntra
-                ? new NamespaceSelection(isEventHubNamespace ? NamespaceService.EventHubs : NamespaceService.ServiceBus)
+                ? new NamespaceSelection(GetDiscoveryService(isEventHubNamespace))
                 : KnownSelection ?? throw new InvalidOperationException("Choose a namespace service before connecting.");
             // The emulator and Service Bus for Windows Server support queues and topics.
             return isCloudNamespace && !UseDevelopmentEmulator ? selection.Entities : Array.AsReadOnly(selection.Entities
@@ -782,10 +791,11 @@ namespace ServiceBusExplorer.Helpers
             }
 
             if (!endpoint.Contains("://"))
-            {
-                staticWriteToLog(string.Format(CultureInfo.CurrentCulture,
-                    ServiceBusNamespaceEndpointPrefixedWithSb, endpoint));
                 endpoint = "sb://" + endpoint;
+            if (!System.Uri.TryCreate(endpoint, UriKind.Absolute, out var address) || string.IsNullOrEmpty(address.Host))
+            {
+                staticWriteToLog($"Skipping {key}: the Entra namespace endpoint is invalid.");
+                return null;
             }
 
             string ns = GetNamespaceNameFromEndpoint(endpoint, staticWriteToLog, key);

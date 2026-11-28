@@ -624,7 +624,8 @@ namespace ServiceBusExplorer.Forms
                 Update("SharedAccessKeyName", saved.SharedAccessKeyName, SharedAccessKeyName);
                 Update("SharedAccessKey", saved.SharedAccessKey, SharedAccessKey);
                 Update("EntityPath", saved.EntityPath, string.IsNullOrEmpty(EntityPath) ? null : EntityPath);
-                Update("TransportType", saved.TransportType.ToString(), TransportType.ToString());
+                if (saved.TransportType != TransportType)
+                    ConnectionString = ChangeTransport(ConnectionString, TransportType);
             }
             else if (string.IsNullOrEmpty(EntityPath))
             {
@@ -882,6 +883,16 @@ namespace ServiceBusExplorer.Forms
             finally { updatingTransportSelection = previous; }
         }
 
+        private static string ChangeTransport(string connection, TransportType transport)
+        {
+            var value = ReplaceConnectionStringSetting(connection, ConnectionStringTransportType, transport.ToString(), true);
+            if (ParseConnectionStringParts(value).TryGetValue(ConnectionStringRuntimePort, out var port) &&
+                (port == DefaultAmqpRuntimePort || port == DefaultNetMessagingRuntimePort))
+                value = ReplaceConnectionStringSetting(value, ConnectionStringRuntimePort,
+                    transport == TransportType.Amqp ? DefaultAmqpRuntimePort : DefaultNetMessagingRuntimePort, false);
+            return value;
+        }
+
         private void cboTransportType_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (updatingTransportSelection) return;
@@ -894,15 +905,7 @@ namespace ServiceBusExplorer.Forms
                     return;
                 }
                 if (!(cboTransportType.SelectedItem is TransportType transportType)) return;
-                var value = ReplaceConnectionStringSetting(txtUri.Text, ConnectionStringTransportType, transportType.ToString(), true);
-                var fields = ParseConnectionStringParts(value);
-                if (fields.TryGetValue(ConnectionStringRuntimePort, out var port) &&
-                    (port == DefaultAmqpRuntimePort || port == DefaultNetMessagingRuntimePort))
-                {
-                    value = ReplaceConnectionStringSetting(value, ConnectionStringRuntimePort,
-                        transportType == TransportType.Amqp ? DefaultAmqpRuntimePort : DefaultNetMessagingRuntimePort, false);
-                }
-                txtUri.Text = value;
+                txtUri.Text = ChangeTransport(txtUri.Text, transportType);
             }
             else
             {
