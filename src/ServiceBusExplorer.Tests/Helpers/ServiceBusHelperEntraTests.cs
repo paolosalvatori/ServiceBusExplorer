@@ -427,6 +427,8 @@ namespace ServiceBusExplorer.Tests.Helpers
                 var target = new ServiceBusNamespace(endpoint.AbsoluteUri, "local", tenant, TransportType.Amqp);
                 helper.Connect(target).Should().BeTrue();
                 helper.IsEventHubNamespace.Should().BeTrue();
+                GetPrivateField<NamespaceManager>(helper, "namespaceManager").Should().BeNull();
+                GetPrivateField<Lazy<NamespaceManager>>(helper, "legacyNamespaceManager").IsValueCreated.Should().BeFalse();
                 var provider = helper.NamespaceManager.Settings.TokenProvider;
                 var header = await provider.GetWebTokenAsync("https://localhost/hub", "Manage", false, TimeSpan.FromSeconds(2));
                 header.Should().Contain(token);

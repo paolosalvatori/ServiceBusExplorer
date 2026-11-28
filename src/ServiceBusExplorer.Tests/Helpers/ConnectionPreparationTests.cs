@@ -34,7 +34,7 @@ namespace ServiceBusExplorer.Tests.Helpers
                 var helper = new ServiceBusHelper((_, __) => { });
                 var original = ServiceBusNamespace.GetServiceBusNamespace("original", "Endpoint=sb://localhost:5672;SharedAccessKeyName=name;SharedAccessKey=synthetic;UseDevelopmentEmulator=true", (_, __) => { });
                 Assert.True(helper.Connect(original));
-                var names = new[] { "serviceBusNamespaceInstance", "connectionString", "namespaceUri", "managementClient", "serviceBusQueue", "serviceBusTopic", "serviceBusSubscription", "serviceBusRule", "serviceBusRelay", "serviceBusNotificationHub", "serviceBusEventHub", "serviceBusConsumerGroup", "serviceBusPartition", "messagingFactory" };
+                var names = new[] { "serviceBusNamespaceInstance", "connectionString", "namespaceUri", "managementClient", "namespaceManager", "legacyNamespaceManager", "serviceBusQueue", "serviceBusTopic", "serviceBusSubscription", "serviceBusRule", "serviceBusRelay", "serviceBusNotificationHub", "serviceBusEventHub", "serviceBusConsumerGroup", "serviceBusPartition", "messagingFactory" };
                 var fields = names.Select(name => typeof(ServiceBusHelper).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)).ToArray();
                 var before = fields.Select(field => field.GetValue(helper)).ToArray();
                 // localhost resolves; SDK construction then rejects the unknown setting without network I/O.

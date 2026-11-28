@@ -143,6 +143,7 @@ namespace ServiceBusExplorer
         #region Private Fields
         private Type messageDeferProviderType = typeof(InMemoryMessageDeferProvider);
         private Microsoft.ServiceBus.NamespaceManager namespaceManager;
+        private Lazy<NamespaceManager> legacyNamespaceManager;
         private ServiceBusManagementClient managementClient;
         private Func<ServiceBusAdministrationClient, Task> serviceBusAudienceProbe = static client =>
             client.QueueExistsAsync("$__scope_probe__$");
@@ -199,7 +200,8 @@ namespace ServiceBusExplorer
             connectionString = serviceBusHelper.ConnectionString;
             serviceBusNamespaceInstance = serviceBusHelper.serviceBusNamespaceInstance;
             entraTokenProvider = serviceBusHelper.entraTokenProvider;
-            namespaceManager = serviceBusHelper.NamespaceManager;
+            namespaceManager = serviceBusHelper.namespaceManager;
+            legacyNamespaceManager = serviceBusHelper.legacyNamespaceManager;
             managementClient = serviceBusHelper.managementClient;
             notificationHubNamespaceManager = serviceBusHelper.NotificationHubNamespaceManager;
             MessagingFactory = serviceBusHelper.messagingFactory;
@@ -414,7 +416,7 @@ namespace ServiceBusExplorer
             {
                 lock (this)
                 {
-                    return namespaceManager;
+                    return namespaceManager ?? (namespaceManager = legacyNamespaceManager?.Value);
                 }
             }
         }
@@ -796,6 +798,7 @@ namespace ServiceBusExplorer
             ns = replacement.ns;
             IsEventHubNamespace = replacement.IsEventHubNamespace;
             namespaceManager = replacement.namespaceManager;
+            legacyNamespaceManager = replacement.legacyNamespaceManager;
             notificationHubNamespaceManager = replacement.notificationHubNamespaceManager;
             entraTokenProvider = replacement.entraTokenProvider;
             managementClient = replacement.managementClient;
@@ -818,6 +821,7 @@ namespace ServiceBusExplorer
             // Reconnect must not leave adapters pointing at a previous namespace.
             serviceBusNamespaceInstance = serviceBusNamespace;
             namespaceManager = null;
+            legacyNamespaceManager = null;
             notificationHubNamespaceManager = null;
             entraTokenProvider = null;
             managementClient = null;
@@ -863,7 +867,6 @@ namespace ServiceBusExplorer
                     // authorization error, the namespace may be an Event Hub namespace that
                     // requires the Event Hub audience instead.
                     entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(tenantId);
-                    namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
 
                     try
                     {
@@ -880,9 +883,8 @@ namespace ServiceBusExplorer
                         entraTokenProvider = EntraCredentialFactory.CreateOldSdkTokenProvider(
                             tenantId, EntraCredentialFactory.EventHubsAudience);
                         // Complete interactive Event Hubs sign-in before publishing the replacement.
-                        entraTokenProvider.GetWebTokenAsync(endpointUri.AbsoluteUri, "Manage", false, namespaceManager.Settings.OperationTimeout)
+                        entraTokenProvider.GetWebTokenAsync(endpointUri.AbsoluteUri, "Manage", false, new NamespaceManagerSettings().OperationTimeout)
                             .GetAwaiter().GetResult();
-                        namespaceManager = new Microsoft.ServiceBus.NamespaceManager(endpointUri, entraTokenProvider);
                         IsEventHubNamespace = true;
                     }
                 }
@@ -890,15 +892,28 @@ namespace ServiceBusExplorer
                 {
                     IsEventHubNamespace = false;
                     entraTokenProvider = null;
-                    namespaceManager = Microsoft.ServiceBus.NamespaceManager.CreateFromConnectionString(GetConnectionStringWithoutEntityPath(ConnectionString));
                 }
 
-                // Set retry count
-                if (namespaceManager?.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential defaultServiceBusRetryExponential)
+                if (!IsEmulator)
                 {
-                    namespaceManager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(defaultServiceBusRetryExponential.MinimalBackoff,
-                                                                                            defaultServiceBusRetryExponential.MaximumBackoff,
-                                                                                            RetryHelper.RetryCount);
+                    // Snapshot the connection: clones share this lazy manager, while reconnects
+                    // get a new one. Do not capture mutable helper fields in the factory.
+                    var endpoint = new Uri(serviceBusNamespace.Uri);
+                    var provider = entraTokenProvider;
+                    var legacyConnectionString = isEntra ? null : GetConnectionStringWithoutEntityPath(ConnectionString);
+                    var retries = RetryHelper.RetryCount;
+                    legacyNamespaceManager = new Lazy<NamespaceManager>(() =>
+                    {
+                        var manager = isEntra
+                            ? new NamespaceManager(endpoint, provider)
+                            : NamespaceManager.CreateFromConnectionString(legacyConnectionString);
+                        if (manager.Settings.RetryPolicy is Microsoft.ServiceBus.RetryExponential retry)
+                        {
+                            manager.Settings.RetryPolicy = new Microsoft.ServiceBus.RetryExponential(
+                                retry.MinimalBackoff, retry.MaximumBackoff, retries);
+                        }
+                        return manager;
+                    });
                 }
 
                 // Notification Hubs don't support Entra token-provider auth
@@ -927,15 +942,6 @@ namespace ServiceBusExplorer
                 serviceBusTopic = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusTopic(sbn, managementClient));
                 serviceBusSubscription = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusSubscription(sbn, managementClient));
                 serviceBusRule = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusRule(sbn, managementClient));
-                if (!IsEmulator)
-                {
-                    serviceBusRelay = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusRelay(sbn, nsmgr));
-                    serviceBusNotificationHub = CreateServiceBusEntity((sbn, nsmgr) => new ServiceBusNotificationHub(sbn, nsmgr, notificationHubNamespaceManager));
-                    serviceBusEventHub = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusEventHub(sbn, nsmgr));
-                    serviceBusConsumerGroup = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusConsumerGroup(sbn, nsmgr));
-                    serviceBusPartition = CreateServiceBusEntity(static (sbn, nsmgr) => new ServiceBusPartition(sbn, nsmgr));
-                }
-
                 namespaceUri = managementClient.Address;
                 WriteToLogIf(traceEnabled, string.Format(CultureInfo.CurrentCulture, ServiceBusIsConnected, namespaceUri.AbsoluteUri, IsEventHubNamespace ? "event hub" : "service bus"));
                 connectionStringType = serviceBusNamespace.ConnectionStringType;
@@ -958,7 +964,7 @@ namespace ServiceBusExplorer
         /// <returns>A RelayDescription handle to the relay, or null if the relay does not exist in the service namespace. </returns>
         public RelayDescription GetRelay(string path)
         {
-            return serviceBusRelay.GetRelay(path);
+            return LegacyRelay.GetRelay(path);
         }
 
         /// <summary>
@@ -968,7 +974,7 @@ namespace ServiceBusExplorer
         ///          Returns an empty collection if no relay exists in this service namespace.</returns>
         public IEnumerable<RelayDescription> GetRelays(int timeoutInSeconds)
         {
-            return serviceBusRelay.GetRelays(timeoutInSeconds);
+            return LegacyRelay.GetRelays(timeoutInSeconds);
         }
 
         /// <summary>
@@ -978,7 +984,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created RelayDescription object.</returns>
         public RelayDescription CreateRelay(RelayDescription description)
         {
-            return serviceBusRelay.CreateRelay(description);
+            return LegacyRelay.CreateRelay(description);
         }
 
         /// <summary>
@@ -987,7 +993,7 @@ namespace ServiceBusExplorer
         /// <param name="path">Path of the relay relative to the service namespace base address.</param>
         public async Task DeleteRelay(string path)
         {
-            await serviceBusRelay.DeleteRelay(path);
+            await LegacyRelay.DeleteRelay(path);
         }
 
         /// <summary>
@@ -996,7 +1002,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public async Task DeleteRelays(IEnumerable<string> relayServices)
         {
-            await serviceBusRelay.DeleteRelays(relayServices);
+            await LegacyRelay.DeleteRelays(relayServices);
         }
 
         /// <summary>
@@ -1006,7 +1012,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated RelayDescription object.</returns>
         public RelayDescription UpdateRelay(RelayDescription description)
         {
-            return serviceBusRelay.UpdateRelay(description);
+            return LegacyRelay.UpdateRelay(description);
         }
 
         /// <summary>
@@ -1016,7 +1022,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the relay.</returns>
         public Uri GetRelayUri(RelayDescription description)
         {
-            return serviceBusRelay.GetRelayUri(description);
+            return LegacyRelay.GetRelayUri(description);
         }
 
         /// <summary>
@@ -1026,7 +1032,7 @@ namespace ServiceBusExplorer
         /// <returns>A EventHubDescription handle to the event hub, or null if the event hub does not exist in the service namespace. </returns>
         public EventHubDescription GetEventHub(string path)
         {
-            return serviceBusEventHub.GetEventHub(path);
+            return LegacyEventHub.GetEventHub(path);
         }
 
         /// <summary>
@@ -1036,7 +1042,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created EventHubDescription object.</returns>
         public EventHubDescription CreateEventHub(EventHubDescription description)
         {
-            return serviceBusEventHub.CreateEventHub(description);
+            return LegacyEventHub.CreateEventHub(description);
         }
 
         /// <summary>
@@ -1045,7 +1051,7 @@ namespace ServiceBusExplorer
         /// <param name="eventHubDescription">The event hub to delete.</param>
         public void DeleteEventHub(EventHubDescription eventHubDescription)
         {
-            serviceBusEventHub.DeleteEventHub(eventHubDescription);
+            LegacyEventHub.DeleteEventHub(eventHubDescription);
         }
 
         /// <summary>
@@ -1054,7 +1060,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public void DeleteEventHubs(IEnumerable<string> eventHubs)
         {
-            serviceBusEventHub.DeleteEventHubs(eventHubs);
+            LegacyEventHub.DeleteEventHubs(eventHubs);
         }
 
         /// <summary>
@@ -1064,7 +1070,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated EventHubDescription object.</returns>
         public EventHubDescription UpdateEventHub(EventHubDescription description)
         {
-            return serviceBusEventHub.UpdateEventHub(description);
+            return LegacyEventHub.UpdateEventHub(description);
         }
 
         /// <summary>
@@ -1074,7 +1080,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the event hub.</returns>
         public Uri GetEventHubUri(string eventHubPath)
         {
-            return serviceBusEventHub.GetEventHubUri(eventHubPath);
+            return LegacyEventHub.GetEventHubUri(eventHubPath);
         }
 
         /// <summary>
@@ -1086,7 +1092,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public PartitionDescription GetPartition(string path, string consumerGroupName, string name)
         {
-            return serviceBusPartition.GetPartition(path, consumerGroupName, name);
+            return LegacyPartition.GetPartition(path, consumerGroupName, name);
         }
 
         /// <summary>
@@ -1097,7 +1103,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of partitions attached to the event hub passed as a parameter.</returns>
         public IEnumerable<PartitionDescription> GetPartitions(string path, string consumerGroupName)
         {
-            return serviceBusPartition.GetPartitions(path, consumerGroupName);
+            return LegacyPartition.GetPartitions(path, consumerGroupName);
         }
 
         /// <summary>
@@ -1109,7 +1115,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the partition.</returns>
         public Uri GetPartitionUri(string eventHubName, string consumerGroupName, string partitionId)
         {
-            return serviceBusPartition.GetPartitionUri(eventHubName, consumerGroupName, partitionId);
+            return LegacyPartition.GetPartitionUri(eventHubName, consumerGroupName, partitionId);
         }
 
         /// <summary>
@@ -1120,7 +1126,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of consumer groups attached to the event hub passed as a parameter.</returns>
         public ConsumerGroupDescription GetConsumerGroup(string eventHubPath, string name)
         {
-            return serviceBusConsumerGroup.GetConsumerGroup(eventHubPath, name);
+            return LegacyConsumerGroup.GetConsumerGroup(eventHubPath, name);
         }
 
         /// <summary>
@@ -1130,7 +1136,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an IEnumerable<SubscriptionDescription/> collection of consumer groups attached to the event hub passed as a parameter.</returns>
         public IEnumerable<ConsumerGroupDescription> GetConsumerGroups(string path)
         {
-            return serviceBusConsumerGroup.GetConsumerGroups(path);
+            return LegacyConsumerGroup.GetConsumerGroups(path);
         }
 
         /// <summary>
@@ -1140,7 +1146,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created ConsumerGroupDescription object.</returns>
         public ConsumerGroupDescription CreateConsumerGroup(ConsumerGroupDescription description)
         {
-            return serviceBusConsumerGroup.CreateConsumerGroup(description);
+            return LegacyConsumerGroup.CreateConsumerGroup(description);
         }
 
         /// <summary>
@@ -1149,7 +1155,7 @@ namespace ServiceBusExplorer
         /// <param name="consumerGroupDescription">The consumer group to delete.</param>
         public void DeleteConsumerGroup(ConsumerGroupDescription consumerGroupDescription)
         {
-            serviceBusConsumerGroup.DeleteConsumerGroup(consumerGroupDescription);
+            LegacyConsumerGroup.DeleteConsumerGroup(consumerGroupDescription);
         }
 
         /// <summary>
@@ -1159,7 +1165,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public void DeleteConsumerGroups(string eventHubName, IEnumerable<string> consumerGroups)
         {
-            serviceBusConsumerGroup.DeleteConsumerGroups(eventHubName, consumerGroups);
+            LegacyConsumerGroup.DeleteConsumerGroups(eventHubName, consumerGroups);
         }
 
         /// <summary>
@@ -1169,7 +1175,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated ConsumerGroupDescription object.</returns>
         public ConsumerGroupDescription UpdateConsumerGroup(ConsumerGroupDescription description)
         {
-            return serviceBusConsumerGroup.UpdateConsumerGroup(description);
+            return LegacyConsumerGroup.UpdateConsumerGroup(description);
         }
 
         /// <summary>
@@ -1180,7 +1186,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the consumer group.</returns>
         public Uri GetConsumerGroupUri(string eventHubName, string consumerGroupPath)
         {
-            return serviceBusConsumerGroup.GetConsumerGroupUri(eventHubName, consumerGroupPath);
+            return LegacyConsumerGroup.GetConsumerGroupUri(eventHubName, consumerGroupPath);
         }
 
         /// <summary>
@@ -1190,7 +1196,7 @@ namespace ServiceBusExplorer
         /// <returns>A NotificationHubDescription handle to the notification hub, or null if the notification hub does not exist in the service namespace. </returns>
         public AzureNotificationHubs.NotificationHubDescription GetNotificationHub(string path)
         {
-            return serviceBusNotificationHub.GetNotificationHub(path);
+            return LegacyNotificationHub.GetNotificationHub(path);
         }
 
         /// <summary>
@@ -1200,7 +1206,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns a newly-created NotificationHubDescription object.</returns>
         public AzureNotificationHubs.NotificationHubDescription CreateNotificationHub(AzureNotificationHubs.NotificationHubDescription description)
         {
-            return serviceBusNotificationHub.CreateNotificationHub(description);
+            return LegacyNotificationHub.CreateNotificationHub(description);
         }
 
         /// <summary>
@@ -1209,7 +1215,7 @@ namespace ServiceBusExplorer
         /// <param name="notificationHubDescription">The notification hub to delete.</param>
         public async Task DeleteNotificationHub(AzureNotificationHubs.NotificationHubDescription notificationHubDescription)
         {
-            await serviceBusNotificationHub.DeleteNotificationHub(notificationHubDescription);
+            await LegacyNotificationHub.DeleteNotificationHub(notificationHubDescription);
         }
 
         /// <summary>
@@ -1218,7 +1224,7 @@ namespace ServiceBusExplorer
         /// </summary>
         public async Task DeleteNotificationHubs(IEnumerable<string> notificationHubs)
         {
-            await serviceBusNotificationHub.DeleteNotificationHubs(notificationHubs);
+            await LegacyNotificationHub.DeleteNotificationHubs(notificationHubs);
         }
 
         /// <summary>
@@ -1228,7 +1234,7 @@ namespace ServiceBusExplorer
         /// <returns>Returns an updated NotificationHubDescription object.</returns>
         public AzureNotificationHubs.NotificationHubDescription UpdateNotificationHub(AzureNotificationHubs.NotificationHubDescription description)
         {
-            return serviceBusNotificationHub.UpdateNotificationHub(description);
+            return LegacyNotificationHub.UpdateNotificationHub(description);
         }
 
         /// <summary>
@@ -1238,7 +1244,7 @@ namespace ServiceBusExplorer
         /// <returns>The absolute uri of the notification hub.</returns>
         public Uri GetNotificationHubUri(string notificationHubPath)
         {
-            return serviceBusNotificationHub.GetNotificationHubUri(notificationHubPath);
+            return LegacyNotificationHub.GetNotificationHubUri(notificationHubPath);
         }
 
         /// <summary>
@@ -5591,6 +5597,35 @@ namespace ServiceBusExplorer
                 !string.IsNullOrWhiteSpace(message))
             {
                 writeToLog(message, async);
+            }
+        }
+
+        private IServiceBusRelay LegacyRelay => GetLegacyEntity(ref serviceBusRelay,
+            (sbn, manager) => new ServiceBusRelay(sbn, manager));
+
+        private IServiceBusNotificationHub LegacyNotificationHub => GetLegacyEntity(ref serviceBusNotificationHub,
+            (sbn, manager) => new ServiceBusNotificationHub(sbn, manager, notificationHubNamespaceManager));
+
+        private IServiceBusEventHub LegacyEventHub => GetLegacyEntity(ref serviceBusEventHub,
+            (sbn, manager) => new ServiceBusEventHub(sbn, manager));
+
+        private IServiceBusConsumerGroup LegacyConsumerGroup => GetLegacyEntity(ref serviceBusConsumerGroup,
+            (sbn, manager) => new ServiceBusConsumerGroup(sbn, manager));
+
+        private IServiceBusPartition LegacyPartition => GetLegacyEntity(ref serviceBusPartition,
+            (sbn, manager) => new ServiceBusPartition(sbn, manager));
+
+        private T GetLegacyEntity<T>(ref T entity, Func<ServiceBusNamespace, NamespaceManager, T> initialization)
+            where T : class, IServiceBusEntity
+        {
+            lock (this)
+            {
+                if (entity != null) return entity;
+                var manager = NamespaceManager;
+                if (manager == null)
+                    throw new InvalidOperationException("Legacy entity management is unavailable for this connection.");
+                entity = CreateServiceBusEntity((sbn, _) => initialization(sbn, manager));
+                return entity;
             }
         }
 
