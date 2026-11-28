@@ -98,11 +98,15 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         ///  Dispose of the returned ServiceBusClient object by calling DisposeAsync().
         /// </summary>
         /// <returns>An Azure.Messaging.ServiceBus.ServiceBusClient</returns>
-        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false)
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions = false) =>
+            CreateServiceBusClient(enableCrossEntityTransactions, null);
+
+        public ServiceBusClient CreateServiceBusClient(bool enableCrossEntityTransactions, ServiceBusRetryOptions retryOptions)
         {
             if (DataPlaneUnavailableReason != null) throw new NotSupportedException(DataPlaneUnavailableReason);
             var endpoint = IsEntra ? DataPlaneEndpoint : ServiceBusConnectionStringProperties.Parse(ConnectionString).Endpoint;
             var options = new ServiceBusClientOptions { TransportType = TransportType, EnableCrossEntityTransactions = enableCrossEntityTransactions };
+            if (retryOptions != null) options.RetryOptions = retryOptions;
             if (endpoint != null && !endpoint.IsDefaultPort)
                 options.CustomEndpointAddress = endpoint;
 
@@ -118,9 +122,13 @@ namespace ServiceBusExplorer.ServiceBus.Helpers
         public virtual ServiceBusAdministrationClient CreateAdministrationClient()
         {
             if (AdministrationClient != null) return AdministrationClient;
+            // Match the main management connection. SDK 7.21 changed its default;
+            // SKU/entity probes must retain the same API version, including on emulator.
+            var options = new ServiceBusAdministrationClientOptions(
+                ServiceBusAdministrationClientOptions.ServiceVersion.V2021_05);
             return IsEntra
-                ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential)
-                : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString);
+                ? new ServiceBusAdministrationClient(FullyQualifiedNamespace, EntraTokenCredential, options)
+                : new ServiceBusAdministrationClient(AdministrationConnectionString ?? ConnectionString, options);
         }
 
         public async Task<bool> IsPremiumNamespace()

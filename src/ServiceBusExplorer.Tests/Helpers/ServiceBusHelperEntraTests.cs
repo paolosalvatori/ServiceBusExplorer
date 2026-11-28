@@ -427,6 +427,8 @@ namespace ServiceBusExplorer.Tests.Helpers
                 var target = new ServiceBusNamespace(endpoint.AbsoluteUri, "local", tenant, TransportType.Amqp);
                 helper.Connect(target).Should().BeTrue();
                 helper.IsEventHubNamespace.Should().BeTrue();
+                GetPrivateField<NamespaceManager>(helper, "namespaceManager").Should().BeNull();
+                GetPrivateField<Lazy<NamespaceManager>>(helper, "legacyNamespaceManager").IsValueCreated.Should().BeFalse();
                 var provider = helper.NamespaceManager.Settings.TokenProvider;
                 var header = await provider.GetWebTokenAsync("https://localhost/hub", "Manage", false, TimeSpan.FromSeconds(2));
                 header.Should().Contain(token);
@@ -919,6 +921,23 @@ namespace ServiceBusExplorer.Tests.Helpers
                 await producer.DisposeAsync();
                 await consumer.DisposeAsync();
             }
+        }
+
+        [Fact]
+        public async Task ManualListenerUsesExplicitSasOnFreshHelper()
+        {
+            var helper = new ServiceBusHelper((_, __) => { });
+            Assert.Null(helper.ConnectionString);
+            const string connection = "Endpoint=sb://manual.servicebus.windows.net/;SharedAccessKeyName=listen;SharedAccessKey=dGVzdA==;EntityPath=orders";
+            var consumer = helper.CreateEventHubConsumerClient("orders", "workers", connection);
+            try
+            {
+                Assert.Equal("manual.servicebus.windows.net", consumer.FullyQualifiedNamespace);
+                Assert.Equal("orders", consumer.EventHubName);
+                Assert.Equal("workers", consumer.ConsumerGroup);
+                Assert.Null(helper.ConnectionString);
+            }
+            finally { await consumer.DisposeAsync(); }
         }
 
         static T GetPrivateField<T>(object instance, string fieldName)

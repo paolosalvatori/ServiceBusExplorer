@@ -450,7 +450,7 @@ namespace ServiceBusExplorer.Controls
                 }
                 try
                 {
-                    consumerGroupDescription = await serviceBusHelper.NamespaceManager.GetConsumerGroupAsync(eventHubName, consumerGroupDescription.Name);
+                    consumerGroupDescription = await serviceBusHelper.GetConsumerGroupAsync(eventHubName, consumerGroupDescription.Name);
                 }
                 catch (Exception ex)
                 {

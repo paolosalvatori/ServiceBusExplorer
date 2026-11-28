@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Globalization;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
@@ -22,6 +23,9 @@ namespace ServiceBusExplorer.WindowsAzure
         }
 
         protected override EntityType EntityType => EntityType.ConsumerGroup;
+
+        public Task<ConsumerGroupDescription> GetConsumerGroupAsync(string eventHubPath, string name) =>
+            NamespaceManager.GetConsumerGroupAsync(eventHubPath, name);
 
         /// <summary>
         /// Retrieves the collection of consumer groups of the event hub passed as a parameter.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Globalization;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
@@ -23,6 +24,12 @@ namespace ServiceBusExplorer.WindowsAzure
         }
 
         protected override EntityType EntityType => EntityType.EventHub;
+
+        public Task<IEnumerable<EventHubDescription>> GetEventHubsAsync() => NamespaceManager.GetEventHubsAsync();
+
+        public Task<EventHubDescription> GetEventHubAsync(string path) => NamespaceManager.GetEventHubAsync(path);
+
+        public Task<EventHubDescription> UpdateEventHubAsync(EventHubDescription description) => NamespaceManager.UpdateEventHubAsync(description);
 
         /// <summary>
         /// Retrieves the event hub from the service namespace.
