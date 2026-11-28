@@ -4748,58 +4748,110 @@ namespace ServiceBusExplorer
                 Scheme = DefaultScheme
             }.Uri;
 
+        // Service Bus Premium supports AMQP messages up to 100 MiB. Bound optional WCF
+        // processing independently of both the service tier and the configured batch size.
+        private const int MaxReplayEnvelopeBytes = 100 * 1024 * 1024;
+
         private void RetargetTrackedEnvelope(ServiceBusMessage outbound, string entityPath)
         {
-            // Value and Sequence bodies can have a text preview that is unrelated to their wire format.
             if (outbound.GetRawAmqpMessage().Body.BodyType != AmqpMessageBodyType.Data) return;
             var body = outbound.Body;
+            if (body.ToMemory().Length > MaxReplayEnvelopeBytes) return;
             using var input = body.ToStream();
-            MessageEncoder encoder;
-            Message envelope;
+            Message envelope = null;
+            BinaryData rewritten = null;
             try
             {
-                encoder = GetReplayEnvelopeEncoder(body);
-                if (encoder == null) return;
-                envelope = encoder.ReadMessage(input, MaxBufferSize);
-            }
-            catch (Exception ex) when (ex is XmlException || ex is CommunicationException ||
-                ex is FormatException || ex is ArgumentException || ex is EndOfStreamException)
-            {
-                // Arbitrary AMQP Data is replayable even when it is not a WCF envelope.
-                return;
-            }
+                MessageEncoder encoder;
+                Uri originalTo;
+                try
+                {
+                    encoder = GetReplayEnvelopeEncoder(body);
+                    if (encoder == null) return;
+                    envelope = encoder.ReadMessage(input, MaxBufferSize);
+                    originalTo = envelope.Headers.To;
+                }
+                catch (Exception ex) when (IsReplayCodecFailure(ex)) { return; }
 
-            using (envelope)
-            {
-                var originalTo = envelope.Headers.To;
                 if (originalTo == null) return;
                 var peer = GetReplayAddress(entityPath);
                 if (originalTo == peer) return;
+                try
+                {
+                    // WCF reads the body lazily while writing the new envelope. Keep the
+                    // original AMQP sections until the complete bounded encode succeeds.
+                    envelope.Headers.To = peer;
+                    using var output = new ReplayEnvelopeStream();
+                    encoder.WriteMessage(envelope, output);
+                    rewritten = new BinaryData(new ReadOnlyMemory<byte>(output.GetBuffer(), 0, (int)output.Length));
+                }
+                catch (Exception ex) when (IsReplayCodecFailure(ex)) { return; }
+            }
+            finally
+            {
+                try { envelope?.Close(); }
+                catch (Exception ex) when (IsReplayCodecFailure(ex)) { rewritten = null; }
+            }
+            if (rewritten != null) outbound.Body = rewritten;
+        }
 
-                envelope.Headers.To = peer;
-                using var output = new MemoryStream();
-                encoder.WriteMessage(envelope, output);
-                outbound.Body = new BinaryData(output.ToArray());
+        private sealed class ReplayEnvelopeStream : MemoryStream
+        {
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                CheckSize(count);
+                base.Write(buffer, offset, count);
+            }
+
+            public override void WriteByte(byte value)
+            {
+                CheckSize(1);
+                base.WriteByte(value);
+            }
+
+            private void CheckSize(int count)
+            {
+                if (count > MaxReplayEnvelopeBytes - Position)
+                    throw new System.ServiceModel.QuotaExceededException("The rewritten WCF envelope exceeds the replay size limit.");
             }
         }
+
+        // A failed optional codec probe must not reject an otherwise replayable AMQP body.
+        private static bool IsReplayCodecFailure(Exception ex) =>
+            !(ex is OutOfMemoryException || ex is StackOverflowException || ex is AccessViolationException ||
+              ex is AppDomainUnloadedException || ex is ThreadAbortException || ex is OperationCanceledException);
 
         private static MessageEncoder GetReplayEnvelopeEncoder(BinaryData body)
         {
             var bytes = body.ToMemory().Span;
             if (bytes.IsEmpty) return null;
             var first = bytes[0];
-            // UTF-8/UTF-16 XML starts with markup, whitespace, a leading zero or a byte-order mark.
-            // The WCF decoder still has to recognize the envelope before any bytes are replaced.
+            XmlDictionaryReaderQuotas quotas;
+            MessageEncodingBindingElement binding;
             if (first == '<' || char.IsWhiteSpace((char)first) || first == 0 ||
                 first == 0xef || first == 0xfe || first == 0xff)
             {
                 using var xml = new XmlTextReader(body.ToStream()) { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null };
                 if (!xml.IsStartElement("Envelope", "http://www.w3.org/2003/05/soap-envelope")) return null;
-                return new TextMessageEncodingBindingElement(MessageVersion.Default, xml.Encoding)
-                    .CreateMessageEncoderFactory().Encoder;
+                var text = new TextMessageEncodingBindingElement(MessageVersion.Default, xml.Encoding);
+                quotas = text.ReaderQuotas;
+                binding = text;
+            }
+            else
+            {
+                // NBFX attribute records and the gap after its element records cannot
+                // start a document. This skips common opaque JSON, gzip and protobuf.
+                if ((first >= 0x04 && first <= 0x3f) || (first >= 0x78 && first <= 0x7f)) return null;
+                var binary = new BinaryMessageEncodingBindingElement();
+                quotas = binary.ReaderQuotas;
+                binding = binary;
             }
 
-            return new BinaryMessageEncodingBindingElement().CreateMessageEncoderFactory().Encoder;
+            // Large text and byte-array values can use the full received payload. Keep
+            // the decoder's depth, name-table and per-read limits and the header limit.
+            quotas.MaxStringContentLength = Math.Max(quotas.MaxStringContentLength, bytes.Length);
+            quotas.MaxArrayLength = Math.Max(quotas.MaxArrayLength, bytes.Length);
+            return binding.CreateMessageEncoderFactory().Encoder;
         }
 
         private async Task DisposeReplayResourceAsync(IAsyncDisposable resource, string name)

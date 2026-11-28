@@ -194,6 +194,86 @@ namespace ServiceBusExplorer.Tests.Helpers
         }
 
         [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(true, true)]
+        public async Task LargeWcfBodyAndOpaqueNeighborsAreDeliveredInOneReplay(bool binary, bool byteArray)
+        {
+            var text = new string('x', 24000) + "東京";
+            var bytes = Enumerable.Range(0, 32000).Select(i => (byte)(i % 251)).ToArray();
+            var textBinding = new TextMessageEncodingBindingElement();
+            var binaryBinding = new BinaryMessageEncodingBindingElement();
+            var quotas = binary ? binaryBinding.ReaderQuotas : textBinding.ReaderQuotas;
+            quotas.MaxArrayLength = 100000;
+            quotas.MaxStringContentLength = 100000;
+            var encoder = (binary ? (MessageEncodingBindingElement)binaryBinding : textBinding)
+                .CreateMessageEncoderFactory().Encoder;
+            using var original = byteArray
+                ? Message.CreateMessage(MessageVersion.Default, "urn:order", bytes)
+                : Message.CreateMessage(MessageVersion.Default, "urn:order", text);
+            original.Headers.To = new Uri("sb://example.test/source");
+            original.Headers.Add(MessageHeader.CreateHeader("Trace", "urn:tracking", "preserved"));
+            using var buffer = new MemoryStream();
+            encoder.WriteMessage(original, buffer);
+            var encoded = buffer.ToArray();
+            var json = Encoding.UTF8.GetBytes("{\"order\":42}");
+            var protobuf = new byte[] { 8, 42 };
+            byte[] gzip;
+            using (var compressed = new MemoryStream())
+            {
+                using (var stream = new System.IO.Compression.GZipStream(compressed, System.IO.Compression.CompressionMode.Compress, true))
+                    stream.Write(json, 0, json.Length);
+                gzip = compressed.ToArray();
+            }
+            using var first = TrackedRow(json, "json");
+            using var soap = TrackedRow(encoded, "soap");
+            using var third = TrackedRow(protobuf, "protobuf");
+            using var fourth = TrackedRow(gzip, "gzip");
+            var client = new Client();
+            var helper = new Helper(client) { NamespaceUri = new Uri("sb://example.test/") };
+
+            Assert.Equal(4, await helper.ResubmitMessagesAsync("target", new[] { first, soap, third, fourth }, false, CancellationToken.None));
+            Assert.Equal(1, client.Sender.Calls);
+            var sent = client.Sender.Messages;
+            Assert.Equal(new[] { "json", "soap", "protobuf", "gzip" }, sent.Select(m => m.MessageId));
+            Assert.Equal(json, sent[0].Body.ToArray());
+            Assert.Equal(protobuf, sent[2].Body.ToArray());
+            Assert.Equal(gzip, sent[3].Body.ToArray());
+            using var input = sent[1].Body.ToStream();
+            using var rewritten = encoder.ReadMessage(input, 65536, encoder.ContentType);
+            Assert.Equal(new Uri("sb://example.test/target"), rewritten.Headers.To);
+            Assert.Equal("urn:order", rewritten.Headers.Action);
+            Assert.Equal("preserved", rewritten.Headers.GetHeader<string>("Trace", "urn:tracking"));
+            if (byteArray) Assert.Equal(bytes, rewritten.GetBody<byte[]>());
+            else Assert.Equal(text, rewritten.GetBody<string>());
+            Assert.Equal(encoded, ServiceBusMessageAdapter.ToReplayMessage(soap).Body.ToArray());
+        }
+
+        [Fact]
+        public async Task ABodyThatCannotBeFullyReencodedPreservesItsBytesAndTheOtherRows()
+        {
+            // The headers are readable; the optional SOAP conversion discovers the incomplete body later.
+            var incomplete = Encoding.UTF8.GetBytes(
+                "<s:Envelope xmlns:s='http://www.w3.org/2003/05/soap-envelope' xmlns:a='http://www.w3.org/2005/08/addressing'>" +
+                "<s:Header><a:Action>urn:test</a:Action><a:To>sb://example.test/source</a:To></s:Header><s:Body><Order>sample");
+            var neighbor = Encoding.UTF8.GetBytes("second row");
+            using var soap = TrackedRow(incomplete, "first");
+            using var other = TrackedRow(neighbor, "second");
+            var client = new Client();
+            var helper = new Helper(client) { NamespaceUri = new Uri("sb://example.test/") };
+
+            Assert.Equal(2, await helper.ResubmitMessagesAsync("target", new[] { soap, other }, false, CancellationToken.None));
+            Assert.Equal(1, client.Sender.Calls);
+            Assert.Equal(incomplete, client.Sender.Messages[0].Body.ToArray());
+            Assert.Equal(neighbor, client.Sender.Messages[1].Body.ToArray());
+        }
+
+        private static BrokeredMessage TrackedRow(byte[] body, string id) =>
+            ServiceBusReceivedMessageAdapter.ToBrokeredMessage(
+                ServiceBusModelFactory.ServiceBusReceivedMessage(body: new BinaryData(body), messageId: id));
+
+        [Theory]
         [InlineData(false)]
         [InlineData(true)]
         public async Task EnvelopeWithoutAPeerChangeKeepsItsExactBytes(bool addressed)

@@ -253,6 +253,20 @@ The body-type selector does not silently reinterpret an existing message. This
 preserves legacy GetBody<string>() / GetBody<byte[]>() consumers while retaining
 IDs/routing unless Generate new MessageId is explicitly selected.
 
+### Listener resubmission
+
+The listener sends selected messages to the chosen queue or topic in a single
+modern SDK batch. Replaying a received AMQP Data message preserves its original
+body sections and application properties, excluding dead-letter and recovery
+properties. For a supported WCF envelope addressed to another endpoint, the
+listener rewrites the SOAP destination and preserves the payload, action and
+other headers. The binary and text readers allow large strings and arrays
+within the received body size and retain their depth and header quotas. If an
+envelope cannot be fully read and re-encoded within the size limit, replay
+keeps the original bytes. The receiver may therefore see the original SOAP
+destination. Ordinary JSON, protobuf and compressed bodies are replayed verbatim.
+The listener reports send failures and closes its sender and client.
+
 ### Destructive non-session read failures (#913)
 
 ReceiveAndDelete rows are already removed from the broker when a batch arrives.
