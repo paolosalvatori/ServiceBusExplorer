@@ -130,7 +130,7 @@ namespace ServiceBusExplorer.Tests.Helpers
             public override Task<Response<QueueProperties>> GetQueueAsync(string name, CancellationToken token = default) =>
                 Result(ServiceBusModelFactory.QueueProperties(name, lockDuration: TimeSpan.FromMinutes(1),
                     maxSizeInMegabytes: 1024, defaultMessageTimeToLive: TimeSpan.MaxValue,
-                    autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), maxDeliveryCount: 10));
+                    autoDeleteOnIdle: TimeSpan.MaxValue, duplicateDetectionHistoryTimeWindow: TimeSpan.FromMinutes(10), maxDeliveryCount: 10, userMetadata: string.Empty));
             public override Task<Response<QueueRuntimeProperties>> GetQueueRuntimePropertiesAsync(string name, CancellationToken token = default) =>
                 Result(ServiceBusModelFactory.QueueRuntimeProperties(name));
             public override Task<Response<TopicProperties>> GetTopicAsync(string name, CancellationToken token = default) =>
