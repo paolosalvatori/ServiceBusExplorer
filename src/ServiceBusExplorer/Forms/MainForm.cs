@@ -7253,7 +7253,7 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void getMessageSessions_Click(object sender, EventArgs e)
+        private async void getMessageSessions_Click(object sender, EventArgs e)
         {
             try
             {
@@ -7266,7 +7266,7 @@ namespace ServiceBusExplorer.Forms
                 if (serviceBusTreeView.SelectedNode.Tag is QueueDescription)
                 {
                     var control = panelMain.Controls[0] as HandleQueueControl;
-                    control?.GetMessageSessions();
+                    if (control != null) await control.GetMessageSessions();
                     return;
                 }
 
@@ -7274,7 +7274,7 @@ namespace ServiceBusExplorer.Forms
                 if (serviceBusTreeView.SelectedNode.Tag is SubscriptionWrapper)
                 {
                     var control = panelMain.Controls[0] as HandleSubscriptionControl;
-                    control?.GetMessageSessions();
+                    if (control != null) await control.GetMessageSessions();
                 }
             }
             catch (Exception ex)
