@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -68,16 +69,26 @@ namespace ServiceBusExplorer.Helpers
             await foreach (var page in pages.AsPages().ConfigureAwait(false))
             {
                 if (page.ContinuationToken != null &&
-                    (!Uri.TryCreate(page.ContinuationToken, UriKind.Absolute, out var next) ||
-                     next.UserInfo.Length != 0 || next.Fragment.Length != 0 ||
-                     Uri.Compare(collectionUri, next, UriComponents.SchemeAndServer | UriComponents.Path,
-                         UriFormat.UriEscaped, StringComparison.OrdinalIgnoreCase) != 0))
+                    !IsSameCollection(collectionUri, page.ContinuationToken))
                     throw new InvalidOperationException("ARM returned a continuation outside the selected consumer group collection.");
 
                 foreach (var item in page.Values)
                     groups.Add(item.Data);
             }
             return groups;
+        }
+
+        private static bool IsSameCollection(Uri collection, string continuation)
+        {
+            if (!Uri.TryCreate(continuation, UriKind.Absolute, out var next) ||
+                next.UserInfo.Length != 0 || next.Fragment.Length != 0 ||
+                Uri.Compare(collection, next, UriComponents.SchemeAndServer, UriFormat.UriEscaped,
+                    StringComparison.OrdinalIgnoreCase) != 0) return false;
+
+            // Split before decoding so equivalent escaping of a resource name is allowed
+            // without treating characters inside one segment as new path boundaries.
+            return collection.AbsolutePath.Split('/').Select(Uri.UnescapeDataString)
+                .SequenceEqual(next.AbsolutePath.Split('/').Select(Uri.UnescapeDataString), StringComparer.OrdinalIgnoreCase);
         }
 
         public static void ValidateGroupMetadata(string name, string metadata)

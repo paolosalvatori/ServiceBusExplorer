@@ -15,17 +15,23 @@ namespace ServiceBusExplorer.Forms
         private readonly Label hubSummary = new Label { AutoSize = true };
         private readonly Label status = new Label { AutoSize = true };
         private readonly ListView groups = new ListView { Name = "consumerGroups", AccessibleName = "Consumer groups", Dock = DockStyle.Fill, View = View.Details, FullRowSelect = true, MultiSelect = false, HideSelection = false };
-        private readonly TextBox name = new TextBox { Name = "groupName", AccessibleName = "Consumer group name", Dock = DockStyle.Fill, MaxLength = 50 };
-        private readonly TextBox metadata = new TextBox { Name = "groupMetadata", AccessibleName = "User metadata", Dock = DockStyle.Fill, Multiline = true, ScrollBars = ScrollBars.Vertical, MaxLength = 1024 };
+        private readonly TextBox name = new TextBox { Name = "groupName", AccessibleName = "Consumer group name", Dock = DockStyle.Fill, MaxLength = 0 };
+        private readonly TextBox metadata = new TextBox { Name = "groupMetadata", AccessibleName = "User metadata", Dock = DockStyle.Fill, Multiline = true, ScrollBars = ScrollBars.Vertical, MaxLength = 0 };
         private readonly Button refresh = new Button { AutoSize = true, Text = "Refresh" };
         private readonly Button save = new Button { AutoSize = true, Text = "Create or update group…" };
         private CancellationTokenSource pending;
         private bool saving;
         private bool loaded;
+        private bool keepDraft;
+        private readonly Func<bool> confirmCloseDuringWrite;
 
-        internal EventHubArmForm(EventHubArmManagement management)
+        internal EventHubArmForm(EventHubArmManagement management, Func<bool> confirmCloseDuringWrite = null)
         {
             this.management = management;
+            this.confirmCloseDuringWrite = confirmCloseDuringWrite ?? (() => MessageBox.Show(this,
+                    "A write is pending and may already have reached Azure. Close this window and cancel the wait? Refresh the group before retrying.",
+                    "Unconfirmed ARM write", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2) == DialogResult.Yes);
             EntraWindowOwners.Register(this);
             Text = "Event Hub — Azure Resource Manager";
             StartPosition = FormStartPosition.CenterParent;
@@ -75,6 +81,8 @@ namespace ServiceBusExplorer.Forms
 
         internal Task RefreshGroupsAsync() => RunAsync(false, async token =>
         {
+            var draftName = name.Text;
+            var draftMetadata = metadata.Text;
             var hub = await management.GetHubAsync(token);
             var current = await management.GetGroupsAsync(token);
             token.ThrowIfCancellationRequested();
@@ -87,8 +95,8 @@ namespace ServiceBusExplorer.Forms
                     groups.Items.Add(GroupItem(group, group.UserMetadata));
             }
             finally { groups.EndUpdate(); }
-            name.Clear();
-            metadata.Clear();
+            name.Text = keepDraft ? draftName : string.Empty;
+            metadata.Text = keepDraft ? draftMetadata : string.Empty;
             loaded = true;
             status.Text = $"{current.Count} consumer group(s)";
         });
@@ -116,6 +124,7 @@ namespace ServiceBusExplorer.Forms
                 var index = groups.Items.IndexOfKey(updated.Name);
                 if (index < 0) groups.Items.Add(row);
                 else groups.Items[index] = row;
+                keepDraft = false;
                 row.Selected = true;
                 status.Text = $"ARM accepted the metadata for {updated.Name}. Refresh to read it back.";
             });
@@ -142,6 +151,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     if (!IsDisposed)
                     {
+                        if (write) keepDraft = true;
                         loaded = false;
                         var reason = ex is RequestFailedException arm ? $"ARM {arm.Status} {arm.ErrorCode}" : ex.Message;
                         status.Text = (write ? "Write not confirmed. Refresh before retrying. " : "Refresh failed. ") + reason;
@@ -166,8 +176,8 @@ namespace ServiceBusExplorer.Forms
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            if (saving && e.CloseReason == CloseReason.UserClosing)
-                e.Cancel = true;
+            if (!e.Cancel && saving && e.CloseReason == CloseReason.UserClosing)
+                e.Cancel = !confirmCloseDuringWrite();
             if (!e.Cancel) pending?.Cancel();
         }
     }

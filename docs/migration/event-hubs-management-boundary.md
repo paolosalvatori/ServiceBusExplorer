@@ -32,7 +32,7 @@ Choose **File → Manage Event Hub via ARM**. Paste the Event Hub resource ID fr
 /subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.EventHub/namespaces/{namespace}/eventhubs/{hub}
 ```
 
-In a fresh Explorer window, enter the tenant ID for the subscription. With an existing Entra connection, Explorer uses its tenant credential and requires the resource ID to match the connected namespace and any configured entity path. This mode supports Azure public cloud. Use a fresh window to open an ARM resource while keeping a SAS or Event Grid connection active elsewhere.
+In a fresh Explorer window, enter the tenant ID for the subscription. With an existing Entra connection, Explorer uses the configured tenant and requires the resource ID to match the connected namespace and any configured entity path. If several accounts belong to that tenant, the ARM window’s broker sign-in can select a different account from the connection window. This mode supports Azure public cloud. Use a fresh window to open an ARM resource while keeping a SAS or Event Grid connection active elsewhere.
 
 The window reads this hub and its consumer groups. Select a row to edit its metadata, or enter a group name to create or update it. The confirmation identifies the full destination. Confirming an empty value clears the metadata. ARM uses a create-or-update operation, so it can recreate a group that was deleted after the last refresh.
 

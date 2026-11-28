@@ -696,11 +696,14 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
+        internal bool CanOpenArmEventHub => !eventGridSelected &&
+            (serviceBusHelper.NamespaceUri == null || serviceBusHelper.IsEntra);
+
         private void manageArmEventHubMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                if (rootNode?.Tag is EventGridNamespaceResource || (serviceBusHelper.NamespaceUri != null && !serviceBusHelper.IsEntra))
+                if (!CanOpenArmEventHub)
                 {
                     MessageBox.Show(this, "Open a new Explorer window or connect with Entra to manage an Event Hub via ARM.",
                         "Event Hubs management", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -732,13 +735,13 @@ namespace ServiceBusExplorer.Forms
                         return;
                     }
 
+                    ResetEventGridConnection(selectingEventGrid: true);
                     UpdateSavedConnectionsMenu();
 
                     SelectedEntities = connectForm.SelectedEntities;
                     NamespaceName = connectForm.NamespaceName;
                     ResourceGroupName = connectForm.ResourceGroup;
 
-                    ResetEventGridConnection();
                     eventGridLibrary = new EventGridLibrary(
                         connectForm.SubscriptionId,
                         connectForm.RetryTimeout,
@@ -5106,8 +5109,11 @@ namespace ServiceBusExplorer.Forms
                 (ex is InvalidOperationException && ex.InnerException is Azure.RequestFailedException);
         }
 
-        private void ResetEventGridConnection()
+        private bool eventGridSelected;
+
+        private void ResetEventGridConnection(bool selectingEventGrid = false)
         {
+            eventGridSelected = selectingEventGrid;
             eventGridRefresh?.Cancel();
             eventGridSubscriptionLoads.Reset();
             eventGridLibrary = null;

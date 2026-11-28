@@ -144,6 +144,17 @@ namespace ServiceBusExplorer.Tests.Helpers
             Assert.Single(wire.Requests);
         }
 
+        [Fact]
+        public async Task EquivalentEscapingOnTheSameCollectionLoadsItsSecondPage()
+        {
+            var id = HubId.Replace("rg.ops", "rg(ops)");
+            using var wire = new Wire { NextLink = "https://management.azure.com" + id.Replace("(ops)", "%28ops%29") +
+                "/consumergroups?api-version=2026-01-01&page=2" };
+            var groups = await wire.Open(resourceId: id).GetGroupsAsync(default);
+            Assert.Equal(new[] { "$Default", "workers" }, groups.Select(g => g.Name));
+            Assert.Equal(2, wire.Requests.Count);
+        }
+
         internal sealed class RecordingCredential : TokenCredential
         {
             public readonly List<string> Scopes = new List<string>();
@@ -163,15 +174,17 @@ namespace ServiceBusExplorer.Tests.Helpers
             public HttpStatusCode? Failure;
             public bool OmitPutMetadata;
             public string NextLink;
+            public TaskCompletionSource<bool> PendingPut;
+            public CancellationToken PutToken;
             public string RequestedTenant;
             private readonly HttpClient http;
 
             public Wire() { http = new HttpClient(this, false); }
-            public EventHubArmManagement Open(ServiceBusNamespace profile = null)
+            public EventHubArmManagement Open(ServiceBusNamespace profile = null, string resourceId = HubId)
             {
                 var options = new ArmClientOptions { Transport = new HttpClientTransport(http) };
                 options.Retry.MaxRetries = 0;
-                return new EventHubArmManagement(HubId, profile, profile == null ? Tenant : null,
+                return new EventHubArmManagement(resourceId, profile, profile == null ? Tenant : null,
                     tenant => { RequestedTenant = tenant; return Credential; }, options);
             }
 
@@ -185,6 +198,12 @@ namespace ServiceBusExplorer.Tests.Helpers
                     json = new JObject { ["error"] = new JObject { ["code"] = Failure == HttpStatusCode.Conflict ? "MissingSubscriptionRegistration" : "AuthorizationFailed", ["message"] = "Denied" } };
                 else if (request.Method == HttpMethod.Put)
                 {
+                    if (PendingPut != null)
+                    {
+                        PutToken = token;
+                        // The server may finish a write even after cancellation reaches the client.
+                        await PendingPut.Task.ConfigureAwait(false);
+                    }
                     json = Group(uri.Segments.Last(), (string)JObject.Parse(body)["properties"]["userMetadata"]);
                     if (OmitPutMetadata) ((JObject)json["properties"]).Property("userMetadata").Remove();
                 }
