@@ -168,7 +168,7 @@ namespace ServiceBusExplorer.Tests.Forms
             typeof(MainForm).GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(main, value);
         }
 
-        private static void WithProfileConfiguration(CrossAppDomainDelegate check, string invalid = null, string storedProfile = SavedEmulator)
+        private static void WithProfileConfiguration(CrossAppDomainDelegate check, string invalid = null, string storedProfile = SavedEmulator, string legacySetting = null)
         {
             var setup = AppDomain.CurrentDomain.SetupInformation;
             var config = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".config");
@@ -180,6 +180,10 @@ namespace ServiceBusExplorer.Tests.Forms
                         new XAttribute("type", typeof(System.Configuration.DictionarySectionHandler).AssemblyQualifiedName))),
                     new XElement("serviceBusNamespaces", new XElement("add", new XAttribute("key", SavedProfileKey),
                         new XAttribute("value", storedProfile))));
+                if (legacySetting != null)
+                    root.Add(new XElement("appSettings", new XElement("add",
+                        new XAttribute("key", ConfigurationParameters.MicrosoftServiceBusConnectionString),
+                        new XAttribute("value", legacySetting))));
                 if (File.Exists(setup.ConfigurationFile))
                     root.Add(XDocument.Load(setup.ConfigurationFile).Root.Element("runtime"));
                 new XDocument(root).Save(config);

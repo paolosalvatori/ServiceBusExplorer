@@ -566,7 +566,7 @@ namespace ServiceBusExplorer.Forms
         private void BuildCurrentConnectionString()
         {
             ServiceBusNamespaceInstance = null;
-            GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
+            GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out var saved);
 
             if (!UsesRawConnectionStringEditor(connectionStringType, containsStsEndpoint) &&
                 SelectedAuthMode == ServiceBusAuthMode.Entra)
@@ -611,7 +611,22 @@ namespace ServiceBusExplorer.Forms
             SharedAccessKeyName = txtIssuerName.Text;
             SharedAccessKey = txtIssuerSecret.Text;
 
-            if (string.IsNullOrEmpty(EntityPath))
+            if (saved?.IsEntra == false && !string.IsNullOrEmpty(saved.ConnectionString))
+            {
+                ConnectionString = saved.ConnectionString;
+                // Only replace fields the user edited. The structured editor does not expose every SDK setting.
+                void Update(string name, string original, string edited)
+                {
+                    if (string.Equals(original ?? "", edited ?? "", StringComparison.Ordinal)) return;
+                    ConnectionString = ReplaceConnectionStringSetting(ConnectionString, name, edited, true);
+                }
+                Update("Endpoint", saved.Uri, Uri);
+                Update("SharedAccessKeyName", saved.SharedAccessKeyName, SharedAccessKeyName);
+                Update("SharedAccessKey", saved.SharedAccessKey, SharedAccessKey);
+                Update("EntityPath", saved.EntityPath, string.IsNullOrEmpty(EntityPath) ? null : EntityPath);
+                Update("TransportType", saved.TransportType.ToString(), TransportType.ToString());
+            }
+            else if (string.IsNullOrEmpty(EntityPath))
             {
                 ConnectionString = string.Format(ServiceBusNamespace.SasConnectionStringFormat,
                     Uri,
@@ -636,7 +651,7 @@ namespace ServiceBusExplorer.Forms
 
         private void validation_TextChanged(object sender, EventArgs e)
         {
-            GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out var profile);
+            GetSelectionState(out var connectionStringType, out var containsStsEndpoint, out _);
 
             if (cboServiceBusNamespace.SelectedIndex == 0)
             {
@@ -660,7 +675,7 @@ namespace ServiceBusExplorer.Forms
                 {
                     SetEmulatorChoices(emulator);
                     if (emulator)
-                        SetService(profile?.Selection?.Service == NamespaceService.Custom ? NamespaceService.Custom : NamespaceService.ServiceBus);
+                        SetService(SelectedService == NamespaceService.Custom ? NamespaceService.Custom : NamespaceService.ServiceBus);
                     else if (SelectedService == NamespaceService.ServiceBus)
                         SetService(null);
                     UpdateSelectedEntitiesUi(false);
@@ -756,9 +771,8 @@ namespace ServiceBusExplorer.Forms
                 return;
             }
 
-            btnSave.Visible = selectedNamespace.UserCreated;
-            btnRename.Visible = selectedNamespace.UserCreated;
-            btnDelete.Visible = selectedNamespace.UserCreated;
+            btnSave.Visible = selectedNamespace.HasExternalCredentials ? !selectedNamespace.IsEntra : selectedNamespace.UserCreated;
+            btnRename.Visible = btnDelete.Visible = selectedNamespace.UserCreated && !selectedNamespace.HasExternalCredentials;
 
             SetSelectedAuthMode(selectedNamespace.IsEntra
                 ? ServiceBusAuthMode.Entra
@@ -853,11 +867,11 @@ namespace ServiceBusExplorer.Forms
             {
                 var separator = parts[i].IndexOf('=');
                 if (separator < 0 || !string.Equals(parts[i].Substring(0, separator).Trim(), name, StringComparison.OrdinalIgnoreCase)) continue;
-                parts[i] = parts[i].Substring(0, separator + 1) + value;
+                parts[i] = value == null ? null : parts[i].Substring(0, separator + 1) + value;
                 found = true;
             }
-            var updated = string.Join(";", parts);
-            return found || !append ? updated : updated.TrimEnd(';') + ";" + name + "=" + value;
+            var updated = string.Join(";", parts.Where(part => part != null));
+            return found || !append || value == null ? updated : updated.TrimEnd(';') + ";" + name + "=" + value;
         }
 
         private void SetTransportSelection(TransportType transportType)
@@ -881,8 +895,13 @@ namespace ServiceBusExplorer.Forms
                 }
                 if (!(cboTransportType.SelectedItem is TransportType transportType)) return;
                 var value = ReplaceConnectionStringSetting(txtUri.Text, ConnectionStringTransportType, transportType.ToString(), true);
-                value = ReplaceConnectionStringSetting(value, ConnectionStringRuntimePort,
-                    transportType == TransportType.Amqp ? DefaultAmqpRuntimePort : DefaultNetMessagingRuntimePort, false);
+                var fields = ParseConnectionStringParts(value);
+                if (fields.TryGetValue(ConnectionStringRuntimePort, out var port) &&
+                    (port == DefaultAmqpRuntimePort || port == DefaultNetMessagingRuntimePort))
+                {
+                    value = ReplaceConnectionStringSetting(value, ConnectionStringRuntimePort,
+                        transportType == TransportType.Amqp ? DefaultAmqpRuntimePort : DefaultNetMessagingRuntimePort, false);
+                }
                 txtUri.Text = value;
             }
             else
@@ -1038,6 +1057,18 @@ namespace ServiceBusExplorer.Forms
                 if (profile == null || profile.IsEntra != isEntra)
                 {
                     MainForm.StaticWriteToLog("The format of the connection string is invalid.");
+                    return;
+                }
+
+                if (!isNewServiceBusNamespace && serviceBusHelper.ServiceBusNamespaces.TryGetValue(key, out var stored) &&
+                    stored.HasExternalCredentials)
+                {
+                    if (CurrentSelection == null || isEntra || ConnectionString != stored.ConnectionString)
+                    {
+                        MainForm.StaticWriteToLog("Choose a namespace service to save. Edit externally supplied credentials at their source.");
+                        return;
+                    }
+                    stored.SaveExternalSelection(TwoFilesConfiguration.Create(configFileUse, MainForm.StaticWriteToLog), CurrentSelection);
                     return;
                 }
 

@@ -362,26 +362,20 @@ namespace ServiceBusExplorer.Helpers
         }
 
         public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces
-            (TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog)
+            (TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog) =>
+            GetMessagingNamespaces(configuration, writeToLog, null);
+
+        public static Dictionary<string, ServiceBusNamespace> GetMessagingNamespaces(
+            TwoFilesConfiguration configuration, WriteToLogDelegate writeToLog, string environmentConnectionString)
         {
             // Read metadata from the same file as each credential. A user entry may shadow an application entry.
             var settings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var hashtable = configuration.GetHashtableFromSection(ServiceBusNamespaces, (file, key) =>
                 settings[key] = file.AppSettings.Settings[Common.Helpers.ConfigurationHelper.NamespaceServiceSettingPrefix + key]?.Value);
 
-            if (hashtable == null || hashtable.Count == 0)
-            {
-                writeToLog(ServiceBusNamespacesNotConfigured);
-            }
-
             var serviceBusNamespaces = new Dictionary<string, ServiceBusNamespace>();
 
-            if (hashtable == null)
-            {
-                return serviceBusNamespaces;
-            }
-
-            foreach (string key in hashtable.Keys)
+            foreach (string key in hashtable?.Keys.Cast<string>() ?? Enumerable.Empty<string>())
             {
                 var profile = GetServiceBusNamespace(key, (string)hashtable[key], writeToLog);
                 if (profile == null) continue;
@@ -390,20 +384,26 @@ namespace ServiceBusExplorer.Helpers
             }
 
             var microsoftServiceBusConnectionString =
-                configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString);
+                configuration.GetStringValue(ConfigurationParameters.MicrosoftServiceBusConnectionString, out var settingSource);
 
-            if (!string.IsNullOrWhiteSpace(microsoftServiceBusConnectionString))
-            {
-                var serviceBusNamespace = ServiceBusNamespace.GetServiceBusNamespace(ConfigurationParameters.MicrosoftServiceBusConnectionString, microsoftServiceBusConnectionString, writeToLog);
-
-                if (serviceBusNamespace != null)
-                {
-                    serviceBusNamespaces.
-                        Add(ConfigurationParameters.MicrosoftServiceBusConnectionString, serviceBusNamespace);
-                }
-            }
-
+            AddExternal(ConfigurationParameters.MicrosoftServiceBusConnectionString, microsoftServiceBusConnectionString, settingSource.ToString());
+            AddExternal(@"HKEY_CURRENT_USER\Environment connection string", environmentConnectionString, "Environment");
+            if (serviceBusNamespaces.Count == 0) writeToLog(ServiceBusNamespacesNotConfigured);
             return serviceBusNamespaces;
+
+            void AddExternal(string key, string value, string source)
+            {
+                if (string.IsNullOrWhiteSpace(value)) return;
+                var profile = GetServiceBusNamespace(key, value, writeToLog);
+                if (profile == null) return;
+                // A replacement credential can refer to another namespace. Keep the choice with its
+                // source and endpoint, without persisting the connection string or its credentials.
+                var endpoint = new Uri(profile.Uri);
+                profile.externalSelectionKey = $"ExternalNamespaceService.{source}.{endpoint.IdnHost}:{endpoint.Port}{endpoint.AbsolutePath}";
+                if (!profile.IsEntra)
+                    profile.Selection = NamespaceSelection.FromSetting(configuration.GetStringValue(profile.externalSelectionKey));
+                serviceBusNamespaces[key] = profile;
+            }
         }
 
         public static void SaveConnectionString(TwoFilesConfiguration configuration,
@@ -554,7 +554,17 @@ namespace ServiceBusExplorer.Helpers
         /// </summary>
         public bool UseDevelopmentEmulator { get; set; }
 
+        private string externalSelectionKey;
+        public bool HasExternalCredentials => externalSelectionKey != null;
         public NamespaceSelection Selection { get; set; }
+
+        public void SaveExternalSelection(TwoFilesConfiguration configuration, NamespaceSelection selection)
+        {
+            if (!HasExternalCredentials) throw new InvalidOperationException("This profile has no external credential source.");
+            if (selection == null) throw new ArgumentNullException(nameof(selection));
+            configuration.SaveStringSetting(externalSelectionKey, selection.ToSetting());
+            Selection = selection;
+        }
 
         public NamespaceSelection KnownSelection => UseDevelopmentEmulator && Selection?.Service != NamespaceService.Custom
             ? new NamespaceSelection(NamespaceService.ServiceBus)

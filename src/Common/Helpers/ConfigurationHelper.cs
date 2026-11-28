@@ -43,7 +43,11 @@ namespace ServiceBusExplorer.Common.Helpers
         #region Public methods
 
         public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
-            WriteToLogDelegate writeToLog, NamespaceSelection selection = null)
+            WriteToLogDelegate writeToLog) =>
+            UpdateServiceBusNamespace(configFileUse, key, newKey, newValue, writeToLog, null);
+
+        public static void UpdateServiceBusNamespace(ConfigFileUse configFileUse, string key, string newKey, string newValue,
+            WriteToLogDelegate writeToLog, NamespaceSelection selection)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 
@@ -55,8 +59,11 @@ namespace ServiceBusExplorer.Common.Helpers
             });
         }
 
+        public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog) =>
+            AddServiceBusNamespace(configFileUse, key, value, writeToLog, null);
+
         public static void AddServiceBusNamespace(ConfigFileUse configFileUse, string key, string value, WriteToLogDelegate writeToLog,
-            NamespaceSelection selection = null)
+            NamespaceSelection selection)
         {
             var configuration = TwoFilesConfiguration.Create(configFileUse, writeToLog);
 

@@ -145,6 +145,12 @@ namespace ServiceBusExplorer.Helpers
         #region Public instance methods
         public string GetStringValue(string AppSettingKey, string defaultValue = "")
         {
+            return GetStringValue(AppSettingKey, out _, defaultValue);
+        }
+
+        internal string GetStringValue(string AppSettingKey, out ConfigFileUse source, string defaultValue = "")
+        {
+            source = ConfigFileUse.None;
             string result = null;
 
             if (userConfiguration != null && UseUserConfig())
@@ -153,6 +159,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrEmpty(result))
                 {
+                    source = ConfigFileUse.UserConfig;
                     return result;
                 }
             }
@@ -163,6 +170,7 @@ namespace ServiceBusExplorer.Helpers
 
                 if (!string.IsNullOrEmpty(result))
                 {
+                    source = ConfigFileUse.ApplicationConfig;
                     return result;
                 }
             }
@@ -344,7 +352,10 @@ namespace ServiceBusExplorer.Helpers
             return defaultValue;
         }
 
-        public Hashtable GetHashtableFromSection(string sectionName, Action<Configuration, string> readEntrySetting = null)
+        public Hashtable GetHashtableFromSection(string sectionName) =>
+            GetHashtableFromSection(sectionName, null);
+
+        public Hashtable GetHashtableFromSection(string sectionName, Action<Configuration, string> readEntrySetting)
         {
             Hashtable sectionValues = null;
 
@@ -409,8 +420,11 @@ namespace ServiceBusExplorer.Helpers
             return (null != resultStringApp);
         }
 
+        public void AddEntryToDictionarySection(string sectionName, string key, string value) =>
+            AddEntryToDictionarySection(sectionName, key, value, null);
+
         public void AddEntryToDictionarySection(string sectionName, string key, string value,
-            Action<Configuration> updateSettings = null)
+            Action<Configuration> updateSettings)
         {
             AquireUserConfigurationIfNeeded();
 
@@ -451,7 +465,11 @@ namespace ServiceBusExplorer.Helpers
 
         // It tries to update the section in both of the files
         public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey,
-            string newValue, WriteToLogDelegate writeToLog, Action<Configuration> updateSettings = null)
+            string newValue, WriteToLogDelegate writeToLog) =>
+            UpdateEntryInDictionarySection(sectionName, key, newKey, newValue, writeToLog, null);
+
+        public void UpdateEntryInDictionarySection(string sectionName, string key, string newKey,
+            string newValue, WriteToLogDelegate writeToLog, Action<Configuration> updateSettings)
         {
             bool updatedUser = false;
             bool updatedApp = false;
@@ -493,7 +511,11 @@ namespace ServiceBusExplorer.Helpers
         }
 
         public void RemoveEntryFromDictionarySection(string sectionName, string key,
-            WriteToLogDelegate writeToLog, Action<Configuration> updateSettings = null)
+            WriteToLogDelegate writeToLog) =>
+            RemoveEntryFromDictionarySection(sectionName, key, writeToLog, null);
+
+        public void RemoveEntryFromDictionarySection(string sectionName, string key,
+            WriteToLogDelegate writeToLog, Action<Configuration> updateSettings)
         {
             bool removedUser = false;
             bool removedApp = false;
@@ -577,6 +599,12 @@ namespace ServiceBusExplorer.Helpers
                 var stringValue = Convert.ToString(value, CultureInfo.InvariantCulture);
                 SetValueInAppropriateConfigurations(AppSettingKey, stringValue);
             }
+        }
+
+        internal void SaveStringSetting(string key, string value)
+        {
+            SetValue(key, value);
+            (UseUserConfig() ? userConfiguration : applicationConfiguration).Save(ConfigurationSaveMode.Modified);
         }
 
         public void Save()

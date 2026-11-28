@@ -4115,37 +4115,23 @@ namespace ServiceBusExplorer.Forms
             }
         }
 
-        private void GetServiceBusNamespacesFromConfiguration()
+        internal void LoadSavedConnections(string environmentConnectionString)
         {
             try
             {
                 var configuration = TwoFilesConfiguration.Create(configFileUse, WriteToLog);
                 serviceBusHelper.ServiceBusNamespaces =
-                    ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog);
+                    ServiceBusNamespace.GetMessagingNamespaces(configuration, WriteToLog, environmentConnectionString);
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
+            UpdateSavedConnectionsMenu();
         }
 
         private static string EnvironmentConnectionString =>
             Environment.GetEnvironmentVariable("AzureServiceBus.ConnectionString", EnvironmentVariableTarget.User);
-
-        internal void LoadSavedConnections(string environmentConnectionString)
-        {
-            GetServiceBusNamespacesFromConfiguration();
-            if (!string.IsNullOrWhiteSpace(environmentConnectionString))
-            {
-                const string key = @"HKEY_CURRENT_USER\Environment connection string";
-                var profile = ServiceBusNamespace.GetServiceBusNamespace(key, environmentConnectionString, WriteToLog);
-                if (profile != null)
-                {
-                    serviceBusHelper.ServiceBusNamespaces[key] = profile;
-                }
-            }
-            UpdateSavedConnectionsMenu();
-        }
 
         private void GetBrokeredMessageInspectorsFromConfiguration()
         {
